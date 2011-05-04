@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="msgf/RankOffsetProbability.java|msgf/RankScoring.java|msgf/RankStatScoring.java|msscorer/RankScorer_new_backup.java" kind="src" path="src"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="extlib/ujmp-complete-0.2.4.jar"/>
+	<classpathentry kind="lib" path="extlib/jrap_StAX_v5.2.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
