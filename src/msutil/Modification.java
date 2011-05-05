@@ -30,7 +30,6 @@ public class Modification {
 	public Composition	getComposition()	{ return composition; }
 	public float getMass() { return (float)mass; }
 	public double getAccurateMass() { return mass; }
-	
 	public static Modification register(String name, double mass)
 	{
 		Modification mod = new Modification(name, mass);
@@ -97,5 +96,10 @@ public class Modification {
 		public char getResidue()	{ return residue; }
 		public Location getLocation()	{ return location; }
 		public boolean isFixedModification() { return isFixedModification; }
+		public String toString()
+		{
+			return mod.getName()+" "+residue+" "+location+" "+(isFixedModification ? "Fixed" : "Variable");		
+		}
+		
 	}
 }

@@ -20,7 +20,7 @@ import msutil.Modification.Location;
  *
  */
 
-public class AminoAcidSet implements Iterable<AminoAcid> {
+public class AminoAcidSet { //implements Iterable<AminoAcid> {
 	/**
 	 * 
 	 */
@@ -28,9 +28,10 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	private static final AminoAcid[] EMPTY_AA_ARRAY = new AminoAcid[0];
 
 	private ArrayList<AminoAcid> aaList;	// contains all amino acids with and without variable modifications
-	// modifications
 	private ArrayList<AminoAcid> nTermAAList;
 	private ArrayList<AminoAcid> cTermAAList;
+	private ArrayList<AminoAcid> protNTermAAList;
+	private ArrayList<AminoAcid> protCTermAAList;
 	
 	// for fast indexing
 	private HashMap<Character,AminoAcid> residueMap;	// residue -> aa (residue must be unique)
@@ -50,6 +51,8 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		aaList = new ArrayList<AminoAcid>();
 		nTermAAList = new ArrayList<AminoAcid>();
 		cTermAAList = new ArrayList<AminoAcid>();
+		protNTermAAList = new ArrayList<AminoAcid>();
+		protCTermAAList = new ArrayList<AminoAcid>();
 	}	
 
 	/**
@@ -70,16 +73,34 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	}
 
 	/**
-	 * Returns the list of N-terminal amino acids.
+	 * Returns the list of intermediate amino acids.
+	 * @return list of intermediate amino acids.
+	 */
+	public ArrayList<AminoAcid> getIntermediateAAList()	{ return aaList; }
+	
+	/**
+	 * Returns the list of possible N-terminal amino acids.
 	 * @return list of N-terminal amino acids.
 	 */
 	public ArrayList<AminoAcid> getNTermAAList() 	{ return nTermAAList; }
 
 	/**
-	 * Returns the list of N-terminal amino acids.
-	 * @return list of N-terminal amino acids.
+	 * Returns the list of possible C-terminal amino acids.
+	 * @return list of C-terminal amino acids.
 	 */
 	public ArrayList<AminoAcid> getCTermAAList() 	{ return cTermAAList; }
+
+	/**
+	 * Returns the list of possible Protein N-terminal amino acids.
+	 * @return list of Protein N-terminal amino acids.
+	 */
+	public ArrayList<AminoAcid> getProtNTermAAList() 	{ return protNTermAAList; }
+
+	/**
+	 * Returns the list of possible Protein C-terminal amino acids.
+	 * @return list of Protein C-terminal amino acids.
+	 */
+	public ArrayList<AminoAcid> getProtCTermAAList() 	{ return protCTermAAList; }
 	
 	/**
 	 * Retrieve an array of amino acids given the specific standard residue. 
@@ -124,28 +145,18 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	public int getIndex(AminoAcid aa) { Integer index = indexMap.get(aa); if(index==null) return -1; else return index; }
 	
 	/**
-	 * Get the lightest amino acid
-	 * @return the lightest amino acid object
+	 * Set the number of allowable variable modifications per peptide
+	 * @param maxNumberOfVariableModificationsPerPeptide the number of allowable variable modifications per peptide
 	 */
-	public AminoAcid getLightestAA()
-	{
-		return this.getAminoAcid(0);
-	}
-	
-	/**
-	 * Get the heaviest amino acid
-	 * @return the heaviest amino acid object
-	 */
-	public AminoAcid getHeaviestAA()
-	{
-		return this.getAminoAcid(this.size()-1);
-	}
-	
 	public void setMaxNumberOfVariableModificationsPerPeptide(int maxNumberOfVariableModificationsPerPeptide)
 	{
 		this.maxNumberOfVariableModificationsPerPeptide = maxNumberOfVariableModificationsPerPeptide;
 	}
-	
+
+	/**
+	 * Get the number of allowable variable modifications per peptide
+	 * @return the number of allowable variable modifications per peptide
+	 */
 	public int getMaxNumberOfVariableModificationsPerPeptide()
 	{
 		return this.maxNumberOfVariableModificationsPerPeptide;
@@ -157,10 +168,6 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	 * @return
 	 */
 	public int getIndex(char residue) { return getIndex(getAminoAcid(residue)); }
-	public int size()	{ return aaList.size(); }
-
-	@Override
-	public Iterator<AminoAcid> iterator() 		{ return aaList.iterator(); }
 
 	private char getModifiedResidue(char unmodResidue)
 	{
@@ -215,27 +222,16 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		aaList.add(aa);
 	}
 	
-	private void applyModification(Modification.Instance mod)
+	private void applyModifications(ArrayList<Modification.Instance> mods)
 	{
+		ArrayList<Modification.Instance> anywhereResidueSpecificFixedMods = new ArrayList<Modification.Instance>();
+		ArrayList<Modification.Instance> nTermResidueSpecificFixedMods = new ArrayList<Modification.Instance>();
+		ArrayList<Modification.Instance> cTermResidueSpecificFixedMods = new ArrayList<Modification.Instance>();
+		
 		Location location = mod.getLocation();
 		char residue = mod.getResidue();
-		AminoAcid targetAA = null;
-		if(residue != '*')	// amino acid specified
-			targetAA = getAminoAcid(residue);
-		else if(location == Location.N_Term)
-			targetAA = AminoAcid.N_TERN;
-		else if(location == Location.C_Term)
-			targetAA = AminoAcid.C_TERM;
-		else if(location == Location.Protein_N_Term)
-			targetAA = AminoAcid.PROTEIN_N_TERN;
-		else if(location == Location.Protein_C_Term)
-			targetAA = AminoAcid.PROTEIN_C_TERM;
-		
-		if(targetAA == null)
-		{
-			System.err.println("Error: wrong modification target (" + mod.getResidue() + ")\n");
-			System.exit(-1);
-		}
+		AminoAcid targetAA = getAminoAcid(residue);
+		assert(targetAA != null): "Invalid modification target: " + mod;
 		
 		if(!mod.isFixedModification())	// variable modification
 		{
@@ -244,11 +240,29 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			if(location == Location.Anywhere)
 			{
 				this.aaList.add(modAA);
+				this.nTermAAList.add(modAA);
+				this.cTermAAList.add(modAA);
+				this.protNTermAAList.add(modAA);
+				this.protCTermAAList.add(modAA);
 			}
 			else if(location == Location.N_Term)
-				this.nTermVariableModAA.add(modAA);
+			{
+				this.nTermAAList.add(modAA);
+				this.protNTermAAList.add(modAA);
+			}
 			else if(location == Location.C_Term)
-				this.cTermVariableModAA.add(modAA);
+			{
+				this.cTermAAList.add(modAA);
+				this.protCTermAAList.add(modAA);
+			}
+			else if(location == Location.Protein_N_Term)
+			{
+				this.protNTermAAList.add(modAA);
+			}
+			else if(location == Location.Protein_C_Term)
+			{
+				this.protCTermAAList.add(modAA);
+			}
 		}
 		else		// fixed modification
 		{
@@ -701,8 +715,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			aaSet.registerStandardAminoAcid(aa);
 		aaSet.finalizeSet();
 		
-		for(Modification.Instance mod : mods)
-			aaSet.applyModification(mod);
+		aaSet.applyModifications(mods);
 		aaSet.finalizeSet();
 		
 		return aaSet;
@@ -747,10 +760,6 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		for(AminoAcid aa : aaSet)
 			System.out.println(aaSet.getIndex(aa)+"\t"+aa.getResidueStr()+"\t"+aa.getResidue()+"\t"+aa.getMass()+"\t"+aa.getName()+"\t"+aa.isModified());
 		System.out.println("Terminal aa");
-		for(AminoAcid aa : aaSet.nTermVariableModAA)
-			System.out.println(aaSet.getIndex(aa)+"\t"+aa.getResidueStr()+"\t"+aa.getMass()+"\t"+aa.getName()+"\t"+aa.isModified());
-//		for(AminoAcid aa : aaSet.cTermVariableModAA)
-//			System.out.println(aaSet.getIndex(aa)+"\t"+aa.getResidueStr()+"\t"+aa.getMass()+"\t"+aa.getName()+"\t"+aa.isModified());
 //		for(AminoAcid aa : aaSet.getAminoAcids('E'))
 //			System.out.println(aa.getResidue());
 //		for(AminoAcid aa : aaSet.getNTermAminoAcids('E'))
