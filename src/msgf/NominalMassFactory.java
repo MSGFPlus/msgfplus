@@ -65,26 +65,6 @@ public class NominalMassFactory extends MassFactory<NominalMass> {
 	public ArrayList<DeNovoGraph.Edge<NominalMass>> getEdges(NominalMass curNode)
 	{
 		return edgeMap.get(curNode);
-//		if(edgeMap != null)
-//			return edgeMap.get(curNode);
-//		int curIndex = curNode.getNominalMass();
-//		ArrayList<DeNovoGraph.Edge<NominalMass>> edges = new ArrayList<DeNovoGraph.Edge<NominalMass>>();
-//		for(AminoAcid aa : aaSet)
-//		{
-//			int prevIndex = curIndex - aaMassIndex[aa.getResidue()];
-//			DeNovoGraph.Edge<NominalMass> edge = new DeNovoGraph.Edge<NominalMass>(new NominalMass(prevIndex), aa.getProbability(), aaSet.getIndex(aa), aa.getMass());
-//			int cleavageScore = 0;
-//			if(prevIndex == 0 && enzyme != null)
-//			{
-//				if(enzyme.isCleavable(aa))
-//					cleavageScore += enzyme.getPeptideCleavageCredit();
-//				else
-//					cleavageScore += enzyme.getPeptideCleavagePenalty();
-//			}
-//			edge.setCleavageScore(cleavageScore);
-//			edges.add(edge);
-//		}
-//		return edges;
 	}
 	
 	@Override
@@ -93,8 +73,6 @@ public class NominalMassFactory extends MassFactory<NominalMass> {
 		int index = curNode.getNominalMass() - aa.getNominalMass();
 		if(index < 0)
 			return null;
-//		if(factory[index] == null)
-//			factory[index] = new NominalMass(index);
 		return factory[index];
 	}
 	
