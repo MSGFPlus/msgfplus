@@ -17,7 +17,7 @@ public class AminoAcid extends Matter {
 
 	private double mass;
 	private int nominalMass;
-	private char residue;
+	private char residue;	// 1 letter code for standard amino acid
 	private String name;
 	private float probability = 0.05f;
 	private Composition composition;
@@ -68,7 +68,7 @@ public class AminoAcid extends Matter {
 	 * Quick way to tell whether this object is modified.
 	 * @return false if this is not modified.
 	 */
-	public boolean isModified()          { return false; }
+	public boolean isVariableModification()          { return false; }
 	
 	//  accessor methods
 	/**

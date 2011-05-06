@@ -157,7 +157,7 @@ public class Matching {
       if (delta > maxMass) break;
       
       // there is no insertion that reconcile this delta
-      if (delta < -alpha.getMaxMass()) continue;
+      if (delta < -alpha.getMaxNominalMass()) continue;
       
       // do not allow mutations that do not change the mass
       if (delta == 0) continue;
@@ -240,7 +240,7 @@ public class Matching {
       if (delta > maxMass) break;
       
       // there is no insertion that reconcile this delta
-      if (delta < -alpha.getMaxMass()) continue;
+      if (delta < -alpha.getMaxNominalMass()) continue;
       
       // do not allow mutations that do not change the mass
       if (delta == 0) continue;

@@ -4,6 +4,7 @@ package msutil;
 public class ModifiedAminoAcid extends AminoAcid {
 	private Modification mod;
 	private char unmodResidue;
+	private boolean isFixedModification;
 	
 	public ModifiedAminoAcid(AminoAcid aa, Modification mod, char residue)
 	{
@@ -11,6 +12,13 @@ public class ModifiedAminoAcid extends AminoAcid {
 		this.mod = mod;
 		this.unmodResidue = aa.getUnmodResidue();
 		super.setProbability(aa.getProbability());
+		isFixedModification = false;
+	}
+	
+	public ModifiedAminoAcid setFixedModification()
+	{
+		this.isFixedModification = true;
+		return this;
 	}
 	
 	@Override
@@ -30,5 +38,5 @@ public class ModifiedAminoAcid extends AminoAcid {
 	}
 	
 	@Override
-	public boolean isModified()		{ return true; }
+	public boolean isVariableModification()		{ return !isFixedModification; }
 }

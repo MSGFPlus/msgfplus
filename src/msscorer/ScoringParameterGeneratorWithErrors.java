@@ -758,7 +758,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
 		AminoAcid aaK = aaSet.getAminoAcid('K');
 		AminoAcid aaQ = aaSet.getAminoAcid('Q');
-		int heaviestAANominalMass = aaSet.getHeaviestAA().getNominalMass();
+		int heaviestAANominalMass = aaSet.getMaxNominalMass();
 		float[] nominalMass = new float[heaviestAANominalMass+1];
 		for(AminoAcid aa : aaSet)
 			nominalMass[aa.getNominalMass()] = aa.getMass();

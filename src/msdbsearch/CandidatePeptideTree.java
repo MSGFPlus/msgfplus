@@ -66,7 +66,7 @@ public class CandidatePeptideTree {
 			for(int j=0; j<aaArr.length; j++)
 			{
 				AminoAcid aa = aaArr[j];
-				if(addModifiedAA || !aa.isModified())
+				if(addModifiedAA || !aa.isVariableModification())
 					newNodes.add(new Node(parent, aaArr[j]));
 			}
 			treeNodes[length] = newNodes.toArray(new Node[0]);
@@ -146,7 +146,7 @@ public class CandidatePeptideTree {
 			this.aa = aa;
 //			this.prm = parent.prm + aa.getAccurateMass();
 //			this.nominalPRM = parent.nominalPRM + aa.getNominalMass();
-			if(aa.isModified())
+			if(aa.isVariableModification())
 				numMods = parent.numMods+1;
 			else
 				numMods = parent.numMods;

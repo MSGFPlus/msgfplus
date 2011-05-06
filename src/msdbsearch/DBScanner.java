@@ -562,7 +562,7 @@ public class DBScanner extends SuffixArray {
 		for(AminoAcid aa : aaSet)
 		{
 			char unmodResidue;
-			if(aa.isModified())
+			if(aa.isVariableModification())
 				unmodResidue = ((ModifiedAminoAcid)aa).getUnmodResidue();
 			else
 				unmodResidue = aa.getResidue();
