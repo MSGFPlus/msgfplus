@@ -2,6 +2,8 @@ package msutil;
 
 import java.util.Hashtable;
 
+import msgf.NominalMass;
+
 
 /**
  * A class representing a modification.
@@ -10,26 +12,28 @@ import java.util.Hashtable;
  */
 public class Modification {
 	private final String name;
-	private Composition composition;
-	private double mass;
+	private final double mass;
+	private final int nominalMass;
 	
 	private Modification(String name, Composition composition)
 	{
 		this.name = name;
-		this.composition = composition;
+		this.mass = composition.getAccurateMass();
+		this.nominalMass = composition.getNominalMass();
 	}
 	
 	private Modification(String name, double mass)
 	{
 		this.name = name;
-		this.composition = null;
 		this.mass = mass;
+		this.nominalMass = NominalMass.toNominalMass((float)mass);
 	}
 	
 	public String getName()	{ return name; }
-	public Composition	getComposition()	{ return composition; }
 	public float getMass() { return (float)mass; }
 	public double getAccurateMass() { return mass; }
+	public int getNominalMass() { return nominalMass; }
+	
 	public static Modification register(String name, double mass)
 	{
 		Modification mod = new Modification(name, mass);
@@ -63,11 +67,11 @@ public class Modification {
 	}
 	
 	public static enum Location {
+		Anywhere,
 		N_Term,
 		C_Term,
 		Protein_N_Term,
 		Protein_C_Term,
-		Anywhere
 	}
 	
 	/**

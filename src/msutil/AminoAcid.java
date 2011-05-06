@@ -19,8 +19,8 @@ public class AminoAcid extends Matter {
 	private int nominalMass;
 	private char residue;
 	private String name;
-	private Composition composition;
 	private float probability = 0.05f;
+	private Composition composition;
 
 	/**
 	 * Constructor.
@@ -47,30 +47,7 @@ public class AminoAcid extends Matter {
 		this.nominalMass = Math.round(Constants.INTEGER_MASS_SCALER*(float)mass);
 		this.residue = residue;
 		this.name = name;
-		this.composition = null;
 	}
-
-//	/**
-//	 * Builder. Set isModified=true and returns this object.
-//	 * @return this object.
-//	 */
-//	public AminoAcid setModified(char unmodifiedResidue)		
-//	{ 
-//		this.unmodifiedResidue = unmodifiedResidue;
-//		this.isModified = true; return this; 
-//	}
-//
-//	/**
-//	 * Builder. Set isNTermMod=true and returns this object.
-//	 * @return this object.
-//	 */
-//	public AminoAcid setNTermMod()	{ this.isNTermMod = true; return this; }
-//	
-//	/**
-//	 * Builder. Set isCTermMod=true and returns this object.
-//	 * @return this object.
-//	 */
-//	public AminoAcid setCTermMod()	{ this.isCTermMod = true; return this; }
 	
 	/**
 	 * Builder. Set isModified=true and returns this object.
@@ -92,18 +69,6 @@ public class AminoAcid extends Matter {
 	 * @return false if this is not modified.
 	 */
 	public boolean isModified()          { return false; }
-//
-//	/**
-//	 * Returns whether the modification of this amino acid is N-term specific or not.
-//	 * @return true if the modification to this amino acid is N-term specific, false otherwise.
-//	 */
-//	public boolean isNTermMod()          { return this.isNTermMod; }
-//
-//	/**
-//	 * Returns whether the modification of this amino acid is C-term specific or not.
-//	 * @return true if the modification to this amino acid is C-term specific, false otherwise.
-//	 */
-//	public boolean isCTermMod()          { return this.isCTermMod; }
 	
 	//  accessor methods
 	/**
@@ -153,7 +118,6 @@ public class AminoAcid extends Matter {
 		return this == aa;
 	}
 
-
 	/**
 	 * Gets the representation of the residue as string.
 	 * @return the string representing this amino acid.    
@@ -165,6 +129,12 @@ public class AminoAcid extends Matter {
 	 * @return the single letter amino acid character.    
 	 */
 	public char getResidue() 		{ return residue; }
+
+	/**
+	 * Gets the single letter amino acid representation of the unmodified version of this amino acid.
+	 * @return the single letter amino acid character.    
+	 */
+	public char getUnmodResidue() 	{ return residue; }
 	
 	/**
 	 * Gets the full string.
@@ -183,34 +153,30 @@ public class AminoAcid extends Matter {
 	public static AminoAcid[] getStandardAminoAcids()	{ return standardAATable; }
 
 	/**
+	 * Apply fixed modification to this amino acid
+	 * @param mod fixed modification
+	 */
+	public void applyFixedModification(Modification mod)
+	{
+		this.mass += mod.getAccurateMass();
+		this.nominalMass += mod.getNominalMass();
+		this.name = mod.getName() + " " + this.getName();
+		// residue and probability remain unchanged
+	}
+	
+	/**
 	 * Returns a modified version of this amino acid (fixed modification).
 	 * @param newResidue new residue character representing the modified amino acid
 	 * @param mod a modification.
 	 * @return a modified amino acid object.
 	 */
 	public AminoAcid getAAWithFixedModification(Modification mod) {
-		AminoAcid modAA;
 		String name = mod.getName() + " " + this.getName();
-		if(mod.getComposition() != null)
-			modAA = new AminoAcid(residue, name, composition.getAddition(mod.getComposition()));
-		else
-			modAA = getCustomAminoAcid(residue, name, mass+mod.getAccurateMass());
+		AminoAcid modAA = getCustomAminoAcid(residue, name, mass+mod.getAccurateMass());
 		return modAA;
 	}
-//
-//	/**
-//	 * Returns a modified version of this amino acid.
-//	 * @param newResidue new residue character representing the modified amino acid
-//	 * @param mod a modification.
-//	 * @return a modified amino acid object.
-//	 */
-//	public AminoAcid getModifiedAA(char newResidue, double modMass, String modName) {
-//		AminoAcid modAA = new AminoAcid(newResidue, modName + " " + this.getName(), mass+modMass);
-//		return modAA;
-//	}
-//	
+
 	public static AminoAcid getCustomAminoAcid(char residue, String name, double mass) {
-//		AminoAcid standardAA = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys().getAminoAcid(residue);
 		AminoAcid standardAA = AminoAcid.getStandardAminoAcid(residue);
 		if(standardAA != null && Math.abs(mass-standardAA.getMass()) < 0.001f)
 			return standardAA;
@@ -222,16 +188,13 @@ public class AminoAcid extends Matter {
 		return new AminoAcid(residue, "Custom amino acid", mass);
 	}
 	
-//
 	public static AminoAcid getAminoAcid(char residue, String name, Composition composition) {
 		AminoAcid standardAA = AminoAcid.getStandardAminoAcid(residue); 
-		if(standardAA != null && standardAA.getComposition().equals(composition))
+		if(standardAA != null && composition.getAccurateMass() == standardAA.getAccurateMass())
 			return standardAA;
 		else
 			return new AminoAcid(residue, name, composition);
 	}
-	
-//
 
 	private static Hashtable<Character, AminoAcid> residueMap;
 	// Static table containing Predefined Amino Acids 
@@ -243,7 +206,6 @@ public class AminoAcid extends Matter {
 		new AminoAcid('P',  "Proline", new Composition(5,7,1,1,0)),
 		new AminoAcid('V',  "Valine", new Composition(5,9,1,1,0)),
 		new AminoAcid('T',  "Threonine", new Composition(4,7,1,2,0)),
-		//new AminoAcid('C',  "Cystine", new Composition(3+2,5+3,1+1,1+1,1)), // this is C with CAM
 		new AminoAcid('C',  "Cystine", new Composition(3,5,1,1,1)),
 		new AminoAcid('L',  "Leucine", new Composition(6,11,1,1,0)),
 		new AminoAcid('I',  "Isoleucine", new Composition(6,11,1,1,0)),
@@ -258,15 +220,13 @@ public class AminoAcid extends Matter {
 		new AminoAcid('R',  "Arginine", new Composition(6,12,4,1,0)),
 		new AminoAcid('Y',  "Tyrosine", new Composition(9,9,1,2,0)),
 		new AminoAcid('W',  "Tryptophan", new Composition(11,10,2,1,0)),
-		//	  new AminoAcid('[',  "N-terminus", new Composition(0,0,0,0,0)),
-		//	  new AminoAcid(']',  "C-terminus", new Composition(0,0,0,0,0)),
 	};
 
-	public static final AminoAcid N_TERN = new AminoAcid('[',  "N-terminus", new Composition(0,0,0,0,0));
-	public static final AminoAcid C_TERM = new AminoAcid(']',  "C-terminus", new Composition(0,0,0,0,0));
-	public static final AminoAcid PROTEIN_N_TERN = new AminoAcid('{',  "Protein N-terminus", new Composition(0,0,0,0,0));
-	public static final AminoAcid PROTEIN_C_TERM = new AminoAcid('}',  "Protein C-terminus", new Composition(0,0,0,0,0));
-	public static final AminoAcid ANY = new AminoAcid('*',  "C-terminus", new Composition(0,0,0,0,0));
+//	public static final AminoAcid N_TERN = new AminoAcid('[',  "N-terminus", new Composition(0,0,0,0,0));
+//	public static final AminoAcid C_TERM = new AminoAcid(']',  "C-terminus", new Composition(0,0,0,0,0));
+//	public static final AminoAcid PROTEIN_N_TERN = new AminoAcid('{',  "Protein N-terminus", new Composition(0,0,0,0,0));
+//	public static final AminoAcid PROTEIN_C_TERM = new AminoAcid('}',  "Protein C-terminus", new Composition(0,0,0,0,0));
+//	public static final AminoAcid ANY = new AminoAcid('*',  "C-terminus", new Composition(0,0,0,0,0));
 	
 	static {
 		residueMap = new Hashtable<Character, AminoAcid>();

@@ -4,21 +4,18 @@ package msutil;
 public class ModifiedAminoAcid extends AminoAcid {
 	private Modification mod;
 	private char unmodResidue;
-	private boolean isResidueSpecific;
 	
 	public ModifiedAminoAcid(AminoAcid aa, Modification mod, char residue)
 	{
 		super(residue, mod.getName()+" "+aa.getName(), aa.getAccurateMass()+mod.getAccurateMass());
 		this.mod = mod;
-		this.unmodResidue = aa.getResidue();
+		this.unmodResidue = aa.getUnmodResidue();
 		super.setProbability(aa.getProbability());
-		if(Character.isUpperCase(unmodResidue))
-			isResidueSpecific = true;
 	}
 	
+	@Override
 	public char getUnmodResidue() 	{ return unmodResidue; }
 	public Modification getModification()	{ return mod; }
-	public boolean isResidueSpecific()	{ return isResidueSpecific; }
 	
 	@Override
 	public String getResidueStr()
