@@ -38,9 +38,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	private int maxNumberOfVariableModificationsPerPeptide = 2;
 	
 	private HashSet<Character> modResidueSet = new HashSet<Character>();	// set of symbols used for residues
-	private char maxResidue;
+	private char nextResidue;
 	
-	int maxMass, minMass;
+	AminoAcid lightestAA, heaviestAA;
 	
 	private AminoAcidSet() // prevents instantiation 
 	{
@@ -48,9 +48,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		standardResidueAAArrayMap = new HashMap<Location, HashMap<Character,AminoAcid[]>>();
 		for(Location location : Location.values())
 			aaListMap.put(location, new ArrayList<AminoAcid>());
-		maxResidue = 128;
-		maxMass = Integer.MIN_VALUE;
-		minMass = Integer.MAX_VALUE;
+		nextResidue = 128;
 	}	
 
 	/**
@@ -91,6 +89,33 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	}
 	
 	/**
+	 * Returns the size of amino acid depending on the location.
+	 * @param location amino acid location
+	 * @return
+	 */
+	public int size(Location location) {
+		return aaListMap.get(location).size();
+	}
+	
+	/**
+	 * Reterns the size of anywhere amino acids
+	 * @return the size of anywhere amino acids
+	 */
+	public int size()
+	{
+		return aaListMap.get(Location.Anywhere).size();
+	}
+	
+//	/**
+//	 * Returns the largest char residue code plus 1 (if the value is smaller than 128, return 128)
+//	 * @return largest char residue code + 1
+//	 */
+//	public int getMaxResidue()
+//	{
+//		return maxResidue;
+//	}
+	
+	/**
 	 * Retrieve an array of amino acids given the specific standard residue. 
 	 * @param location amino acid location
 	 * @param standardAAResidue the standard residue to look up
@@ -116,14 +141,14 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		return EMPTY_AA_ARRAY;
 	}
 	
-//	/**
-//	 * Retrieve an array of amino acids given the specific nominal mass.
-//	 * @param nominalMass the mass to look up
-//	 * @return the array of amino acids or an empty list otherwise
-//	 */
-//	public AminoAcid[] getAminoAcids(int nominalMass) {
-//		return getAminoAcids(Location.Anywhere, nominalMass);
-//	}
+	/**
+	 * Retrieve an array of amino acids given the specific nominal mass.
+	 * @param nominalMass the mass to look up
+	 * @return the array of amino acids or an empty list otherwise
+	 */
+	public AminoAcid[] getAminoAcids(int nominalMass) {
+		return getAminoAcids(Location.Anywhere, nominalMass);
+	}
 	
 	/**
 	 * Checks whether a residue belongs to this amino acid set
@@ -182,6 +207,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			index = -1;
 		return index;
 	}
+	
 	/**
 	 * Get the peptide corresponding to the string sequence. 
 	 * @param sequence sequence of the peptide.
@@ -205,8 +231,11 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		return pep;
 	}	
 
-	public int getMaxNominalMass() { return this.maxMass; }
-	public int getMinNominalMass() { return this.minMass; }
+	public int getMaxNominalMass() { return this.lightestAA.getNominalMass(); }
+	public int getMinNominalMass() { return this.heaviestAA.getNominalMass(); }
+	
+	public AminoAcid getLightestAA()	{ return this.lightestAA; }
+	public AminoAcid getHeaviestAA()	{ return this.heaviestAA; }
 	
 	// private members to build an amino acid set
 	private void addAminoAcid(AminoAcid aa)
@@ -374,32 +403,41 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			nominalMass2aa.put(location, new HashMap<Integer,AminoAcid[]>());
 		}
 		
-		// add all amino acids to aaList
-		int minMass = Integer.MAX_VALUE;
-		int maxMass = Integer.MIN_VALUE;
-		ArrayList<AminoAcid> allAAList = new ArrayList<AminoAcid>();
 		
+		// add all amino acids to aaList
+		ArrayList<AminoAcid> allAAList = new ArrayList<AminoAcid>();
 		for(Location location : aaListMap.keySet())
 		{
 			for(AminoAcid aa : aaListMap.get(location))
-			{
 				allAAList.add(aa);
-				int nominalMass = aa.getNominalMass();
-				if(nominalMass > maxMass)
-					maxMass = nominalMass;
-				if(nominalMass < minMass)
-					minMass = nominalMass;
-			}
 		}
-		this.maxMass = maxMass;
-		this.minMass = minMass;
 		
-		// assign index
 		Collections.sort(allAAList);
 		this.allAminoAcidArr = allAAList.toArray(EMPTY_AA_ARRAY);
+
+		// assign index, heaviest and lightest aa
+		double minMass = Double.MAX_VALUE;
+		int lightIndex = -1;
+		double maxMass = Double.MIN_VALUE;
+		int heavyIndex = -1;
 		aa2index = new HashMap<AminoAcid, Integer>() ;		// aa -> index
-		for(int i=0; i<allAAList.size(); i++)
-			aa2index.put(allAAList.get(i), i);
+		for(int i=0; i<allAminoAcidArr.length; i++)
+		{
+			aa2index.put(allAminoAcidArr[i], i);
+			double mass = allAminoAcidArr[i].getAccurateMass();
+			if(mass < minMass)
+			{
+				lightIndex = i;
+				minMass = mass;
+			}
+			if(mass > maxMass)
+			{
+				heavyIndex = i;
+				maxMass = mass;
+			}
+		}
+		this.heaviestAA = allAminoAcidArr[heavyIndex];
+		this.lightestAA = allAminoAcidArr[lightIndex];
 		
 		// initialize aaList and residueMap
 		residueMap = new HashMap<Character, AminoAcid>();
@@ -802,9 +840,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		}
 		
 		// if not, use char value >= 128
-		char symbol = this.maxResidue;
-		maxResidue++;
-		if(maxResidue > Character.MAX_VALUE)
+		char symbol = this.nextResidue;
+		nextResidue++;
+		if(nextResidue > Character.MAX_VALUE)
 		{
 			System.err.println("Too many modifications!");
 			System.exit(-1);

@@ -9,10 +9,9 @@ import msutil.Annotation;
 import msutil.Composition;
 import msutil.Enzyme;
 import msutil.Matter;
-import msutil.Modification;
-import msutil.ModifiedAminoAcid;
 import msutil.Peptide;
 import msutil.Sequence;
+import msutil.Modification.Location;
 
 public class GenericDeNovoGraph<T extends Matter> extends DeNovoGraph<T> {
 	private HashMap<T, Integer> nodeScore;
@@ -28,20 +27,15 @@ public class GenericDeNovoGraph<T extends Matter> extends DeNovoGraph<T> {
 		this.scoredSpec = scoredSpec;
 		edgeMap = new HashMap<T, ArrayList<DeNovoGraph.Edge<T>>>();
 
+		super.source = factory.getZero();
+		
 		float peptideMass = parentMass - (float)Composition.H2O;
+		super.pmNode = factory.getNode(peptideMass);
+		
 		super.sinkNodes = factory.getNodes(peptideMass, pmTolerance);
 		setEdgesToSinkNodes();
 		
 		super.intermediateNodes = factory.getIntermediateNodes(super.sinkNodes);
-		super.pmNode = null;
-		if(sinkNodes.size() > 0)
-		{
-			super.source = super.intermediateNodes.get(0);
-			super.pmNode = sinkNodes.get(0);
-			for(int i=1; i<sinkNodes.size(); i++)
-				if(Math.abs(peptideMass - sinkNodes.get(i).getMass()) < Math.abs(peptideMass - pmNode.getMass()))
-					pmNode = sinkNodes.get(i);
-		}
 		super.destination = factory.getInfinity();
 		setEdgesToIntermediateNodes();
 		computeNodeScores();
@@ -152,42 +146,29 @@ public class GenericDeNovoGraph<T extends Matter> extends DeNovoGraph<T> {
 	private void setEdgesToSinkNodes()
 	{
 		boolean isReverse = factory.isReverse();
+		Location location;
+		if(isReverse)
+			location = Location.N_Term;
+		else
+			location = Location.C_Term;
+		
+		AminoAcidSet aaSet = factory.getAASet();
+		ArrayList<AminoAcid> aaList = aaSet.getAAList(location);
 		for(T curNode : sinkNodes)
 		{
-			ArrayList<DeNovoGraph.Edge<T>> unmodEdges = factory.getEdges(curNode);
-			AminoAcidSet aaSet = factory.getAASet();
-			
-			// apply fixed mods
-			
-			// variable mods
-			ArrayList<DeNovoGraph.Edge<T>> modEdges = new ArrayList<DeNovoGraph.Edge<T>>(); 
-			ArrayList<ModifiedAminoAcid> termVariableMods;
-			if(isReverse)	// consider N-term specific mods
-				termVariableMods = aaSet.getNTermVariableMods();
-			else			// consider c-term specific mods
-				termVariableMods = aaSet.getCTermVariableMods();
-			
-			// non residue specific mods
-			for(ModifiedAminoAcid modAA : termVariableMods)
+			ArrayList<DeNovoGraph.Edge<T>> edges = new ArrayList<DeNovoGraph.Edge<T>>();
+			for(AminoAcid aa : aaList)
 			{
-				
-			}
-			
-			for(ModifiedAminoAcid modAA : termVariableMods)
-			{
-				if(modAA.isResidueSpecific())
+				T prevNode = factory.getPreviousNode(curNode, aa);
+				if(prevNode != null)
 				{
-					T prevNode = factory.getPreviousNode(curNode, modAA);
-					if(prevNode != null)
-					{
-						DeNovoGraph.Edge<T> edge = new DeNovoGraph.Edge<T>(prevNode, modAA.getProbability(), aaSet.getIndex(modAA), modAA.getMass());
-						modEdges.add(edge);
-					}
+					DeNovoGraph.Edge<T> edge = new DeNovoGraph.Edge<T>(prevNode, aa.getProbability(), aaSet.getIndex(aa), aa.getMass());				
+//					int errorScore = scoredSpec.getEdgeScore(curNode, prevNode, edge.getEdgeMass());
+//					edge.setErrorScore(errorScore);
+					edges.add(edge);
 				}
 			}
-			for(DeNovoGraph.Edge<T> edge : unmodEdges)
-				edge.setErrorScore(0);
-			edgeMap.put(curNode, unmodEdges);
+			edgeMap.put(curNode, edges);
 		}		
 	}
 	

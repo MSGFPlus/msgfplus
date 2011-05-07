@@ -10,20 +10,16 @@ import java.util.TreeMap;
 
 import parser.BufferedLineReader;
 
-import msdbsearch.CandidatePeptideTree.CandidatePeptide;
 import msgf.DeNovoGraph;
 import msgf.GF;
 import msgf.GenericDeNovoGraph;
-import msgf.IntMassFactory;
 import msgf.MSGFDBResultGenerator;
 import msgf.GeneratingFunction;
 import msgf.GeneratingFunctionGroup;
 import msgf.NominalMass;
 import msgf.NominalMassFactory;
-import msgf.PrefixSuffixScorer;
 import msgf.ScoredSpectrum;
 import msgf.Tolerance;
-import msgf.IntMassFactory.IntMass;
 import msscorer.DBScanScorer;
 import msscorer.FastScorer;
 import msscorer.NewRankScorer;
@@ -297,7 +293,8 @@ public class DBScanner extends SuffixArray {
 				continue;
 			
 			boolean isProteinNTerm; 
-			if(nAA == '_' || (nAA == 'M' && sequence.getCharAt(index-1) == '_'))
+//			if(nAA == '_' || (nAA == 'M' && sequence.getCharAt(index-1) == '_'))
+			if(nAA == '_')
 				isProteinNTerm = true;
 			else
 				isProteinNTerm = false;
@@ -323,9 +320,23 @@ public class DBScanner extends SuffixArray {
 			
 			for(i=lcp > 1 ? lcp : 1; i<maxPeptideLength+1 && index+i<size; i++)	// ith character of a peptide
 			{
+				// TODO: apply C-term mods
 				char residue = sequence.getCharAt(index+i);
-				if(candidatePepGrid.addResidue(i, residue) == false)
-					break;
+				if(isProteinNTerm)
+				{
+					if(candidatePepGrid.addProtNTermResidue(residue) == false)
+						break;
+				}
+				else if(i == 1)
+				{
+					if(candidatePepGrid.addNTermResidue(residue) == false)
+						break;
+				}
+				else
+				{
+					if(candidatePepGrid.addResidue(i, residue) == false)
+						break;
+				}
 				if(enzymaticSearch && !enzyme.isCleavable(residue))
 				{
 					if(nNET+1 > numberOfAllowableNonEnzymaticTermini)

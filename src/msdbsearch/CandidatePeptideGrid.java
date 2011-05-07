@@ -1,11 +1,15 @@
 package msdbsearch;
 
+import java.util.ArrayList;
+
 import msutil.AminoAcid;
 import msutil.AminoAcidSet;
 import msutil.ModifiedAminoAcid;
+import msutil.Modification.Location;
 
 public class CandidatePeptideGrid {
 	private static final int MAX_NUM_VARIATIONS_PER_PEPTIDE = 128;
+	private static final int STANDARD_RESIDUE_MAX_RESIDUE = 128;
 	
 	private final AminoAcidSet aaSet;
 	private final int maxPeptideLength;
@@ -16,15 +20,32 @@ public class CandidatePeptideGrid {
 	private int[][] numMods;
 	private StringBuffer[] peptide;
 	
+	// caching amino acid set for fast search
+	
 	// anywhere aa (including modified aa)
 	private int[][] aaNominalMass; // residue -> mass list
 	private double[][] aaMass;
 	private char[][] aaResidue;
 	
-	// aa with variable modifications
+	// N-term aa set
 	private int[][] nTermAANominalMass; // residue -> mass list
 	private double[][] nTermAAMass;
 	private char[][] nTermAAResidue;
+
+	// C-term aa set
+	private int[][] cTermAANominalMass; // residue -> mass list
+	private double[][] cTermAAMass;
+	private char[][] cTermAAResidue;
+
+	// Protein N-term aa set
+	private int[][] protNTermAANominalMass; // residue -> mass list
+	private double[][] protNTermAAMass;
+	private char[][] protNTermAAResidue;
+
+	// Protein C-term aa set
+	private int[][] protCTermAANominalMass; // residue -> mass list
+	private double[][] protCTermAAMass;
+	private char[][] protCTermAAResidue;
 	
 	private int length;
 	private int[] size;
@@ -90,30 +111,45 @@ public class CandidatePeptideGrid {
 		return peptide[index].toString();
 	}
 	
+	public boolean addProtNTermResidue(char residue)
+	{
+		double[] aaMassArr = protNTermAAMass[residue];
+		if(aaMassArr == null)
+			return false;
+		
+		int[] aaNominalMassArr = protNTermAANominalMass[residue];
+		char[] aaResidueArr = protNTermAAResidue[residue];
+		
+		return addResidue(aaMassArr, aaNominalMassArr, aaResidueArr, 1);
+	}
+
+	public boolean addNTermResidue(char residue)
+	{
+		double[] aaMassArr = nTermAAMass[residue];
+		if(aaMassArr == null)
+			return false;
+		
+		int[] aaNominalMassArr = nTermAANominalMass[residue];
+		char[] aaResidueArr = nTermAAResidue[residue];
+		
+		return addResidue(aaMassArr, aaNominalMassArr, aaResidueArr, 1);
+	}
+	
 	// if residue is not a standard residue, return false
 	public boolean addResidue(int length, char residue)
 	{
-		double[] aaMassArr;
-		if(length != 1)
-			aaMassArr = aaMass[residue];
-		else	// N-term
-			aaMassArr = nTermAAMass[residue];
+		double[] aaMassArr = aaMass[residue];
 		if(aaMassArr == null || length > maxPeptideLength)
 			return false;
 		
-		int[] aaNominalMassArr;
-		char[] aaResidueArr;
-		if(length != 1)
-		{
-			aaNominalMassArr = aaNominalMass[residue];
-			aaResidueArr = aaResidue[residue];
-		}
-		else	// N-term
-		{
-			aaNominalMassArr = nTermAANominalMass[residue];
-			aaResidueArr = nTermAAResidue[residue];
-		}
+		int[] aaNominalMassArr = aaNominalMass[residue];
+		char[] aaResidueArr = aaResidue[residue];
 		
+		return addResidue(aaMassArr, aaNominalMassArr, aaResidueArr, length);
+	}
+	
+	private boolean addResidue(double[] aaMassArr, int[] aaNominalMassArr, char[] aaResidueArr, int length)
+	{
 		int parentSize = size[length-1];
 		for(int parentIndex=0; parentIndex<parentSize; parentIndex++)
 		{
@@ -158,46 +194,65 @@ public class CandidatePeptideGrid {
 		}
 		
 		this.length = length;
-		return true;
+		return true;		
 	}
 	
 	private void cacheAASet()
 	{
-		aaNominalMass = new int[128][];
-		aaMass = new double[128][];
-		aaResidue = new char[128][];
-		for(AminoAcid aa : AminoAcidSet.getStandardAminoAcidSet())
+		for(Location location : Location.values())
+			cacheAASet(location);
+	}
+	
+	private void cacheAASet(Location location)
+	{
+		int[][] stdResidue2NominalMasses = null;
+		double[][] stdResidue2Masses = null;
+		char[][] stdResidue2Residues = null;
+		
+		if(location == Location.Anywhere)
 		{
-			char residue = aa.getResidue();
-			AminoAcid[] aaArr = aaSet.getAminoAcids(residue);
-			aaNominalMass[residue] = new int[aaArr.length];
-			aaMass[residue] = new double[aaArr.length];
-			aaResidue[residue] = new char[aaArr.length];
-			for(int i=0; i<aaArr.length; i++)
-			{
-				aaNominalMass[residue][i] = aaArr[i].getNominalMass();
-				aaMass[residue][i] = aaArr[i].getAccurateMass();
-				aaResidue[residue][i] = aaArr[i].getResidue();
-			}
+			stdResidue2NominalMasses = aaNominalMass = new int[STANDARD_RESIDUE_MAX_RESIDUE][];
+			stdResidue2Masses = aaMass = new double[STANDARD_RESIDUE_MAX_RESIDUE][];
+			stdResidue2Residues = aaResidue = new char[STANDARD_RESIDUE_MAX_RESIDUE][];
+		}
+		else if(location == Location.N_Term)
+		{
+			stdResidue2NominalMasses = nTermAANominalMass = new int[STANDARD_RESIDUE_MAX_RESIDUE][];
+			stdResidue2Masses = nTermAAMass = new double[STANDARD_RESIDUE_MAX_RESIDUE][];
+			stdResidue2Residues = nTermAAResidue = new char[STANDARD_RESIDUE_MAX_RESIDUE][];
+		}
+		else if(location == Location.C_Term)
+		{
+			stdResidue2NominalMasses = cTermAANominalMass = new int[STANDARD_RESIDUE_MAX_RESIDUE][];
+			stdResidue2Masses = cTermAAMass = new double[STANDARD_RESIDUE_MAX_RESIDUE][];
+			stdResidue2Residues = cTermAAResidue = new char[STANDARD_RESIDUE_MAX_RESIDUE][];
+		}
+		else if(location == Location.Protein_N_Term)
+		{
+			stdResidue2NominalMasses = protNTermAANominalMass = new int[STANDARD_RESIDUE_MAX_RESIDUE][];
+			stdResidue2Masses = protNTermAAMass = new double[STANDARD_RESIDUE_MAX_RESIDUE][];
+			stdResidue2Residues = protNTermAAResidue = new char[STANDARD_RESIDUE_MAX_RESIDUE][];
+		}
+		else if(location == Location.Protein_C_Term)
+		{
+			stdResidue2NominalMasses = protCTermAANominalMass = new int[STANDARD_RESIDUE_MAX_RESIDUE][];
+			stdResidue2Masses = protCTermAAMass = new double[STANDARD_RESIDUE_MAX_RESIDUE][];
+			stdResidue2Residues = protCTermAAResidue = new char[STANDARD_RESIDUE_MAX_RESIDUE][];
 		}
 		
-		// N-term
-		nTermAANominalMass = new int[128][];
-		nTermAAMass = new double[128][];
-		nTermAAResidue = new char[128][];
 		for(AminoAcid aa : AminoAcidSet.getStandardAminoAcidSet())
 		{
 			char residue = aa.getResidue();
-			AminoAcid[] aaArr = aaSet.getNTermAminoAcids(residue);
-			nTermAANominalMass[residue] = new int[aaArr.length];
-			nTermAAMass[residue] = new double[aaArr.length];
-			nTermAAResidue[residue] = new char[aaArr.length];
+			AminoAcid[] aaArr = aaSet.getAminoAcids(location, residue);
+			stdResidue2NominalMasses[residue] = new int[aaArr.length];
+			stdResidue2Masses[residue] = new double[aaArr.length];
+			stdResidue2Residues[residue] = new char[aaArr.length];
 			for(int i=0; i<aaArr.length; i++)
 			{
-				nTermAANominalMass[residue][i] = aaArr[i].getNominalMass();
-				nTermAAMass[residue][i] = aaArr[i].getAccurateMass();
-				nTermAAResidue[residue][i] = aaArr[i].getResidue();
+				stdResidue2NominalMasses[residue][i] = aaArr[i].getNominalMass();
+				stdResidue2Masses[residue][i] = aaArr[i].getAccurateMass();
+				stdResidue2Residues[residue][i] = aaArr[i].getResidue();
 			}
 		}
-	}	
+	}
 }

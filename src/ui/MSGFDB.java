@@ -304,6 +304,7 @@ public class MSGFDB {
 		int numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
 		ArrayList<Integer> scanNumList = specAccessor.getScanNumList();
 //		scanNumList.clear();
+//		scanNumList.add(4378);	// Q-17
 //		scanNumList.add(685);
 //		scanNumList.add(1162);	// M+16
 //		scanNumList.add(3888);

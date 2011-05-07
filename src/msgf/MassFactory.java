@@ -11,6 +11,7 @@ import msutil.Enzyme;
 import msutil.Matter;
 import msutil.Peptide;
 import msutil.Sequence;
+import msutil.Modification.Location;
 
 public abstract class MassFactory<T extends Matter> implements DeNovoNodeFactory<T> {
 
@@ -48,12 +49,6 @@ public abstract class MassFactory<T extends Matter> implements DeNovoNodeFactory
 		return aaSet;
 	}
 
-//	@Override
-//	public ArrayList<DeNovoGraph.Edge<T>> getEdges(T curNode)
-//	{
-//		return edgeMap.get(curNode);
-//	}
-	
 	@Override
 	public DeNovoGraph.Edge<T> getEdge(T curNode, T prevNode)
 	{
@@ -122,11 +117,9 @@ public abstract class MassFactory<T extends Matter> implements DeNovoNodeFactory
 	protected void makeAllPossibleMasses(boolean makeEdgeMap)
 	{
 		HashSet<T> nodes = new HashSet<T>();
-		ArrayList<T> curFreshNodes = new ArrayList<T>();
 		
 		T zero = getZero();
 		nodes.add(zero);
-		curFreshNodes.add(zero);
 
 		if(makeEdgeMap)
 		{
@@ -134,8 +127,46 @@ public abstract class MassFactory<T extends Matter> implements DeNovoNodeFactory
 			edgeMap.put(zero, new ArrayList<DeNovoGraph.Edge<T>>());
 		}
 		
-		boolean isSource = true;
-		for(int i=0; i<maxLength; i++)
+		// length 1
+		ArrayList<T> curFreshNodes = new ArrayList<T>();
+		Location location;
+		if(isReverse())	// C-term
+			location = Location.C_Term;
+		else			// N-term
+			location = Location.N_Term;
+		
+		for(AminoAcid aa : aaSet.getAAList(location))
+		{
+			T newNode = getNextNode(zero, aa);
+			boolean isNewNode = nodes.add(newNode);
+			if(isNewNode)
+				curFreshNodes.add(newNode);
+			
+			if(makeEdgeMap)
+			{
+				DeNovoGraph.Edge<T> edge = new DeNovoGraph.Edge<T>(zero, aa.getProbability(), aaSet.getIndex(aa), aa.getMass());
+				if(enzyme != null)
+				{
+					if(enzyme.isCleavable(aa))
+						edge.setCleavageScore(enzyme.getPeptideCleavageCredit());
+					else
+						edge.setCleavageScore(enzyme.getPeptideCleavagePenalty());
+				}
+				if(isNewNode)	// newly generated node
+				{
+					ArrayList<DeNovoGraph.Edge<T>> edges = new ArrayList<DeNovoGraph.Edge<T>>();
+					edges.add(edge);
+					edgeMap.put(newNode, edges);
+				}
+				else	// existing node
+				{
+					edgeMap.get(newNode).add(edge);
+				}
+			}
+		}
+		
+		// length >=2
+		for(int i=1; i<maxLength; i++)
 		{
 			ArrayList<T> newFreshNodes = new ArrayList<T>();
 			for(T node : curFreshNodes)
@@ -144,31 +175,24 @@ public abstract class MassFactory<T extends Matter> implements DeNovoNodeFactory
 				{
 					T newNode = getNextNode(node, aa);
 					assert(newNode != null): node.getNominalMass()+" "+aa.getResidueStr();
-					DeNovoGraph.Edge<T> edge = new DeNovoGraph.Edge<T>(node, aa.getProbability(), aaSet.getIndex(aa), aa.getMass());
-					if(isSource && enzyme != null)
-					{
-						if(enzyme.isCleavable(aa))
-							edge.setCleavageScore(enzyme.getPeptideCleavageCredit());
-						else
-							edge.setCleavageScore(enzyme.getPeptideCleavagePenalty());
-					}
-					if(nodes.add(newNode))	// newly generated node
-					{
-						ArrayList<DeNovoGraph.Edge<T>> edges = new ArrayList<DeNovoGraph.Edge<T>>();
-						edges.add(edge);
-						if(makeEdgeMap)
-							edgeMap.put(newNode, edges);
-						
+					boolean isNewNode = nodes.add(newNode);
+					if(isNewNode)
 						newFreshNodes.add(newNode);
-					}
-					else	// existing node
+					if(makeEdgeMap)
 					{
-						if(makeEdgeMap)
+						DeNovoGraph.Edge<T> edge = new DeNovoGraph.Edge<T>(node, aa.getProbability(), aaSet.getIndex(aa), aa.getMass());
+						if(isNewNode)	// newly generated node
+						{
+							ArrayList<DeNovoGraph.Edge<T>> edges = new ArrayList<DeNovoGraph.Edge<T>>();
+							edges.add(edge);
+							edgeMap.put(newNode, edges);
+						}
+						else	// existing node
+						{
 							edgeMap.get(newNode).add(edge);
+						}
 					}
 				}
-				if(isSource)
-					isSource = false;
 			}
 			curFreshNodes = newFreshNodes;
 		}

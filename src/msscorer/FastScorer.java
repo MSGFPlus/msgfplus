@@ -1,9 +1,5 @@
 package msscorer;
 
-import java.util.ArrayList;
-
-import msdbsearch.CandidatePeptideTree;
-import msdbsearch.DatabaseMatch;
 import msgf.NominalMass;
 import msgf.NominalMassFactory;
 
@@ -46,11 +42,6 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 		return score;
 	}
 
-	public ArrayList<DatabaseMatch> getPeptideMatches(CandidatePeptideTree candidates, int scoreThreshold)
-	{
-		return null;
-	}
-	
 	@Override
 	public int getNodeScore(NominalMass prefixMass, NominalMass suffixMass) {
 		return Math.round(prefixScore[prefixMass.getNominalMass()]+suffixScore[suffixMass.getNominalMass()]);

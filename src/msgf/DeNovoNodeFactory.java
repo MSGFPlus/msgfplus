@@ -13,7 +13,8 @@ public interface DeNovoNodeFactory<T extends Matter> {
 	public AminoAcidSet getAASet();
 	public T getZero();
 	public T getInfinity();
-	public ArrayList<T> getNodes(float peptideMass, Tolerance tolerance);
+	public ArrayList<T> getNodes(float mass, Tolerance tolerance);
+	public T getNode(float mass);	// get the closest node from the mass
 	public T getComplementNode(T srm, T pmNode);
 	public ArrayList<T> getIntermediateNodes(ArrayList<T> destNodes);
 	public ArrayList<DeNovoGraph.Edge<T>> getEdges(T curNode);

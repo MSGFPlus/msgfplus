@@ -103,8 +103,19 @@ public class NominalMassFactory extends MassFactory<NominalMass> {
 		{
 			if(factory[index] != null)
 				nodes.add(factory[index]);
+			else
+				nodes.add(new NominalMass(index));
 		}
 		return nodes;
+	}
+
+	@Override
+	public NominalMass getNode(float peptideMass) {
+		int index = getMassIndex(peptideMass);
+		if(factory[index] != null)
+			return factory[index];
+		else
+			return new NominalMass(index);
 	}
 	
 	@Override

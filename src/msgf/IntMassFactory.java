@@ -94,6 +94,15 @@ public class IntMassFactory extends MassFactory<IntMassFactory.IntMass> {
 	}
 	
 	@Override
+	public IntMass getPreviousNode(IntMass curNode, AminoAcid aa) {
+		int index = curNode.getMassIndex() - getMassIndex(aa.getMass());
+		if(index < 0)
+			return null;
+		else
+			return factory[index];
+	}
+	
+	@Override
 	public IntMass getNextNode(IntMass curNode, AminoAcid aa) {
 		int index = curNode.getMassIndex() + getMassIndex(aa.getMass());
 		if(factory[index] == null)
@@ -120,8 +129,19 @@ public class IntMassFactory extends MassFactory<IntMassFactory.IntMass> {
 		{
 			if(factory[index] != null)
 				nodes.add(factory[index]);
+			else
+				nodes.add(new IntMass(index));
 		}
 		return nodes;
+	}
+
+	@Override
+	public IntMass getNode(float peptideMass) {
+		int index = getMassIndex(peptideMass);
+		if(factory[index] != null)
+			return factory[index];
+		else
+			return new IntMass(index);
 	}
 	
 	public class IntMass extends Matter {

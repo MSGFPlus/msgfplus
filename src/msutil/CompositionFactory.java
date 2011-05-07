@@ -141,6 +141,39 @@ public class CompositionFactory extends MassFactory<Composition>{
 	}
 
 	@Override
+	public Composition getNode(float mass) {
+		// binary search
+		int minIndex=0, maxIndex=data.length, i=-1;
+		while(true)
+		{
+			i = (minIndex+maxIndex)/2; 
+			double m = Composition.getMonoMass(data[i]);
+			if(m < mass)
+				minIndex = i;
+			else if(m > mass)
+				maxIndex = i;
+			else
+				break;
+			if(maxIndex - minIndex <= 1)
+				break;
+		}
+
+		if(minIndex == maxIndex)
+			return new Composition(data[minIndex]);
+		else
+		{
+			Composition compMin = new Composition(data[minIndex]);
+			Composition compMax = new Composition(data[maxIndex]);
+			float min = compMin.getMass();
+			float max = compMax.getMass();
+			if(Math.abs(mass-min) < Math.abs(mass-max))
+				return compMin;
+			else
+				return compMax;
+		}
+	}
+	
+	@Override
 	public ArrayList<Composition> getIntermediateNodes(ArrayList<Composition> destCompositionList)
 	{
 		return getIntermediateCompositions(new Composition(0), destCompositionList);
@@ -264,6 +297,4 @@ public class CompositionFactory extends MassFactory<Composition>{
 	public static void main(String[] argv)
 	{
 	}
-
-
 }
