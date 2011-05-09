@@ -3,15 +3,16 @@ package msutil;
 // for variable modification
 public class ModifiedAminoAcid extends AminoAcid {
 	private Modification mod;
-	private char unmodResidue;
+	private AminoAcid targetAA;
 	private boolean isFixedModification;
+	private boolean isNTermNonSpecificMod = false;
 	
-	public ModifiedAminoAcid(AminoAcid aa, Modification mod, char residue)
+	public ModifiedAminoAcid(AminoAcid targetAA, Modification mod, char residue)
 	{
-		super(residue, mod.getName()+" "+aa.getName(), aa.getAccurateMass()+mod.getAccurateMass());
+		super(residue, mod.getName()+" "+targetAA.getName(), targetAA.getAccurateMass()+mod.getAccurateMass());
 		this.mod = mod;
-		this.unmodResidue = aa.getUnmodResidue();
-		super.setProbability(aa.getProbability());
+		this.targetAA = targetAA;
+		super.setProbability(targetAA.getProbability());
 		isFixedModification = false;
 	}
 	
@@ -21,19 +22,36 @@ public class ModifiedAminoAcid extends AminoAcid {
 		return this;
 	}
 	
+	public ModifiedAminoAcid setNTermNonSpecificMod()
+	{
+		this.isNTermNonSpecificMod = true;
+		return this;
+	}
+	
 	@Override
-	public char getUnmodResidue() 	{ return unmodResidue; }
+	public char getUnmodResidue() 	{ return targetAA.getResidue(); }
 	public Modification getModification()	{ return mod; }
 	
 	@Override
 	public String getResidueStr()
 	{
+		if(isFixedModification)
+			return targetAA.getResidueStr();
 		StringBuffer buf = new StringBuffer();
-		buf.append(unmodResidue);
+		String massStr;
 		float modMass = mod.getMass();
 		if(modMass >= 0)
-			buf.append('+');
-		buf.append(String.format("%.3f", modMass));
+			massStr = "+" + String.format("%.3f", modMass);
+		else
+			massStr = String.format("%.3f", modMass);
+		if(isNTermNonSpecificMod)
+		{
+			buf.append(massStr+targetAA.getResidueStr());
+		}
+		else
+		{
+			buf.append(targetAA.getResidueStr()+massStr);
+		}
 		return buf.toString();
 	}
 	

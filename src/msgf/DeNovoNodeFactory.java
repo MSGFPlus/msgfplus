@@ -1,6 +1,7 @@
 package msgf;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import msutil.AminoAcid;
 import msutil.AminoAcidSet;
@@ -16,7 +17,7 @@ public interface DeNovoNodeFactory<T extends Matter> {
 	public ArrayList<T> getNodes(float mass, Tolerance tolerance);
 	public T getNode(float mass);	// get the closest node from the mass
 	public T getComplementNode(T srm, T pmNode);
-	public ArrayList<T> getIntermediateNodes(ArrayList<T> destNodes);
+	public ArrayList<T> getLinkedNodeList(Collection<T> destNodes);	
 	public ArrayList<DeNovoGraph.Edge<T>> getEdges(T curNode);
 	public DeNovoGraph.Edge<T> getEdge(T curNode, T prevNode);
 	public Sequence<T> toCumulativeSequence(boolean isPrefix, Peptide pep);

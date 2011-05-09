@@ -32,6 +32,7 @@ import msutil.ModifiedAminoAcid;
 import msutil.Peptide;
 import msutil.Spectrum;
 import msutil.SpectrumAccessorByScanNum;
+import msutil.Modification.Location;
 import suffixarray.SuffixArray;
 import suffixarray.SuffixArraySequence;
 
@@ -568,16 +569,12 @@ public class DBScanner extends SuffixArray {
 			}
 		}
 		long totalAACount = 0;
-		for(AminoAcid aa : aaSet)
-			totalAACount += aaCount[aa.getResidue()];
-		for(AminoAcid aa : aaSet)
+		for(AminoAcid aa : aaSet.getAAList(Location.Anywhere))
+			if(!aa.isVariableModification())
+				totalAACount += aaCount[aa.getResidue()];
+		for(AminoAcid aa : aaSet.getAllAminoAcidArr())
 		{
-			char unmodResidue;
-			if(aa.isVariableModification())
-				unmodResidue = ((ModifiedAminoAcid)aa).getUnmodResidue();
-			else
-				unmodResidue = aa.getResidue();
-			aa.setProbability(aaCount[unmodResidue]/(float)totalAACount);
+			aa.setProbability(aaCount[aa.getUnmodResidue()]/(float)totalAACount);
 		}
 	}
 }

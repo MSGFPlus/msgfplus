@@ -1,6 +1,7 @@
 package msgf;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -82,11 +83,10 @@ public abstract class MassFactory<T extends Matter> implements DeNovoNodeFactory
 	}
 	
 	@Override
-	public ArrayList<T> getIntermediateNodes(ArrayList<T> destNodes) 
+	public ArrayList<T> getLinkedNodeList(Collection<T> destNodes) 
 	{
-		HashSet<T> effectiveNodeSet = new HashSet<T>();
+		HashSet<T> effectiveNodeSet = new HashSet<T>(destNodes);
 		ArrayList<T> curFreshNodes = new ArrayList<T>(destNodes);
-		
 		while(!curFreshNodes.isEmpty())
 		{
 			ArrayList<T> newFreshNodes = new ArrayList<T>();

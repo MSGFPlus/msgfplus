@@ -1,7 +1,9 @@
 package msgf;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import msutil.AminoAcid;
 import msutil.AminoAcidSet;
@@ -35,7 +37,8 @@ public class GenericDeNovoGraph<T extends Matter> extends DeNovoGraph<T> {
 		super.sinkNodes = factory.getNodes(peptideMass, pmTolerance);
 		setEdgesToSinkNodes();
 		
-		super.intermediateNodes = factory.getIntermediateNodes(super.sinkNodes);
+		setIntermediateNodes();
+//		super.intermediateNodes = factory.getIntermediateNodes(super.sinkNodes);
 		super.destination = factory.getInfinity();
 		setEdgesToIntermediateNodes();
 		computeNodeScores();
@@ -163,8 +166,6 @@ public class GenericDeNovoGraph<T extends Matter> extends DeNovoGraph<T> {
 				if(prevNode != null)
 				{
 					DeNovoGraph.Edge<T> edge = new DeNovoGraph.Edge<T>(prevNode, aa.getProbability(), aaSet.getIndex(aa), aa.getMass());				
-//					int errorScore = scoredSpec.getEdgeScore(curNode, prevNode, edge.getEdgeMass());
-//					edge.setErrorScore(errorScore);
 					edges.add(edge);
 				}
 			}
@@ -186,4 +187,26 @@ public class GenericDeNovoGraph<T extends Matter> extends DeNovoGraph<T> {
 			edgeMap.put(curNode, edges);
 		}
 	}	
+	
+	private void setIntermediateNodes() 
+	{
+		HashSet<T> depth1Nodes = new HashSet<T>();
+		for(T sink : sinkNodes)
+		{
+			ArrayList<DeNovoGraph.Edge<T>> edges = getEdges(sink);
+			if(edges != null)
+			{
+				for(DeNovoGraph.Edge<T> edge : edges)
+				{
+					T prevNode = edge.getPrevNode();
+					depth1Nodes.add(prevNode);
+				}				
+			}
+		}
+		
+		ArrayList<T> intermidiateNodeList = factory.getLinkedNodeList(depth1Nodes);
+		Collections.sort(intermidiateNodeList);
+		this.intermediateNodes = intermidiateNodeList;
+	}
+	
 }

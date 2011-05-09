@@ -355,6 +355,18 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 				if(prevDist.getMinScore()+combinedScore < curMinScore)
 					curMinScore = prevDist.getMinScore() + combinedScore;
 				edges.add(edge);
+//				if(
+//						curNode.getNominalMass() == 793 && prevNode.getNominalMass() == 682
+//						|| curNode.getNominalMass() == 682 && prevNode.getNominalMass() == 581
+//						|| curNode.getNominalMass() == 581 && prevNode.getNominalMass() == 468
+//						|| curNode.getNominalMass() == 468 && prevNode.getNominalMass() == 381
+//						|| curNode.getNominalMass() == 381 && prevNode.getNominalMass() == 225
+//						|| curNode.getNominalMass() == 225 && prevNode.getNominalMass() == 128
+//						|| curNode.getNominalMass() == 128 && prevNode.getNominalMass() == 0
+//					)
+//				{
+//					System.out.println(curNode.getNominalMass()+"->"+prevNode.getNominalMass()+" "+combinedScore);
+//				}
 			}
 		}
 		if(curMinScore >= curMaxScore)

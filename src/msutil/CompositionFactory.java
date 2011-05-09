@@ -1,6 +1,7 @@
 package msutil;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 
 import msgf.DeNovoGraph;
@@ -174,13 +175,13 @@ public class CompositionFactory extends MassFactory<Composition>{
 	}
 	
 	@Override
-	public ArrayList<Composition> getIntermediateNodes(ArrayList<Composition> destCompositionList)
+	public ArrayList<Composition> getLinkedNodeList(Collection<Composition> destCompositionList)
 	{
 		return getIntermediateCompositions(new Composition(0), destCompositionList);
 	}
 	
 	// return set of compositions contained in paths from (0,0,0,0,0) to despCompositions
-	public ArrayList<Composition> getIntermediateCompositions(Composition source, ArrayList<Composition> destCompositionList)
+	public ArrayList<Composition> getIntermediateCompositions(Composition source, Collection<Composition> destCompositionList)
 	{
 		CompositionFactory intermediateCompositions = new CompositionFactory(this.aaSet, maxLength);
 		

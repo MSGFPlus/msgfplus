@@ -47,7 +47,7 @@ public class MSGFDB {
 		int minPeptideLength = 6;
 		int maxPeptideLength = 40;
 		
-		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
+		AminoAcidSet aaSet = null;
 		
 		for(int i=0; i<argv.length; i+=2)
 		{
@@ -211,6 +211,8 @@ public class MSGFDB {
 		if(parentMassTolerance == null)
 			printUsageAndExit("Parent mass tolerance is not specified.");
 	
+		if(aaSet == null)
+			aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
 		runMSGFDB(specFile, specFormat, databaseFile, paramFile, useError, parentMassTolerance, numAllowedC13,
 	    		outputFile, enzyme, numAllowedNonEnzymaticTermini,
 	    		activationMethod, aaSet, numMatchesPerSpec, showTitle,
@@ -287,6 +289,12 @@ public class MSGFDB {
 		
 		DBScanner.setAminoAcidProbabilities(databaseFile.getPath(), aaSet);
 		
+		//////////////////// Debug
+//		aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
+//		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
+//		aaSet.printAASet();
+		///////////////////////////
+		
 		NewRankScorer scorer;
 		if(paramFile != null)
 			scorer = new NewRankScorer(paramFile.getPath());
@@ -303,13 +311,18 @@ public class MSGFDB {
 		int numBytesPerMass = 8;
 		int numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
 		ArrayList<Integer> scanNumList = specAccessor.getScanNumList();
+		
+		////////// Debug ////////////
 //		scanNumList.clear();
+//		scanNumList.add(4353);
+//		scanNumList.add(685);	// Q-17
 //		scanNumList.add(4378);	// Q-17
-//		scanNumList.add(685);
 //		scanNumList.add(1162);	// M+16
 //		scanNumList.add(3888);
 //		for(int sn=1000; sn<1100; sn++)
 //			scanNumList.add(sn);
+		////////////////////////////////
+		
 		int fromIndex = 0;
 		
 		String header = 

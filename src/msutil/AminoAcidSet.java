@@ -3,6 +3,7 @@ package msutil;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import java.util.LinkedList;
 
 import parser.BufferedLineReader;
 
+import msdbsearch.DBScanner;
 import msutil.Modification.Location;
 
 /**
@@ -186,6 +188,15 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	}
 	
 	/**
+	 * Get all amino acids for all locations.
+	 * @return an array of all amino acids.
+	 */
+	public AminoAcid[] getAllAminoAcidArr()
+	{
+		return this.allAminoAcidArr;
+	}
+	
+	/**
 	 * Get the amino acid corresponding to the index
 	 * @param index amino acid index
 	 * @return amino acid object
@@ -241,10 +252,10 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	{
 		for(Location location : Location.values())
 		{
-			System.out.println(location);
 			ArrayList<AminoAcid> aaList = this.getAAList(location);
+			System.out.println(location+"\t"+aaList.size());
 			for(AminoAcid aa : aaList)
-				System.out.println(aa.getResidueStr()+"\t"+(int)aa.getResidue()+"\t"+aa.getNominalMass()+"\t"+aa.getMass());
+				System.out.println(aa.getResidueStr()+(aa.isVariableModification() ? "*" : "")+"\t"+(int)aa.getResidue()+"\t"+aa.getNominalMass()+"\t"+aa.getMass()+"\t"+aa.getProbability());
 		}
 	}
 	
@@ -301,17 +312,18 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		}
 
 		// Apply anywhere fixed modifications: simply change the amino acid
-		for(Modification.Instance mod : fixedMods.get(Location.Anywhere))
-		{
-			char residue = mod.getResidue();
-			AminoAcid aa = getAminoAcid(residue);
-			if(aa == null)
-			{
-				System.err.println("Invalid modification: " + mod);
-				System.exit(-1);
-			}
-			aa.applyFixedModification(mod.getModification());
-		}
+//		for(Modification.Instance mod : fixedMods.get(Location.Anywhere))
+//		{
+//			char residue = mod.getResidue();
+//			AminoAcid aa = getAminoAcid(residue);
+//			if(aa == null)
+//			{
+//				System.err.println("Invalid modification: " + mod);
+//				System.exit(-1);
+//			}
+//			aa.applyFixedModification(mod.getModification());
+//		}
+		applyFixedMods(fixedMods, Location.Anywhere);
 		
 		// Apply anywhere variable modifications
 		addVariableMods(variableMods, Location.Anywhere);
@@ -322,17 +334,23 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		// Variable C-term mods (residue-specific)
 		addVariableMods(variableMods, Location.C_Term);
 		
+		// Variable Protein N-term mods (residue-specific)
+		addVariableMods(variableMods, Location.Protein_N_Term);
+		
+		// Variable Protein C-term mods (residue-specific)
+		addVariableMods(variableMods, Location.Protein_C_Term);
+		
 		// Fixed N-term
-		addFixedTerminalMods(fixedMods, Location.N_Term);
+		applyFixedMods(fixedMods, Location.N_Term);
 		
 		// Fixed C-term
-		addFixedTerminalMods(fixedMods, Location.C_Term);
+		applyFixedMods(fixedMods, Location.C_Term);
 
-		// Fixed N-term
-		addFixedTerminalMods(fixedMods, Location.Protein_N_Term);
+		// Fixed Protein N-term
+		applyFixedMods(fixedMods, Location.Protein_N_Term);
 		
-		// Fixed C-term
-		addFixedTerminalMods(fixedMods, Location.Protein_C_Term);
+		// Fixed Protein C-term
+		applyFixedMods(fixedMods, Location.Protein_C_Term);
 		
 	}
 
@@ -346,13 +364,14 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 				continue;
 			for(AminoAcid targetAA : getAminoAcids(location, residue))
 			{
-				char modResidue = this.getModifiedResidue(residue);
+				char modResidue = this.getModifiedResidue(targetAA.getUnmodResidue());
 				ModifiedAminoAcid modAA = new ModifiedAminoAcid(targetAA, mod.getModification(), modResidue);
 				this.addAminoAcid(modAA, location);
 			}
 		}
 		
 		// any residue
+		ArrayList<AminoAcid> newAAList = new ArrayList<AminoAcid>();
 		for(Modification.Instance mod : variableMods.get(location))
 		{
 			char residue = mod.getResidue();
@@ -360,14 +379,18 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 				continue;
 			for(AminoAcid targetAA : this.aaListMap.get(location))
 			{
-				char modResidue = this.getModifiedResidue(residue);
+				char modResidue = this.getModifiedResidue(targetAA.getUnmodResidue());
 				ModifiedAminoAcid modAA = new ModifiedAminoAcid(targetAA, mod.getModification(), modResidue);
-				this.addAminoAcid(modAA, location);
+				if(location == Location.N_Term || location == Location.Protein_N_Term)
+					modAA.setNTermNonSpecificMod();
+				newAAList.add(modAA);
 			}
 		}
+		for(AminoAcid newAA : newAAList)
+			this.addAminoAcid(newAA, location);
 	}
 	
-	private void addFixedTerminalMods(HashMap<Modification.Location,ArrayList<Modification.Instance>> fixedMods, Location location)
+	private void applyFixedMods(HashMap<Modification.Location,ArrayList<Modification.Instance>> fixedMods, Location location)
 	{
 		// residue-specific
 		for(Modification.Instance mod : fixedMods.get(location))
@@ -375,17 +398,18 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			char residue = mod.getResidue();
 			if(residue == '*')
 				continue;
-			ArrayList<AminoAcid> newAAList = new ArrayList<AminoAcid>();
+			ArrayList<AminoAcid> oldAAList = this.getAAList(location);
+			ArrayList<AminoAcid> newAAList = new ArrayList<AminoAcid>(oldAAList);
 			for(AminoAcid targetAA : getAminoAcids(location, residue))
 			{
-				char modResidue = this.getModifiedResidue(residue);
+				char modResidue = this.getModifiedResidue(targetAA.getUnmodResidue());
 				ModifiedAminoAcid modAA = new ModifiedAminoAcid(targetAA, mod.getModification(), modResidue);
+				modAA.setFixedModification();
+				newAAList.remove(targetAA);
 				newAAList.add(modAA);
 			}
 			aaListMap.put(location, newAAList);
 		}
-		
-		
 
 		// any residue
 		for(Modification.Instance mod : fixedMods.get(location))
@@ -396,8 +420,10 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			ArrayList<AminoAcid> newAAList = new ArrayList<AminoAcid>();
 			for(AminoAcid targetAA : this.aaListMap.get(location))
 			{
-				char modResidue = this.getModifiedResidue(residue);
+				char modResidue = this.getModifiedResidue(targetAA.getUnmodResidue());
 				ModifiedAminoAcid modAA = new ModifiedAminoAcid(targetAA, mod.getModification(), modResidue);
+				if(location == Location.N_Term || location == Location.Protein_N_Term)
+					modAA.setNTermNonSpecificMod();
 				newAAList.add(modAA);
 			}
 			aaListMap.put(location, newAAList);
@@ -416,15 +442,15 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		
 		
 		// add all amino acids to aaList
-		ArrayList<AminoAcid> allAAList = new ArrayList<AminoAcid>();
+		HashSet<AminoAcid> allAASet = new HashSet<AminoAcid>();
 		for(Location location : aaListMap.keySet())
 		{
 			for(AminoAcid aa : aaListMap.get(location))
-				allAAList.add(aa);
+				allAASet.add(aa);
 		}
 		
-		Collections.sort(allAAList);
-		this.allAminoAcidArr = allAAList.toArray(EMPTY_AA_ARRAY);
+		this.allAminoAcidArr = allAASet.toArray(EMPTY_AA_ARRAY);
+		Arrays.sort(allAminoAcidArr);
 
 		// assign index, heaviest and lightest aa
 		double minMass = Double.MAX_VALUE;
@@ -453,7 +479,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		// initialize aaList and residueMap
 		residueMap = new HashMap<Character, AminoAcid>();
 		
-		for(AminoAcid aa : allAAList)
+		for(AminoAcid aa : allAminoAcidArr)
 		{
 			assert(residueMap.get(aa.getResidue()) == null): aa.getResidue()+" already exists!";
 			residueMap.put(aa.getResidue(), aa);
@@ -827,6 +853,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		for(AminoAcid aa : getStandardAminoAcidSet())
 			aaSet.addAminoAcid(aa);
 		aaSet.finalizeSet();
+//		aaSet.printAASet();
 		
 		aaSet.applyModifications(mods);
 		aaSet.finalizeSet();
@@ -863,17 +890,8 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
 	public static void main(String argv[])
 	{
-//		testReadingFile();
 		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(System.getProperty("user.home")+"/Research/ToolDistribution/Mods.txt");
+		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
 		aaSet.printAASet();
-//		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
-		System.out.println("Standard aa and Anyware variable modifications");
-//		for(AminoAcid aa : aaSet)
-//			System.out.println(aaSet.getIndex(aa)+"\t"+aa.getResidueStr()+"\t"+aa.getResidue()+"\t"+aa.getMass()+"\t"+aa.getName()+"\t"+aa.isModified());
-//		System.out.println("Terminal aa");
-//		for(AminoAcid aa : aaSet.getAminoAcids('E'))
-//			System.out.println(aa.getResidue());
-//		for(AminoAcid aa : aaSet.getNTermAminoAcids('E'))
-//			System.out.println(aa.getResidue());
 	}
 }
