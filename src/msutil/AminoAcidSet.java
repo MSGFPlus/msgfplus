@@ -237,6 +237,17 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	public AminoAcid getLightestAA()	{ return this.lightestAA; }
 	public AminoAcid getHeaviestAA()	{ return this.heaviestAA; }
 	
+	public void printAASet()
+	{
+		for(Location location : Location.values())
+		{
+			System.out.println(location);
+			ArrayList<AminoAcid> aaList = this.getAAList(location);
+			for(AminoAcid aa : aaList)
+				System.out.println(aa.getResidueStr()+"\t"+(int)aa.getResidue()+"\t"+aa.getNominalMass()+"\t"+aa.getMass());
+		}
+	}
+	
 	// private members to build an amino acid set
 	private void addAminoAcid(AminoAcid aa)
 	{
@@ -853,7 +864,8 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	public static void main(String argv[])
 	{
 //		testReadingFile();
-		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile("/home/sangtaekim/Research/ToolDistribution/Mods.txt");
+		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(System.getProperty("user.home")+"/Research/ToolDistribution/Mods.txt");
+		aaSet.printAASet();
 //		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
 		System.out.println("Standard aa and Anyware variable modifications");
 //		for(AminoAcid aa : aaSet)
