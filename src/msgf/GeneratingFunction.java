@@ -299,8 +299,8 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 			finalDist = factory.getInstance(mergedDist.getMinScore()+neighboringAACleavagePenalty, mergedDist.getMaxScore()+neighboringAACleavageCredit);
 			if(calcNumber)
 			{
-				finalDist.addNumDist(mergedDist, neighboringAACleavageCredit, enzyme.getResidues().size());
-				finalDist.addNumDist(mergedDist, neighboringAACleavagePenalty, graph.getAASet().size()-enzyme.getResidues().size());
+				finalDist.addNumDist(mergedDist, neighboringAACleavageCredit, enzyme.getResidues().length);
+				finalDist.addNumDist(mergedDist, neighboringAACleavagePenalty, graph.getAASet().size()-enzyme.getResidues().length);
 			}
 			if(calcProb)
 			{
@@ -356,13 +356,13 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 					curMinScore = prevDist.getMinScore() + combinedScore;
 				edges.add(edge);
 //				if(
-//						curNode.getNominalMass() == 793 && prevNode.getNominalMass() == 682
-//						|| curNode.getNominalMass() == 682 && prevNode.getNominalMass() == 581
-//						|| curNode.getNominalMass() == 581 && prevNode.getNominalMass() == 468
-//						|| curNode.getNominalMass() == 468 && prevNode.getNominalMass() == 381
-//						|| curNode.getNominalMass() == 381 && prevNode.getNominalMass() == 225
-//						|| curNode.getNominalMass() == 225 && prevNode.getNominalMass() == 128
-//						|| curNode.getNominalMass() == 128 && prevNode.getNominalMass() == 0
+//						curNode.getNominalMass() == 850 && prevNode.getNominalMass() == 763
+//						|| curNode.getNominalMass() == 763 && prevNode.getNominalMass() == 616
+//						|| curNode.getNominalMass() == 616 && prevNode.getNominalMass() == 502
+//						|| curNode.getNominalMass() == 502 && prevNode.getNominalMass() == 346
+//						|| curNode.getNominalMass() == 346 && prevNode.getNominalMass() == 289
+//						|| curNode.getNominalMass() == 289 && prevNode.getNominalMass() == 160
+//						|| curNode.getNominalMass() == 160 && prevNode.getNominalMass() == 0
 //					)
 //				{
 //					System.out.println(curNode.getNominalMass()+"->"+prevNode.getNominalMass()+" "+combinedScore);
@@ -386,6 +386,7 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 			{
 				int edgeScore = edge.getEdgeScore();
 				int combinedScore = curNodeScore + edgeScore;
+
 				if(calcNumber)
 					curDist.addNumDist(prevDist, combinedScore, 1);
 				if(calcProb)
@@ -405,6 +406,6 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 		fwdTable.put(curNode, curDist);
 		if(backtrack)
 			backtrackTable.put(curNode, backPointer);	
+//		System.out.println("**********\t"+curNode.getNominalMass()+"\t"+curDist.getProbability(curMaxScore-1));
 	}
-
 }

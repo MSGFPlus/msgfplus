@@ -29,11 +29,8 @@ public class Enzyme {
 	private String name;
 	
 	/** Amino acid residues cleaved by the enzyme. */
-	private ArrayList<AminoAcid> residues;
+	private char[] residues;
 	private boolean[] isResidueCleavable; 
-	
-	private NominalMassAASet nominalMassAASet;
-	private CompositionAASet compositionAASet;
 	
 	private float probCleavageSites;
 	
@@ -49,19 +46,19 @@ public class Enzyme {
 	private int neighboringAACleavageCredit = 0;
 	private int neighboringAACleavagePenalty = 0;
 	
-	/**
-	 * Instantiates a new enzyme.
-	 * 
-	 * @param name the name
-	 * @param residues the residues cleaved by the enzyme (HashSet)
-	 * @param isNTerm N term or C term (true if it cleaves N-term)
-	 */
-	private Enzyme(String name, ArrayList<AminoAcid> residues, boolean isNTerm) 
+	public void registerAASet(AminoAcidSet aaSet)
 	{
-		this.name = name;
-		this.residues = residues;
-		this.isNTerm = isNTerm;
-		initResidues();
+		probCleavageSites = 0;
+		for(char r : residues)
+			probCleavageSites += aaSet.getAminoAcid(r).getProbability();
+		isResidueCleavable = new boolean[128];
+		for(char r : residues)
+			isResidueCleavable[r] = true;
+		this.neighboringAACleavageCredit = (int)Math.round(Math.log(neighboringAACleavageEfficiency/this.probCleavageSites));
+		this.neighboringAACleavagePenalty = (int)Math.round(Math.log((1-neighboringAACleavageEfficiency)/(1-this.probCleavageSites)));
+		this.peptideCleavageCredit = (int)Math.round(Math.log(peptideCleavageEfficiency/this.probCleavageSites));
+		this.peptideCleavagePenalty = (int)Math.round(Math.log((1-peptideCleavageEfficiency)/(1-this.probCleavageSites)));
+		
 	}
 	
 	/**
@@ -74,11 +71,10 @@ public class Enzyme {
 	private Enzyme(String name, String residues, boolean isNTerm) 
 	{
 		this.name = name;
-		this.residues = new ArrayList<AminoAcid>();
+		this.residues = new char[residues.length()];
 		for(int i=0; i<residues.length(); i++)
-			this.residues.add(AminoAcid.getStandardAminoAcid(residues.charAt(i)));
+			this.residues[i] = residues.charAt(i);
 		this.isNTerm = isNTerm;
-		initResidues();
 	}
 
 	/**
@@ -86,11 +82,11 @@ public class Enzyme {
 	 * @param neighboringAACleavageEfficiency neighboring amino acid effieicncy
 	 * @return this object
 	 */
-	public void setNeighboringAAEfficiency(float neighboringAACleavageEfficiency)
+	private void setNeighboringAAEfficiency(float neighboringAACleavageEfficiency)
 	{
 		this.neighboringAACleavageEfficiency = neighboringAACleavageEfficiency;
-		this.neighboringAACleavageCredit = (int)Math.round(Math.log(neighboringAACleavageEfficiency/this.probCleavageSites));
-		this.neighboringAACleavagePenalty = (int)Math.round(Math.log((1-neighboringAACleavageEfficiency)/(1-this.probCleavageSites)));
+//		this.neighboringAACleavageCredit = (int)Math.round(Math.log(neighboringAACleavageEfficiency/this.probCleavageSites));
+//		this.neighboringAACleavagePenalty = (int)Math.round(Math.log((1-neighboringAACleavageEfficiency)/(1-this.probCleavageSites)));
 	}
 
 	/**
@@ -107,11 +103,11 @@ public class Enzyme {
 	 * @param peptideCleavageEfficiency peptide cleagave efficiency
 	 * @return this object
 	 */
-	public void setPeptideCleavageEffiency(float peptideCleavageEfficiency)
+	private void setPeptideCleavageEffiency(float peptideCleavageEfficiency)
 	{
 		this.peptideCleavageEfficiency = peptideCleavageEfficiency;
-		this.peptideCleavageCredit = (int)Math.round(Math.log(peptideCleavageEfficiency/this.probCleavageSites));
-		this.peptideCleavagePenalty = (int)Math.round(Math.log((1-peptideCleavageEfficiency)/(1-this.probCleavageSites)));
+//		this.peptideCleavageCredit = (int)Math.round(Math.log(peptideCleavageEfficiency/this.probCleavageSites));
+//		this.peptideCleavagePenalty = (int)Math.round(Math.log((1-peptideCleavageEfficiency)/(1-this.probCleavageSites)));
 	}
 	
 	/**
@@ -153,7 +149,10 @@ public class Enzyme {
 	 */
 	public boolean isCleavable(AminoAcid aa)
 	{
-		return residues.contains(aa);
+		for(char r : this.residues)
+			if(r == aa.getResidue())
+				return true;
+		return false;
 	}
 
 	/**
@@ -165,7 +164,9 @@ public class Enzyme {
 	 */
 	public boolean isCleavable(char residue)
 	{
-		return isResidueCleavable[residue];
+		if(residue < isResidueCleavable.length)
+			return isResidueCleavable[residue];
+		return false;
 	}
 	
 	
@@ -223,7 +224,7 @@ public class Enzyme {
 	 * 
 	 * @return the residues
 	 */
-	public ArrayList<AminoAcid> getResidues()	{ return residues; }
+	public char[] getResidues()	{ return residues; }
 	
 	/** 
 	 * Sets probCleavageSites. Cleavage penalty/credit must be re-computed.
@@ -247,13 +248,6 @@ public class Enzyme {
 	{
 		return probCleavageSites;
 	}
-	
-	public NominalMassAASet getNominalMassAASet()	{ return nominalMassAASet; }
-	public IntMassAASet getIntMassAASet(IntMassFactory factory)
-	{
-		return new IntMassAASet(factory, residues);
-	}
-	public CompositionAASet getCompefficiencyositionAASet()	{ return compositionAASet; }
 	
 	/** The Constant TRYPSIN. */
 	public static final Enzyme TRYPSIN;
@@ -286,19 +280,6 @@ public class Enzyme {
 	public static Enzyme getEnzymeByName(String name)
 	{
 		return registeredEnzyme.get(name);
-	}
-	
-	private void initResidues()
-	{
-		Collections.sort(residues);
-		nominalMassAASet = new NominalMassAASet(residues);
-		compositionAASet = new CompositionAASet(residues);
-		probCleavageSites = 0;
-		for(AminoAcid aa : residues)
-			probCleavageSites += aa.getProbability();
-		isResidueCleavable = new boolean[128];
-		for(AminoAcid aa : residues)
-			isResidueCleavable[aa.getResidue()] = true;
 	}
 	
 	static {

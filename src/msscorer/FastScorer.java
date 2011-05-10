@@ -1,7 +1,6 @@
 package msscorer;
 
 import msgf.NominalMass;
-import msgf.NominalMassFactory;
 
 // this does not use edge scores
 public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
@@ -9,7 +8,7 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 	protected float[] prefixScore = null;
 	protected float[] suffixScore = null;
 	
-	public FastScorer(NominalMassFactory factory, NewScoredSpectrum<NominalMass> scoredSpec, int peptideMass)
+	public FastScorer(NewScoredSpectrum<NominalMass> scoredSpec, int peptideMass)
 	{
 		prefixScore = new float[peptideMass];
 		suffixScore = new float[peptideMass];
@@ -17,12 +16,9 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 			prefixScore[i] = Float.MIN_VALUE;
 		for(int nominalMass=1; nominalMass<peptideMass; nominalMass++)
 		{
-			NominalMass node = factory.getInstanceOfIndex(nominalMass);
-			if(node != null)
-			{
-				prefixScore[nominalMass] = scoredSpec.getNodeScore(node, true);
-				suffixScore[nominalMass] = scoredSpec.getNodeScore(node, false);
-			}
+			NominalMass node = new NominalMass(nominalMass);
+			prefixScore[nominalMass] = scoredSpec.getNodeScore(node, true);
+			suffixScore[nominalMass] = scoredSpec.getNodeScore(node, false);
 		}
 	}
 	

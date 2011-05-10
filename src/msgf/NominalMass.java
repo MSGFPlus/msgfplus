@@ -20,7 +20,10 @@ public class NominalMass extends Matter {
 	}
 
 	@Override
-	public int hashCode()	{ return nominalMass; }
+	public int hashCode()	
+	{ 
+		return nominalMass; 
+	}
 	
 	@Override
 	public boolean equals(Object obj)	

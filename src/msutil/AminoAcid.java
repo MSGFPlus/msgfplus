@@ -152,17 +152,17 @@ public class AminoAcid extends Matter {
 	public static AminoAcid getStandardAminoAcid(char residue) { return residueMap.get(residue); }
 	public static AminoAcid[] getStandardAminoAcids()	{ return standardAATable; }
 
-	/**
-	 * Apply fixed modification to this amino acid
-	 * @param mod fixed modification
-	 */
-	public void applyFixedModification(Modification mod)
-	{
-		this.mass += mod.getAccurateMass();
-		this.nominalMass += mod.getNominalMass();
-		this.name = mod.getName() + " " + this.getName();
-		// residue and probability remain unchanged
-	}
+//	/**
+//	 * Apply fixed modification to this amino acid
+//	 * @param mod fixed modification
+//	 */
+//	public void applyFixedModification(Modification mod)
+//	{
+//		this.mass += mod.getAccurateMass();
+//		this.nominalMass += mod.getNominalMass();
+//		this.name = mod.getName() + " " + this.getName();
+//		// residue and probability remain unchanged
+//	}
 	
 	/**
 	 * Returns a modified version of this amino acid (fixed modification).

@@ -28,7 +28,6 @@ import msutil.AminoAcid;
 import msutil.AminoAcidSet;
 import msutil.Composition;
 import msutil.Enzyme;
-import msutil.ModifiedAminoAcid;
 import msutil.Peptide;
 import msutil.Spectrum;
 import msutil.SpectrumAccessorByScanNum;
@@ -100,8 +99,8 @@ public class DBScanner extends SuffixArray {
 		this.minPeptideLength = minPeptideLength;
 		this.maxPeptideLength = maxPeptideLength;
 		
-		// set amino acid probabilities
-		setAAProbabilities();
+//		// set amino acid probabilities
+//		setAAProbabilities();
 		
 		pepMassScanNumMap = new TreeMap<Float,Integer>();	// pepMass -> scanNum
 		scanNumScorerMap = new HashMap<Integer, FastScorer>();	// scanNumber -> peptideScorer
@@ -113,9 +112,9 @@ public class DBScanner extends SuffixArray {
 			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
 			int peptideMassIndex = factory.getMassIndex(peptideMass);
 			if(scorer.supportEdgeScores())
-				scanNumScorerMap.put(scanNum, new DBScanScorer(factory, scoredSpec, peptideMassIndex));
+				scanNumScorerMap.put(scanNum, new DBScanScorer(scoredSpec, peptideMassIndex));
 			else
-				scanNumScorerMap.put(scanNum, new FastScorer(factory, scoredSpec, peptideMassIndex));
+				scanNumScorerMap.put(scanNum, new FastScorer(scoredSpec, peptideMassIndex));
 			while(pepMassScanNumMap.get(peptideMass) != null)
 				peptideMass = Math.nextUp(peptideMass);
 			pepMassScanNumMap.put(peptideMass, scanNum);
@@ -351,7 +350,7 @@ public class DBScanner extends SuffixArray {
 					peptideCleavageScore = enzyme.getPeptideCleavageCredit();
 				else
 					peptideCleavageScore = enzyme.getPeptideCleavagePenalty();
-//				if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("KALYNET"))
+//				if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("QLGSILK"))
 //					System.out.println("Debug");
 				
 				int enzymeScore = nTermAAScore + peptideCleavageScore;
@@ -420,20 +419,16 @@ public class DBScanner extends SuffixArray {
 				int minPeptideMassIndex = factory.getMassIndex(Math.min(peptideMass-tolDa, peptideMass-numAllowedC13*(float)Composition.ISOTOPE));
 				for(int peptideMassIndex = minPeptideMassIndex; peptideMassIndex<=maxPeptideMassIndex; peptideMassIndex++)
 				{
-					NominalMass pmNode = factory.getInstance(peptideMassIndex);
-					if(pmNode != null)
-					{
-						DeNovoGraph<NominalMass> graph = new GenericDeNovoGraph<NominalMass>(
-								factory, 
-								factory.getMassFromIndex(peptideMassIndex+factory.getMassIndex((float)Composition.H2O)), 
-								Tolerance.ZERO_TOLERANCE, 
-								enzyme,
-								scoredSpec);
-						GeneratingFunction<NominalMass> gfi = new GeneratingFunction<NominalMass>(graph)
-						.doNotBacktrack()
-						.doNotCalcNumber();
-						gfGroup.registerGF(pmNode, gfi);
-					}
+					DeNovoGraph<NominalMass> graph = new GenericDeNovoGraph<NominalMass>(
+							factory, 
+							factory.getMassFromIndex(peptideMassIndex+factory.getMassIndex((float)Composition.H2O)), 
+							Tolerance.ZERO_TOLERANCE, 
+							enzyme,
+							scoredSpec);
+					GeneratingFunction<NominalMass> gfi = new GeneratingFunction<NominalMass>(graph)
+					.doNotBacktrack()
+					.doNotCalcNumber();
+					gfGroup.registerGF(graph.getPMNode(), gfi);
 				}			
 				gf = gfGroup;
 			}
@@ -460,6 +455,33 @@ public class DBScanner extends SuffixArray {
 				assert(specProb > 0): scanNum + ": " + match.getDeNovoScore()+" "+match.getScore()+" "+specProb; 
 				match.setSpecProb(specProb);
 				match.setScoreDist(gf.getScoreDist());
+				//// Debug
+//				NewRankScorer scorer = new NewRankScorer("/home/sangtaekim/Developments/MS_Java/bin/HCD_TrypE.param");
+//				NewScoredSpectrum<NominalMass> scoredSpec1 = scorer.getScoredSpectrum(spec);
+//				ScoredSpectrum<NominalMass> scoredSpec2 = new msscorer.DBScanScorer(scoredSpec1, 722);
+//				GenericDeNovoGraph<NominalMass> graph = new GenericDeNovoGraph<NominalMass>(factory, spec.getParentMass(), Tolerance.ZERO_TOLERANCE, enzyme, scoredSpec1);
+//				GeneratingFunction<NominalMass> gf2 = new GeneratingFunction<NominalMass>(graph).enzyme(enzyme).doNotCalcNumber();
+//				gf2.computeGeneratingFunction();
+//				System.out.println("\n"+spec.getScanNum()+"\tSpecProb2\t"+(gf2.getMaxScore()-1)+"\t"+gf2.getSpectralProbability(score));
+				
+//				String peptideStr = match.getPepSeq();
+//				int index = match.getIndex();
+//				int length = match.getLength();
+//				if(peptideStr == null)
+//					peptideStr = sequence.getSubsequence(index+1, index+length-1);
+//				Peptide pep = aaSet.getPeptide(peptideStr);
+//				int nominalPeptideMass = pep.getNominalMass();
+//				GeneratingFunctionGroup<NominalMass> gfGroup = (GeneratingFunctionGroup<NominalMass>)gf;
+//				GeneratingFunction<NominalMass> gfi = gfGroup.get(new NominalMass(nominalPeptideMass));
+//				ArrayList<String> dic = gfi.getReconstructionsEqualOrAboveScore(score);
+//				float specProb2 = 0;
+//				System.out.println("\nDictionary");
+//				for(String s : dic)
+//				{
+//					float prob = msgf.test.MSGFTest.getProbability(s, aaSet);
+//					specProb2 += prob;
+//					System.out.println(pep+"\t"+prob+"\t"+gfi.getScore(new Annotation(msgf.test.MSGFTest.getAnnotationStr(s), aaSet))+"\t"+specProb2);
+//				}
 			}
 		}
 	}
@@ -478,22 +500,14 @@ public class DBScanner extends SuffixArray {
 				continue;
 
 			DatabaseMatch match = matchList.get(matchList.size()-1);
-			// parent mass error
-			
-//			String peptide = sequence.getSubsequence(index+1, index+i+1);
-//			char nTermAA = sequence.getCharAt(index);
-//			char cTermAA = sequence.getCharAt(index+i+1);
-//			annotationStr = nTermAA+"."+peptide+"."+cTermAA;
 			
 			int index = match.getIndex();
 			int length = match.getLength();
 			
-//			String peptideStr = sequence.getSubsequence(index+1, index+length-1);
 			String peptideStr = match.getPepSeq();
 			if(peptideStr == null)
 				peptideStr = sequence.getSubsequence(index+1, index+length-1);
 			Peptide pep = aaSet.getPeptide(peptideStr);
-//			String annotationStr = sequence.getCharAt(index)+"."+peptideStr+"."+sequence.getCharAt(index+length-1);
 			String annotationStr = sequence.getCharAt(index)+"."+pep+"."+sequence.getCharAt(index+length-1);
 			float expMass = spec.getParentMass();
 			float theoMass = pep.getParentMass();

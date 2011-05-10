@@ -3,9 +3,12 @@ package msgf.test;
 import java.io.File;
 import java.util.ArrayList;
 
+import msdbsearch.DBScanner;
 import msgf.GeneratingFunction;
 import msgf.GenericDeNovoGraph;
 import msgf.IntMassFactory;
+import msgf.NominalMass;
+import msgf.NominalMassFactory;
 import msgf.ScoredSpectrum;
 import msgf.Tolerance;
 import msgf.IntMassFactory.IntMass;
@@ -31,8 +34,76 @@ import parser.PSMList;
 public class MSGFTest {
 	public static void main(String[] argv) throws Exception
 	{
-		msgfTest();
+//		msgfTest();
+		dicTest();
 	}
+	
+	public static void dicTest() throws Exception
+	{
+		File specFile = new File("/home/sangtaekim/Research/Data/Zubarev/SACTest/SACTest.mgf");
+		SpectrumAccessorByScanNum specAccessor = new SpectraMap(specFile.getPath(), new MgfSpectrumParser());
+		int scanNum = 338;
+		Spectrum spec = specAccessor.getSpectrumByScanNum(scanNum);
+		
+		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile("/home/sangtaekim/Developments/MS_Java_Dev/bin/Mods.txt");
+		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
+//		aaSet.printAASet();
+		
+		NewRankScorer scorer = new NewRankScorer("/home/sangtaekim/Developments/MS_Java/bin/HCD_TrypE.param");
+		
+		NewScoredSpectrum<NominalMass> scoredSpec1 = scorer.getScoredSpectrum(spec);
+		ScoredSpectrum<NominalMass> scoredSpec = new msscorer.DBScanScorer(scoredSpec1, 722);
+		Enzyme enzyme = Enzyme.TRYPSIN;
+		NominalMassFactory factory = new NominalMassFactory(aaSet, enzyme, 50);
+		Tolerance pmTolerance = Tolerance.ZERO_TOLERANCE;
+		GenericDeNovoGraph<NominalMass> graph = new GenericDeNovoGraph<NominalMass>(factory, spec.getParentMass(), pmTolerance, enzyme, scoredSpec);
+		GeneratingFunction<NominalMass> gf = new GeneratingFunction<NominalMass>(graph).enzyme(enzyme).doNotCalcNumber();
+		gf.computeGeneratingFunction();
+		Annotation annotation = new Annotation("K.qLGSILK.T", aaSet);
+		int score = gf.getScore(annotation);
+		float specProb = gf.getSpectralProbability(score);
+		
+		System.out.println(scanNum+"\t"+annotation+" "+(gf.getMaxScore()-1)+" "+score+" "+specProb);
+		ArrayList<String> dictionary = gf.getReconstructionsEqualOrAboveScore(score);
+		float specProb2 = 0;
+		for(String pep : dictionary)
+		{
+			float prob = getProbability(pep, aaSet);
+			specProb2 += prob;
+			System.out.println(pep+"\t"+prob+"\t"+gf.getScore(new Annotation(getAnnotationStr(pep), aaSet))+"\t"+specProb2);
+		}
+	}
+	
+	public static float getProbability(String annotationStr, AminoAcidSet aaSet)
+	{
+		float prob = 1;
+		char aaBefore = annotationStr.charAt(0);
+		if(aaBefore == 'K' || aaBefore == 'R' || !Character.isLetter(aaBefore))
+			prob *= (aaSet.getAminoAcid('K').getProbability()+aaSet.getAminoAcid('R').getProbability());
+		else
+			prob *= (1-(aaSet.getAminoAcid('K').getProbability()+aaSet.getAminoAcid('R').getProbability()));
+		
+		String pepStr = annotationStr.substring(annotationStr.indexOf('.')+1);
+		for(int i=0; i<pepStr.length(); i++)
+		{
+			char c = pepStr.charAt(i);
+			if(Character.isLetter(c))
+			{
+				prob *= aaSet.getAminoAcid(Character.toUpperCase(c)).getProbability();
+			}
+		}
+		return prob;
+	}
+	
+	public static String getAnnotationStr(String annotationStr)
+	{
+		String retStr = null;
+		retStr = annotationStr.replaceAll("E-18.011", "e");
+		retStr = retStr.replaceAll("Q-17.027", "q");
+		retStr = retStr.replaceAll("M+15.995", "m");
+		return retStr+".A";
+	}
+	
 	
 	public static void msgfTest() throws Exception
 	{
@@ -53,15 +124,16 @@ public class MSGFTest {
 //		enzyme = null;
 		IntMassFactory factory = new IntMassFactory(aaSet, enzyme, maxLength, rescalingFactor);
 		NewRankScorer scorer = NewScorerFactory.get(ActivationMethod.CID, enzyme);
-		
 		String header = parser.getHeader();
 		PSMList<InsPecTPSM> psmList = parser.getPSMList(); 
 		for(InsPecTPSM psm : psmList)
 		{
 //			if(psm.getPeptide().size() > 10)
 //				continue;
-			if(psm.getScanNum() != 1649)
-				continue;
+//			if(psm.getScanNum() != 1649)
+//				continue;
+			if(psm.getScanNum() != 7400)
+			continue;
 			Spectrum spec = specAccessor.getSpectrumByScanNum(psm.getScanNum());
 			
 			NewScoredSpectrum<IntMass> scoredSpec = scorer.getScoredSpectrum(spec);

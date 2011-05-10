@@ -213,6 +213,16 @@ public class MSGFDB {
 	
 		if(aaSet == null)
 			aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
+		
+		DBScanner.setAminoAcidProbabilities(databaseFile.getPath(), aaSet);
+		////////// Debug ////////////
+//		aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
+//		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
+		//////////////////
+		
+		if(enzyme != null)
+			enzyme.registerAASet(aaSet);
+		
 		runMSGFDB(specFile, specFormat, databaseFile, paramFile, useError, parentMassTolerance, numAllowedC13,
 	    		outputFile, enzyme, numAllowedNonEnzymaticTermini,
 	    		activationMethod, aaSet, numMatchesPerSpec, showTitle,
@@ -287,13 +297,6 @@ public class MSGFDB {
 			}
 		}
 		
-		DBScanner.setAminoAcidProbabilities(databaseFile.getPath(), aaSet);
-		
-		//////////////////// Debug
-//		aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
-//		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
-//		aaSet.printAASet();
-		///////////////////////////
 		
 		NewRankScorer scorer;
 		if(paramFile != null)
@@ -313,8 +316,12 @@ public class MSGFDB {
 		ArrayList<Integer> scanNumList = specAccessor.getScanNumList();
 		
 		////////// Debug ////////////
+//		aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
+//		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
+//		aaSet.printAASet();
 //		scanNumList.clear();
-//		scanNumList.add(4353);
+//		scanNumList.add(338);	// decoytest
+//		scanNumList.add(857);
 //		scanNumList.add(685);	// Q-17
 //		scanNumList.add(4378);	// Q-17
 //		scanNumList.add(1162);	// M+16

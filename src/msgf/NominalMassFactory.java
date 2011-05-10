@@ -46,7 +46,9 @@ public class NominalMassFactory extends MassFactory<NominalMass> {
 	public NominalMass getInstanceOfIndex(int index)
 	{
 		if(index < factory.length)
+		{
 			return factory[index];
+		}
 		else
 			return null;
 	}

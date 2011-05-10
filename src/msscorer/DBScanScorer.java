@@ -12,9 +12,9 @@ public class DBScanScorer extends FastScorer {
 	private float probPeak;
 	private boolean mainIonDirection;	// prefix: true, suffix: false
 	
-	public DBScanScorer(NominalMassFactory factory,	NewScoredSpectrum<NominalMass> scoredSpec, int peptideMass) 
+	public DBScanScorer(NewScoredSpectrum<NominalMass> scoredSpec, int peptideMass) 
 	{
-		super(factory, scoredSpec, peptideMass);
+		super(scoredSpec, peptideMass);
 		this.scorer = scoredSpec.getScorer();
 		
 		nodeMass = new float[peptideMass];
@@ -26,9 +26,7 @@ public class DBScanScorer extends FastScorer {
 		nodeMass[0] = 0;
 		for(int nominalMass=1; nominalMass<nodeMass.length; nominalMass++)
 		{
-			NominalMass node = factory.getInstanceOfIndex(nominalMass);
-			if(node != null)
-				nodeMass[nominalMass] = scoredSpec.getNodeMass(node);
+			nodeMass[nominalMass] = scoredSpec.getNodeMass(new NominalMass(nominalMass));
 		}
 		
 		mainIonDirection = scoredSpec.getMainIon().isPrefixIon();
