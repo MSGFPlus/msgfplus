@@ -334,15 +334,18 @@ public class DBScanner extends SuffixArray {
 			{
 				// TODO: apply C-term mods
 				char residue = sequence.getCharAt(index+i);
-				if(isProteinNTerm)
+				if(i==1)
 				{
-					if(candidatePepGrid.addProtNTermResidue(residue) == false)
-						break;
-				}
-				else if(i == 1)
-				{
-					if(candidatePepGrid.addNTermResidue(residue) == false)
-						break;
+					if(isProteinNTerm)
+					{
+						if(candidatePepGrid.addProtNTermResidue(residue) == false)
+							break;
+					}
+					else
+					{
+						if(candidatePepGrid.addNTermResidue(residue) == false)
+							break;
+					}
 				}
 				else
 				{
