@@ -22,7 +22,25 @@ public class GenericDeNovoGraph<T extends Matter> extends DeNovoGraph<T> {
 	private Enzyme enzyme;
 	private HashMap<T, ArrayList<DeNovoGraph.Edge<T>>> edgeMap;
 	
-	public GenericDeNovoGraph(DeNovoNodeFactory<T> factory, float parentMass, Tolerance pmTolerance, Enzyme enzyme, ScoredSpectrum<T> scoredSpec) 
+	public GenericDeNovoGraph(
+			DeNovoNodeFactory<T> factory, 
+			float parentMass, 
+			Tolerance pmTolerance, 
+			Enzyme enzyme, 
+			ScoredSpectrum<T> scoredSpec
+		) 
+	{
+		this(factory, parentMass, pmTolerance, enzyme, scoredSpec, false);
+	}
+	
+	public GenericDeNovoGraph(
+			DeNovoNodeFactory<T> factory, 
+			float parentMass, 
+			Tolerance pmTolerance, 
+			Enzyme enzyme, 
+			ScoredSpectrum<T> scoredSpec,
+			boolean isProteinTerm
+		) 
 	{
 		this.factory = factory;
 		this.enzyme = enzyme;
@@ -35,7 +53,7 @@ public class GenericDeNovoGraph<T extends Matter> extends DeNovoGraph<T> {
 		super.pmNode = factory.getNode(peptideMass);
 		
 		super.sinkNodes = factory.getNodes(peptideMass, pmTolerance);
-		setEdgesToSinkNodes();
+		setEdgesToSinkNodes(isProteinTerm);
 		
 		setIntermediateNodes();
 //		super.intermediateNodes = factory.getIntermediateNodes(super.sinkNodes);
@@ -146,14 +164,24 @@ public class GenericDeNovoGraph<T extends Matter> extends DeNovoGraph<T> {
 			nodeScore.put(node, 0);
 	}
 
-	private void setEdgesToSinkNodes()
+	private void setEdgesToSinkNodes(boolean isProteinTerm)
 	{
 		boolean isReverse = factory.isReverse();
 		Location location;
 		if(isReverse)
-			location = Location.N_Term;
+		{
+			if(!isProteinTerm)
+				location = Location.N_Term;
+			else
+				location = Location.Protein_N_Term;
+		}
 		else
-			location = Location.C_Term;
+		{
+			if(!isProteinTerm)
+				location = Location.C_Term;
+			else
+				location = Location.Protein_C_Term;
+		}
 		
 		AminoAcidSet aaSet = factory.getAASet();
 		ArrayList<AminoAcid> aaList = aaSet.getAAList(location);
