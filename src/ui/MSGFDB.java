@@ -220,8 +220,7 @@ public class MSGFDB {
 //		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
 		//////////////////
 		
-		if(enzyme != null)
-			enzyme.registerAASet(aaSet);
+		aaSet.registerEnzyme(enzyme);
 		
 		runMSGFDB(specFile, specFormat, databaseFile, paramFile, useError, parentMassTolerance, numAllowedC13,
 	    		outputFile, enzyme, numAllowedNonEnzymaticTermini,

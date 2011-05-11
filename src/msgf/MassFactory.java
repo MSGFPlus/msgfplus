@@ -148,9 +148,9 @@ public abstract class MassFactory<T extends Matter> implements DeNovoNodeFactory
 				if(enzyme != null)
 				{
 					if(enzyme.isCleavable(aa))
-						edge.setCleavageScore(enzyme.getPeptideCleavageCredit());
+						edge.setCleavageScore(aaSet.getPeptideCleavageCredit());
 					else
-						edge.setCleavageScore(enzyme.getPeptideCleavagePenalty());
+						edge.setCleavageScore(aaSet.getPeptideCleavagePenalty());
 				}
 				if(isNewNode)	// newly generated node
 				{

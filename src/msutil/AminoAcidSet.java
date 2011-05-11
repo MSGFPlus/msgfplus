@@ -236,6 +236,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		{
 			char residue = sequence.charAt(i);
 			AminoAcid aa = this.getAminoAcid(residue);
+			assert(aa != null): sequence + ": " + residue + " is null!";
 			if(aa.isVariableModification())
 				isModified = true;
 			aaArray.add(aa);
@@ -251,6 +252,67 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	
 	public AminoAcid getLightestAA()	{ return this.lightestAA; }
 	public AminoAcid getHeaviestAA()	{ return this.heaviestAA; }
+	
+	private int neighboringAACleavageCredit = 0;
+	private int neighboringAACleavagePenalty = 0;
+	private int peptideCleavageCredit = 0;
+	private int peptideCleavagePenalty = 0;
+	private float probCleavageSites = 0;
+	
+	public void registerEnzyme(Enzyme enzyme)
+	{
+		if(enzyme == null)
+			return;
+		probCleavageSites = 0;
+		for(char residue : enzyme.getResidues())
+		{
+			AminoAcid aa = this.getAminoAcid(residue);
+			if(aa == null)
+			{
+				System.err.println("Invalid Enzyme cleavage site: " + residue);
+				System.exit(-1);
+			}
+			probCleavageSites += aa.getProbability();
+		}
+		if(probCleavageSites == 0)
+		{
+			System.err.println("Probability of enzyme residues must be positive!");
+			System.exit(-1);
+		}
+		
+		float peptideCleavageEfficiency = enzyme.getPeptideCleavageEfficiency();
+		float neighboringAACleavageEfficiency = enzyme.getNeighboringAACleavageEffiency();
+		
+		peptideCleavageCredit = (int)Math.round(Math.log(peptideCleavageEfficiency/probCleavageSites));
+		peptideCleavagePenalty = (int)Math.round(Math.log((1-peptideCleavageEfficiency)/(1-probCleavageSites)));
+		neighboringAACleavageCredit = (int)Math.round(Math.log(neighboringAACleavageEfficiency/probCleavageSites));
+		neighboringAACleavagePenalty = (int)Math.round(Math.log((1-neighboringAACleavageEfficiency)/(1-probCleavageSites)));
+	}
+	
+	public int getNeighboringAACleavageCredit()
+	{
+		return neighboringAACleavageCredit;
+	}
+
+	public int getNeighboringAACleavagePenalty()
+	{
+		return neighboringAACleavagePenalty;
+	}
+	
+	public int getPeptideCleavageCredit()
+	{
+		return peptideCleavageCredit;
+	}
+	
+	public int getPeptideCleavagePenalty()
+	{
+		return peptideCleavagePenalty;
+	}
+	
+	public float getProbCleavageSites()
+	{
+		return probCleavageSites;
+	}
 	
 	public void printAASet()
 	{

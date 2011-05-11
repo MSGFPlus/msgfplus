@@ -73,9 +73,9 @@ public class CompositionFactory extends MassFactory<Composition>{
 			if(prevNum == 0 && enzyme != null)
 			{
 				if(enzyme.isCleavable(aa))
-					edge.setCleavageScore(enzyme.getPeptideCleavageCredit());
+					edge.setCleavageScore(aaSet.getPeptideCleavageCredit());
 				else
-					edge.setCleavageScore(enzyme.getPeptideCleavagePenalty());
+					edge.setCleavageScore(aaSet.getPeptideCleavagePenalty());
 			}
 			edges.add(edge);
 		}

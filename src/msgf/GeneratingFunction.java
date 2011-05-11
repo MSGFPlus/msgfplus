@@ -166,9 +166,9 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 		{
 			//TODO: add prefix info?
 			for(T sink : graph.getSinkList())
-				backtrackTable.getReconstructions(sink, score-enzyme.getNeighboringAACleavageCredit(), "R.", reconstructions, sa);
+				backtrackTable.getReconstructions(sink, score-graph.getAASet().getNeighboringAACleavageCredit(), "R.", reconstructions, sa);
 			for(T sink : graph.getSinkList())
-				backtrackTable.getReconstructions(sink, score-enzyme.getNeighboringAACleavagePenalty(), "L.", reconstructions, sa);
+				backtrackTable.getReconstructions(sink, score-graph.getAASet().getNeighboringAACleavagePenalty(), "L.", reconstructions, sa);
 		}
 	}
 
@@ -294,8 +294,8 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 		ScoreDist finalDist;
 		if(enzyme != null)
 		{
-			int neighboringAACleavageCredit = enzyme.getNeighboringAACleavageCredit();
-			int neighboringAACleavagePenalty = enzyme.getNeighboringAACleavagePenalty();
+			int neighboringAACleavageCredit = graph.getAASet().getNeighboringAACleavageCredit();
+			int neighboringAACleavagePenalty = graph.getAASet().getNeighboringAACleavagePenalty();
 			finalDist = factory.getInstance(mergedDist.getMinScore()+neighboringAACleavagePenalty, mergedDist.getMaxScore()+neighboringAACleavageCredit);
 			if(calcNumber)
 			{
@@ -304,8 +304,8 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 			}
 			if(calcProb)
 			{
-				finalDist.addProbDist(mergedDist, neighboringAACleavageCredit, enzyme.getProbCleavageSites());
-				finalDist.addProbDist(mergedDist, neighboringAACleavagePenalty, 1-enzyme.getProbCleavageSites());
+				finalDist.addProbDist(mergedDist, neighboringAACleavageCredit, graph.getAASet().getProbCleavageSites());
+				finalDist.addProbDist(mergedDist, neighboringAACleavagePenalty, 1-graph.getAASet().getProbCleavageSites());
 			}
 		}
 		else

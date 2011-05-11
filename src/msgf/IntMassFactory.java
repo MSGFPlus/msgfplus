@@ -77,9 +77,9 @@ public class IntMassFactory extends MassFactory<IntMassFactory.IntMass> {
 			if(prevIndex == 0 && enzyme != null)
 			{
 				if(enzyme.isCleavable(aa))
-					cleavageScore += enzyme.getPeptideCleavageCredit();
+					cleavageScore += aaSet.getPeptideCleavageCredit();
 				else
-					cleavageScore += enzyme.getPeptideCleavagePenalty();
+					cleavageScore += aaSet.getPeptideCleavagePenalty();
 			}
 			edge.setCleavageScore(cleavageScore);
 			edges.add(edge);

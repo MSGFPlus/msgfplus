@@ -180,6 +180,12 @@ public class DBScanner extends SuffixArray {
 			enzymaticSearch = false;
 		else
 			enzymaticSearch = true;
+		
+		int neighboringAACleavageCredit = aaSet.getNeighboringAACleavageCredit();
+		int neighboringAACleavagePenalty = aaSet.getNeighboringAACleavagePenalty();
+		int peptideCleavageCredit = aaSet.getPeptideCleavageCredit();
+		int peptideCleavagePenalty = aaSet.getPeptideCleavagePenalty();
+		
 		while(indices.hasRemaining()) {
 			int index = indices.get();
 			rank++;
@@ -204,9 +210,9 @@ public class DBScanner extends SuffixArray {
 			}
 			int nTermAAScore;
 			if(nAA == '_' || enzyme.isCleavable(nAA))
-				nTermAAScore = enzyme.getNeighboringAACleavageCredit();
+				nTermAAScore = neighboringAACleavageCredit;
 			else
-				nTermAAScore = enzyme.getNeighboringAACleavagePenalty();
+				nTermAAScore = neighboringAACleavagePenalty;
 			
 			for(i=lcp > 1 ? lcp : 1; i<maxPeptideLength+1 && index+i<size; i++)	// ith character of a peptide
 			{
@@ -232,9 +238,9 @@ public class DBScanner extends SuffixArray {
 				{
 					int peptideCleavageScore;
 					if(enzyme.isCleavable(sequence.getCharAt(index+i)))
-						peptideCleavageScore = enzyme.getPeptideCleavageCredit();
+						peptideCleavageScore = peptideCleavageCredit;
 					else
-						peptideCleavageScore = enzyme.getPeptideCleavagePenalty();
+						peptideCleavageScore = peptideCleavagePenalty;
 					
 //					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("GNTIEIQGDDAPSLWVYGFSDR"))
 //						System.out.println("Debug");
@@ -281,6 +287,12 @@ public class DBScanner extends SuffixArray {
 			enzymaticSearch = false;
 		else
 			enzymaticSearch = true;
+		
+		int neighboringAACleavageCredit = aaSet.getNeighboringAACleavageCredit();
+		int neighboringAACleavagePenalty = aaSet.getNeighboringAACleavagePenalty();
+		int peptideCleavageCredit = aaSet.getPeptideCleavageCredit();
+		int peptideCleavagePenalty = aaSet.getPeptideCleavagePenalty();
+		
 		while(indices.hasRemaining()) {
 			int index = indices.get();
 			rank++;
@@ -314,9 +326,9 @@ public class DBScanner extends SuffixArray {
 
 			int nTermAAScore;
 			if(isProteinNTerm || enzyme.isCleavable(nAA))
-				nTermAAScore = enzyme.getNeighboringAACleavageCredit();
+				nTermAAScore = neighboringAACleavageCredit;
 			else
-				nTermAAScore = enzyme.getNeighboringAACleavagePenalty();
+				nTermAAScore = neighboringAACleavagePenalty;
 			
 			for(i=lcp > 1 ? lcp : 1; i<maxPeptideLength+1 && index+i<size; i++)	// ith character of a peptide
 			{
@@ -347,9 +359,9 @@ public class DBScanner extends SuffixArray {
 				
 				int peptideCleavageScore;
 				if(enzyme.isCleavable(sequence.getCharAt(index+i)))
-					peptideCleavageScore = enzyme.getPeptideCleavageCredit();
+					peptideCleavageScore = peptideCleavageCredit;
 				else
-					peptideCleavageScore = enzyme.getPeptideCleavagePenalty();
+					peptideCleavageScore = peptideCleavagePenalty;
 //				if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("QLGSILK"))
 //					System.out.println("Debug");
 				

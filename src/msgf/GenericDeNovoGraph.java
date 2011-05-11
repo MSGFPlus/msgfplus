@@ -85,9 +85,9 @@ public class GenericDeNovoGraph<T extends Matter> extends DeNovoGraph<T> {
 			if(prevNode == source && enzyme != null)
 			{
 				if(enzyme.isCleavable(aa))
-					edgeScore += enzyme.getPeptideCleavageCredit();
+					edgeScore += factory.getAASet().getPeptideCleavageCredit();
 				else
-					edgeScore += enzyme.getPeptideCleavagePenalty();
+					edgeScore += factory.getAASet().getPeptideCleavagePenalty();
 			}
 			////////////////
 			score += nodeScore + edgeScore;
@@ -108,9 +108,9 @@ public class GenericDeNovoGraph<T extends Matter> extends DeNovoGraph<T> {
 			else
 				neighboringAA = annotation.getNextAA();
 			if(neighboringAA == null || enzyme.isCleavable(neighboringAA))
-				score += enzyme.getNeighboringAACleavageCredit();
+				score += factory.getAASet().getNeighboringAACleavageCredit();
 			else
-				score += enzyme.getNeighboringAACleavagePenalty();
+				score += factory.getAASet().getNeighboringAACleavagePenalty();
 		}
 		
 		return score;
