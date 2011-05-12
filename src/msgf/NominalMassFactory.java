@@ -13,7 +13,6 @@ public class NominalMassFactory extends MassFactory<NominalMass> {
 	private NominalMass[] factory;
 	private NominalMass zero;
 	private NominalMass inf;
-	private int[] aaMassIndex;
 	
 	public NominalMassFactory(AminoAcidSet aaSet, Enzyme enzyme, int maxLength)
 	{
@@ -23,9 +22,6 @@ public class NominalMassFactory extends MassFactory<NominalMass> {
 		factory = new NominalMass[maxIndex+2];
 		zero = factory[0] = new NominalMass(0);
 		inf = factory[factory.length-1] = new NominalMass(factory.length-1);
-		aaMassIndex = new int[128];
-		for(AminoAcid aa : aaSet)
-			aaMassIndex[aa.getResidue()] = aa.getNominalMass();
 		makeAllPossibleMasses(true);
 	}
 

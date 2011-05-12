@@ -52,6 +52,13 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	private HashSet<Character> modResidueSet = new HashSet<Character>();	// set of symbols used for residues
 	private char nextResidue;
 	
+	// for enzyme
+	private int neighboringAACleavageCredit = 0;
+	private int neighboringAACleavagePenalty = 0;
+	private int peptideCleavageCredit = 0;
+	private int peptideCleavagePenalty = 0;
+	private float probCleavageSites = 0;
+
 	AminoAcid lightestAA, heaviestAA;
 	
 	private AminoAcidSet() // prevents instantiation 
@@ -247,17 +254,13 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		return pep;
 	}	
 
-	public int getMaxNominalMass() { return this.lightestAA.getNominalMass(); }
-	public int getMinNominalMass() { return this.heaviestAA.getNominalMass(); }
+	public int getMaxNominalMass() { return this.heaviestAA.getNominalMass(); }
+	public int getMinNominalMass() { return this.lightestAA.getNominalMass(); }
 	
 	public AminoAcid getLightestAA()	{ return this.lightestAA; }
 	public AminoAcid getHeaviestAA()	{ return this.heaviestAA; }
-	
-	private int neighboringAACleavageCredit = 0;
-	private int neighboringAACleavagePenalty = 0;
-	private int peptideCleavageCredit = 0;
-	private int peptideCleavagePenalty = 0;
-	private float probCleavageSites = 0;
+
+	public char getMaxResidue()	{ return nextResidue; }
 	
 	public void registerEnzyme(Enzyme enzyme)
 	{
@@ -915,10 +918,10 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
 	public static void main(String argv[])
 	{
-		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(System.getProperty("user.home")+"/Developments/MS_Java_Dev/bin/Mods.txt");
+		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(System.getProperty("user.home")+"/Research/Data/ABRF/StudyFiles/Mods.txt");
 		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
 		aaSet.printAASet();
-		for(AminoAcid aa : aaSet.getAminoAcids(Location.N_Term, 'E'))
-			System.out.println(aa.getResidueStr()+"\t"+aa.getMass());
+//		for(AminoAcid aa : aaSet.getAminoAcids(Location.N_Term, 'E'))
+//			System.out.println(aa.getResidueStr()+"\t"+aa.getMass());
 	}
 }

@@ -1,7 +1,6 @@
 package msscorer;
 
 import msgf.NominalMass;
-import msgf.NominalMassFactory;
 
 // Fast scorer for DB search, consider edges
 public class DBScanScorer extends FastScorer {
@@ -10,7 +9,7 @@ public class DBScanScorer extends FastScorer {
 	private NewRankScorer scorer = null;
 	private Partition partition;
 	private float probPeak;
-	private boolean mainIonDirection;	// prefix: true, suffix: false
+	private boolean isNodeMassPRM;	// prefix: true, suffix: false
 	
 	public DBScanScorer(NewScoredSpectrum<NominalMass> scoredSpec, int peptideMass) 
 	{
@@ -22,14 +21,13 @@ public class DBScanScorer extends FastScorer {
 		for(int i=0; i<nodeMass.length; i++)
 			nodeMass[i] = -1;
 		
+		isNodeMassPRM = scoredSpec.getMainIon().isPrefixIon();
 		// assign node mass
 		nodeMass[0] = 0;
 		for(int nominalMass=1; nominalMass<nodeMass.length; nominalMass++)
 		{
 			nodeMass[nominalMass] = scoredSpec.getNodeMass(new NominalMass(nominalMass));
 		}
-		
-		mainIonDirection = scoredSpec.getMainIon().isPrefixIon();
 		
 		partition = scoredSpec.getPartition();
 		probPeak = scoredSpec.getProbPeak();
@@ -41,15 +39,15 @@ public class DBScanScorer extends FastScorer {
 	{
 		int nodeScore = super.getScore(prefixMassArr, nominalPrefixMassArr, fromIndex, toIndex);
 		int edgeScore = 0;
-		if(!mainIonDirection)
+		if(!isNodeMassPRM)	// reverse
 		{
 			int nominalPeptideMass = nominalPrefixMassArr[toIndex-1];
 			for(int i=toIndex-2; i>=fromIndex; i--)
 				edgeScore += getEdgeScoreInt(nominalPeptideMass-nominalPrefixMassArr[i], nominalPeptideMass-nominalPrefixMassArr[i+1], (float)(prefixMassArr[i+1]-prefixMassArr[i]));
 		}
-		else
+		else					// forward
 		{
-			for(int i=fromIndex+1; i<=toIndex-1; i++) 
+			for(int i=fromIndex; i<=toIndex-2; i++) 
 				edgeScore += getEdgeScoreInt(nominalPrefixMassArr[i], nominalPrefixMassArr[i-1], (float)(prefixMassArr[i]-prefixMassArr[i-1]));
 		}
 		

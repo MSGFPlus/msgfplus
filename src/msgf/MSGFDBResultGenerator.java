@@ -125,9 +125,9 @@ public class MSGFDBResultGenerator extends ArrayList<MSGFDBResultGenerator.DBMat
 		}
 		@Override
 		public int compareTo(DBMatch arg0) {
-			if(this.specProb < arg0.specProb)
+			if(this.pValue < arg0.pValue)
 				return -1;
-			else if(this.specProb > arg0.specProb)
+			else if(this.pValue > arg0.pValue)
 				return 1;
 			else
 				return 0;

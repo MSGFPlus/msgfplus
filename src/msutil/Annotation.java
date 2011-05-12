@@ -23,6 +23,16 @@ public class Annotation {
 		nextAA = aaSet.getAminoAcid(nextAAResidue);
 	}
 	
+	public boolean isProteinNTerm()
+	{
+		return prevAA == null;
+	}
+	
+	public boolean isProteiNCTerm()
+	{
+		return nextAA == null;
+	}
+	
 	public AminoAcid getPrevAA() {
 		return prevAA;
 	}

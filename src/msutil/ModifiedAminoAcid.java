@@ -29,7 +29,7 @@ public class ModifiedAminoAcid extends AminoAcid {
 	}
 	
 	@Override
-	public char getUnmodResidue() 	{ return targetAA.getResidue(); }
+	public char getUnmodResidue() 	{ return targetAA.getUnmodResidue(); }
 	public Modification getModification()	{ return mod; }
 	
 	@Override

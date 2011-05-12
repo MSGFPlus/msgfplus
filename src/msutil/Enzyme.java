@@ -125,7 +125,7 @@ public class Enzyme {
 	public boolean isCleavable(AminoAcid aa)
 	{
 		for(char r : this.residues)
-			if(r == aa.getResidue())
+			if(r == aa.getUnmodResidue())
 				return true;
 		return false;
 	}

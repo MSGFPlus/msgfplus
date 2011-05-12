@@ -76,14 +76,14 @@ public class DBScanner extends SuffixArray {
 	{
 		super(sequence);
 		this.factory = factory;
-		aaMass = new double[128];
-		intAAMass = new int[128];
+		aaMass = new double[aaSet.getMaxResidue()];
+		intAAMass = new int[aaSet.getMaxResidue()];
 		for(int i=0; i<aaMass.length; i++)
 		{
 			aaMass[i] = -1;
 			intAAMass[i] = -1;
 		}
-		for(AminoAcid aa : aaSet)
+		for(AminoAcid aa : aaSet.getAllAminoAcidArr())
 		{
 			aaMass[aa.getResidue()] = aa.getAccurateMass();
 			intAAMass[aa.getResidue()] = factory.getMassIndex(aa.getMass());
@@ -365,8 +365,8 @@ public class DBScanner extends SuffixArray {
 					peptideCleavageScore = peptideCleavageCredit;
 				else
 					peptideCleavageScore = peptideCleavagePenalty;
-//				if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("QLGSILK"))
-//					System.out.println("Debug");
+				if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("YFKYYK"))
+					System.out.println("Debug");
 				
 				int enzymeScore = nTermAAScore + peptideCleavageScore;
 				
@@ -391,7 +391,7 @@ public class DBScanner extends SuffixArray {
 							{
 								if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
 									prevMatchQueue.poll();
-								prevMatchQueue.add(new DatabaseMatch(index, i+2, score).pepSeq(candidatePepGrid.getPeptideSeq(j)));
+								prevMatchQueue.add(new DatabaseMatch(index, i+2, score).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm));
 							}
 						}
 					}					
@@ -422,6 +422,11 @@ public class DBScanner extends SuffixArray {
 			if(matchQueue == null)
 				continue;
 
+			boolean isProtNTermContained = false;
+			for(DatabaseMatch match : matchQueue)
+				if(match.isProteinNTerm())
+					isProtNTermContained = true;
+			
 			Spectrum spec = specMap.getSpectrumByScanNum(scanNum);
 			ScoredSpectrum<NominalMass> scoredSpec = scanNumScorerMap.get(scanNum);
 			GF<NominalMass> gf = null;
@@ -439,7 +444,8 @@ public class DBScanner extends SuffixArray {
 							factory.getMassFromIndex(peptideMassIndex+factory.getMassIndex((float)Composition.H2O)), 
 							Tolerance.ZERO_TOLERANCE, 
 							enzyme,
-							scoredSpec);
+							scoredSpec,
+							isProtNTermContained);
 					GeneratingFunction<NominalMass> gfi = new GeneratingFunction<NominalMass>(graph)
 					.doNotBacktrack()
 					.doNotCalcNumber();
