@@ -217,7 +217,7 @@ public class MSGFDB {
 		DBScanner.setAminoAcidProbabilities(databaseFile.getPath(), aaSet);
 		////////// Debug ////////////
 //		aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
-//		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
+		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
 //		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/ABRF/StudyFiles/iPRG2011CCS.fasta", aaSet);
 		//////////////////
 		
@@ -243,9 +243,9 @@ public class MSGFDB {
 		System.out.print("usage: java -Xmx3500M -jar MSGFDB.jar\n"
 				+ "\t-s spectrumFile (*.mzXML or *.mgf)\n" //, *.mgf, *.pkl, *.ms2)\n"
 				+ "\t-d database (*.fasta)\n"
-				+ "\t-t parentMassTolerance (ex: 2.5Da or 50ppm, no space is allowed.)\n"
+				+ "\t-t parentMassTolerance (e.g. 2.5Da or 50ppm, no space is allowed.)\n"
 				+ "\t[-c13 0/1/2] (Number of allowed C13, default: 0)\n"
-				+ "\t[-m FragmentationMethodID] (0: written in the spectrum, 1: CID , 2: ETD, 3: HCD)\n"//, 3: CID/ETD pair)\n"
+				+ "\t[-m FragmentationMethodID] (0: as written in the spectrum, 1: CID , 2: ETD, 3: HCD)\n"//, 3: CID/ETD pair)\n"
 				+ "\t[-e EnzymeID] (0: No enzyme, 1: Trypsin (default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N)\n"
 				+ "\t[-nnet 0/1/2] (Number of allowed non-enzymatic termini, default: 0)\n"
 				+ "\t[-param paramFile]\n"
@@ -254,8 +254,8 @@ public class MSGFDB {
 				+ "\t[-err 0/1 (0: don't use peak errors (default), 1: use peak errors for scoring]\n"
 				+ "\t[-mod modificationFileName (default: standard amino acids with fixed C+57)]\n"
 				+ "\t[-title 0/1] (0: don't show title (default), 1: show title)\n"
-				+ "\t[-minLength 0/1] (0: don't show title (default), 1: show title)\n"
-				+ "\t[-maxLength 0/1] (0: don't show title (default), 1: show title)\n"
+				+ "\t[-minLength minPepLength] (default: 6)\n"
+				+ "\t[-maxLength maxPepLength] (default: 40)\n"
 				);
 		System.exit(-1);
 	}
@@ -297,14 +297,13 @@ public class MSGFDB {
 			}
 		}
 		
-		
-		NewRankScorer scorer;
+		NewRankScorer scorer = null;
 		if(paramFile != null)
 			scorer = new NewRankScorer(paramFile.getPath());
-		else
+		else if(activationMethod != null)
 			scorer = NewScorerFactory.get(activationMethod, enzyme);
 
-		if(!useError)
+		if(!useError && scorer != null)
 			scorer.doNotUseError();
 		
 		NominalMassFactory factory = new NominalMassFactory(aaSet, enzyme, maxPeptideLength);
@@ -319,8 +318,10 @@ public class MSGFDB {
 //		aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
 //		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
 //		aaSet.printAASet();
-//		scanNumList.clear();
-//		scanNumList.add(321);
+		scanNumList.clear();
+		scanNumList.add(3888);
+//		scanNumList.add(1615);
+//		scanNumList.add(6416);
 //		scanNumList.add(3751);
 //		scanNumList.add(338);	// decoytest
 //		scanNumList.add(857);
@@ -336,6 +337,7 @@ public class MSGFDB {
 		
 		String header = 
 			"#SpecFile\tScan#\t"
+			+(scorer == null ? "FragMethod\t" : "")
 			+(showTitle ? "Title\t" : "")
 			+"Precursor\tPMError("
 			+(parentMassTolerance.isTolerancePPM() ? "ppm" : "Da")
@@ -360,10 +362,12 @@ public class MSGFDB {
 	    			parentMassTolerance,
 	    			numAllowedC13,
 	    			scorer,
+	    			activationMethod,
 	    			enzyme,
 	    			numMatchesPerSpec,
 	    			minPeptideLength,
-	    			maxPeptideLength
+	    			maxPeptideLength,
+	    			useError
 	    			);
 	    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
 	    	
@@ -372,7 +376,8 @@ public class MSGFDB {
 			if(enzyme == null)
 				sa.dbSearchNoEnzyme();	// currently not supported
 			else if(enzyme.isCTerm())
-				sa.dbSearchCTermEnzymeWithMods(numAllowedNonEnzymaticTermini, true);
+				sa.dbSearchCTermEnzymeWithCTermMods(numAllowedNonEnzymaticTermini, true);
+//				sa.dbSearchCTermEnzymeWithMods(numAllowedNonEnzymaticTermini, true);
 //				sa.dbSearchCTermEnzyme(numAllowedNonEnzymaticTermini, true);
 			else
 				sa.dbSearchNTermEnzyme(numAllowedNonEnzymaticTermini);	// currently not supported

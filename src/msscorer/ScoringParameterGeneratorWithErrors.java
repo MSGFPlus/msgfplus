@@ -626,8 +626,11 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 	private void generateErrorDist(int errorScalingFactor)
 	{
 		this.errorScalingFactor = errorScalingFactor;
-		generateIonErrorDist();
-		generateNoiseErrorDist();
+		if(errorScalingFactor > 0)
+		{
+			generateIonErrorDist();
+			generateNoiseErrorDist();
+		}
 	}
 	
 	private void generateIonErrorDist()

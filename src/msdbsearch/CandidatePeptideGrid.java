@@ -135,6 +135,30 @@ public class CandidatePeptideGrid {
 		return addResidue(aaMassArr, aaNominalMassArr, aaResidueArr, 1);
 	}
 	
+	public boolean addProtCTermResidue(int length, char residue)
+	{
+		double[] aaMassArr = protCTermAAMass[residue];
+		if(aaMassArr == null)
+			return false;
+		
+		int[] aaNominalMassArr = protCTermAANominalMass[residue];
+		char[] aaResidueArr = protCTermAAResidue[residue];
+		
+		return addResidue(aaMassArr, aaNominalMassArr, aaResidueArr, length);
+	}
+	
+	public boolean addCTermResidue(int length, char residue)
+	{
+		double[] aaMassArr = cTermAAMass[residue];
+		if(aaMassArr == null)
+			return false;
+		
+		int[] aaNominalMassArr = cTermAANominalMass[residue];
+		char[] aaResidueArr = cTermAAResidue[residue];
+		
+		return addResidue(aaMassArr, aaNominalMassArr, aaResidueArr, length);
+	}
+	
 	// if residue is not a standard residue, return false
 	public boolean addResidue(int length, char residue)
 	{

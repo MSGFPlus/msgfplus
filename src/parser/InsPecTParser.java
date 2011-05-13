@@ -176,7 +176,7 @@ public class InsPecTParser {
 			{
 				for(AminoAcid aa : peptide)
 				{
-					if(aa.isVariableModification())	// modified residue
+					if(aa.isModified())	// modified residue
 						modifiedAASet.add(aa);
 				}
 				//TODO: revise this

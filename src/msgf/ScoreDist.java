@@ -40,9 +40,11 @@ public class ScoreDist extends ScoreBound {
 		int minIndex = (score >= minScore) ? score-minScore : 0;
 		for(int t=minIndex; t<probDistribution.length; t++)
 		{
-//			System.out.println("***********\t"+t+"\t"+probDistribution[t]);
+//			System.out.println("***********\t"+(t+minScore)+"\t"+probDistribution[t]);
 			specProb += probDistribution[t];
 		}
+		if(specProb > 1f)
+			specProb = 1f;
 		return specProb;
 	}
 

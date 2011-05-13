@@ -261,7 +261,7 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
 	 * @return false if not modifies, true otherwise.
 	 */
 	public boolean isCTermModified() {
-		return get(this.size()-1).isVariableModification();
+		return get(this.size()-1).isModified();
 	}
 
 

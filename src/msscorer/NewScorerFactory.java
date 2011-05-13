@@ -33,7 +33,6 @@ public class NewScorerFactory {
 		}
 		ActivationMethod method;
 		Enzyme enzyme;
-		int charge;
 	}
 	
 	private static Hashtable<Condition, NewRankScorer> scorerTable = new Hashtable<Condition, NewRankScorer>();

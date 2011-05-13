@@ -4,7 +4,6 @@ package msutil;
 public class ModifiedAminoAcid extends AminoAcid {
 	private Modification mod;
 	private AminoAcid targetAA;
-	private boolean isFixedModification;
 	private boolean isNTermNonSpecificMod = false;
 	
 	public ModifiedAminoAcid(AminoAcid targetAA, Modification mod, char residue)
@@ -13,13 +12,6 @@ public class ModifiedAminoAcid extends AminoAcid {
 		this.mod = mod;
 		this.targetAA = targetAA;
 		super.setProbability(targetAA.getProbability());
-		isFixedModification = false;
-	}
-	
-	public ModifiedAminoAcid setFixedModification()
-	{
-		this.isFixedModification = true;
-		return this;
 	}
 	
 	public ModifiedAminoAcid setNTermNonSpecificMod()
@@ -35,8 +27,6 @@ public class ModifiedAminoAcid extends AminoAcid {
 	@Override
 	public String getResidueStr()
 	{
-		if(isFixedModification)
-			return targetAA.getResidueStr();
 		StringBuffer buf = new StringBuffer();
 		String massStr;
 		float modMass = mod.getMass();
@@ -56,5 +46,5 @@ public class ModifiedAminoAcid extends AminoAcid {
 	}
 	
 	@Override
-	public boolean isVariableModification()		{ return !isFixedModification; }
+	public boolean isModified()		{ return true; }
 }

@@ -24,6 +24,8 @@ import msscorer.DBScanScorer;
 import msscorer.FastScorer;
 import msscorer.NewRankScorer;
 import msscorer.NewScoredSpectrum;
+import msscorer.NewScorerFactory;
+import msutil.ActivationMethod;
 import msutil.AminoAcid;
 import msutil.AminoAcidSet;
 import msutil.Composition;
@@ -32,6 +34,7 @@ import msutil.Peptide;
 import msutil.Spectrum;
 import msutil.SpectrumAccessorByScanNum;
 import msutil.Modification.Location;
+import sequences.Constants;
 import suffixarray.SuffixArray;
 import suffixarray.SuffixArraySequence;
 
@@ -51,6 +54,7 @@ public class DBScanner extends SuffixArray {
 	private SpectrumAccessorByScanNum specMap;
 	private Tolerance parentMassTolerance;
 	
+	private ActivationMethod activationMethod;
 	private List<Integer> scanNumList;
 	private TreeMap<Float,Integer> pepMassScanNumMap;
 	private HashMap<Integer, FastScorer> scanNumScorerMap;
@@ -68,10 +72,12 @@ public class DBScanner extends SuffixArray {
 			Tolerance parentMassTolerance,
 			int numAllowedC13,
 			NewRankScorer scorer,
+			ActivationMethod activationMethod,
 			Enzyme enzyme,
 			int numPeptidesPerSpec,
 			int minPeptideLength,
-			int maxPeptideLength
+			int maxPeptideLength,
+			boolean useError
 			) 
 	{
 		super(sequence);
@@ -93,12 +99,14 @@ public class DBScanner extends SuffixArray {
 		this.parentMassTolerance = parentMassTolerance;
 		this.enzyme = enzyme;
 		this.numAllowedC13 = numAllowedC13;
+		this.activationMethod = activationMethod;
 		this.scanNumList = scanNumList;
 		this.specMap = specMap;
 		this.numPeptidesPerSpec = numPeptidesPerSpec;
 		this.minPeptideLength = minPeptideLength;
 		this.maxPeptideLength = maxPeptideLength;
 		
+		boolean useSpectrumDependentScorer = scorer == null;
 //		// set amino acid probabilities
 //		setAAProbabilities();
 		
@@ -108,6 +116,14 @@ public class DBScanner extends SuffixArray {
 		for(int scanNum : scanNumList)
 		{
 			Spectrum spec = specMap.getSpectrumByScanNum(scanNum);
+			if(activationMethod != null && spec.getActivationMethod() != null && (spec.getActivationMethod() != activationMethod))
+				continue;
+			if(useSpectrumDependentScorer)
+			{
+				scorer = NewScorerFactory.get(spec.getActivationMethod(), enzyme);
+				if(!useError)
+					scorer.doNotUseError();
+			}
 			NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
 			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
 			int peptideMassIndex = factory.getMassIndex(peptideMass);
@@ -209,7 +225,7 @@ public class DBScanner extends SuffixArray {
 				}
 			}
 			int nTermAAScore;
-			if(nAA == '_' || enzyme.isCleavable(nAA))
+			if(nAA == Constants.TERMINATOR_CHAR || enzyme.isCleavable(nAA))
 				nTermAAScore = neighboringAACleavageCredit;
 			else
 				nTermAAScore = neighboringAACleavagePenalty;
@@ -305,8 +321,8 @@ public class DBScanner extends SuffixArray {
 				continue;
 			
 			boolean isProteinNTerm; 
-//			if(nAA == '_' || (nAA == 'M' && sequence.getCharAt(index-1) == '_'))
-			if(nAA == '_')
+//			if(nAA == Constants.TERMINATOR_CHAR || (nAA == 'M' && sequence.getCharAt(index-1) == Constants.TERMINATOR_CHAR))
+			if(nAA == Constants.TERMINATOR_CHAR)
 				isProteinNTerm = true;
 			else
 				isProteinNTerm = false;
@@ -332,7 +348,6 @@ public class DBScanner extends SuffixArray {
 			
 			for(i=lcp > 1 ? lcp : 1; i<maxPeptideLength+1 && index+i<size; i++)	// ith character of a peptide
 			{
-				// TODO: apply C-term mods
 				char residue = sequence.getCharAt(index+i);
 				if(i==1)
 				{
@@ -365,8 +380,8 @@ public class DBScanner extends SuffixArray {
 					peptideCleavageScore = peptideCleavageCredit;
 				else
 					peptideCleavageScore = peptideCleavagePenalty;
-				if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("YFKYYK"))
-					System.out.println("Debug");
+//				if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("YFKYYK"))
+//					System.out.println("Debug");
 				
 				int enzymeScore = nTermAAScore + peptideCleavageScore;
 				
@@ -401,6 +416,155 @@ public class DBScanner extends SuffixArray {
 		indices.rewind();
 		neighboringLcps.rewind();
 	}  	
+	
+	public void dbSearchCTermEnzymeWithCTermMods(int numberOfAllowableNonEnzymaticTermini, boolean verbose)
+	{
+		scanNumDBMatchMap = new HashMap<Integer,PriorityQueue<DatabaseMatch>>();	// scanNum -> dbHits
+
+		CandidatePeptideGrid candidatePepGrid = new CandidatePeptideGrid(aaSet, maxPeptideLength);
+		
+		int i = Integer.MAX_VALUE;
+		
+		int rank = -1;
+		boolean enzymaticSearch;
+		if(numberOfAllowableNonEnzymaticTermini == 2)
+			enzymaticSearch = false;
+		else
+			enzymaticSearch = true;
+		
+		int neighboringAACleavageCredit = aaSet.getNeighboringAACleavageCredit();
+		int neighboringAACleavagePenalty = aaSet.getNeighboringAACleavagePenalty();
+		int peptideCleavageCredit = aaSet.getPeptideCleavageCredit();
+		int peptideCleavagePenalty = aaSet.getPeptideCleavagePenalty();
+		
+		char nAA = Constants.TERMINATOR_CHAR;
+		boolean isProteinNTerm = true;
+		int nTermAAScore = neighboringAACleavageCredit;
+		boolean isExtensionAtTheSameIndex;
+		while(indices.hasRemaining()) {
+			int index = indices.get();
+			rank++;
+			isExtensionAtTheSameIndex = false;
+			int lcp = this.neighboringLcps.get(rank);
+			int nNET = 0;	// number of non-enzymatic termini
+
+			if(lcp > i)		// skip redundant peptide
+				continue;
+			else if(lcp == 0)	// preceding aa is changed
+			{
+				nAA = sequence.getCharAt(index);
+//				if(nAA == Constants.TERMINATOR_CHAR || (nAA == 'M' && sequence.getCharAt(index-1) == Constants.TERMINATOR_CHAR))
+				if(nAA == Constants.TERMINATOR_CHAR)
+					isProteinNTerm = true;
+				else
+					isProteinNTerm = false;
+				if(isProteinNTerm || enzyme.isCleavable(nAA))
+					nTermAAScore = neighboringAACleavageCredit;
+				else
+					nTermAAScore = neighboringAACleavagePenalty;
+				if(enzymaticSearch)
+				{
+					if(!isProteinNTerm && Character.isLetter(nAA) && !enzyme.isCleavable(nAA))
+					{
+						nNET++;
+						if(nNET > numberOfAllowableNonEnzymaticTermini)
+						{
+							i=0;
+							continue;
+						}
+					}
+				}
+			}
+			
+			if(verbose && rank % 1000000 == 0)
+				System.out.println("DBSearch: " + rank/(float)size*100 + "%");
+
+			for(i=lcp > 1 ? lcp : 1; i<maxPeptideLength+1 && index+i<size-1; i++)	// ith character of a peptide
+			{
+				char residue = sequence.getCharAt(index+i);
+				if(i==1)
+				{
+					if(isProteinNTerm)
+					{
+						if(candidatePepGrid.addProtNTermResidue(residue) == false)
+							break;
+					}
+					else
+					{
+						if(candidatePepGrid.addNTermResidue(residue) == false)
+							break;
+					}
+				}
+				else
+				{
+					if(i < minPeptideLength)
+					{
+						if(candidatePepGrid.addResidue(i, residue) == false)
+							break;
+						else
+							continue;
+					}
+					else
+					{
+						if(isExtensionAtTheSameIndex && i > minPeptideLength)
+							candidatePepGrid.addResidue(i-1, sequence.getCharAt(index+i-1));
+						boolean success;
+						if(sequence.getCharAt(index+i+1) == Constants.TERMINATOR_CHAR)	// protein C-term
+							success = candidatePepGrid.addProtCTermResidue(i, residue);
+						else	// peptide C-term
+							success = candidatePepGrid.addCTermResidue(i, residue);
+						if(!success)
+							break;
+					}
+				}
+				if(enzymaticSearch && !enzyme.isCleavable(residue))
+				{
+					if(nNET+1 > numberOfAllowableNonEnzymaticTermini)
+						continue;
+				}
+				
+				int peptideCleavageScore;
+				if(enzyme.isCleavable(sequence.getCharAt(index+i)))
+					peptideCleavageScore = peptideCleavageCredit;
+				else
+					peptideCleavageScore = peptideCleavagePenalty;
+//				if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("YFKYYK"))
+//					System.out.println("Debug");
+				
+				int enzymeScore = nTermAAScore + peptideCleavageScore;
+				
+				for(int j=0; j<candidatePepGrid.size(); j++)
+				{
+					float peptideMass = candidatePepGrid.getPeptideMass(j);
+					float tolDa = parentMassTolerance.getToleranceAsDa(peptideMass);
+					Collection<Integer> matchedScanNumList = pepMassScanNumMap.subMap(peptideMass-tolDa, peptideMass+tolDa).values();
+					if(matchedScanNumList.size() > 0)
+					{
+						for(Integer scanNum : matchedScanNumList)
+						{
+							FastScorer scorer = scanNumScorerMap.get(scanNum);
+							int score = enzymeScore + scorer.getScore(candidatePepGrid.getPRMGrid()[j], candidatePepGrid.getNominalPRMGrid()[j], 1, i+1); 
+							PriorityQueue<DatabaseMatch> prevMatchQueue = scanNumDBMatchMap.get(scanNum);
+							if(prevMatchQueue == null)
+							{
+								prevMatchQueue = new PriorityQueue<DatabaseMatch>();
+								scanNumDBMatchMap.put(scanNum, prevMatchQueue);
+							}
+							if(prevMatchQueue.size() == 0 || score > prevMatchQueue.peek().getScore())
+							{
+								if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
+									prevMatchQueue.poll();
+								prevMatchQueue.add(new DatabaseMatch(index, i+2, score).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm));
+							}
+						}
+					}					
+				}
+				isExtensionAtTheSameIndex = true;
+			}
+		}
+		indices.rewind();
+		neighboringLcps.rewind();
+	}  		
 	
 	// dupulicated to speed-up the search
 	public void dbSearchNoEnzyme()
@@ -551,6 +715,7 @@ public class DBScanner extends SuffixArray {
 			String resultStr =
 				specFileName+"\t"
 				+scanNum+"\t"
+				+(activationMethod != null ? activationMethod : spec.getActivationMethod()) +"\t"
 				+(showTitle ? spec.getTitle()+"\t" : "")
 				+spec.getPrecursorPeak().getMz()+"\t"
 				+pmError+"\t"
@@ -566,20 +731,20 @@ public class DBScanner extends SuffixArray {
 		}
 	}
 	
-	private void setAAProbabilities()
-	{
-		long[] aaCount = new long[128];
-		for(long i=0; i<super.sequence.getSize(); i++)
-		{
-			char residue = sequence.getCharAt(i);
-			aaCount[residue]++;
-		}
-		long sum = 0;
-		for(AminoAcid aa : aaSet)
-			sum += aaCount[aa.getResidue()];
-		for(AminoAcid aa : aaSet)
-			aa.setProbability(aaCount[aa.getResidue()]/(float)sum);
-	}
+//	private void setAAProbabilities()
+//	{
+//		long[] aaCount = new long[128];
+//		for(long i=0; i<super.sequence.getSize(); i++)
+//		{
+//			char residue = sequence.getCharAt(i);
+//			aaCount[residue]++;
+//		}
+//		long sum = 0;
+//		for(AminoAcid aa : aaSet)
+//			sum += aaCount[aa.getResidue()];
+//		for(AminoAcid aa : aaSet)
+//			aa.setProbability(aaCount[aa.getResidue()]/(float)sum);
+//	}
 	
 	public static void setAminoAcidProbabilities(String databaseFileName, AminoAcidSet aaSet)
 	{
@@ -605,7 +770,7 @@ public class DBScanner extends SuffixArray {
 		}
 		long totalAACount = 0;
 		for(AminoAcid aa : aaSet.getAAList(Location.Anywhere))
-			if(!aa.isVariableModification())
+			if(!aa.isModified())
 				totalAACount += aaCount[aa.getResidue()];
 		for(AminoAcid aa : aaSet.getAllAminoAcidArr())
 		{

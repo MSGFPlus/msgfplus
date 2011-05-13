@@ -68,7 +68,7 @@ public class AminoAcid extends Matter {
 	 * Quick way to tell whether this object is modified.
 	 * @return false if this is not modified.
 	 */
-	public boolean isVariableModification()          { return false; }
+	public boolean isModified()          { return false; }
 	
 	//  accessor methods
 	/**
@@ -152,18 +152,6 @@ public class AminoAcid extends Matter {
 	public static AminoAcid getStandardAminoAcid(char residue) { return residueMap.get(residue); }
 	public static AminoAcid[] getStandardAminoAcids()	{ return standardAATable; }
 
-//	/**
-//	 * Apply fixed modification to this amino acid
-//	 * @param mod fixed modification
-//	 */
-//	public void applyFixedModification(Modification mod)
-//	{
-//		this.mass += mod.getAccurateMass();
-//		this.nominalMass += mod.getNominalMass();
-//		this.name = mod.getName() + " " + this.getName();
-//		// residue and probability remain unchanged
-//	}
-	
 	/**
 	 * Returns a modified version of this amino acid (fixed modification).
 	 * @param newResidue new residue character representing the modified amino acid
