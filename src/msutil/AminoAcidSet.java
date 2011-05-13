@@ -56,6 +56,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	private HashSet<Character> modResidueSet = new HashSet<Character>();	// set of symbols used for residues
 	private char nextResidue;
 	
+	private boolean isFinalized = false;
 	// for enzyme
 	private int neighboringAACleavageCredit = 0;
 	private int neighboringAACleavagePenalty = 0;
@@ -87,6 +88,14 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	public ArrayList<AminoAcid> getAAList(Location location)
 	{
 		return aaListMap.get(location);
+//		if(this.isFinalized)
+//		else
+//		{
+//			HashSet<AminoAcid> aaList = new HashSet<AminoAcid>();
+//			for(Location loc : locMap.get(location))
+//				aaList.addAll(aaListMap.get(loc));
+//			return 
+//		}
 	}
 	
 	public ArrayList<AminoAcid> getNTermAAList()
@@ -384,8 +393,8 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			applyFixedMods(fixedMods, loc);
 
 		// Variable modifications 
-		for(Location loc : locArr)
-			addVariableMods(variableMods, loc);
+//		for(Location loc : locArr)
+//			addVariableMods(variableMods, loc);
 		
 		// setup containsNTermModification and containsCTermModification
 		for(Modification.Instance mod : mods)
@@ -459,7 +468,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			}
 		}
 		/// debug
-		System.out.println("\n"+location+"\t"+this.getAAList(location).size());
+//		System.out.println("\n"+location+"\t"+this.getAAList(location).size());
 //		for(AminoAcid aa : this.getAAList(location))
 //			System.out.println(aa.getResidueStr()+"\t"+aa.getMass());
 	}
@@ -601,6 +610,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			this.nominalMass2aa.put(location, mass2aaArray);
 			this.standardResidueAAArrayMap.put(location, stdResidue2aaArray);
 		}
+		this.isFinalized = true;
 		
 		return this;
 	}	
@@ -969,7 +979,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	{
 //		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(System.getProperty("user.home")+"/Research/Data/ABRF/StudyFiles/Mods.txt");
 		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(System.getProperty("user.home")+"/Developments/MS_Java_Dev/bin/Mods.txt");
-		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
+//		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
 		aaSet.printAASet();
 //		for(AminoAcid aa : aaSet.getAminoAcids(Location.N_Term, 'E'))
 //			System.out.println(aa.getResidueStr()+"\t"+aa.getMass());
