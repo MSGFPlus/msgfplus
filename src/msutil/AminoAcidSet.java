@@ -33,11 +33,11 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	private static HashMap<Location,Location[]> locMap;
 	static {
 		locMap = new HashMap<Location,Location[]>();
-		locMap.put(Location.Anywhere, new Location[] {Location.Anywhere});
-		locMap.put(Location.N_Term, new Location[] {Location.Anywhere, Location.N_Term});
-		locMap.put(Location.C_Term, new Location[] {Location.Anywhere, Location.C_Term});
-		locMap.put(Location.Protein_N_Term, new Location[] {Location.Anywhere, Location.N_Term, Location.Protein_N_Term});
-		locMap.put(Location.Protein_C_Term, new Location[] {Location.Anywhere, Location.C_Term, Location.Protein_C_Term});
+		locMap.put(Location.Anywhere, new Location[] {Location.Anywhere, Location.N_Term, Location.C_Term, Location.Protein_N_Term, Location.Protein_C_Term});
+		locMap.put(Location.N_Term, new Location[] {Location.N_Term, Location.Protein_N_Term});
+		locMap.put(Location.C_Term, new Location[] {Location.C_Term, Location.Protein_C_Term});
+		locMap.put(Location.Protein_N_Term, new Location[] {Location.Protein_N_Term});
+		locMap.put(Location.Protein_C_Term, new Location[] {Location.Protein_C_Term});
 	}
 	
 	// for fast indexing
@@ -357,9 +357,13 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	// private members
 	private void addAminoAcid(AminoAcid aa, Location location)
 	{
-//		aaListMap.get(location).add(aa);
 		for(Location loc : locMap.get(location))
+		{
+			// Debug
+//			if(aa.isModified())
+//				System.out.println("Debug");
 			aaListMap.get(loc).add(aa);
+		}
 	}
 	
 	private void applyModifications(ArrayList<Modification.Instance> mods)
@@ -393,8 +397,8 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			applyFixedMods(fixedMods, loc);
 
 		// Variable modifications 
-//		for(Location loc : locArr)
-//			addVariableMods(variableMods, loc);
+		for(Location loc : locArr)
+			addVariableMods(variableMods, loc);
 		
 		// setup containsNTermModification and containsCTermModification
 		for(Modification.Instance mod : mods)
@@ -417,45 +421,17 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			char residue = mod.getResidue();
 			if(residue == '*')
 				continue;
-			for(Location loc : locMap.get(location))
+			
+			ArrayList<AminoAcid> oldAAList = this.getAAList(location);
+			ArrayList<AminoAcid> newAAList = new ArrayList<AminoAcid>();
+			
+			for(AminoAcid aa : oldAAList)
 			{
-				ArrayList<AminoAcid> oldAAList = this.getAAList(loc);
-				ArrayList<AminoAcid> newAAList = new ArrayList<AminoAcid>();
-				
-				for(AminoAcid aa : oldAAList)
+				if(aa.getUnmodResidue() != residue)
+					newAAList.add(aa);
+				else
 				{
-					if(aa.getUnmodResidue() != residue)
-						newAAList.add(aa);
-					else
-					{
-						if(loc == Location.Anywhere)
-							newAAList.add(aa.getAAWithFixedModification(mod.getModification()));
-						else
-						{
-							char modResidue = this.getModifiedResidue(aa.getUnmodResidue());
-							ModifiedAminoAcid modAA = new ModifiedAminoAcid(aa, mod.getModification(), modResidue);
-							newAAList.add(modAA);
-						}
-					}
-				}
-				aaListMap.put(loc, newAAList);
-			}
-		}
-		
-		// any residue
-		for(Modification.Instance mod : fixedMods.get(location))
-		{
-			char residue = mod.getResidue();
-			if(residue != '*')
-				continue;
-			for(Location loc : locMap.get(location))
-			{
-				ArrayList<AminoAcid> oldAAList = this.getAAList(location);
-				ArrayList<AminoAcid> newAAList = new ArrayList<AminoAcid>();
-				
-				for(AminoAcid aa : oldAAList)
-				{
-					if(loc == Location.Anywhere)
+					if(location == Location.Anywhere)
 						newAAList.add(aa.getAAWithFixedModification(mod.getModification()));
 					else
 					{
@@ -464,8 +440,35 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 						newAAList.add(modAA);
 					}
 				}
-				aaListMap.put(loc, newAAList);
 			}
+			
+			for(Location loc : locMap.get(location))
+				aaListMap.put(loc, new ArrayList<AminoAcid>(newAAList));
+		}
+		
+		// any residue
+		for(Modification.Instance mod : fixedMods.get(location))
+		{
+			char residue = mod.getResidue();
+			if(residue != '*')
+				continue;
+			ArrayList<AminoAcid> oldAAList = this.getAAList(location);
+			ArrayList<AminoAcid> newAAList = new ArrayList<AminoAcid>();
+			
+			for(AminoAcid aa : oldAAList)
+			{
+				if(location == Location.Anywhere)
+					newAAList.add(aa.getAAWithFixedModification(mod.getModification()));
+				else
+				{
+					char modResidue = this.getModifiedResidue(aa.getUnmodResidue());
+					ModifiedAminoAcid modAA = new ModifiedAminoAcid(aa, mod.getModification(), modResidue);
+					newAAList.add(modAA);
+				}
+			}
+			
+			for(Location loc : locMap.get(location))
+				aaListMap.put(loc, new ArrayList<AminoAcid>(newAAList));
 		}
 		/// debug
 //		System.out.println("\n"+location+"\t"+this.getAAList(location).size());
@@ -476,6 +479,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	private void addVariableMods(HashMap<Modification.Location,ArrayList<Modification.Instance>> variableMods, Location location)
 	{
 		// residue-specific
+		ArrayList<AminoAcid> newAAList = new ArrayList<AminoAcid>();
 		for(Modification.Instance mod : variableMods.get(location))
 		{
 			char residue = mod.getResidue();
@@ -487,13 +491,15 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 				{
 					char modResidue = this.getModifiedResidue(targetAA.getUnmodResidue());
 					ModifiedAminoAcid modAA = new ModifiedAminoAcid(targetAA, mod.getModification(), modResidue);
-					this.addAminoAcid(modAA, location);
+					newAAList.add(modAA);
 				}
 			}
 		}
+		for(AminoAcid newAA : newAAList)
+			this.addAminoAcid(newAA, location);
 		
 		// any residue
-		ArrayList<AminoAcid> newAAList = new ArrayList<AminoAcid>();
+		newAAList = new ArrayList<AminoAcid>();
 		for(Modification.Instance mod : variableMods.get(location))
 		{
 			char residue = mod.getResidue();
@@ -534,6 +540,10 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			for(AminoAcid aa : aaListMap.get(location))
 			{
 				allAASet.add(aa);
+//				if(allAASet.add(aa) == false)
+//				{
+//					System.out.println("Debug");
+//				}
 			}
 		}
 		
