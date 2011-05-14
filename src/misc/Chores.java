@@ -45,14 +45,8 @@ public class Chores {
 //		System.out.println(System.currentTimeMillis()-time);
 //		System.out.println(IonType.X.getOffset());
 //		System.out.println(Character.isUpperCase(']'));
-		char c1 = (char)128;
-		char c2 = (char)129;
-		char c3 = (char)Character.MAX_VALUE;
-		c3++;
-		System.out.println(c1==c2);
-		System.out.println((int)c1+" "+(int)c2+" "+(int)c3);
-		System.out.println(c1<Character.MAX_VALUE);
-		System.out.println((int)Character.MAX_VALUE);
+		System.out.println(Float.MIN_NORMAL);
+		System.out.println(Double.MIN_NORMAL);
 	}
 
 	public static void combination(int n, int r) throws Exception
