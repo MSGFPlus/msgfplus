@@ -217,7 +217,7 @@ public class MSGFDB {
 		DBScanner.setAminoAcidProbabilities(databaseFile.getPath(), aaSet);
 		////////// Debug ////////////
 //		aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
-		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
+//		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
 //		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/ABRF/StudyFiles/iPRG2011CCS.fasta", aaSet);
 		//////////////////
 		
@@ -318,9 +318,8 @@ public class MSGFDB {
 //		aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
 //		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
 //		aaSet.printAASet();
-		scanNumList.clear();
-		scanNumList.add(3888);
-//		scanNumList.add(1615);
+//		scanNumList.clear();
+//		scanNumList.add(3888);
 //		scanNumList.add(6416);
 //		scanNumList.add(3751);
 //		scanNumList.add(338);	// decoytest
@@ -374,14 +373,18 @@ public class MSGFDB {
 	    	// db search
 	    	time = System.currentTimeMillis(); 
 			if(enzyme == null)
-				sa.dbSearchNoEnzyme();	// currently not supported
+				sa.dbSearchNoEnzyme(true);	// currently not supported
 			else if(enzyme.isCTerm())
-				sa.dbSearchCTermEnzymeWithCTermMods(numAllowedNonEnzymaticTermini, true);
-//				sa.dbSearchCTermEnzymeWithMods(numAllowedNonEnzymaticTermini, true);
-//				sa.dbSearchCTermEnzyme(numAllowedNonEnzymaticTermini, true);
+			{
+				if(!aaSet.containsModification())
+					sa.dbSearchCTermEnzymeNoMod(numAllowedNonEnzymaticTermini, true);
+				else
+					sa.dbSearchCTermEnzyme(numAllowedNonEnzymaticTermini, true);
+			}
 			else
-				sa.dbSearchNTermEnzyme(numAllowedNonEnzymaticTermini);	// currently not supported
-	    	System.out.println("Database search... " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
+				sa.dbSearchNTermEnzyme(numAllowedNonEnzymaticTermini, true);
+			
+			System.out.println("Database search... " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
 
 	    	// running MS-GF
 			System.out.print("Computing P-values...");

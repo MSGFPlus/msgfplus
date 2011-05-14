@@ -87,33 +87,33 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 		return getMaxScore()-getScore(annotation);
 	}
 	
-	public float getSpectralProbability(Annotation annotation) {
+	public double getSpectralProbability(Annotation annotation) {
 		int score = getScore(annotation);
 		return getSpectralProbability(score);
 	}
 	
 	// score: inclusive
 	@Override
-	public float getSpectralProbability(int score) {
+	public double getSpectralProbability(int score) {
 		if(!this.distribution.isProbSet())
 			return 100;
 		return distribution.getSpectralProbability(score);
 	}
 	
-	public float getNumEqualBetterPeptides(Annotation annotation)
+	public double getNumEqualBetterPeptides(Annotation annotation)
 	{
 		int score = getScore(annotation);
 		return getNumEqualOrBetterPeptides(score);
 	}
 
-	public float getNumEqualOrBetterPeptides(int score)
+	public double getNumEqualOrBetterPeptides(int score)
 	{
 		if(!this.distribution.isNumSet())
-			return -1;
+			return -1.;
 		return distribution.getNumEqualOrBetterPeptides(score);
 	}
 
-	public float getDictionarySize(float specProb)
+	public double getDictionarySize(float specProb)
 	{
 		return getNumEqualOrBetterPeptides(getThresholdScore(specProb));
 	}
@@ -384,6 +384,9 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 			ScoreDist prevDist = fwdTable.get(prevNode);
 			if(prevDist != null)
 			{
+				// debug
+//				if(curNode.getNominalMass() == 3535)
+//					System.out.println("Debug");
 				int edgeScore = edge.getEdgeScore();
 				int combinedScore = curNodeScore + edgeScore;
 
@@ -401,7 +404,10 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 		if(calcProb)
 		{
 			if(curDist.getProbability(curDist.maxScore-1) == 0)	// to avoid underflow
+			{
+				assert(false): "Underflow! " + curNode.getNominalMass()+ " " + curDist.getProbability(curDist.maxScore-1);
 				curDist.setProb(curDist.maxScore-1, Float.MIN_VALUE);
+			}
 		}
 		fwdTable.put(curNode, curDist);
 		if(backtrack)

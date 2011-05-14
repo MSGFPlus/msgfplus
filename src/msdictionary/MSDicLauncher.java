@@ -150,7 +150,7 @@ public class MSDicLauncher extends ToolLauncher {
 						if(this.trypticOnly && !Enzyme.TRYPSIN.isCleaved(pep))
 							continue;
 						
-						float specProb = gf.getSpectralProbability(peptideScore);
+						double specProb = gf.getSpectralProbability(peptideScore);
 						String id = matchedPeptides.get(i);
 						
 						out.println(spec.getTitle()+"\t"+spec.getScanNum()+"\t"+id+"\t"+matchedProteinAnnotations.get(i)+"\t"+spec.getPrecursorPeak().getMz()+"\t"+spec.getCharge()+"\t"+(gf.getMaxScore()-1)+

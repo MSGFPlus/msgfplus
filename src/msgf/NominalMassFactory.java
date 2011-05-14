@@ -12,7 +12,6 @@ public class NominalMassFactory extends MassFactory<NominalMass> {
 	private float rescalingConstant = Constants.INTEGER_MASS_SCALER;
 	private NominalMass[] factory;
 	private NominalMass zero;
-	private NominalMass inf;
 	
 	public NominalMassFactory(AminoAcidSet aaSet, Enzyme enzyme, int maxLength)
 	{
@@ -21,7 +20,6 @@ public class NominalMassFactory extends MassFactory<NominalMass> {
 		int maxIndex = heaviestNominalMass*maxLength;
 		factory = new NominalMass[maxIndex+2];
 		zero = factory[0] = new NominalMass(0);
-		inf = factory[factory.length-1] = new NominalMass(factory.length-1);
 		makeAllPossibleMasses(true);
 	}
 
@@ -121,11 +119,6 @@ public class NominalMassFactory extends MassFactory<NominalMass> {
 		return zero;
 	}
 	
-	@Override
-	public NominalMass getInfinity() {
-		return inf;
-	}
-
 	@Override
 	public boolean contains(NominalMass node) {
 		int index = node.getNominalMass();

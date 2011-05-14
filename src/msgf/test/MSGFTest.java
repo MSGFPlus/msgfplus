@@ -43,17 +43,18 @@ public class MSGFTest {
 	{
 		File specFile = new File("/home/sangtaekim/Research/Data/Zubarev/SACTest/SACTest.mgf");
 		SpectrumAccessorByScanNum specAccessor = new SpectraMap(specFile.getPath(), new MgfSpectrumParser());
-		int scanNum = 2956;
+		int scanNum = 3888;
 		Spectrum spec = specAccessor.getSpectrumByScanNum(scanNum);
 		
 		Enzyme enzyme = Enzyme.TRYPSIN;
-		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile("/home/sangtaekim/Developments/MS_Java_Dev/bin/Mods.txt");
+//		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile("/home/sangtaekim/Developments/MS_Java_Dev/bin/Mods.txt");
+		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
 		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
 		aaSet.registerEnzyme(enzyme);
 //		aaSet.printAASet();
-		NewRankScorer scorer = new NewRankScorer("/home/sangtaekim/Developments/MS_Java/bin/HCD_TrypE.param");
+		NewRankScorer scorer = NewScorerFactory.get(ActivationMethod.HCD, enzyme);
 		
-		Annotation annotation = new Annotation(getAnnotationStr("S.Q-17.027VQLVQSGAEVK.K"), aaSet);
+		Annotation annotation = new Annotation(getAnnotationStr("R.TPEVTCVVVDVSHEDPEVQFK.W"), aaSet);
 		NewScoredSpectrum<NominalMass> scoredSpec1 = scorer.getScoredSpectrum(spec);
 //		ScoredSpectrum<NominalMass> scoredSpec = new msscorer.DBScanScorer(scoredSpec1, annotation.getPeptide().getNominalMass());
 		NominalMassFactory factory = new NominalMassFactory(aaSet, enzyme, 50);
@@ -62,7 +63,7 @@ public class MSGFTest {
 		GeneratingFunction<NominalMass> gf = new GeneratingFunction<NominalMass>(graph).enzyme(enzyme).doNotCalcNumber();
 		gf.computeGeneratingFunction();
 		int score = gf.getScore(annotation);
-		float specProb = gf.getSpectralProbability(score);
+		double specProb = gf.getSpectralProbability(score);
 		System.out.println(scanNum+"\t"+annotation+" "+(gf.getMaxScore()-1)+" "+score+" "+specProb);
 		for(int t=score; t<gf.getMaxScore(); t++)
 			System.out.println(t+"\t"+gf.getScoreDist().getProbability(t));
@@ -156,7 +157,7 @@ public class MSGFTest {
 			graph = new GenericDeNovoGraph<IntMass>(factory, spec.getParentMass(), pmTolerance, enzyme, scoredSpec);
 			GeneratingFunction<IntMass> gf = new GeneratingFunction<IntMass>(graph).enzyme(enzyme);
 			gf.computeGeneratingFunction();
-			float specProb = gf.getSpectralProbability(psm.getAnnotation());
+			double specProb = gf.getSpectralProbability(psm.getAnnotation());
 			int score = gf.getScore(psm.getAnnotation());
 //			if(score != gf.getMaxScore()-1)
 //				continue;

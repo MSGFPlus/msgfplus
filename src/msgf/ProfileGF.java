@@ -19,7 +19,7 @@ public class ProfileGF<T extends Matter> {
 	}
 	
 	private HashMap<T, ScoreDist> bwdTable = null;
-	private float sizeDictionary = 0;
+	private double sizeDictionary = 0;
 	private Profile<T> profile = null;
 	
 	public HashMap<T, ScoreDist> getBwdTable() {return bwdTable;}
@@ -71,7 +71,7 @@ public class ProfileGF<T extends Matter> {
 				int maxScore = bwdDist.getMaxScore();
 				float sumNumbers = 0;
 				for(int t = minScore; t<maxScore; t++){
-					float mult = bwdDist.getNumberRecs(t);
+					double mult = bwdDist.getNumberRecs(t);
 					if(mult != 0)
 						sumNumbers += fwdDist.getNumberRecs(t)*mult;
 				}
@@ -185,7 +185,7 @@ public class ProfileGF<T extends Matter> {
 		
 		for(int score=curBwdDist.getMaxScore()-1; score>=curBwdDist.getMinScore(); score--)
 		{
-			float numberRecs = curBwdDist.getNumberRecs(score);
+			double numberRecs = curBwdDist.getNumberRecs(score);
 			if(numberRecs == 0) continue;
 			for(Edge<T> edge : gf.getGraph().getEdges(curNode))
 			{

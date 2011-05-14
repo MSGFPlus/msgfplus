@@ -9,9 +9,10 @@ public class DatabaseMatch implements Comparable<DatabaseMatch> {
 	
 	// optional
 	private int		deNovoScore;	
-	private float	specProb;
+	private double	specProb;
 	private ScoreDist	scoreDist;
 	private boolean isProteinNTerm;
+	private boolean isProteinCTerm;
 
 	private String pepSeq;
 	public DatabaseMatch(int index, int length, int score) {
@@ -21,6 +22,7 @@ public class DatabaseMatch implements Comparable<DatabaseMatch> {
 		this.score = score;
 		pepSeq = null;
 		isProteinNTerm = false;
+		isProteinCTerm = false;
 	}
 	
 	public DatabaseMatch pepSeq(String pepSeq)
@@ -32,6 +34,12 @@ public class DatabaseMatch implements Comparable<DatabaseMatch> {
 	public DatabaseMatch setProteinNTerm(boolean isProteinNTerm)
 	{
 		this.isProteinNTerm = isProteinNTerm;
+		return this;
+	}
+
+	public DatabaseMatch setProteinCTerm(boolean isProteinCTerm)
+	{
+		this.isProteinCTerm = isProteinCTerm;
 		return this;
 	}
 	
@@ -52,6 +60,11 @@ public class DatabaseMatch implements Comparable<DatabaseMatch> {
 	{
 		return isProteinNTerm;
 	}
+
+	public boolean isProteinCTerm()
+	{
+		return isProteinCTerm;
+	}
 	
 	public void setScore(int score)
 	{
@@ -71,12 +84,12 @@ public class DatabaseMatch implements Comparable<DatabaseMatch> {
 		return deNovoScore;
 	}
 
-	public void setSpecProb(float specProb)
+	public void setSpecProb(double specProb)
 	{
 		this.specProb = specProb;
 	}
 	
-	public float getSpecProb() {
+	public double getSpecProb() {
 		return specProb;
 	}
 	

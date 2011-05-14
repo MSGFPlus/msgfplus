@@ -39,7 +39,7 @@ public class GenericDeNovoGraph<T extends Matter> extends DeNovoGraph<T> {
 			Tolerance pmTolerance, 
 			Enzyme enzyme, 
 			ScoredSpectrum<T> scoredSpec,
-			boolean isProteinTerm
+			boolean containsModifiedSinkEdge
 		) 
 	{
 		this.factory = factory;
@@ -53,11 +53,9 @@ public class GenericDeNovoGraph<T extends Matter> extends DeNovoGraph<T> {
 		super.pmNode = factory.getNode(peptideMass);
 		
 		super.sinkNodes = factory.getNodes(peptideMass, pmTolerance);
-		setEdgesToSinkNodes(isProteinTerm);
+		setEdgesToSinkNodes(containsModifiedSinkEdge);
 		
 		setIntermediateNodes();
-//		super.intermediateNodes = factory.getIntermediateNodes(super.sinkNodes);
-		super.destination = factory.getInfinity();
 		setEdgesToIntermediateNodes();
 		computeNodeScores();
 	}
@@ -164,20 +162,20 @@ public class GenericDeNovoGraph<T extends Matter> extends DeNovoGraph<T> {
 			nodeScore.put(node, 0);
 	}
 
-	private void setEdgesToSinkNodes(boolean isProteinTerm)
+	private void setEdgesToSinkNodes(boolean containsModifiedSinkEdge)
 	{
 		boolean isReverse = factory.isReverse();
 		Location location;
 		if(isReverse)
 		{
-			if(!isProteinTerm)
+			if(!containsModifiedSinkEdge)
 				location = Location.N_Term;
 			else
 				location = Location.Protein_N_Term;
 		}
 		else
 		{
-			if(!isProteinTerm)
+			if(!containsModifiedSinkEdge)
 				location = Location.C_Term;
 			else
 				location = Location.Protein_C_Term;

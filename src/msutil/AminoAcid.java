@@ -183,6 +183,24 @@ public class AminoAcid extends Matter {
 		else
 			return new AminoAcid(residue, name, composition);
 	}
+	
+	@Override
+	public int hashCode()
+	{
+		return (int)residue;
+	}
+	
+//	@Override
+//	public boolean equals(Object obj)
+//	{
+//		if(!(obj instanceof AminoAcid))
+//			return false;
+//		else
+//		{
+//			AminoAcid otherAA = (AminoAcid)obj;
+//			return this.getResidue() == otherAA.getResidue();
+//		}
+//	}
 
 	private static Hashtable<Character, AminoAcid> residueMap;
 	// Static table containing Predefined Amino Acids 

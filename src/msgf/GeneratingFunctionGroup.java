@@ -63,7 +63,7 @@ public class GeneratingFunctionGroup<T extends Matter> extends HashMap<T, Genera
 	}
 	
 	@Override
-	public float getSpectralProbability(int score)
+	public double getSpectralProbability(int score)
 	{
 		return mergedScoreDist.getSpectralProbability(score);
 	}

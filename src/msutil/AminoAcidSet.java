@@ -4,7 +4,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -12,7 +11,6 @@ import java.util.LinkedList;
 
 import parser.BufferedLineReader;
 
-import msdbsearch.DBScanner;
 import msutil.Modification.Location;
 
 /**
@@ -56,7 +54,6 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	private HashSet<Character> modResidueSet = new HashSet<Character>();	// set of symbols used for residues
 	private char nextResidue;
 	
-	private boolean isFinalized = false;
 	// for enzyme
 	private int neighboringAACleavageCredit = 0;
 	private int neighboringAACleavagePenalty = 0;
@@ -620,7 +617,6 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			this.nominalMass2aa.put(location, mass2aaArray);
 			this.standardResidueAAArrayMap.put(location, stdResidue2aaArray);
 		}
-		this.isFinalized = true;
 		
 		return this;
 	}	

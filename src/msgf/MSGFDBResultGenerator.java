@@ -18,13 +18,13 @@ public class MSGFDBResultGenerator extends ArrayList<MSGFDBResultGenerator.DBMat
 	public void computeEFDR()
 	{
 		Collections.sort(this);
-		float eTD = 0;	// expected target discovery
-		float cumulativePValue = 0;
+		double eTD = 0;	// expected target discovery
+		double cumulativePValue = 0;
 		for(int i=0; i<this.size(); i++)
 		{
-			float specProb = get(i).getSpecProb();
+			double specProb = get(i).getSpecProb();
 			cumulativePValue += get(i).getPValue();
-			float eDD = cumulativePValue;	// expected decoy discovery
+			double eDD = cumulativePValue;	// expected decoy discovery
 			for(int j=i+1; j<this.size(); j++)
 				eDD += get(j).getEDD(specProb);
 			eTD += 1-get(i).getPValue();
@@ -41,14 +41,14 @@ public class MSGFDBResultGenerator extends ArrayList<MSGFDBResultGenerator.DBMat
 	
 	public static class DBMatch implements Comparable<DBMatch>
 	{
-		private float specProb;
-		private float pValue;
+		private double specProb;
+		private double pValue;
 		private int numPeptides;
 		private String resultStr;
-		private float[] cumScoreDist;
-		private float eFDR;
+		private double[] cumScoreDist;
+		private double eFDR;
 		
-		public DBMatch(float specProb, int numPeptides, String resultStr, ScoreDist scoreDist) {
+		public DBMatch(double specProb, int numPeptides, String resultStr, ScoreDist scoreDist) {
 			this.specProb = specProb;
 			this.pValue = getPValue(specProb, numPeptides);
 			this.numPeptides = numPeptides;
@@ -56,7 +56,7 @@ public class MSGFDBResultGenerator extends ArrayList<MSGFDBResultGenerator.DBMat
 			
 			if(scoreDist.isProbSet())
 			{
-				this.cumScoreDist = new float[scoreDist.getMaxScore()-scoreDist.getMinScore()];
+				this.cumScoreDist = new double[scoreDist.getMaxScore()-scoreDist.getMinScore()];
 				cumScoreDist[0] = scoreDist.getProbability(scoreDist.getMaxScore()-1);
 				int index = 1;
 				for(int t=scoreDist.getMaxScore()-2; t>=scoreDist.getMinScore(); t--)
@@ -67,39 +67,39 @@ public class MSGFDBResultGenerator extends ArrayList<MSGFDBResultGenerator.DBMat
 			}
 		}
 		
-		public static float getPValue(float specProb, int numPeptides)
+		public static double getPValue(double specProb, int numPeptides)
 		{
-			float pValue;
-			double probCorr = 1.-(double)specProb;
+			double pValue;
+			double probCorr = 1.-specProb;
 			if(probCorr < 1.)
-				pValue = (float)(1.- Math.pow(probCorr, numPeptides));
+				pValue = 1.- Math.pow(probCorr, numPeptides);
 			else
 				pValue = specProb*numPeptides;
 			return pValue;
 		}
 		
-		public void setEFDR(float eFDR)	{ this.eFDR = eFDR; }
+		public void setEFDR(double eFDR)	{ this.eFDR = eFDR; }
 		
-		public float getEFDR() {
+		public double getEFDR() {
 			return eFDR;
 		}
 		
 		/**
 		 * Gets expected decoy discovery for a given specProbThreshold
 		 */
-		public float getEDD(float specProbThreshold)	{
-			float probEqualOrBetterTargetPep;
+		public double getEDD(double specProbThreshold)	{
+			double probEqualOrBetterTargetPep;
 			if(specProbThreshold >= specProb)
 				probEqualOrBetterTargetPep = specProb;
 			else
 				probEqualOrBetterTargetPep = getSpectralProbability(specProbThreshold);
 			
-			float pValue = getPValue(probEqualOrBetterTargetPep, numPeptides);
+			double pValue = getPValue(probEqualOrBetterTargetPep, numPeptides);
 			return pValue;
 		}
 		
 		// returns cumulative probability <= specProbThreshold
-		public float getSpectralProbability(float specProbThreshold)
+		public double getSpectralProbability(double specProbThreshold)
 		{
 			int index = Arrays.binarySearch(cumScoreDist, specProbThreshold);
 			if(index >= 0)
@@ -114,10 +114,10 @@ public class MSGFDBResultGenerator extends ArrayList<MSGFDBResultGenerator.DBMat
 			}
 		}
 		
-		public float getSpecProb() {
+		public double getSpecProb() {
 			return specProb;
 		}
-		public float getPValue() {
+		public double getPValue() {
 			return pValue;
 		}
 		public String getResultStr() {

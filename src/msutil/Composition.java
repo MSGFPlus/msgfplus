@@ -28,9 +28,7 @@ public class Composition extends Matter
 	public static final double OFFSET_Y = H*2+O+PROTON;
 	public static final double OFFSET_B = PROTON;
 
-
 	public static final Composition NIL = new Composition(0,0,0,0,0);
-	public static final Composition INF = new Composition(1,1,1,1,1);
 
 	int number; // MSB 8 (C) 8 (H) 6 (N) 6 (O) 4 (S)
 	static final double[] monoMass = new double[] { C, H, N, O, S};

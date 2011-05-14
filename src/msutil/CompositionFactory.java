@@ -46,11 +46,6 @@ public class CompositionFactory extends MassFactory<Composition>{
 	}
 
 	@Override
-	public Composition getInfinity() {
-		return Composition.INF;
-	}
-	
-	@Override
 	public Composition getNextNode(Composition curNode, AminoAcid aa) {
 		int num = curNode.number + aa.getComposition().number;
 		return new Composition(num);

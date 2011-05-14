@@ -11,7 +11,6 @@ public class IntMassFactory extends MassFactory<IntMassFactory.IntMass> {
 	private float rescalingConstant;
 	private IntMass[] factory;
 	private IntMass zero;
-	private IntMass inf;
 	private int[] aaMassIndex;
 	
 	public IntMassFactory(AminoAcidSet aaSet, Enzyme enzyme, int maxLength, float rescalingConstant, boolean preComputeEdges)
@@ -22,7 +21,6 @@ public class IntMassFactory extends MassFactory<IntMassFactory.IntMass> {
 		int maxIndex = heaviestAAIndex*maxLength;
 		factory = new IntMass[maxIndex+2];
 		zero = factory[0] = new IntMass(0);
-		inf = factory[factory.length-1] = new IntMass(factory.length-1);
 		aaMassIndex = new int[128];
 		for(AminoAcid aa : aaSet)
 			aaMassIndex[aa.getResidue()] = getMassIndex(aa.getMass());
@@ -187,11 +185,6 @@ public class IntMassFactory extends MassFactory<IntMassFactory.IntMass> {
 		return zero;
 	}
 
-	@Override
-	public IntMass getInfinity() {
-		return inf;
-	}
-	
 	@Override
 	public boolean contains(IntMass node) {
 		int index = node.massIndex;

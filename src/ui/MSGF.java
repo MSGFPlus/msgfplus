@@ -304,11 +304,11 @@ public class MSGF {
 		}
 			
 		ArrayList<String> keyList = null;
-		Hashtable<String, Float> minSpecProb = null;
+		Hashtable<String, Double> minSpecProb = null;
 		Hashtable<String, String> bestOut = null;
 		if(onePerSpec)
 		{
-			minSpecProb = new Hashtable<String, Float>();
+			minSpecProb = new Hashtable<String, Double>();
 			bestOut = new Hashtable<String, String>();
 			keyList = new ArrayList<String>();
 		}
@@ -445,7 +445,7 @@ public class MSGF {
 			
 			gf.computeGeneratingFunction();
 			
-			float specProb = gf.getSpectralProbability(psm.getAnnotation());
+			double specProb = gf.getSpectralProbability(psm.getAnnotation());
 			int msgfScore = gf.getScore(psm.getAnnotation());
 			assert(specProb > 0): psm.getInsPecTString()+"\t"+"SpecProb is zero!";
 			String output = psm.getInsPecTString()+"\t"+specProb;
@@ -458,7 +458,7 @@ public class MSGF {
 				else
 				{
 					String specKey = psm.getSpecFileName()+":"+psm.getScanNum();
-					Float prevBest = minSpecProb.get(specKey);
+					Double prevBest = minSpecProb.get(specKey);
 					if(prevBest == null || specProb < prevBest)
 					{
 						minSpecProb.put(specKey, specProb);
@@ -518,11 +518,11 @@ public class MSGF {
 			customScorer = new NewRankScorer(paramFile.getPath());
 			
 		ArrayList<String> keyList = null;
-		Hashtable<String, Float> minSpecProb = null;
+		Hashtable<String, Double> minSpecProb = null;
 		Hashtable<String, String> bestOut = null;
 		if(onePerSpec)
 		{
-			minSpecProb = new Hashtable<String, Float>();
+			minSpecProb = new Hashtable<String, Double>();
 			bestOut = new Hashtable<String, String>();
 			keyList = new ArrayList<String>();
 		}
@@ -672,7 +672,7 @@ public class MSGF {
 			
 			gf.computeGeneratingFunction();
 			
-			float specProb = gf.getSpectralProbability(psm.getAnnotation());
+			double specProb = gf.getSpectralProbability(psm.getAnnotation());
 			int msgfScore = gf.getScore(psm.getAnnotation());
 			
 			String output = psm.getInsPecTString()+"\t"+specProb;
@@ -685,7 +685,7 @@ public class MSGF {
 				else
 				{
 					String specKey = psm.getSpecFileName()+":"+psm.getScanNum();
-					Float prevBest = minSpecProb.get(specKey);
+					Double prevBest = minSpecProb.get(specKey);
 					if(prevBest == null || specProb < prevBest)
 					{
 						minSpecProb.put(specKey, specProb);
