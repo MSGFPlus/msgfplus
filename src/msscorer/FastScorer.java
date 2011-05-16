@@ -7,6 +7,7 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 
 	protected float[] prefixScore = null;
 	protected float[] suffixScore = null;
+	private boolean mainIonDirection;
 	
 	public FastScorer(NewScoredSpectrum<NominalMass> scoredSpec, int peptideMass)
 	{
@@ -20,6 +21,7 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 			prefixScore[nominalMass] = scoredSpec.getNodeScore(node, true);
 			suffixScore[nominalMass] = scoredSpec.getNodeScore(node, false);
 		}
+		mainIonDirection = scoredSpec.getMainIonDirection();
 	}
 	
 	// fromIndex: inclusive, toIndex: exclusive
@@ -46,5 +48,10 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 	@Override
 	public int getEdgeScore(NominalMass curNode, NominalMass prevNode, float theoMass) {
 		return 0;
+	}
+	
+	@Override
+	public boolean getMainIonDirection() {
+		return mainIonDirection;
 	}
 }

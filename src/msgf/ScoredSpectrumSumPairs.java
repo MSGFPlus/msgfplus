@@ -22,4 +22,11 @@ public class ScoredSpectrumSumPairs<T extends Matter> implements ScoredSpectrum<
 	public int getEdgeScore(T curNode, T prevNode, float theoMass) {
 		return scoredSpec1.getEdgeScore(curNode, prevNode, theoMass)+scoredSpec2.getEdgeScore(curNode, prevNode, theoMass);
 	}
+	
+	@Override
+	public boolean getMainIonDirection() {
+		assert(false): "Not supported!";
+		return false;
+	}
+	
 }

@@ -7,12 +7,10 @@ import msutil.*;
 public abstract class DeNovoGraph<T extends Matter> {
 	protected T source;
 	protected T pmNode;
-	protected T destination;
 	protected ArrayList<T> sinkNodes;
 	protected ArrayList<T> intermediateNodes;
 	
 	public T getSource() { return source; }
-	public T getDestination() { return destination; }
 	public T getPMNode() { return pmNode; }
 	public ArrayList<T> getSinkList() { return sinkNodes; }
 	public ArrayList<T> getIntermediateNodeList() { return intermediateNodes; }

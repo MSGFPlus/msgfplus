@@ -9,6 +9,7 @@ public class PrefixSuffixScorer implements SimpleDBSearchScorer<IntMass> {
 	private float[] prefixScore = null;
 	private float[] suffixScore = null;
 	private final boolean useVariablePMBin;
+	private boolean mainIonDirection;
 	
 	public PrefixSuffixScorer(IntMassFactory factory, NewScoredSpectrum<IntMass> scoredSpec, int peptideMassIndex)
 	{
@@ -23,6 +24,7 @@ public class PrefixSuffixScorer implements SimpleDBSearchScorer<IntMass> {
 				suffixScore[massIndex] = scoredSpec.getNodeScore(node, false);
 			}
 		}
+		mainIonDirection = scoredSpec.getMainIonDirection();
 		if(Math.round(factory.getRescalingConstant()) == 1)
 			useVariablePMBin = true;
 		else
@@ -53,5 +55,10 @@ public class PrefixSuffixScorer implements SimpleDBSearchScorer<IntMass> {
 	public int getEdgeScore(IntMass curNode, IntMass prevNode, float edgeMass) {
 		assert(false);	// do not use
 		return 0;
+	}
+
+	@Override
+	public boolean getMainIonDirection() {
+		return mainIonDirection;
 	}
 }

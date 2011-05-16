@@ -99,6 +99,12 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 	{
 		return mainIon;
 	}
+	
+	@Override
+	public boolean getMainIonDirection() {
+		return mainIon.isPrefixIon();
+	}
+	
 	/**
 	 * returns the corrected mass of the node based on the peak observed in the spectrum
 	 * @param node

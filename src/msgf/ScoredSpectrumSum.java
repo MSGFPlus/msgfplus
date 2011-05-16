@@ -28,4 +28,10 @@ public class ScoredSpectrumSum<T extends Matter> implements ScoredSpectrum<T> {
 			sum += scoredSpec.getEdgeScore(curNode, prevNode, theoMass);
 		return sum;
 	}
+
+	@Override
+	public boolean getMainIonDirection() {
+		assert(false): "Not supported!";
+		return false;
+	}
 }
