@@ -11,13 +11,11 @@ import java.util.TreeMap;
 import parser.BufferedLineReader;
 
 import msgf.DeNovoGraph;
-import msgf.GF;
-import msgf.GenericDeNovoGraph;
+import msgf.FlexAminoAcidGraph;
 import msgf.MSGFDBResultGenerator;
 import msgf.GeneratingFunction;
 import msgf.GeneratingFunctionGroup;
 import msgf.NominalMass;
-import msgf.NominalMassFactory;
 import msgf.ScoredSpectrum;
 import msgf.Tolerance;
 import msscorer.DBScanScorer;
@@ -42,7 +40,7 @@ public class DBScanner extends SuffixArray {
 
 	private int minPeptideLength;
 	private int maxPeptideLength;
-	private NominalMassFactory factory;
+//	private NominalMassFactory factory;
 	
 	private AminoAcidSet aaSet;
 	private double[] aaMass;
@@ -64,7 +62,7 @@ public class DBScanner extends SuffixArray {
 	private HashMap<Integer,PriorityQueue<DatabaseMatch>> scanNumDBMatchMap;
 
 	public DBScanner(
-			NominalMassFactory factory,
+//			NominalMassFactory factory,
 			SuffixArraySequence sequence, 
 			AminoAcidSet aaSet,
 			SpectrumAccessorByScanNum specMap,
@@ -81,7 +79,7 @@ public class DBScanner extends SuffixArray {
 			) 
 	{
 		super(sequence);
-		this.factory = factory;
+//		this.factory = factory;
 		aaMass = new double[aaSet.getMaxResidue()];
 		intAAMass = new int[aaSet.getMaxResidue()];
 		for(int i=0; i<aaMass.length; i++)
@@ -92,7 +90,8 @@ public class DBScanner extends SuffixArray {
 		for(AminoAcid aa : aaSet.getAllAminoAcidArr())
 		{
 			aaMass[aa.getResidue()] = aa.getAccurateMass();
-			intAAMass[aa.getResidue()] = factory.getMassIndex(aa.getMass());
+//			intAAMass[aa.getResidue()] = factory.getMassIndex(aa.getMass());
+			intAAMass[aa.getResidue()] = aa.getNominalMass();
 		}
 		
 		this.aaSet = aaSet;
@@ -126,11 +125,13 @@ public class DBScanner extends SuffixArray {
 			}
 			NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
 			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
-			int peptideMassIndex = factory.getMassIndex(peptideMass);
+			float tolDa = parentMassTolerance.getToleranceAsDa(peptideMass);
+			int maxNominalPeptideMass = NominalMass.toNominalMass(peptideMass + tolDa);
+			
 			if(scorer.supportEdgeScores())
-				scanNumScorerMap.put(scanNum, new DBScanScorer(scoredSpec, peptideMassIndex));
+				scanNumScorerMap.put(scanNum, new DBScanScorer(scoredSpec, maxNominalPeptideMass));
 			else
-				scanNumScorerMap.put(scanNum, new FastScorer(scoredSpec, peptideMassIndex));
+				scanNumScorerMap.put(scanNum, new FastScorer(scoredSpec, maxNominalPeptideMass));
 			while(pepMassScanNumMap.get(peptideMass) != null)
 				peptideMass = Math.nextUp(peptideMass);
 			pepMassScanNumMap.put(peptideMass, scanNum);
@@ -237,6 +238,9 @@ public class DBScanner extends SuffixArray {
 				}
 			}
 			
+			if(verbose && rank % 1000000 == 0)
+				System.out.println("DBSearch: " + rank/(float)size*100 + "%");
+			
 			for(i=lcp > 1 ? lcp : 1; i<maxPeptideLength+1 && index+i<size; i++)	// ith character of a peptide
 			{
 				char residue = sequence.getCharAt(index+i);
@@ -275,7 +279,7 @@ public class DBScanner extends SuffixArray {
 							prevMatchQueue = new PriorityQueue<DatabaseMatch>();
 							scanNumDBMatchMap.put(scanNum, prevMatchQueue);
 						}
-						else if(prevMatchQueue.size() == 0 || score > prevMatchQueue.peek().getScore())
+						if(prevMatchQueue.size() == 0 || score > prevMatchQueue.peek().getScore())
 						{
 							if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
 								prevMatchQueue.poll();
@@ -355,6 +359,7 @@ public class DBScanner extends SuffixArray {
 			for(i=lcp > 1 ? lcp : 1; i<maxPeptideLength+1 && index+i<size-1; i++)	// ith character of a peptide
 			{
 				char residue = sequence.getCharAt(index+i);
+				boolean isProteinCTerm = false;
 				if(i==1)
 				{
 					if(isProteinNTerm)
@@ -389,7 +394,7 @@ public class DBScanner extends SuffixArray {
 							if(isExtensionAtTheSameIndex && i > minPeptideLength)
 								candidatePepGrid.addResidue(i-1, sequence.getCharAt(index+i-1));
 							boolean success;
-							if(sequence.getCharAt(index+i+1) == Constants.TERMINATOR_CHAR)	// protein C-term
+							if(isProteinCTerm = (sequence.getCharAt(index+i+1) == Constants.TERMINATOR_CHAR))	// protein C-term
 								success = candidatePepGrid.addProtCTermResidue(i, residue);
 							else	// peptide C-term
 								success = candidatePepGrid.addCTermResidue(i, residue);
@@ -398,6 +403,10 @@ public class DBScanner extends SuffixArray {
 						}
 					}
 				}
+				
+				if(i < minPeptideLength)
+					continue;
+				
 				if(enzymaticSearch && !enzyme.isCleavable(residue))
 				{
 					if(nNET+1 > numberOfAllowableNonEnzymaticTermini)
@@ -435,7 +444,7 @@ public class DBScanner extends SuffixArray {
 							{
 								if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
 									prevMatchQueue.poll();
-								prevMatchQueue.add(new DatabaseMatch(index, i+2, score).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm));
+								prevMatchQueue.add(new DatabaseMatch(index, i+2, score).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
 							}
 						}
 					}					
@@ -534,8 +543,12 @@ public class DBScanner extends SuffixArray {
 					}
 				}
 				
+				if(i+1 < minPeptideLength)
+					continue;
 //				if(sequence.getSubsequence(index, index+i+1).equalsIgnoreCase("TPEVTCVVVDVSHEDPEVQFK"))
 //					System.out.println("Debug");
+				char nextAA = sequence.getCharAt(index+i+1);
+				boolean isProteinCTerm = nextAA == Constants.TERMINATOR_CHAR;
 				
 				for(int j=0; j<candidatePepGrid.size(); j++)
 				{
@@ -558,7 +571,7 @@ public class DBScanner extends SuffixArray {
 							{
 								if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
 									prevMatchQueue.poll();
-								prevMatchQueue.add(new DatabaseMatch(index-1, i+2, score).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm));
+								prevMatchQueue.add(new DatabaseMatch(index-1, i+2, score).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
 							}
 						}
 					}					
@@ -681,6 +694,9 @@ public class DBScanner extends SuffixArray {
 					}
 				}
 				
+				if(i+1 < minPeptideLength)
+					continue;
+				
 				int cTermAAScore = 0;
 				char nextAA = sequence.getCharAt(index+i+1);
 				boolean isProteinCTerm = nextAA == Constants.TERMINATOR_CHAR;
@@ -718,7 +734,7 @@ public class DBScanner extends SuffixArray {
 							{
 								if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
 									prevMatchQueue.poll();
-								prevMatchQueue.add(new DatabaseMatch(index-1, i+2, score).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinCTerm(isProteinCTerm));
+								prevMatchQueue.add(new DatabaseMatch(index-1, i+2, score).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
 							}
 						}
 					}					
@@ -730,7 +746,7 @@ public class DBScanner extends SuffixArray {
 		neighboringLcps.rewind();
 	}
 	
-	public void computeSpecProb(boolean grouped)
+	public void computeSpecProb()
 	{
 		for(int scanNum : scanNumList)
 		{
@@ -738,61 +754,50 @@ public class DBScanner extends SuffixArray {
 			if(matchQueue == null)
 				continue;
 
-			boolean containsModifiedSinkEdge = false;
-			for(DatabaseMatch match : matchQueue)
-			{
-				if(factory.isReverse())
-				{
-					if(match.isProteinNTerm())
-						containsModifiedSinkEdge = true;
-				}
-				else
-				{
-					if(match.isProteinCTerm())
-						containsModifiedSinkEdge = true;
-				}
-			}
+//			boolean containsModifiedSinkEdge = false;
+//			for(DatabaseMatch match : matchQueue)
+//			{
+//				if(factory.isReverse())
+//				{
+//					if(match.isProteinNTerm())
+//						containsModifiedSinkEdge = true;
+//				}
+//				else
+//				{
+//					if(match.isProteinCTerm())
+//						containsModifiedSinkEdge = true;
+//				}
+//			}
 			
 			Spectrum spec = specMap.getSpectrumByScanNum(scanNum);
 			ScoredSpectrum<NominalMass> scoredSpec = scanNumScorerMap.get(scanNum);
-			GF<NominalMass> gf = null;
-			if(grouped)
+			GeneratingFunctionGroup<NominalMass> gf = new GeneratingFunctionGroup<NominalMass>();
+			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
+			float tolDa = parentMassTolerance.getToleranceAsDa(peptideMass);
+//				int maxPeptideMassIndex = factory.getMassIndex(peptideMass + tolDa);
+//				int minPeptideMassIndex = factory.getMassIndex(Math.min(peptideMass-tolDa, peptideMass-numAllowedC13*(float)Composition.ISOTOPE));
+			int maxPeptideMassIndex = NominalMass.toNominalMass(peptideMass + tolDa);
+			int minPeptideMassIndex = NominalMass.toNominalMass(Math.min(peptideMass-tolDa, peptideMass-numAllowedC13*(float)Composition.ISOTOPE));
+			for(int peptideMassIndex = minPeptideMassIndex; peptideMassIndex<=maxPeptideMassIndex; peptideMassIndex++)
 			{
-				GeneratingFunctionGroup<NominalMass> gfGroup = new GeneratingFunctionGroup<NominalMass>();
-				float peptideMass = spec.getParentMass() - (float)Composition.H2O;
-				float tolDa = parentMassTolerance.getToleranceAsDa(peptideMass);
-				int maxPeptideMassIndex = factory.getMassIndex(peptideMass + tolDa);
-				int minPeptideMassIndex = factory.getMassIndex(Math.min(peptideMass-tolDa, peptideMass-numAllowedC13*(float)Composition.ISOTOPE));
-				for(int peptideMassIndex = minPeptideMassIndex; peptideMassIndex<=maxPeptideMassIndex; peptideMassIndex++)
-				{
-					DeNovoGraph<NominalMass> graph = new GenericDeNovoGraph<NominalMass>(
-							factory, 
-							factory.getMassFromIndex(peptideMassIndex+factory.getMassIndex((float)Composition.H2O)), 
-							Tolerance.ZERO_TOLERANCE, 
-							enzyme,
-							scoredSpec,
-							containsModifiedSinkEdge);
-					GeneratingFunction<NominalMass> gfi = new GeneratingFunction<NominalMass>(graph)
-					.doNotBacktrack()
-					.doNotCalcNumber();
-					gfGroup.registerGF(graph.getPMNode(), gfi);
-				}			
-				gf = gfGroup;
-			}
-			else
-			{
-				DeNovoGraph<NominalMass> graph = new GenericDeNovoGraph<NominalMass>(
-						factory, 
-						spec.getParentMass(), 
-						parentMassTolerance, 
+//					DeNovoGraph<NominalMass> graph = new GenericDeNovoGraph<NominalMass>(
+//							factory, 
+//							factory.getMassFromIndex(peptideMassIndex+factory.getMassIndex((float)Composition.H2O)), 
+//							Tolerance.ZERO_TOLERANCE, 
+//							enzyme,
+//							scoredSpec,
+//							containsModifiedSinkEdge);
+				DeNovoGraph<NominalMass> graph = new FlexAminoAcidGraph(
+						aaSet, 
+						peptideMassIndex,
 						enzyme,
-						scoredSpec,
-						containsModifiedSinkEdge);
-				gf = new GeneratingFunction<NominalMass>(graph)
-					.doNotBacktrack()
-					.doNotCalcNumber();
-			}
-			
+						scoredSpec
+						);
+				GeneratingFunction<NominalMass> gfi = new GeneratingFunction<NominalMass>(graph)
+				.doNotBacktrack()
+				.doNotCalcNumber();
+				gf.registerGF(graph.getPMNode(), gfi);
+			}			
 			gf.computeGeneratingFunction();
 			
 			for(DatabaseMatch match : matchQueue)
@@ -893,9 +898,24 @@ public class DBScanner extends SuffixArray {
 		for(AminoAcid aa : aaSet.getAAList(Location.Anywhere))
 			if(!aa.isModified())
 				totalAACount += aaCount[aa.getResidue()];
+		
+		boolean success = true;
 		for(AminoAcid aa : aaSet.getAllAminoAcidArr())
 		{
-			aa.setProbability(aaCount[aa.getUnmodResidue()]/(float)totalAACount);
+			long count = aaCount[aa.getUnmodResidue()];
+			if(count == 0)
+			{
+				success = false;
+				break;
+			}
+			aa.setProbability(count/(float)totalAACount);
+		}
+		
+		if(!success)
+		{
+			System.out.println("Warning: database does not contain all standard amino acids. Probability 0.05 will be used for all amino acids.");
+			for(AminoAcid aa : aaSet.getAllAminoAcidArr())
+				aa.setProbability(0.05f);
 		}
 	}
 }

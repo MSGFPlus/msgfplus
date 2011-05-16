@@ -306,7 +306,7 @@ public class MSGFDB {
 		if(!useError && scorer != null)
 			scorer.doNotUseError();
 		
-		NominalMassFactory factory = new NominalMassFactory(aaSet, enzyme, maxPeptideLength);
+//		NominalMassFactory factory = new NominalMassFactory(aaSet, enzyme, maxPeptideLength);
 		// determine the number of spectra to be scanned together 
 		long maxMemory = Runtime.getRuntime().maxMemory();
 		int avgPeptideMass = 2000;
@@ -319,6 +319,7 @@ public class MSGFDB {
 //		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
 //		aaSet.printAASet();
 //		scanNumList.clear();
+//		scanNumList.add(3256);
 //		scanNumList.add(3888);
 //		scanNumList.add(6416);
 //		scanNumList.add(3751);
@@ -353,7 +354,6 @@ public class MSGFDB {
 	    	System.out.print("Preprocessing spectra...");
 	    	long time = System.currentTimeMillis();
 	    	DBScanner sa = new DBScanner(
-	    			factory,
 	    			new SuffixArraySequence(databaseFile.getPath()), 
 	    			aaSet,
 	    			specAccessor,
@@ -389,7 +389,7 @@ public class MSGFDB {
 	    	// running MS-GF
 			System.out.print("Computing P-values...");
 	    	time = System.currentTimeMillis(); 
-	    	sa.computeSpecProb(true);
+	    	sa.computeSpecProb();
 	    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
 	    	
 			System.out.print("Generating results...");

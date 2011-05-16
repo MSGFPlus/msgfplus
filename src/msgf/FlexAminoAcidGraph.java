@@ -7,12 +7,11 @@ import java.util.HashMap;
 import msutil.AminoAcid;
 import msutil.AminoAcidSet;
 import msutil.Annotation;
-import msutil.Composition;
 import msutil.Enzyme;
 import msutil.Peptide;
 import msutil.Modification.Location;
 
-public class FlexDeNovoGraph extends DeNovoGraph<NominalMass> {
+public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
 	private ScoredSpectrum<NominalMass> scoredSpec;
 	private Enzyme enzyme;
 	private boolean direction;	// true: forward (e.g. Lys-C), false: reverse (e.g. Trypsin)
@@ -23,10 +22,9 @@ public class FlexDeNovoGraph extends DeNovoGraph<NominalMass> {
 	private HashMap<NominalMass, ArrayList<DeNovoGraph.Edge<NominalMass>>> edgeMap;
 	private HashMap<NominalMass, Integer> nodeScore;
 	
-	public FlexDeNovoGraph(
+	public FlexAminoAcidGraph(
 			AminoAcidSet aaSet,
-			float parentMass, 
-			Tolerance pmTolerance, 
+			int peptideMass, 
 			Enzyme enzyme, 
 			ScoredSpectrum<NominalMass> scoredSpec
 		) 
@@ -40,11 +38,10 @@ public class FlexDeNovoGraph extends DeNovoGraph<NominalMass> {
 
 		super.source = new NominalMass(0);
 		
-		float peptideMass = parentMass - (float)Composition.H2O;
-		super.pmNode = new NominalMass(NominalMass.toNominalMass(peptideMass));
+		super.pmNode = new NominalMass(peptideMass);
 
 		edgeMap = new HashMap<NominalMass, ArrayList<DeNovoGraph.Edge<NominalMass>>>();
-		edgeMap.put(source, null);
+		edgeMap.put(source, new ArrayList<DeNovoGraph.Edge<NominalMass>>());
 		setForwardEdgesFromSource();
 		setForwardEdgesFromIntermediateNodes();
 		super.intermediateNodes = new ArrayList<NominalMass>(edgeMap.keySet());
@@ -56,16 +53,15 @@ public class FlexDeNovoGraph extends DeNovoGraph<NominalMass> {
 		
 		computeNodeScores();
 		computeEdgeScores();
-		computeCleavageScores();
 	}
 
-	public FlexDeNovoGraph useProtNTerm()
+	public FlexAminoAcidGraph useProtNTerm()
 	{
 		this.useProtNTerm = true;
 		return this;
 	}
 
-	public FlexDeNovoGraph useProtCTerm()
+	public FlexAminoAcidGraph useProtCTerm()
 	{
 		this.useProtCTerm = true;
 		return this;
@@ -192,14 +188,14 @@ public class FlexDeNovoGraph extends DeNovoGraph<NominalMass> {
 		}
 		
 		ArrayList<AminoAcid> aaList = aaSet.getAAList(location);
-		makeForwardEdges(source, aaList);
+		makeForwardEdges(source, aaList, enzyme != null && direction == enzyme.isNTerm());
 	}
 	
 	private void setForwardEdgesFromIntermediateNodes()
 	{
 		ArrayList<AminoAcid> aaList = aaSet.getAAList(Location.Anywhere);
 		for(int i=1; i<pmNode.getNominalMass(); i++)
-			makeForwardEdges(new NominalMass(i), aaList);
+			makeForwardEdges(new NominalMass(i), aaList, false);
 	}
 	
 	private void setBackwardEdgesFromSink()
@@ -229,14 +225,21 @@ public class FlexDeNovoGraph extends DeNovoGraph<NominalMass> {
 			NominalMass prevNode = new NominalMass(peptideNominalMass-aa.getNominalMass());
 			if(edgeMap.containsKey(prevNode))
 			{
-				DeNovoGraph.Edge<NominalMass> edge = new DeNovoGraph.Edge<NominalMass>(prevNode, aa.getProbability(), aaSet.getIndex(aa), aa.getMass());				
+				DeNovoGraph.Edge<NominalMass> edge = new DeNovoGraph.Edge<NominalMass>(prevNode, aa.getProbability(), aaSet.getIndex(aa), aa.getMass());		
 				edges.add(edge);
+				if(enzyme != null && direction != enzyme.isNTerm())
+				{
+					if(enzyme.isCleavable(aa))
+						edge.setCleavageScore(aaSet.getPeptideCleavageCredit());
+					else
+						edge.setCleavageScore(aaSet.getPeptideCleavagePenalty());
+				}
 			}
 		}
 		edgeMap.put(pmNode, edges);
 	}	
 	
-	private void makeForwardEdges(NominalMass curNode, ArrayList<AminoAcid> aaList)
+	private void makeForwardEdges(NominalMass curNode, ArrayList<AminoAcid> aaList, boolean addCleavageScore)
 	{
 		int curNominalMass = curNode.getNominalMass();
 		for(AminoAcid aa : aaList)
@@ -259,6 +262,13 @@ public class FlexDeNovoGraph extends DeNovoGraph<NominalMass> {
 					aa.getMass());
 			int errorScore = scoredSpec.getEdgeScore(nextNode, curNode, aa.getMass());
 			edge.setErrorScore(errorScore);
+			if(addCleavageScore)
+			{
+				if(enzyme.isCleavable(aa))
+					edge.setCleavageScore(aaSet.getPeptideCleavageCredit());
+				else
+					edge.setCleavageScore(aaSet.getPeptideCleavagePenalty());
+			}
 			
 			edges.add(edge);
 		}
@@ -278,9 +288,4 @@ public class FlexDeNovoGraph extends DeNovoGraph<NominalMass> {
 			edgeMap.put(curNode, edges);
 		}
 	}	
-
-	private void computeCleavageScores()
-	{
-		// TODO:
-	}
 }
