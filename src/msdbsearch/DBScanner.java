@@ -74,8 +74,8 @@ public class DBScanner extends SuffixArray {
 			Enzyme enzyme,
 			int numPeptidesPerSpec,
 			int minPeptideLength,
-			int maxPeptideLength,
-			boolean useError
+			int maxPeptideLength
+//			boolean useError
 			) 
 	{
 		super(sequence);
@@ -120,8 +120,8 @@ public class DBScanner extends SuffixArray {
 			if(useSpectrumDependentScorer)
 			{
 				scorer = NewScorerFactory.get(spec.getActivationMethod(), enzyme);
-				if(!useError)
-					scorer.doNotUseError();
+//				if(!useError)
+//					scorer.doNotUseError();
 			}
 			NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
 			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
@@ -279,11 +279,17 @@ public class DBScanner extends SuffixArray {
 							prevMatchQueue = new PriorityQueue<DatabaseMatch>();
 							scanNumDBMatchMap.put(scanNum, prevMatchQueue);
 						}
-						if(prevMatchQueue.size() == 0 || score > prevMatchQueue.peek().getScore())
+						if(prevMatchQueue.size() < this.numPeptidesPerSpec)
 						{
-							if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
-								prevMatchQueue.poll();
 							prevMatchQueue.add(new DatabaseMatch(index, i+2, score));
+						}
+						else if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
+						{
+							if(score > prevMatchQueue.peek().getScore())
+							{
+								prevMatchQueue.poll();
+								prevMatchQueue.add(new DatabaseMatch(index, i+2, score));
+							}
 						}
 					}
 				}
@@ -440,11 +446,17 @@ public class DBScanner extends SuffixArray {
 								prevMatchQueue = new PriorityQueue<DatabaseMatch>();
 								scanNumDBMatchMap.put(scanNum, prevMatchQueue);
 							}
-							if(prevMatchQueue.size() == 0 || score > prevMatchQueue.peek().getScore())
+							if(prevMatchQueue.size() < this.numPeptidesPerSpec)
 							{
-								if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
-									prevMatchQueue.poll();
 								prevMatchQueue.add(new DatabaseMatch(index, i+2, score).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
+							}
+							else if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
+							{
+								if(score > prevMatchQueue.peek().getScore())
+								{
+									prevMatchQueue.poll();
+									prevMatchQueue.add(new DatabaseMatch(index, i+2, score).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
+								}
 							}
 						}
 					}					
@@ -567,11 +579,17 @@ public class DBScanner extends SuffixArray {
 								prevMatchQueue = new PriorityQueue<DatabaseMatch>();
 								scanNumDBMatchMap.put(scanNum, prevMatchQueue);
 							}
-							if(prevMatchQueue.size() == 0 || score > prevMatchQueue.peek().getScore())
+							if(prevMatchQueue.size() < this.numPeptidesPerSpec)
 							{
-								if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
-									prevMatchQueue.poll();
 								prevMatchQueue.add(new DatabaseMatch(index-1, i+2, score).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
+							}
+							else if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
+							{
+								if(score > prevMatchQueue.peek().getScore())
+								{
+									prevMatchQueue.poll();
+									prevMatchQueue.add(new DatabaseMatch(index-1, i+2, score).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
+								}
 							}
 						}
 					}					
@@ -583,7 +601,6 @@ public class DBScanner extends SuffixArray {
 		neighboringLcps.rewind();
 	}
 	
-	// will be used for all purposes
 	public void dbSearchNTermEnzyme(int numberOfAllowableNonEnzymaticTermini, boolean verbose)
 	{
 		scanNumDBMatchMap = new HashMap<Integer,PriorityQueue<DatabaseMatch>>();	// scanNum -> dbHits
@@ -730,12 +747,19 @@ public class DBScanner extends SuffixArray {
 								prevMatchQueue = new PriorityQueue<DatabaseMatch>();
 								scanNumDBMatchMap.put(scanNum, prevMatchQueue);
 							}
-							if(prevMatchQueue.size() == 0 || score > prevMatchQueue.peek().getScore())
+							if(prevMatchQueue.size() < this.numPeptidesPerSpec)
 							{
-								if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
-									prevMatchQueue.poll();
 								prevMatchQueue.add(new DatabaseMatch(index-1, i+2, score).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
 							}
+							else if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
+							{
+								if(score > prevMatchQueue.peek().getScore())
+								{
+									prevMatchQueue.poll();
+									prevMatchQueue.add(new DatabaseMatch(index-1, i+2, score).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
+								}
+							}
+							
 						}
 					}					
 				}
@@ -754,45 +778,30 @@ public class DBScanner extends SuffixArray {
 			if(matchQueue == null)
 				continue;
 
-//			boolean containsModifiedSinkEdge = false;
-//			for(DatabaseMatch match : matchQueue)
-//			{
-//				if(factory.isReverse())
-//				{
-//					if(match.isProteinNTerm())
-//						containsModifiedSinkEdge = true;
-//				}
-//				else
-//				{
-//					if(match.isProteinCTerm())
-//						containsModifiedSinkEdge = true;
-//				}
-//			}
-			
+			boolean useProtNTerm = false;
+			boolean useProtCTerm = false;
+			for(DatabaseMatch m : matchQueue)
+			{
+				if(m.isProteinNTerm())
+					useProtNTerm = true;
+				if(m.isProteinCTerm())
+					useProtCTerm = true;
+			}
 			Spectrum spec = specMap.getSpectrumByScanNum(scanNum);
 			ScoredSpectrum<NominalMass> scoredSpec = scanNumScorerMap.get(scanNum);
 			GeneratingFunctionGroup<NominalMass> gf = new GeneratingFunctionGroup<NominalMass>();
 			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
 			float tolDa = parentMassTolerance.getToleranceAsDa(peptideMass);
-//				int maxPeptideMassIndex = factory.getMassIndex(peptideMass + tolDa);
-//				int minPeptideMassIndex = factory.getMassIndex(Math.min(peptideMass-tolDa, peptideMass-numAllowedC13*(float)Composition.ISOTOPE));
 			int maxPeptideMassIndex = NominalMass.toNominalMass(peptideMass + tolDa);
 			int minPeptideMassIndex = NominalMass.toNominalMass(Math.min(peptideMass-tolDa, peptideMass-numAllowedC13*(float)Composition.ISOTOPE));
 			for(int peptideMassIndex = minPeptideMassIndex; peptideMassIndex<=maxPeptideMassIndex; peptideMassIndex++)
 			{
-//					DeNovoGraph<NominalMass> graph = new GenericDeNovoGraph<NominalMass>(
-//							factory, 
-//							factory.getMassFromIndex(peptideMassIndex+factory.getMassIndex((float)Composition.H2O)), 
-//							Tolerance.ZERO_TOLERANCE, 
-//							enzyme,
-//							scoredSpec,
-//							containsModifiedSinkEdge);
 				DeNovoGraph<NominalMass> graph = new FlexAminoAcidGraph(
 						aaSet, 
 						peptideMassIndex,
 						enzyme,
 						scoredSpec
-						);
+						).useProtCTerm(useProtCTerm).useProtNTerm(useProtNTerm);
 				GeneratingFunction<NominalMass> gfi = new GeneratingFunction<NominalMass>(graph)
 				.doNotBacktrack()
 				.doNotCalcNumber();
@@ -825,50 +834,63 @@ public class DBScanner extends SuffixArray {
 			if(matchList.size() == 0)
 				continue;
 
-			DatabaseMatch match = matchList.get(matchList.size()-1);
-			
-			int index = match.getIndex();
-			int length = match.getLength();
-			
-			String peptideStr = match.getPepSeq();
-			if(peptideStr == null)
-				peptideStr = sequence.getSubsequence(index+1, index+length-1);
-			Peptide pep = aaSet.getPeptide(peptideStr);
-			String annotationStr = sequence.getCharAt(index)+"."+pep+"."+sequence.getCharAt(index+length-1);
-			float expMass = spec.getParentMass();
-			float theoMass = pep.getParentMass();
-			float pmError = Float.MAX_VALUE;
-			for(int numC13=0; numC13<=numAllowedC13; numC13++)
+			for(int i=matchList.size()-1; i>=0; --i)
 			{
-				float error = expMass-theoMass-(float)(Composition.ISOTOPE)*numC13; 
-				if(Math.abs(error) < Math.abs(pmError))
-					pmError = error;
+				DatabaseMatch match = matchList.get(i);
+				
+				int index = match.getIndex();
+				int length = match.getLength();
+				
+				String peptideStr = match.getPepSeq();
+				if(peptideStr == null)
+					peptideStr = sequence.getSubsequence(index+1, index+length-1);
+				Peptide pep = aaSet.getPeptide(peptideStr);
+				String annotationStr = sequence.getCharAt(index)+"."+pep+"."+sequence.getCharAt(index+length-1);
+				float expMass = spec.getParentMass();
+				float theoMass = pep.getParentMass();
+				float pmError = Float.MAX_VALUE;
+				for(int numC13=0; numC13<=numAllowedC13; numC13++)
+				{
+					float error = expMass-theoMass-(float)(Composition.ISOTOPE)*numC13; 
+					if(Math.abs(error) < Math.abs(pmError))
+						pmError = error;
+				}
+				if(parentMassTolerance.isTolerancePPM())
+					pmError = pmError/theoMass*1e6f;
+				
+				String protein = getAnnotation(index+1);
+				
+				int score = match.getScore();
+				double specProb = match.getSpecProb();
+				int numPeptides = this.numDisinctPeptides[peptideStr.length()+1];
+				double pValue = MSGFDBResultGenerator.DBMatch.getPValue(specProb, numPeptides);
+				String specProbStr;
+				if(specProb < Float.MIN_NORMAL)
+					specProbStr = String.valueOf(specProb);
+				else
+					specProbStr = String.valueOf((float)specProb);
+				String pValueStr;
+				if(specProb < Float.MIN_NORMAL)
+					pValueStr = String.valueOf(pValue);
+				else
+					pValueStr = String.valueOf((float)pValue);
+				String resultStr =
+					specFileName+"\t"
+					+scanNum+"\t"
+					+(activationMethod != null ? "" : spec.getActivationMethod()+"\t") 
+					+(showTitle ? spec.getTitle()+"\t" : "")
+					+spec.getPrecursorPeak().getMz()+"\t"
+					+pmError+"\t"
+					+spec.getCharge()+"\t"
+					+annotationStr+"\t"
+					+protein+"\t"
+					+match.getDeNovoScore()+"\t"
+					+score+"\t"
+					+specProbStr+"\t"
+					+pValueStr;
+				MSGFDBResultGenerator.DBMatch eFDRMatch = new MSGFDBResultGenerator.DBMatch(specProb, numPeptides, resultStr, match.getScoreDist());		
+				gen.add(eFDRMatch);				
 			}
-			if(parentMassTolerance.isTolerancePPM())
-				pmError = pmError/theoMass*1e6f;
-			
-			String protein = getAnnotation(index+1);
-			
-			int score = match.getScore();
-			double specProb = match.getSpecProb();
-			int numPeptides = this.numDisinctPeptides[peptideStr.length()+1];
-			double pValue = MSGFDBResultGenerator.DBMatch.getPValue(specProb, numPeptides);
-			String resultStr =
-				specFileName+"\t"
-				+scanNum+"\t"
-				+(activationMethod != null ? "" : spec.getActivationMethod()+"\t") 
-				+(showTitle ? spec.getTitle()+"\t" : "")
-				+spec.getPrecursorPeak().getMz()+"\t"
-				+pmError+"\t"
-				+spec.getCharge()+"\t"
-				+annotationStr+"\t"
-				+protein+"\t"
-				+match.getDeNovoScore()+"\t"
-				+score+"\t"
-				+(specProb < Float.MIN_NORMAL ? (float)specProb : specProb) +"\t"
-				+(pValue < Float.MIN_NORMAL ? (float)pValue : pValue);
-			MSGFDBResultGenerator.DBMatch eFDRMatch = new MSGFDBResultGenerator.DBMatch(specProb, numPeptides, resultStr, match.getScoreDist());		
-			gen.add(eFDRMatch);
 		}
 	}
 	

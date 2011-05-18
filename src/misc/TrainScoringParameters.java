@@ -14,7 +14,7 @@ public class TrainScoringParameters {
 	
 	public static void main(String argv[]) throws Exception
 	{
-		backup();
+//		backup();
 		createParamFiles();
 	}
 	
@@ -90,7 +90,7 @@ public class TrainScoringParameters {
 				File outputFile = new File(PARAM_DIR, paramFileName);
 				System.out.println("Generating " + outputFile.getPath());
 				int numSpecsPerPeptide = 1;
-				int errorScalingFactor = 10;
+				int errorScalingFactor = 0;
 				if(id.contains("HCD"))
 				{
 					numSpecsPerPeptide = 3;

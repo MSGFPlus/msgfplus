@@ -32,11 +32,27 @@ public class MSGFDBResultGenerator extends ArrayList<MSGFDBResultGenerator.DBMat
 		}
 	}
 	
-	public void writeResults(PrintStream out)
+	public void writeResults(PrintStream out, boolean printEFDR)
 	{
-		out.println(header+"\tEFDR");
+		if(printEFDR)
+			out.println(header+"\tEFDR");
+		else
+			out.println(header);
+		String eFDRStr;
 		for(MSGFDBResultGenerator.DBMatch m : this)
-			out.println(m.getResultStr()+"\t"+m.getEFDR());
+		{
+			if(printEFDR)
+			{
+				double eFDR = m.getEFDR();
+				if(eFDR < Float.MIN_NORMAL)
+					eFDRStr = String.valueOf(eFDR);
+				else
+					eFDRStr = String.valueOf((float)eFDR);
+				out.println(m.getResultStr()+"\t"+eFDRStr);
+			}
+			else
+				out.println(m.getResultStr());
+		}
 	}
 	
 	public static class DBMatch implements Comparable<DBMatch>
@@ -125,9 +141,9 @@ public class MSGFDBResultGenerator extends ArrayList<MSGFDBResultGenerator.DBMat
 		}
 		@Override
 		public int compareTo(DBMatch arg0) {
-			if(this.pValue < arg0.pValue)
+			if(this.specProb < arg0.specProb)
 				return -1;
-			else if(this.pValue > arg0.pValue)
+			else if(this.specProb > arg0.specProb)
 				return 1;
 			else
 				return 0;

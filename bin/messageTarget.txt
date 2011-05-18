@@ -1,0 +1,44 @@
+Spectrum 0-10061 (total: 10062)
+Preprocessing spectra... 42.984 sec
+DBSearch: 0.0%
+DBSearch: 2.842868%
+DBSearch: 5.685736%
+DBSearch: 8.5286045%
+DBSearch: 11.371472%
+DBSearch: 14.21434%
+DBSearch: 17.057209%
+DBSearch: 19.900076%
+DBSearch: 22.742945%
+DBSearch: 25.585812%
+DBSearch: 28.42868%
+DBSearch: 31.27155%
+DBSearch: 34.114418%
+DBSearch: 36.957283%
+DBSearch: 39.80015%
+DBSearch: 42.64302%
+DBSearch: 45.48589%
+DBSearch: 48.32876%
+DBSearch: 51.171623%
+DBSearch: 54.014492%
+DBSearch: 56.85736%
+DBSearch: 59.700233%
+DBSearch: 62.5431%
+DBSearch: 65.38597%
+DBSearch: 68.228836%
+DBSearch: 71.0717%
+DBSearch: 73.914566%
+DBSearch: 76.75744%
+DBSearch: 79.6003%
+DBSearch: 82.44317%
+DBSearch: 85.28604%
+DBSearch: 88.128914%
+DBSearch: 90.97178%
+DBSearch: 93.814644%
+DBSearch: 96.65752%
+DBSearch: 99.50038%
+Database search... 2132.371 sec
+Computing P-values... 88.595 sec
+Generating results... 2.499 sec
+Computing EFDRs... 19.872 sec
+Writing results... 0.077 sec
+Time: 2287.790 sec

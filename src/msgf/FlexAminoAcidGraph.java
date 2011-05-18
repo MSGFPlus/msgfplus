@@ -55,15 +55,15 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
 		computeEdgeScores();
 	}
 
-	public FlexAminoAcidGraph useProtNTerm()
+	public FlexAminoAcidGraph useProtNTerm(boolean useProteinNTerm)
 	{
-		this.useProtNTerm = true;
+		this.useProtNTerm = useProteinNTerm;
 		return this;
 	}
 
-	public FlexAminoAcidGraph useProtCTerm()
+	public FlexAminoAcidGraph useProtCTerm(boolean useProteinCTerm)
 	{
-		this.useProtCTerm = true;
+		this.useProtCTerm = useProteinCTerm;
 		return this;
 	}
 	

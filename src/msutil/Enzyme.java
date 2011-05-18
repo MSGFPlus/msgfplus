@@ -243,6 +243,9 @@ public class Enzyme {
 		LysC.setPeptideCleavageEffiency(0.89f);
 		
 		LysN = new Enzyme("LysN", "K", true);
+		LysN.setNeighboringAAEfficiency(0.79f);
+		LysN.setPeptideCleavageEffiency(0.89f);
+		
 		GluC = new Enzyme("GluC","E",false);
 		ArgC = new Enzyme("ArgC","R",false);
 		AspN = new Enzyme("AspN","D",true);

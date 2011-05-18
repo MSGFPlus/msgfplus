@@ -13,7 +13,6 @@ import suffixarray.SuffixArraySequence;
 
 import msdbsearch.DBScanner;
 import msgf.MSGFDBResultGenerator;
-import msgf.NominalMassFactory;
 import msgf.Tolerance;
 import msscorer.NewRankScorer;
 import msscorer.NewScorerFactory;
@@ -37,13 +36,12 @@ public class MSGFDB {
 		File	paramFile		= null;
 		File	outputFile = null;
 		Tolerance	parentMassTolerance = null;
-		int numAllowedC13 = 0;
+		int numAllowedC13 = 1;
 		int 	numMatchesPerSpec = 1;
 		Enzyme	enzyme = Enzyme.TRYPSIN;
 		ActivationMethod activationMethod = null;
-		int numAllowedNonEnzymaticTermini = 0;
+		int numAllowedNonEnzymaticTermini = 2;
 		boolean showTitle = false;
-		boolean useError = false;
 		int minPeptideLength = 6;
 		int maxPeptideLength = 40;
 		
@@ -194,13 +192,15 @@ public class MSGFDB {
 				if(argv[i+1].equalsIgnoreCase("1"))
 					showTitle = true;
 			}
-			else if(argv[i].equalsIgnoreCase("-err"))
-			{
-				if(argv[i+1].equalsIgnoreCase("1"))
-					useError = true;
-			}
+//			else if(argv[i].equalsIgnoreCase("-err"))
+//			{
+//				if(argv[i+1].equalsIgnoreCase("1"))
+//					useError = true;
+//			}
 			else
-				printUsageAndExit();
+			{
+				printUsageAndExit("Invalid option: " + argv[i]);
+			}
 		}
 		
 		if(specFile == null)
@@ -223,7 +223,7 @@ public class MSGFDB {
 		
 		aaSet.registerEnzyme(enzyme);
 		
-		runMSGFDB(specFile, specFormat, databaseFile, paramFile, useError, parentMassTolerance, numAllowedC13,
+		runMSGFDB(specFile, specFormat, databaseFile, paramFile, parentMassTolerance, numAllowedC13,
 	    		outputFile, enzyme, numAllowedNonEnzymaticTermini,
 	    		activationMethod, aaSet, numMatchesPerSpec, showTitle,
 	    		minPeptideLength, maxPeptideLength);
@@ -238,24 +238,24 @@ public class MSGFDB {
 	public static void printUsageAndExit(String message)
 	{
 		if(message != null)
-			System.err.println(message);
-		System.err.println("MSGFDB v20100323");
+			System.out.println(message);
+		System.out.println("MSGFDB v2 (05/18/2011)");
 		System.out.print("usage: java -Xmx3500M -jar MSGFDB.jar\n"
-				+ "\t-s spectrumFile (*.mzXML or *.mgf)\n" //, *.mgf, *.pkl, *.ms2)\n"
-				+ "\t-d database (*.fasta)\n"
-				+ "\t-t parentMassTolerance (e.g. 2.5Da or 50ppm, no space is allowed.)\n"
-				+ "\t[-c13 0/1/2] (Number of allowed C13, default: 0)\n"
-				+ "\t[-m FragmentationMethodID] (0: as written in the spectrum, 1: CID , 2: ETD, 3: HCD)\n"//, 3: CID/ETD pair)\n"
-				+ "\t[-e EnzymeID] (0: No enzyme, 1: Trypsin (default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N)\n"
-				+ "\t[-nnet 0/1/2] (Number of allowed non-enzymatic termini, default: 0)\n"
-				+ "\t[-param paramFile]\n"
+				+ "\t-s SpectrumFile (*.mzXML or *.mgf)\n" //, *.mgf, *.pkl, *.ms2)\n"
+				+ "\t-d Database (*.fasta)\n"
+				+ "\t-t ParentMassTolerance (e.g. 2.5Da or 50ppm, no space is allowed.)\n"
+				+ "\t[-m FragmentationMethodID] (0: as written in the spectrum (Default), 1: CID , 2: ETD, 3: HCD)\n"//, 3: CID/ETD pair)\n"
+				+ "\t[-e EnzymeID] (0: No enzyme, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N)\n"
+				+ "\t[-c13 0/1/2] (Number of allowed C13, Default: 0)\n"
+				+ "\t[-nnet 0/1/2] (Number of allowed non-enzymatic termini, Default: 2)\n"
+				+ "\t[-mod modificationFileName (Default: standard amino acids with fixed C+57)]\n"
+				+ "\t[-minLength minPepLength] (Default: 6)\n"
+				+ "\t[-maxLength maxPepLength] (Default: 40)\n"
+				+ "\t[-n numMatchesPerSpec (Default: 1)]\n"
 				+ "\t[-o outputFileName] (Default: stdout)\n"
-//				+ "\t[-n numMatchesPerSpec (Default: 1)]\n"
-				+ "\t[-err 0/1 (0: don't use peak errors (default), 1: use peak errors for scoring]\n"
-				+ "\t[-mod modificationFileName (default: standard amino acids with fixed C+57)]\n"
+//				+ "\t[-param paramFile]\n"
+//				+ "\t[-err 0/1 (0: don't use peak errors (default), 1: use peak errors for scoring]\n"
 				+ "\t[-title 0/1] (0: don't show title (default), 1: show title)\n"
-				+ "\t[-minLength minPepLength] (default: 6)\n"
-				+ "\t[-maxLength maxPepLength] (default: 40)\n"
 				);
 		System.exit(-1);
 	}
@@ -265,7 +265,6 @@ public class MSGFDB {
     		SpecFileFormat specFormat, 
     		File databaseFile, 
     		File paramFile, 
-    		boolean useError,
     		Tolerance parentMassTolerance, 
     		int numAllowedC13,
     		File outputFile, 
@@ -303,8 +302,8 @@ public class MSGFDB {
 		else if(activationMethod != null)
 			scorer = NewScorerFactory.get(activationMethod, enzyme);
 
-		if(!useError && scorer != null)
-			scorer.doNotUseError();
+//		if(!useError && scorer != null)
+//			scorer.doNotUseError();
 		
 //		NominalMassFactory factory = new NominalMassFactory(aaSet, enzyme, maxPeptideLength);
 		// determine the number of spectra to be scanned together 
@@ -319,8 +318,8 @@ public class MSGFDB {
 //		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
 //		aaSet.printAASet();
 //		scanNumList.clear();
-//		scanNumList.add(3256);
 //		scanNumList.add(3888);
+//		scanNumList.add(3256);
 //		scanNumList.add(6416);
 //		scanNumList.add(3751);
 //		scanNumList.add(338);	// decoytest
@@ -365,8 +364,7 @@ public class MSGFDB {
 	    			enzyme,
 	    			numMatchesPerSpec,
 	    			minPeptideLength,
-	    			maxPeptideLength,
-	    			useError
+	    			maxPeptideLength
 	    			);
 	    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
 	    	
@@ -396,18 +394,18 @@ public class MSGFDB {
 	    	time = System.currentTimeMillis(); 
 	    	sa.addDBSearchResults(gen, specFile.getName(), showTitle);
 	    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
-
 			fromIndex += numSpecScannedTogether;
 		}
 
 		System.out.print("Computing EFDRs...");
     	long time = System.currentTimeMillis(); 
-    	gen.computeEFDR();
+    	if(numMatchesPerSpec == 1)
+    		gen.computeEFDR();
     	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
     	
 		System.out.print("Writing results...");
     	time = System.currentTimeMillis(); 
-    	gen.writeResults(out);
+    	gen.writeResults(out, numMatchesPerSpec == 1);
     	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
 		
 		if(out != System.out)
