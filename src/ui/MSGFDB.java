@@ -244,6 +244,7 @@ public class MSGFDB {
 				+ "\t-s SpectrumFile (*.mzXML or *.mgf)\n" //, *.mgf, *.pkl, *.ms2)\n"
 				+ "\t-d Database (*.fasta)\n"
 				+ "\t-t ParentMassTolerance (e.g. 2.5Da or 50ppm, no space is allowed.)\n"
+				+ "\t[-o outputFileName] (Default: stdout)\n"
 				+ "\t[-m FragmentationMethodID] (0: as written in the spectrum (Default), 1: CID , 2: ETD, 3: HCD)\n"//, 3: CID/ETD pair)\n"
 				+ "\t[-e EnzymeID] (0: No enzyme, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N)\n"
 				+ "\t[-c13 0/1/2] (Number of allowed C13, Default: 0)\n"
@@ -252,10 +253,9 @@ public class MSGFDB {
 				+ "\t[-minLength minPepLength] (Default: 6)\n"
 				+ "\t[-maxLength maxPepLength] (Default: 40)\n"
 				+ "\t[-n numMatchesPerSpec (Default: 1)]\n"
-				+ "\t[-o outputFileName] (Default: stdout)\n"
 //				+ "\t[-param paramFile]\n"
 //				+ "\t[-err 0/1 (0: don't use peak errors (default), 1: use peak errors for scoring]\n"
-				+ "\t[-title 0/1] (0: don't show title (default), 1: show title)\n"
+//				+ "\t[-title 0/1] (0: don't show title (default), 1: show title)\n"
 				);
 		System.exit(-1);
 	}
