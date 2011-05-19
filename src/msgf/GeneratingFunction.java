@@ -73,9 +73,6 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 	
 	protected HashMap<T, ScoreDist> getFwdTable()	{ return fwdTable; }
 	protected BacktrackTable<T> getBacktrackTable()	{ return backtrackTable; }
-//	public HashMap<T, Integer> getSRMScore()	{ return srmScore; }
-//	//added by kyowon
-//	public void setSRMScore(HashMap<T, Integer> srmScore) { this.srmScore = srmScore; }
 	
 	@Override
 	public int getScore(Annotation annotation)

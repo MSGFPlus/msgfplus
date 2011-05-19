@@ -96,6 +96,10 @@ public class TrainScoringParameters {
 					numSpecsPerPeptide = 3;
 					errorScalingFactor = 100;
 				}
+				else if(id.contains("TOF"))
+				{
+					errorScalingFactor = 100;
+				}
 //				else if(id.contains("ETD"))
 //				{
 //					errorScalingFactor = 0;

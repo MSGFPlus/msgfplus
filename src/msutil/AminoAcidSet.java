@@ -55,6 +55,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	private char nextResidue;
 	
 	// for enzyme
+	private ArrayList<AminoAcid> enzymeAAList;
 	private int neighboringAACleavageCredit = 0;
 	private int neighboringAACleavagePenalty = 0;
 	private int peptideCleavageCredit = 0;
@@ -66,13 +67,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	private AminoAcidSet() // prevents instantiation 
 	{
 		aaListMap = new HashMap<Location, ArrayList<AminoAcid>>();
-//		unmodAAListMap = new HashMap<Location, ArrayList<AminoAcid>>();
-//		modAAListMap = new HashMap<Location, ArrayList<AminoAcid>>();
 		standardResidueAAArrayMap = new HashMap<Location, HashMap<Character,AminoAcid[]>>();
 		for(Location location : Location.values())
 		{
-//			unmodAAListMap.put(location, new ArrayList<AminoAcid>());
-//			modAAListMap.put(location, new ArrayList<AminoAcid>());
 			aaListMap.put(location, new ArrayList<AminoAcid>());
 		}
 		nextResidue = 128;
@@ -85,14 +82,6 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	public ArrayList<AminoAcid> getAAList(Location location)
 	{
 		return aaListMap.get(location);
-//		if(this.isFinalized)
-//		else
-//		{
-//			HashSet<AminoAcid> aaList = new HashSet<AminoAcid>();
-//			for(Location loc : locMap.get(location))
-//				aaList.addAll(aaListMap.get(loc));
-//			return 
-//		}
 	}
 	
 	public ArrayList<AminoAcid> getNTermAAList()
@@ -113,6 +102,11 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	public ArrayList<AminoAcid> getProtCTermAAList()
 	{
 		return aaListMap.get(Location.Protein_N_Term);
+	}
+	
+	public ArrayList<AminoAcid> getEnzymeAAList()
+	{
+		return enzymeAAList;
 	}
 	
 	/**
@@ -283,6 +277,20 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	{
 		if(enzyme == null)
 			return;
+		enzymeAAList = new ArrayList<AminoAcid>();
+		
+		ArrayList<AminoAcid> aaList;
+		if(enzyme.isCTerm())
+			aaList = this.getAAList(Location.C_Term);
+		else
+			aaList = this.getAAList(Location.N_Term);
+		
+		for(AminoAcid aa : aaList)
+		{
+			if(enzyme.isCleavable(aa))
+				enzymeAAList.add(aa);
+		}
+		
 		probCleavageSites = 0;
 		for(char residue : enzyme.getResidues())
 		{
@@ -294,6 +302,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			}
 			probCleavageSites += aa.getProbability();
 		}
+		
 		if(probCleavageSites == 0)
 		{
 			System.err.println("Probability of enzyme residues must be positive!");

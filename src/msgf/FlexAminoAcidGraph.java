@@ -27,14 +27,26 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
 			int peptideMass, 
 			Enzyme enzyme, 
 			ScoredSpectrum<NominalMass> scoredSpec
+		)
+	{
+		this(aaSet, peptideMass, enzyme, scoredSpec, false, false);
+	}
+
+	public FlexAminoAcidGraph(
+			AminoAcidSet aaSet,
+			int peptideMass, 
+			Enzyme enzyme, 
+			ScoredSpectrum<NominalMass> scoredSpec,
+			boolean useProteinNTerm,
+			boolean useProteinCTerm
 		) 
 	{
 		this.enzyme = enzyme;
 		this.direction = scoredSpec.getMainIonDirection();
 		this.scoredSpec = scoredSpec;
 		this.aaSet = aaSet;
-		this.useProtNTerm = false;
-		this.useProtCTerm = false;
+		this.useProtNTerm = useProteinNTerm;
+		this.useProtCTerm = useProteinCTerm;
 
 		super.source = new NominalMass(0);
 		
@@ -55,18 +67,6 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
 		computeEdgeScores();
 	}
 
-	public FlexAminoAcidGraph useProtNTerm(boolean useProteinNTerm)
-	{
-		this.useProtNTerm = useProteinNTerm;
-		return this;
-	}
-
-	public FlexAminoAcidGraph useProtCTerm(boolean useProteinCTerm)
-	{
-		this.useProtCTerm = useProteinCTerm;
-		return this;
-	}
-	
 	@Override
 	public NominalMass getComplementNode(NominalMass node) {
 		return new NominalMass(pmNode.getNominalMass()-node.getNominalMass());
@@ -188,6 +188,10 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
 		}
 		
 		ArrayList<AminoAcid> aaList = aaSet.getAAList(location);
+//		if(enzymaticCleavageOnly && (direction == enzyme.isNTerm()))
+//			aaList = aaSet.getEnzymeAAList();
+//		else
+//			aaList = aaSet.getAAList(location);
 		makeForwardEdges(source, aaList, enzyme != null && direction == enzyme.isNTerm());
 	}
 	
@@ -217,6 +221,11 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
 		}
 		
 		ArrayList<AminoAcid> aaList = aaSet.getAAList(location);
+		
+//		if(enzymaticCleavageOnly && direction != enzyme.isNTerm())
+//			aaList = aaSet.getEnzymeAAList();
+//		else
+//			aaList = aaSet.getAAList(location);
 		
 		int peptideNominalMass = pmNode.getNominalMass();
 		ArrayList<DeNovoGraph.Edge<NominalMass>> edges = new ArrayList<DeNovoGraph.Edge<NominalMass>>();

@@ -205,11 +205,11 @@ public class DBScanner extends SuffixArray {
 		
 		boolean isProteinNTerm = true;
 		int nTermAAScore = neighboringAACleavageCredit;
+		int nNET = 0;	// number of non-enzymatic termini
 		while(indices.hasRemaining()) {
 			int index = indices.get();
 			rank++;
 			int lcp = this.neighboringLcps.get(rank);
-			int nNET = 0;	// number of non-enzymatic termini
 
 			if(lcp > i)		// skip redundant peptide
 				continue;
@@ -226,15 +226,17 @@ public class DBScanner extends SuffixArray {
 					nTermAAScore = neighboringAACleavagePenalty;
 				if(enzymaticSearch)
 				{
-					if(!isProteinNTerm && Character.isLetter(nAA) && !enzyme.isCleavable(nAA))
+					if(!isProteinNTerm && !enzyme.isCleavable(nAA))
 					{
-						nNET++;
+						nNET = 1;
 						if(nNET > numberOfAllowableNonEnzymaticTermini)
 						{
 							i=0;
 							continue;
 						}
 					}
+					else
+						nNET = 0;
 				}
 			}
 			
@@ -324,13 +326,13 @@ public class DBScanner extends SuffixArray {
 		boolean isProteinNTerm = true;
 		int nTermAAScore = neighboringAACleavageCredit;
 		boolean isExtensionAtTheSameIndex;
+		int nNET = 0;	// number of non-enzymatic termini
 		while(indices.hasRemaining()) {
 			int index = indices.get();
 			rank++;
 			isExtensionAtTheSameIndex = false;
 			int lcp = this.neighboringLcps.get(rank);
-			int nNET = 0;	// number of non-enzymatic termini
-
+			
 			if(lcp > i)		// skip redundant peptide
 				continue;
 			else if(lcp == 0)	// preceding aa is changed
@@ -347,17 +349,20 @@ public class DBScanner extends SuffixArray {
 					nTermAAScore = neighboringAACleavagePenalty;
 				if(enzymaticSearch)
 				{
-					if(!isProteinNTerm && Character.isLetter(nAA) && !enzyme.isCleavable(nAA))
+					if(!isProteinNTerm && !enzyme.isCleavable(nAA))
 					{
-						nNET++;
+						nNET = 1;
 						if(nNET > numberOfAllowableNonEnzymaticTermini)
 						{
 							i=0;
 							continue;
 						}
 					}
+					else
+						nNET = 0;
 				}
 			}
+			
 			
 			if(verbose && rank % 1000000 == 0)
 				System.out.println("DBSearch: " + rank/(float)size*100 + "%");
@@ -410,6 +415,9 @@ public class DBScanner extends SuffixArray {
 					}
 				}
 				
+//				if(sequence.getSubsequence(index, index+i+1).equalsIgnoreCase("ADEAGSEADHEGTHST"))
+//					System.out.println("Debug");
+
 				if(i < minPeptideLength)
 					continue;
 				
@@ -424,8 +432,6 @@ public class DBScanner extends SuffixArray {
 					peptideCleavageScore = peptideCleavageCredit;
 				else
 					peptideCleavageScore = peptideCleavagePenalty;
-//				if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("YFKYYK"))
-//					System.out.println("Debug");
 				
 				int enzymeScore = nTermAAScore + peptideCleavageScore;
 				
@@ -627,12 +633,12 @@ public class DBScanner extends SuffixArray {
 		boolean isExtensionAtTheSameIndex;
 		int peptideCleavageScore = 0;	// N-term residue, when i=0
 		
+		int nNET = 0;	// number of non-enzymatic termini
 		while(indices.hasRemaining()) {
 			int index = indices.get();
 			rank++;
 			isExtensionAtTheSameIndex = false;
 			int lcp = this.neighboringLcps.get(rank);
-			int nNET = 0;	// number of non-enzymatic termini
 
 			if(lcp > i)		// skip redundant peptide
 				continue;
@@ -641,14 +647,17 @@ public class DBScanner extends SuffixArray {
 				i=0;
 				char nAA = sequence.getCharAt(index);
 				if(enzyme.isCleavable(nAA))
+				{
 					peptideCleavageScore = peptideCleavageCredit;
+					nNET = 0;
+				}
 				else
 				{
 					if(!Character.isLetter(nAA))
 						continue;
 					if(enzymaticSearch)
 					{
-						nNET++;
+						nNET = 1;
 						if(nNET > numberOfAllowableNonEnzymaticTermini)
 							continue;
 					}
@@ -800,8 +809,11 @@ public class DBScanner extends SuffixArray {
 						aaSet, 
 						peptideMassIndex,
 						enzyme,
-						scoredSpec
-						).useProtCTerm(useProtCTerm).useProtNTerm(useProtNTerm);
+						scoredSpec,
+						useProtNTerm,
+						useProtCTerm
+						);
+				
 				GeneratingFunction<NominalMass> gfi = new GeneratingFunction<NominalMass>(graph)
 				.doNotBacktrack()
 				.doNotCalcNumber();

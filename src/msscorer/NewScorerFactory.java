@@ -2,18 +2,19 @@ package msscorer;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.util.Hashtable;
 
 import msutil.ActivationMethod;
 import msutil.Enzyme;
+import msutil.InstrumentType;
 
 public class NewScorerFactory {
 	private NewScorerFactory() {}
 	
 	private static class Condition {
-		public Condition(ActivationMethod method, Enzyme enzyme) {
+		public Condition(ActivationMethod method, InstrumentType instType, Enzyme enzyme) {
 			this.method = method;
+			this.instType = instType;
 			this.enzyme = enzyme;
 		}
 		@Override
@@ -22,6 +23,7 @@ public class NewScorerFactory {
 			{
 				Condition other = (Condition)obj;
 				if(this.method == other.method &&
+					this.instType == other.instType &&
 					this.enzyme == other.enzyme)
 					return true;
 			}
@@ -31,7 +33,12 @@ public class NewScorerFactory {
 		public int hashCode() {
 			return method.hashCode()*enzyme.hashCode();
 		}
+		@Override
+		public String toString() {
+			return method.getName()+"_"+instType.getName()+"_"+enzyme.getName();			
+		}
 		ActivationMethod method;
+		InstrumentType instType;
 		Enzyme enzyme;
 	}
 	
@@ -39,37 +46,45 @@ public class NewScorerFactory {
 	
 	public static NewRankScorer get(ActivationMethod method, Enzyme enzyme)
 	{
+		return get(method, InstrumentType.LOW_RESOLUTION_LTQ, enzyme);
+	}
+	
+	public static NewRankScorer get(ActivationMethod method, InstrumentType instType, Enzyme enzyme)
+	{
 		if(method == null)
 			method = ActivationMethod.CID;
 		if(enzyme == null)
 			enzyme = Enzyme.TRYPSIN;
-		Condition condition = new Condition(method, enzyme);
+		Condition condition = new Condition(method, instType, enzyme);
 		NewRankScorer scorer = scorerTable.get(condition);
 		if(scorer == null)
 		{
-			InputStream is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+method.getName()+"_"+enzyme.getName()+".param");
+			InputStream is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+method+".param");
 			if(is == null)	// param file does not exist. Change enzyme.
 			{
 				// change enzyme
-				String alternativeEnzyme;
+				Enzyme alternativeEnzyme;
 				if(enzyme.isCTerm())
-					alternativeEnzyme = Enzyme.TRYPSIN.getName();
+					alternativeEnzyme = Enzyme.TRYPSIN;
 				else
-					alternativeEnzyme = Enzyme.LysN.getName();
-				is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+method.getName()+"_"+alternativeEnzyme+".param");
+					alternativeEnzyme = Enzyme.LysN;
+				Condition newCond = new Condition(method, instType, alternativeEnzyme);
+				is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+newCond+".param");
 				
 				if(is == null)	// param file still does not exist. Change method.
 				{
-					String alternativeMethod;
+					ActivationMethod alternativeMethod;
 					if(method.isElectronBased())
-						alternativeMethod = ActivationMethod.ETD.getName();
+						alternativeMethod = ActivationMethod.ETD;
 					else
-						alternativeMethod = ActivationMethod.CID.getName();
-					is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+alternativeMethod+"_"+enzyme.getName()+".param");
+						alternativeMethod = ActivationMethod.CID;
+					newCond = new Condition(alternativeMethod, instType, enzyme);
+					is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+newCond+".param");
 					
 					if(is == null)
 					{
-						is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+alternativeMethod+"_"+alternativeEnzyme+".param");						
+						newCond = new Condition(alternativeMethod, instType, alternativeEnzyme);
+						is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+newCond+".param");						
 					}
 				}
 			}

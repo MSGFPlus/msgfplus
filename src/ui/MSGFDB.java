@@ -19,6 +19,7 @@ import msscorer.NewScorerFactory;
 import msutil.AminoAcidSet;
 import msutil.Enzyme;
 import msutil.ActivationMethod;
+import msutil.InstrumentType;
 import msutil.SpecFileFormat;
 import msutil.SpectraMap;
 import msutil.SpectrumAccessorByScanNum;
@@ -28,7 +29,7 @@ public class MSGFDB {
 	{
 		long time = System.currentTimeMillis();
 		if(argv.length < 2 || argv.length % 2 != 0)
-			printUsageAndExit();
+			printUsageAndExit("The number of parameters must be even.");
 
 		File 	specFile = null;
 		SpecFileFormat specFormat = null;
@@ -40,6 +41,7 @@ public class MSGFDB {
 		int 	numMatchesPerSpec = 1;
 		Enzyme	enzyme = Enzyme.TRYPSIN;
 		ActivationMethod activationMethod = null;
+		InstrumentType instType = InstrumentType.LOW_RESOLUTION_LTQ;
 		int numAllowedNonEnzymaticTermini = 2;
 		boolean showTitle = false;
 		int minPeptideLength = 6;
@@ -136,6 +138,21 @@ public class MSGFDB {
 					activationMethod = ActivationMethod.HCD;
 				}
 			}			
+			else if(argv[i].equalsIgnoreCase("-m"))	// Instrument type
+			{
+				if(argv[i+1].equalsIgnoreCase("0"))
+				{
+					instType = InstrumentType.LOW_RESOLUTION_LTQ;
+				}
+				else if(argv[i+1].equalsIgnoreCase("1"))
+				{
+					instType = InstrumentType.TOF;
+				}
+				else if(argv[i+1].equalsIgnoreCase("2"))
+				{
+					instType = InstrumentType.HIGH_RESOLUTION_LTQ;
+				}
+			}			
 			else if(argv[i].equalsIgnoreCase("-e"))	// Enzyme
 			{
 				// 0: No enzyme, 1: Trypsin, 2: Chymotrypsin, 3: LysC, 4: LysN, 5: GluC, 6: ArgC, 7: AspN
@@ -214,6 +231,9 @@ public class MSGFDB {
 		if(aaSet == null)
 			aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
 		
+		if(activationMethod == ActivationMethod.HCD)
+			instType = InstrumentType.HIGH_RESOLUTION_LTQ;
+		
 		DBScanner.setAminoAcidProbabilities(databaseFile.getPath(), aaSet);
 		////////// Debug ////////////
 //		aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
@@ -225,7 +245,7 @@ public class MSGFDB {
 		
 		runMSGFDB(specFile, specFormat, databaseFile, paramFile, parentMassTolerance, numAllowedC13,
 	    		outputFile, enzyme, numAllowedNonEnzymaticTermini,
-	    		activationMethod, aaSet, numMatchesPerSpec, showTitle,
+	    		activationMethod, instType, aaSet, numMatchesPerSpec, showTitle,
 	    		minPeptideLength, maxPeptideLength);
 		System.out.format("Time: %.3f sec\n", (System.currentTimeMillis()-time)/(float)1000);
 	}
@@ -246,8 +266,9 @@ public class MSGFDB {
 				+ "\t-t ParentMassTolerance (e.g. 2.5Da or 50ppm, no space is allowed.)\n"
 				+ "\t[-o outputFileName] (Default: stdout)\n"
 				+ "\t[-m FragmentationMethodID] (0: as written in the spectrum (Default), 1: CID , 2: ETD, 3: HCD)\n"//, 3: CID/ETD pair)\n"
+				+ "\t[-inst InstrumentID] (0: Low-res LCQ/LTQ (Default for CID and ETD), 1: TOF , 2: High-res LTQ (Default for HCD))\n"
 				+ "\t[-e EnzymeID] (0: No enzyme, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N)\n"
-				+ "\t[-c13 0/1/2] (Number of allowed C13, Default: 0)\n"
+				+ "\t[-c13 0/1/2] (Number of allowed C13, Default: 1)\n"
 				+ "\t[-nnet 0/1/2] (Number of allowed non-enzymatic termini, Default: 2)\n"
 				+ "\t[-mod modificationFileName (Default: standard amino acids with fixed C+57)]\n"
 				+ "\t[-minLength minPepLength] (Default: 6)\n"
@@ -271,6 +292,7 @@ public class MSGFDB {
     		Enzyme enzyme, 
     		int numAllowedNonEnzymaticTermini,
     		ActivationMethod activationMethod,  
+    		InstrumentType instType,
     		AminoAcidSet aaSet, 
     		int numMatchesPerSpec,
     		boolean showTitle,
@@ -300,12 +322,13 @@ public class MSGFDB {
 		if(paramFile != null)
 			scorer = new NewRankScorer(paramFile.getPath());
 		else if(activationMethod != null)
-			scorer = NewScorerFactory.get(activationMethod, enzyme);
+			scorer = NewScorerFactory.get(activationMethod, instType, enzyme);
 
-//		if(!useError && scorer != null)
-//			scorer.doNotUseError();
+		if(enzyme == null)
+			numAllowedNonEnzymaticTermini = 2;
 		
 //		NominalMassFactory factory = new NominalMassFactory(aaSet, enzyme, maxPeptideLength);
+		
 		// determine the number of spectra to be scanned together 
 		long maxMemory = Runtime.getRuntime().maxMemory();
 		int avgPeptideMass = 2000;
@@ -318,6 +341,7 @@ public class MSGFDB {
 //		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
 //		aaSet.printAASet();
 //		scanNumList.clear();
+//		scanNumList.add(31669);
 //		scanNumList.add(3888);
 //		scanNumList.add(3256);
 //		scanNumList.add(6416);

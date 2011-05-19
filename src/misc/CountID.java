@@ -1,0 +1,86 @@
+package misc;
+
+import msgf.Histogram;
+import parser.BufferedLineReader;
+
+public class CountID {
+	public static void main(String argv[]) throws Exception
+	{
+		if(argv.length != 2)
+			printUsageAndExit();
+		countID(argv[0], Double.parseDouble(argv[1]));
+	}
+	
+	public static void printUsageAndExit()
+	{
+		System.out.println("usage: java CountID MSGFDBResult.txt EFDRThreshold");
+		System.exit(-1);
+	}
+	
+	public static void countID(String fileName, double threshold) throws Exception
+	{
+		BufferedLineReader in = new BufferedLineReader(fileName);
+		String header = in.readLine();
+		if(header == null || !header.startsWith("#"))
+		{
+			System.out.println("Not a valid MSGFDB result file!");
+			System.exit(0);
+		}
+		String[] headerToken = header.split("\t");
+		int eFDRColNum = -1;
+		int pepColNum = -1;
+		for(int i=0; i<headerToken.length; i++)
+		{
+			if(headerToken[i].equalsIgnoreCase("EFDR"))
+				eFDRColNum = i;
+			if(headerToken[i].equalsIgnoreCase("Peptide"))
+				pepColNum = i;
+		}
+		if(eFDRColNum < 0 || pepColNum < 0)
+		{
+			System.out.println("EFDR or Peptide column is missing!");
+			System.exit(0);
+		}
+		
+		int totalID = 0;
+		int numID = 0;
+		String s;
+		Histogram<Integer> nttHist = new Histogram<Integer>();
+		while((s=in.readLine()) != null)
+		{
+			if(s.startsWith("#"))
+				continue;
+			String[] token = s.split("\t");
+			if(token.length <= eFDRColNum || token.length <= pepColNum)
+				continue;
+			double eFDR = Double.parseDouble(token[eFDRColNum]);
+			totalID++;
+			if(eFDR <= threshold)
+				numID++;
+			
+			int ntt=0;
+			String annotation = token[pepColNum];
+			char pre = annotation.charAt(0);
+			if(pre == 'K' || pre == 'R' || pre == '_')
+				ntt++;
+			String pepStr = annotation.substring(annotation.indexOf('.')+1, annotation.lastIndexOf('.'));
+			StringBuffer unmodStr = new StringBuffer();
+			for(int i=0; i<pepStr.length(); i++)
+				if(Character.isLetter(pepStr.charAt(i)))
+					unmodStr.append(pepStr.charAt(i));
+			char last = unmodStr.charAt(unmodStr.length()-1);
+			if(last == 'K' || last == 'R')
+				ntt++;
+			nttHist.add(ntt);
+//			if(ntt == 0) {
+//				System.out.println(s);
+//				System.exit(0);
+//			}
+		}
+		
+		System.out.println("TotalPSM\t" + totalID);
+		System.out.println("NumID\t" + numID+"\t"+numID/(float)totalID);
+		System.out.println("NTT hist");
+		nttHist.printSorted();
+	}
+}
