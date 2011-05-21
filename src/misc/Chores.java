@@ -45,8 +45,16 @@ public class Chores {
 //		System.out.println(System.currentTimeMillis()-time);
 //		System.out.println(IonType.X.getOffset());
 //		System.out.println(Character.isUpperCase(']'));
-		System.out.println(Float.MIN_NORMAL);
-		System.out.println(Double.MIN_NORMAL);
+//		System.out.println(Float.MIN_NORMAL);
+//		System.out.println(Double.MIN_NORMAL);
+		System.out.println(Enzyme.LysN.getPeptideCleavageEfficiency());
+		System.out.println(Enzyme.LysN.getNeighboringAACleavageEffiency());
+		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
+		aaSet.registerEnzyme(Enzyme.LysN);
+		System.out.println(aaSet.getNeighboringAACleavageCredit());
+		System.out.println(aaSet.getNeighboringAACleavagePenalty());
+		System.out.println(aaSet.getPeptideCleavageCredit());
+		System.out.println(aaSet.getPeptideCleavagePenalty());
 	}
 
 	public static void combination(int n, int r) throws Exception

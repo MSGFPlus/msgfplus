@@ -18,7 +18,6 @@ public class MSGFDBResultGenerator extends ArrayList<MSGFDBResultGenerator.DBMat
 	public void computeEFDR()
 	{
 		Collections.sort(this);
-//		double eTD = 0;	// expected target discovery
 		double cumulativePValue = 0;
 		for(int i=0; i<this.size(); i++)
 		{
@@ -62,7 +61,7 @@ public class MSGFDBResultGenerator extends ArrayList<MSGFDBResultGenerator.DBMat
 		private double pValue;
 		private int numPeptides;
 		private String resultStr;
-//		private double[] cumScoreDist;
+		private double[] cumScoreDist;
 		private double eFDR;
 		
 		public DBMatch(double specProb, int numPeptides, String resultStr, ScoreDist scoreDist) {
@@ -71,17 +70,17 @@ public class MSGFDBResultGenerator extends ArrayList<MSGFDBResultGenerator.DBMat
 			this.numPeptides = numPeptides;
 			this.resultStr = resultStr;
 			
-//			if(scoreDist.isProbSet())
-//			{
-//				this.cumScoreDist = new double[scoreDist.getMaxScore()-scoreDist.getMinScore()];
-//				cumScoreDist[0] = scoreDist.getProbability(scoreDist.getMaxScore()-1);
-//				int index = 1;
-//				for(int t=scoreDist.getMaxScore()-2; t>=scoreDist.getMinScore(); t--)
-//				{
-//					cumScoreDist[index] = cumScoreDist[index-1] + scoreDist.getProbability(t);
-//					index++;
-//				}
-//			}
+			if(scoreDist.isProbSet())
+			{
+				this.cumScoreDist = new double[scoreDist.getMaxScore()-scoreDist.getMinScore()];
+				cumScoreDist[0] = scoreDist.getProbability(scoreDist.getMaxScore()-1);
+				int index = 1;
+				for(int t=scoreDist.getMaxScore()-2; t>=scoreDist.getMinScore(); t--)
+				{
+					cumScoreDist[index] = cumScoreDist[index-1] + scoreDist.getProbability(t);
+					index++;
+				}
+			}
 		}
 		
 		public static double getPValue(double specProb, int numPeptides)
@@ -118,18 +117,17 @@ public class MSGFDBResultGenerator extends ArrayList<MSGFDBResultGenerator.DBMat
 		// returns cumulative probability <= specProbThreshold
 		public double getSpectralProbability(double specProbThreshold)
 		{
-//			int index = Arrays.binarySearch(cumScoreDist, specProbThreshold);
-//			if(index >= 0)
-//				return cumScoreDist[index];
-//			else
-//			{
-//				index = -index-1;
-//				if(index > 0)
-//					return cumScoreDist[index-1];
-//				else
-//					return 0;
-//			}
-			return specProbThreshold;
+			int index = Arrays.binarySearch(cumScoreDist, specProbThreshold);
+			if(index >= 0)
+				return cumScoreDist[index];
+			else
+			{
+				index = -index-1;
+				if(index > 0)
+					return cumScoreDist[index-1];
+				else
+					return 0;
+			}
 		}
 		
 		public double getSpecProb() {
