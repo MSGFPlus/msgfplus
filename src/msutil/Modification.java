@@ -14,12 +14,14 @@ public class Modification {
 	private final String name;
 	private final double mass;
 	private final int nominalMass;
+	private Composition composition;
 	
 	private Modification(String name, Composition composition)
 	{
 		this.name = name;
 		this.mass = composition.getAccurateMass();
 		this.nominalMass = composition.getNominalMass();
+		this.composition = composition;
 	}
 	
 	private Modification(String name, double mass)
@@ -33,6 +35,7 @@ public class Modification {
 	public float getMass() { return (float)mass; }
 	public double getAccurateMass() { return mass; }
 	public int getNominalMass() { return nominalMass; }
+	public Composition getComposition() { return composition; } 
 	
 	public static Modification register(String name, double mass)
 	{

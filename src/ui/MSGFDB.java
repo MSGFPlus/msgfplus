@@ -42,7 +42,7 @@ public class MSGFDB {
 		Enzyme	enzyme = Enzyme.TRYPSIN;
 		ActivationMethod activationMethod = null;
 		InstrumentType instType = InstrumentType.LOW_RESOLUTION_LTQ;
-		int numAllowedNonEnzymaticTermini = 2;
+		int numAllowedNonEnzymaticTermini = 1;
 		boolean showTitle = false;
 		int minPeptideLength = 6;
 		int maxPeptideLength = 40;
@@ -138,7 +138,7 @@ public class MSGFDB {
 					activationMethod = ActivationMethod.HCD;
 				}
 			}			
-			else if(argv[i].equalsIgnoreCase("-m"))	// Instrument type
+			else if(argv[i].equalsIgnoreCase("-inst"))	// Instrument type
 			{
 				if(argv[i+1].equalsIgnoreCase("0"))
 				{
@@ -259,17 +259,17 @@ public class MSGFDB {
 	{
 		if(message != null)
 			System.out.println(message);
-		System.out.println("MSGFDB v2 (05/18/2011)");
+		System.out.println("MSGFDB v2 (05/20/2011)");
 		System.out.print("usage: java -Xmx3500M -jar MSGFDB.jar\n"
 				+ "\t-s SpectrumFile (*.mzXML or *.mgf)\n" //, *.mgf, *.pkl, *.ms2)\n"
 				+ "\t-d Database (*.fasta)\n"
-				+ "\t-t ParentMassTolerance (e.g. 2.5Da or 50ppm, no space is allowed.)\n"
+				+ "\t-t ParentMassTolerance (e.g. 2.5Da or 30ppm, no space is allowed.)\n"
 				+ "\t[-o outputFileName] (Default: stdout)\n"
 				+ "\t[-m FragmentationMethodID] (0: as written in the spectrum (Default), 1: CID , 2: ETD, 3: HCD)\n"//, 3: CID/ETD pair)\n"
 				+ "\t[-inst InstrumentID] (0: Low-res LCQ/LTQ (Default for CID and ETD), 1: TOF , 2: High-res LTQ (Default for HCD))\n"
 				+ "\t[-e EnzymeID] (0: No enzyme, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N)\n"
 				+ "\t[-c13 0/1/2] (Number of allowed C13, Default: 1)\n"
-				+ "\t[-nnet 0/1/2] (Number of allowed non-enzymatic termini, Default: 2)\n"
+				+ "\t[-nnet 0/1/2] (Number of allowed non-enzymatic termini, Default: 1)\n"
 				+ "\t[-mod modificationFileName (Default: standard amino acids with fixed C+57)]\n"
 				+ "\t[-minLength minPepLength] (Default: 6)\n"
 				+ "\t[-maxLength maxPepLength] (Default: 40)\n"
@@ -324,6 +324,8 @@ public class MSGFDB {
 		else if(activationMethod != null)
 			scorer = NewScorerFactory.get(activationMethod, instType, enzyme);
 
+//		scorer.doNotUseError();
+		
 		if(enzyme == null)
 			numAllowedNonEnzymaticTermini = 2;
 		
@@ -341,6 +343,7 @@ public class MSGFDB {
 //		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
 //		aaSet.printAASet();
 //		scanNumList.clear();
+//		scanNumList.add(21678);
 //		scanNumList.add(31669);
 //		scanNumList.add(3888);
 //		scanNumList.add(3256);

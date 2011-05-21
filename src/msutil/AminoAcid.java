@@ -160,7 +160,11 @@ public class AminoAcid extends Matter {
 	 */
 	public AminoAcid getAAWithFixedModification(Modification mod) {
 		String name = mod.getName() + " " + this.getName();
-		AminoAcid modAA = getCustomAminoAcid(residue, name, mass+mod.getAccurateMass());
+		AminoAcid modAA;
+		if(mod.getComposition() == null)
+			modAA = getCustomAminoAcid(residue, name, mass+mod.getAccurateMass());
+		else
+			modAA = getAminoAcid(residue, name, composition.getAddition(mod.getComposition()));
 		return modAA;
 	}
 

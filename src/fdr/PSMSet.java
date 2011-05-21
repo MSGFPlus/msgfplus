@@ -148,12 +148,12 @@ public class PSMSet {
 				{
 					if(isTarget)
 					{
-						if(token[dbCol].startsWith(decoyPrefix))
+						if(token[dbCol].contains(decoyPrefix))
 							continue;
 					}
 					else
 					{
-						if(!token[dbCol].startsWith(decoyPrefix))
+						if(!token[dbCol].contains(decoyPrefix))
 							continue;
 					}
 				}

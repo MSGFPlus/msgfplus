@@ -34,6 +34,7 @@ import msutil.Peptide;
 import msutil.SpectraIterator;
 import msutil.Spectrum;
 import msutil.WindowFilter;
+import msutil.Modification.Location;
 
 import parser.BufferedLineReader;
 import parser.MgfSpectrumParser;
@@ -56,10 +57,89 @@ public class Zubarev {
 //		countTryptic();
 //		paramTest();
 //		computeDBSize();
-		testEdgeScoresNominalMass();
+//		testEdgeScoresNominalMass();
 //		testEdgeScoresRandom();
 //		testRandomPeakProb();
 //		testTagging();
+//		filtrationPowerNominalMass();
+		filtrationPowerComposition(10);
+	}
+
+	public static void filtrationPowerComposition(float tolerancePPM) throws Exception
+	{
+		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
+		int maxMass = 700;
+		float[] filtFactorNM = new float[maxMass+1];
+		filtFactorNM[0] = 1;
+		for(int mass=1; mass<filtFactorNM.length; mass++)
+		{
+			for(AminoAcid aa : aaSet.getAAList(Location.Anywhere))
+			{
+				int prevMass = mass - aa.getNominalMass();
+				if(prevMass < 0)
+					continue;
+				filtFactorNM[mass] += filtFactorNM[prevMass]*0.05f;
+			}
+		}
+		
+		int maxLength = 13;
+		Tolerance tolerance = new Tolerance(tolerancePPM, true);
+		CompositionFactory factory = new CompositionFactory(aaSet, null, maxLength);
+		HashMap<Composition,Float> filtFactor = new HashMap<Composition,Float>(); 
+		filtFactor.put(Composition.NIL, 1f);
+		for(int compNum : factory.getData())
+		{
+			Composition c = new Composition(compNum);
+			if(c.equals(Composition.NIL))
+				continue;
+			float prob = 0;
+			for(AminoAcid aa : aaSet.getAAList(Location.Anywhere))
+			{
+				Composition aaComp = aa.getComposition();
+				Composition prevComp = c.getSubtraction(aaComp);
+				if(prevComp == null)
+					continue;
+				Float prevProb = filtFactor.get(prevComp);
+				if(prevProb == null)
+					continue;
+				prob += prevProb*0.05f;
+			}
+			filtFactor.put(c, prob);
+		}
+		System.out.println("Mass\tFiltrationFactor");
+		for(int compNum : factory.getData())
+		{
+			Composition c = new Composition(compNum);
+			if(c.getMass() > 700)
+				break;
+			float prob = 0;
+			for(Composition neighbor : factory.getNodes(c.getMass(), tolerance))
+			{
+				prob += filtFactor.get(neighbor);
+			}
+			System.out.println(c.getMass()+"\t"+filtFactorNM[c.getNominalMass()]+"\t"+prob);
+		}
+	}
+	
+	public static void filtrationPowerNominalMass() throws Exception
+	{
+		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
+		int maxMass = 700;
+		float[] filtFactor = new float[maxMass+1];
+		filtFactor[0] = 1;
+		for(int mass=1; mass<filtFactor.length; mass++)
+		{
+			for(AminoAcid aa : aaSet.getAAList(Location.Anywhere))
+			{
+				int prevMass = mass - aa.getNominalMass();
+				if(prevMass < 0)
+					continue;
+				filtFactor[mass] += filtFactor[prevMass]*0.05f;
+			}
+		}
+		System.out.println("Mass\tFiltrationFactor");
+		for(int mass=0; mass<filtFactor.length; mass++)
+			System.out.println(NominalMass.getMassFromNominalMass(mass)+"\t"+filtFactor[mass]);
 	}
 	
 	public static void testRandomPeakProb() throws Exception

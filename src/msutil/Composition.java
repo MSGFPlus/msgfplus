@@ -102,6 +102,8 @@ public class Composition extends Matter
 	public int getS() { return (number & 0x0000000F); }
 	public int getNumber()  { return number; }
 	//  public int getIndex()	{ return number; }
+	
+	@Override
 	public int hashCode()
 	{
 		return number;
@@ -166,7 +168,15 @@ public class Composition extends Matter
 
 	public Composition getSubtraction(Composition c)
 	{
-		return new Composition(number-c.number);
+		int newC = getC()-c.getC();
+		int newH = getH()-c.getH();
+		int newN = getN()-c.getN();
+		int newO = getO()-c.getO();
+		int newS = getS()-c.getS();
+		
+		if(newC < 0 || newH < 0 || newN < 0 || newO < 0 || newS < 0)
+			return null;
+		return new Composition(newC, newH, newN, newO, newS);
 	}
 	
 	public boolean equals(Object o)
