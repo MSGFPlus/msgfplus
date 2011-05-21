@@ -63,6 +63,7 @@ public class MSGFDBResultGenerator extends ArrayList<MSGFDBResultGenerator.DBMat
 		private String resultStr;
 		private double[] cumScoreDist;
 		private double eFDR;
+		int curIndex;
 		
 		public DBMatch(double specProb, int numPeptides, String resultStr, ScoreDist scoreDist) {
 			this.specProb = specProb;
@@ -72,15 +73,17 @@ public class MSGFDBResultGenerator extends ArrayList<MSGFDBResultGenerator.DBMat
 			
 			if(scoreDist.isProbSet())
 			{
-				this.cumScoreDist = new double[scoreDist.getMaxScore()-scoreDist.getMinScore()];
-				cumScoreDist[0] = scoreDist.getProbability(scoreDist.getMaxScore()-1);
+				this.cumScoreDist = new double[scoreDist.getMaxScore()-scoreDist.getMinScore()+1];
+				cumScoreDist[0] = 0;
+//				cumScoreDist[0] = scoreDist.getProbability(scoreDist.getMaxScore()-1);
 				int index = 1;
-				for(int t=scoreDist.getMaxScore()-2; t>=scoreDist.getMinScore(); t--)
+				for(int t=scoreDist.getMaxScore()-1; t>=scoreDist.getMinScore(); t--)
 				{
 					cumScoreDist[index] = cumScoreDist[index-1] + scoreDist.getProbability(t);
 					index++;
 				}
 			}
+			curIndex = 0;
 		}
 		
 		public static double getPValue(double specProb, int numPeptides)
@@ -117,17 +120,21 @@ public class MSGFDBResultGenerator extends ArrayList<MSGFDBResultGenerator.DBMat
 		// returns cumulative probability <= specProbThreshold
 		public double getSpectralProbability(double specProbThreshold)
 		{
-			int index = Arrays.binarySearch(cumScoreDist, specProbThreshold);
-			if(index >= 0)
-				return cumScoreDist[index];
-			else
-			{
-				index = -index-1;
-				if(index > 0)
-					return cumScoreDist[index-1];
-				else
-					return 0;
-			}
+//			int index = Arrays.binarySearch(cumScoreDist, specProbThreshold);
+//			if(index >= 0)
+//				return cumScoreDist[index];
+//			else
+//			{
+//				index = -index-1;
+//				if(index > 0)
+//					return cumScoreDist[index-1];
+//				else
+//					return 0;
+//			}
+			while(curIndex < cumScoreDist.length-1 && cumScoreDist[curIndex+1] <= specProbThreshold)
+				++curIndex;
+			
+			return cumScoreDist[curIndex];
 		}
 		
 		public double getSpecProb() {
