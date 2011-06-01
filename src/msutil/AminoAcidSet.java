@@ -345,6 +345,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	
 	public void printAASet()
 	{
+		System.out.println("NumMods: " + this.getMaxNumberOfVariableModificationsPerPeptide());
 		for(Location location : Location.values())
 		{
 			ArrayList<AminoAcid> aaList = this.getAAList(location);
@@ -768,6 +769,230 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		return aaSet;
 	}
 	
+	public static AminoAcidSet getAminoAcidSetFromXMLFile(String fileName)
+	{
+		BufferedLineReader in = null;
+		try {
+			in = new BufferedLineReader(fileName);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		int numMods = 2;
+		
+		// memorize keywords
+		String numModsKey = "<parameter name=\"ptm.mods\">";
+		String cysKey = "<parameter name=\"cysteine_protease.cysteine\">";
+		String oxidationKey = "<parameter name=\"ptm.OXIDATION\">on</parameter>";
+		String lysMetKey = "<parameter name=\"ptm.LYSINE_METHYLATION\">on</parameter>";
+		String pyrogluKey = "<parameter name=\"ptm.PYROGLUTAMATE_FORMATION\">on</parameter>";
+		String phosphoKey = "<parameter name=\"ptm.PHOSPHORYLATION\">on</parameter>";
+		String ntermCarbamyKey = "<parameter name=\"ptm.NTERM_CARBAMYLATION\">on</parameter>";
+		String ptmKey = "<parameter name=\"ptm.custom_PTM\">";
+		String closeKey = "</parameter>";
+		
+		// parse modifications
+		ArrayList<Modification.Instance> mods = new ArrayList<Modification.Instance>();
+		String s;
+		int lineNum = 0;
+		while((s=in.readLine()) != null)
+		{
+			lineNum++;
+			if(s.startsWith(numModsKey))
+			{
+				try {
+					String value = s.substring(numModsKey.length(), s.lastIndexOf(closeKey));
+					numMods = Integer.parseInt(value);
+				} catch (NumberFormatException e)
+				{
+					System.err.println(fileName + ": Illegal ptm.mods option at line " + lineNum + ": " + s);
+					e.printStackTrace();
+					System.exit(-1);
+				}
+			}
+			else if(s.startsWith(cysKey))
+			{
+				String value = s.substring(cysKey.length(), s.lastIndexOf(closeKey));
+				if(value.equals("c57"))
+				{
+					char residue = 'C';
+					Modification mod = Modification.get("Carbamidomethylation");
+					Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere).fixedModification();
+					mods.add(modIns);
+				}
+				else if(value.equals("c58"))
+				{
+					char residue = 'C';
+					Modification mod = Modification.get("Carboxymethylation");
+					Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere).fixedModification();
+					mods.add(modIns);
+				}
+				else if(value.equals("c99"))
+				{
+					char residue = 'C';
+					Modification mod = Modification.get("NIPCAM");
+					Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere).fixedModification();
+					mods.add(modIns);
+				}
+				else
+				{
+					System.err.println(fileName + ": Illegal Cycteine protecting group at line " + lineNum + ": " + s);
+					System.exit(-1);
+				}
+			}
+			else if(s.startsWith(ptmKey))	// custom PTM
+			{
+				String value = s.substring(ptmKey.length(), s.lastIndexOf(closeKey));
+				String[] token = value.split(",");
+				
+				if(token.length != 3)
+				{
+					System.err.println(fileName + ": Illegal custom ptm option at line " + lineNum + ": " + s);
+					System.exit(-1);
+				}
+
+				// Mass
+				double modMass = 0;
+				try {
+					modMass = Double.parseDouble(token[0]);
+				}
+				catch (NumberFormatException e)
+				{
+					System.err.println(fileName + ": AminoAcidSet: Illegal Mass at line " + lineNum + ": " + s);
+					e.printStackTrace();
+					System.exit(-1);
+				}
+				
+				// Residues
+				String residueStr = token[1];
+				boolean isResidueStrLegitimate = true;
+				if(!residueStr.equals("*"))
+				{
+					if(residueStr.length() > 0)
+					{
+						for(int i=0; i<residueStr.length(); i++)
+						{
+							if(!AminoAcid.isStdAminoAcid(residueStr.charAt(i)))
+							{
+								isResidueStrLegitimate = false;
+								break;
+							}
+						}
+					}
+					else
+						isResidueStrLegitimate = false;
+				}
+				if(!isResidueStrLegitimate)
+				{
+					System.err.println(fileName + ": AminoAcidSet: Illegal Residue(s) at line " + lineNum + ": " + s);
+					System.exit(-1);
+				}
+				
+				boolean isFixedModification = false;
+				Modification.Location location = null;
+				
+				// Type
+				String type = token[2];
+				if(type.equals("fix"))
+				{
+					isFixedModification = true;
+					location = Location.Anywhere;
+				}
+				else if(type.equals("opt"))
+				{
+					isFixedModification = false;
+					location = Location.Anywhere;
+				}
+				else if(type.equals("nterminal"))
+				{
+					isFixedModification = false;
+					location = Location.N_Term;
+				}
+				else if(type.equals("cterminal"))
+				{
+					isFixedModification = false;
+					location = Location.C_Term;
+				}
+				else
+				{
+					System.err.println(fileName + ": AminoAcidSet: Illegal Type(s) at line " + lineNum + ": " + s);
+					System.exit(-1);
+				}
+
+				String name = residueStr + " " + modMass;
+				
+				Modification mod = Modification.register(name, modMass);
+				
+				for(int i=0; i<residueStr.length(); i++)
+				{
+					char residue = residueStr.charAt(i);
+					Modification.Instance modIns = new Modification.Instance(mod, residue, location);
+					if(isFixedModification)
+						modIns.fixedModification();
+					mods.add(modIns);
+				}				
+			}
+			else if(s.startsWith(oxidationKey))	// predefined Oxidation
+			{
+				String residueStr = "MW";
+				Modification mod = Modification.get("Oxidation");
+				for(int i=0; i<residueStr.length(); i++)
+				{
+					char residue = residueStr.charAt(i);
+					Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere);
+					mods.add(modIns);
+				}				
+			}
+			else if(s.startsWith(lysMetKey))	// predefined
+			{
+				String residueStr = "K";
+				Modification mod = Modification.get("Methylation");
+				for(int i=0; i<residueStr.length(); i++)
+				{
+					char residue = residueStr.charAt(i);
+					Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere);
+					mods.add(modIns);
+				}				
+			}
+			else if(s.startsWith(pyrogluKey))	// predefined
+			{
+				String residueStr = "Q";
+				Modification mod = Modification.get("PyrogluQ");
+				for(int i=0; i<residueStr.length(); i++)
+				{
+					char residue = residueStr.charAt(i);
+					Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere);
+					mods.add(modIns);
+				}				
+			}
+			else if(s.startsWith(phosphoKey))	// predefined
+			{
+				String residueStr = "STY";
+				Modification mod = Modification.get("Phosphorylation");
+				for(int i=0; i<residueStr.length(); i++)
+				{
+					char residue = residueStr.charAt(i);
+					Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere);
+					mods.add(modIns);
+				}				
+			}
+			else if(s.startsWith(ntermCarbamyKey))	// predefined
+			{
+				String residueStr = "*";
+				Modification mod = Modification.get("Carbamylation");
+				for(int i=0; i<residueStr.length(); i++)
+				{
+					char residue = residueStr.charAt(i);
+					Modification.Instance modIns = new Modification.Instance(mod, residue, Location.N_Term);
+					mods.add(modIns);
+				}				
+			}
+		}
+		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSet(mods);
+		aaSet.setMaxNumberOfVariableModificationsPerPeptide(numMods);
+		return aaSet;
+	}
+	
 	/**
 	 * Gets standard amino acids from file
 	 * @param fileName amino acid set file name.
@@ -993,7 +1218,8 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	public static void main(String argv[])
 	{
 //		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(System.getProperty("user.home")+"/Research/Data/ABRF/StudyFiles/Mods.txt");
-		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(System.getProperty("user.home")+"/Developments/MS_Java_Dev/bin/Mods.txt");
+//		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(System.getProperty("user.home")+"/Developments/MS_Java_Dev/bin/Mods.txt");
+		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile("/home/sangtaekim/Research/ToolDistribution/TempTest/params.xml");
 //		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
 		aaSet.printAASet();
 //		for(AminoAcid aa : aaSet.getAminoAcids(Location.N_Term, 'E'))

@@ -348,11 +348,20 @@ public class SuffixArray {
 
 		// the size of the alphabet to make the hashes
 		int hashBase = sequence.getAlphabetSize();
-
+		if(hashBase > 30)
+		{
+			System.err.println("Suffix array construction failure: alphabet size is too large: " + sequence.getAlphabetSize());
+			System.exit(-1);
+		}
+		
 		// this number is to efficiently calculate the next hash
 		int denominator = 1;
-		for(int i=0; i < BUCKET_SIZE-1; i++)    denominator *= hashBase;
+		for(int i=0; i < BUCKET_SIZE-1; i++)
+		{
+			denominator *= hashBase;
+		}
 
+			
 		// the number of buckets  required to encode for all hashes
 		int numBuckets = denominator*hashBase;
 

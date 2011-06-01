@@ -6,16 +6,19 @@ import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Random;
 
 import org.systemsbiology.jrap.stax.MSXMLSequentialParser;
 
 import msdbsearch.DBScanner;
+import msgf.MSGFDBResultGenerator;
 import msutil.AminoAcid;
 import msutil.AminoAcidSet;
 import msutil.Composition;
@@ -47,16 +50,51 @@ public class Chores {
 //		System.out.println(Character.isUpperCase(']'));
 //		System.out.println(Float.MIN_NORMAL);
 //		System.out.println(Double.MIN_NORMAL);
-		System.out.println(Enzyme.LysN.getPeptideCleavageEfficiency());
-		System.out.println(Enzyme.LysN.getNeighboringAACleavageEffiency());
-		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
-		aaSet.registerEnzyme(Enzyme.LysN);
-		System.out.println(aaSet.getNeighboringAACleavageCredit());
-		System.out.println(aaSet.getNeighboringAACleavagePenalty());
-		System.out.println(aaSet.getPeptideCleavageCredit());
-		System.out.println(aaSet.getPeptideCleavagePenalty());
+//		System.out.println(Enzyme.LysN.getPeptideCleavageEfficiency());
+//		System.out.println(Enzyme.LysN.getNeighboringAACleavageEffiency());
+//		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
+//		aaSet.registerEnzyme(Enzyme.LysN);
+//		System.out.println(aaSet.getNeighboringAACleavageCredit());
+//		System.out.println(aaSet.getNeighboringAACleavagePenalty());
+//		System.out.println(aaSet.getPeptideCleavageCredit());
+//		System.out.println(aaSet.getPeptideCleavagePenalty());
+//		efdrTest();
+		System.out.println(Composition.getMass("HO3P"));
 	}
 
+	public static void efdrTest() throws Exception
+	{
+		double[] specProb = new double[136964];
+		Random rand = new Random();
+		for(int i=0; i<specProb.length; i++)
+		{
+			specProb[i] = rand.nextDouble();
+//			Arrays.sort(specProb[i]);
+		}
+		
+		long time = System.currentTimeMillis();
+		Arrays.sort(specProb);
+		System.out.println("Sorting: " + (System.currentTimeMillis()-time));
+		time = System.currentTimeMillis();
+		double cumP = 0;
+		for(int i=0; i<specProb.length; i++)
+		{
+			double probCorr = 1.-specProb[i];
+			double pValue = MSGFDBResultGenerator.DBMatch.getPValue(specProb[i], 3000000);
+			cumP += pValue;
+			double eTD = i+1-cumP;
+			double eDD = cumP;
+			for(int j=1; j<specProb.length; j++)
+			{
+				eDD += specProb[j];
+			}
+			double eFDR = eDD/eTD;
+			double dummy = eFDR;
+		}
+		System.out.println("Time: " + (System.currentTimeMillis()-time));
+		
+	}
+	
 	public static void combination(int n, int r) throws Exception
 	{
 		for(LinkedList<Integer> ins : getCombinations(n,r))

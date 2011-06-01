@@ -36,7 +36,8 @@ public class MSGFDB {
 		File 	databaseFile 	= null;
 		File	paramFile		= null;
 		File	outputFile = null;
-		Tolerance	parentMassTolerance = null;
+		Tolerance parentMassTolerance = null;
+		Boolean isTolerancePPM = null;
 		int numAllowedC13 = 1;
 		int 	numMatchesPerSpec = 1;
 		Enzyme	enzyme = Enzyme.TRYPSIN;
@@ -103,6 +104,13 @@ public class MSGFDB {
 				{
 					printUsageAndExit("Illegal tolerance value: " + argv[i+1]);
 				}
+			}
+			else if(argv[i].equalsIgnoreCase("-u"))	// hidden option for ccms workflow
+			{
+				if(argv[i+1].equalsIgnoreCase("1"))
+					isTolerancePPM = true;
+				else if(argv[i+1].equalsIgnoreCase("0"))
+					isTolerancePPM = false;
 			}
 			else if(argv[i].equalsIgnoreCase("-c13"))
 			{
@@ -182,7 +190,15 @@ public class MSGFDB {
 				{
 					printUsageAndExit(modFile + " doesn't exist.");
 				}
-				aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
+				String modFileName = modFile.getName();
+				if(!modFileName.substring(modFileName.lastIndexOf('.')+1).equalsIgnoreCase("xml"))	// custom mod file
+				{
+					aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
+				}
+				else	// mod file for ccms workflow
+				{
+					aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile(modFile.getPath());
+				}
 			}
 			else if(argv[i].equalsIgnoreCase("-n"))
 			{
@@ -227,6 +243,9 @@ public class MSGFDB {
 		
 		if(parentMassTolerance == null)
 			printUsageAndExit("Parent mass tolerance is not specified.");
+
+		if(isTolerancePPM != null)
+			parentMassTolerance = new Tolerance(parentMassTolerance.getValue(), isTolerancePPM);
 	
 		if(aaSet == null)
 			aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
@@ -259,7 +278,7 @@ public class MSGFDB {
 	{
 		if(message != null)
 			System.out.println(message);
-		System.out.println("MSGFDB v2 (05/20/2011)");
+		System.out.println("MSGFDB v2 (05/31/2011)");
 		System.out.print("usage: java -Xmx3500M -jar MSGFDB.jar\n"
 				+ "\t-s SpectrumFile (*.mzXML or *.mgf)\n" //, *.mgf, *.pkl, *.ms2)\n"
 				+ "\t-d Database (*.fasta)\n"

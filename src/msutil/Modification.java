@@ -58,8 +58,13 @@ public class Modification {
 	{
 		new Modification("Carbamidomethylation", new Composition(2,3,1,1,0)),
 		new Modification("Carboxymethylation", new Composition(2,2,2,0,0)),
+		new Modification("NIPCAM", new Composition(5,9,1,1,0)),
 		new Modification("Oxidation", new Composition(0,0,0,1,0)),
-		new Modification("Phosphorylation", new Composition(0,1,0,3,0)),
+		new Modification("Phosphorylation", Composition.getMass("HO3P")),
+		new Modification("Methylation", new Composition(1,2,0,0,0)),
+		new Modification("PyrogluQ", new Composition(0,-3,-1,0,0)),
+		new Modification("Pyroglue", new Composition(0,-2,0,-1,0)),
+		new Modification("Carbamylation", new Composition(1,1,1,1,0)),
 	};
 	
 	private static Hashtable<String,Modification> modTable; 

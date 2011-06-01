@@ -53,7 +53,15 @@ public class Tolerance implements Serializable { // Serializable is needed in or
 	{
 		Float val = null;
 		boolean isTolerancePPM = false;
-		if(tolStr.endsWith("Da"))
+		if(tolStr.endsWith("ppm"))
+		{
+			try {
+				val = Float.parseFloat(tolStr.substring(0, tolStr.length()-3).trim()); 
+				isTolerancePPM = true;
+			}
+			catch (NumberFormatException e) {}
+		}
+		else if(tolStr.endsWith("Da"))
 		{
 			try {
 				val = Float.parseFloat(tolStr.substring(0, tolStr.length()-2).trim()); 
@@ -61,11 +69,11 @@ public class Tolerance implements Serializable { // Serializable is needed in or
 			}
 			catch (NumberFormatException e) {}
 		}
-		else if(tolStr.endsWith("ppm"))
+		else
 		{
 			try {
-				val = Float.parseFloat(tolStr.substring(0, tolStr.length()-3).trim()); 
-				isTolerancePPM = true;
+				val = Float.parseFloat(tolStr); 
+				isTolerancePPM = false;
 			}
 			catch (NumberFormatException e) {}
 		}
