@@ -45,8 +45,8 @@ public class TDATest {
 //		computeEfficiency();
 //		summarize();
 //		splitByCharges();
-		mergeSearchResults();
-//		postProcessProtein();
+//		mergeSearchResults();
+		postProcessProtein();
 	}
 
 	public static void postProcessProtein() throws Exception
@@ -54,14 +54,10 @@ public class TDATest {
 		String dbFileName = "/home/sangtaekim/Research/Data/ISBControl/Mix_7/ORBITRAP/Database/18mix.fasta";
 		SuffixArray sa = new SuffixArray(new SuffixArraySequence(dbFileName));
 		
-		String resultName = "/home/sangtaekim/Research/Data/TDATest/Mascot/Mascot_S5/S5_Mascot_Target.txt";
-		int pepColumn = 2;
-		int protColumn = 4;
+		String resultName = "/home/sangtaekim/Research/Data/TDATest/ASMS/TDATest_S3_Target.txt";
+		int pepColumn = 6;
+		int protColumn = 7;
 
-		resultName = "/home/sangtaekim/Research/Data/TDATest/MSGFDBv2/MSGFDB_S10_Target.txt";
-		pepColumn = 6;
-		protColumn = 7;
-		
 		BufferedLineReader in = new BufferedLineReader(resultName);
 		
 		System.out.println(in.readLine());
@@ -80,7 +76,7 @@ public class TDATest {
 				for(String protMatch : sa.getAllMatchingAnnotations(str))
 				{
 					if(!protMatch.startsWith("Y"))
-						protein = '"'+protMatch.split("\\s+")[0];
+						protein = protMatch.split("\\s+")[0];
 				}
 			}
 			

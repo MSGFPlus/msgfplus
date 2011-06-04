@@ -56,13 +56,13 @@ public class Zubarev {
 //		compareGraphSize();
 //		countTryptic();
 //		paramTest();
-//		computeDBSize();
+		computeDBSize();
 //		testEdgeScoresNominalMass();
 //		testEdgeScoresRandom();
 //		testRandomPeakProb();
 //		testTagging();
 //		filtrationPowerNominalMass();
-		filtrationPowerComposition(10);
+//		filtrationPowerComposition(10);
 	}
 
 	public static void filtrationPowerComposition(float tolerancePPM) throws Exception
@@ -593,7 +593,8 @@ public class Zubarev {
 	public static void computeDBSize() throws Exception
 	{
 		String dbFileName = System.getProperty("user.home")+"/Research/Data/IPI/IPI_human_3.79.fasta";
-		dbFileName = System.getProperty("user.home")+"/Research/Data/ISBControl/Mix_7/ORBITRAP/Database/18mixWithYeast_reverse.fasta";
+		dbFileName = System.getProperty("user.home")+"/Research/Data/Arabidopsis/TAIR9_pep_20090619.fasta";
+		dbFileName = System.getProperty("user.home")+"/Research/Data/YeastDB/Yeast_60.fasta";
 		SuffixArray sa = new SuffixArray(new SuffixArraySequence(dbFileName));
 		for(int length=5; length<=50; length++)
 			System.out.println(length+"\t"+sa.getNumDistinctSeq(length));

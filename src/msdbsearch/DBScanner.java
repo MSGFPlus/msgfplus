@@ -219,7 +219,12 @@ public class DBScanner extends SuffixArray {
 				if(nAA == Constants.TERMINATOR_CHAR)
 					isProteinNTerm = true;
 				else
-					isProteinNTerm = false;
+				{	
+					if(nAA == 'M' && sequence.getCharAt(index-1) == Constants.TERMINATOR_CHAR)
+						isProteinNTerm = true;
+					else
+						isProteinNTerm = false;
+				}
 				if(isProteinNTerm || enzyme.isCleavable(nAA))
 					nTermAAScore = neighboringAACleavageCredit;
 				else
@@ -338,11 +343,15 @@ public class DBScanner extends SuffixArray {
 			else if(lcp == 0)	// preceding aa is changed
 			{
 				char nAA = sequence.getCharAt(index);
-//				if(nAA == Constants.TERMINATOR_CHAR || (nAA == 'M' && sequence.getCharAt(index-1) == Constants.TERMINATOR_CHAR))
 				if(nAA == Constants.TERMINATOR_CHAR)
 					isProteinNTerm = true;
 				else
-					isProteinNTerm = false;
+				{
+					if(nAA == 'M' && sequence.getCharAt(index-1) == Constants.TERMINATOR_CHAR)
+						isProteinNTerm = true;
+					else
+						isProteinNTerm = false;
+				}
 				if(isProteinNTerm || enzyme.isCleavable(nAA))
 					nTermAAScore = neighboringAACleavageCredit;
 				else
@@ -504,6 +513,13 @@ public class DBScanner extends SuffixArray {
 					char nAA = sequence.getCharAt(index-1);
 					if(nAA == Constants.TERMINATOR_CHAR)
 						isProteinNTerm = true;
+					else
+					{
+						if(nAA == 'M' && sequence.getCharAt(index-2) == Constants.TERMINATOR_CHAR)
+							isProteinNTerm = true;
+						else
+							isProteinNTerm = false;
+					}
 				}
 				else
 					continue;
@@ -667,6 +683,13 @@ public class DBScanner extends SuffixArray {
 				char preAA = sequence.getCharAt(index-1);
 				if(preAA == Constants.TERMINATOR_CHAR)
 					isProteinNTerm = true;
+				else
+				{
+					if(preAA == 'M' && sequence.getCharAt(index-2) == Constants.TERMINATOR_CHAR)
+						isProteinNTerm = true;
+					else
+						isProteinNTerm = false;
+				}
 			}
 			
 			if(verbose && rank % 1000000 == 0)
@@ -800,9 +823,19 @@ public class DBScanner extends SuffixArray {
 			ScoredSpectrum<NominalMass> scoredSpec = scanNumScorerMap.get(scanNum);
 			GeneratingFunctionGroup<NominalMass> gf = new GeneratingFunctionGroup<NominalMass>();
 			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
+			int nominalPeptideMass = NominalMass.toNominalMass(peptideMass);
 			float tolDa = parentMassTolerance.getToleranceAsDa(peptideMass);
-			int maxPeptideMassIndex = NominalMass.toNominalMass(peptideMass + tolDa);
-			int minPeptideMassIndex = NominalMass.toNominalMass(Math.min(peptideMass-tolDa, peptideMass-numAllowedC13*(float)Composition.ISOTOPE));
+			int maxPeptideMassIndex, minPeptideMassIndex;
+			if(tolDa > 0.5f)
+			{
+				maxPeptideMassIndex = nominalPeptideMass + Math.round(tolDa-0.5f);
+				minPeptideMassIndex = nominalPeptideMass - Math.round(tolDa-0.5f);
+			}
+			else
+			{
+				maxPeptideMassIndex = nominalPeptideMass;
+				minPeptideMassIndex = nominalPeptideMass-numAllowedC13;
+			}
 			for(int peptideMassIndex = minPeptideMassIndex; peptideMassIndex<=maxPeptideMassIndex; peptideMassIndex++)
 			{
 				DeNovoGraph<NominalMass> graph = new FlexAminoAcidGraph(
