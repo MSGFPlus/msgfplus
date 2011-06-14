@@ -117,6 +117,11 @@ public class DBScanner extends SuffixArray {
 			Spectrum spec = specMap.getSpectrumByScanNum(scanNum);
 			if(activationMethod != null && spec.getActivationMethod() != null && (spec.getActivationMethod() != activationMethod))
 				continue;
+			if(spec.size() < Constants.MIN_NUM_PEAKS_PER_SPECTRUM)
+			{
+				System.out.println("Spectrum " + spec.getScanNum() + " has too few peaks (#Peaks: " + spec.size()+"): ignored.");
+				continue;
+			}
 			if(useSpectrumDependentScorer)
 			{
 				scorer = NewScorerFactory.get(spec.getActivationMethod(), enzyme);
@@ -882,6 +887,9 @@ public class DBScanner extends SuffixArray {
 			for(int i=matchList.size()-1; i>=0; --i)
 			{
 				DatabaseMatch match = matchList.get(i);
+				
+				if(match.getDeNovoScore() < 0)
+					continue;
 				
 				int index = match.getIndex();
 				int length = match.getLength();

@@ -63,5 +63,9 @@ public class Constants {
    */
   public static final char INVALID_CHAR = '?';
   
+  /**
+   * Minumum number of peaks per spectrum.
+   */
+  public static final int MIN_NUM_PEAKS_PER_SPECTRUM = 20;
  
 }

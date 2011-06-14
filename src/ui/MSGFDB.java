@@ -45,6 +45,7 @@ public class MSGFDB {
 		InstrumentType instType = InstrumentType.LOW_RESOLUTION_LTQ;
 		int numAllowedNonEnzymaticTermini = 1;
 		boolean showTitle = false;
+		boolean useTDA = false;
 		int minPeptideLength = 6;
 		int maxPeptideLength = 40;
 		
@@ -160,6 +161,10 @@ public class MSGFDB {
 				{
 					instType = InstrumentType.HIGH_RESOLUTION_LTQ;
 				}
+				else
+				{
+					printUsageAndExit("Illegal instrument type: " + argv[i+1]);
+				}
 			}			
 			else if(argv[i].equalsIgnoreCase("-e"))	// Enzyme
 			{
@@ -181,7 +186,7 @@ public class MSGFDB {
 				else if(argv[i+1].equalsIgnoreCase("7"))
 					enzyme = Enzyme.AspN;
 				else
-					printUsageAndExit("Illigal enzyme: " + argv[i+1]);
+					printUsageAndExit("Illegal enzyme: " + argv[i+1]);
 			}
 			else if(argv[i].equalsIgnoreCase("-mod"))
 			{
@@ -224,6 +229,17 @@ public class MSGFDB {
 			{
 				if(argv[i+1].equalsIgnoreCase("1"))
 					showTitle = true;
+			}
+			else if(argv[i].equalsIgnoreCase("-tda"))
+			{
+				if(argv[i+1].equalsIgnoreCase("1"))
+					useTDA = true;
+				else if(argv[i+1].equalsIgnoreCase("0"))
+					useTDA = false;
+				else
+				{
+					printUsageAndExit("Illigal -tda parameter: " + argv[i+1]);
+				}
 			}
 //			else if(argv[i].equalsIgnoreCase("-err"))
 //			{
@@ -290,6 +306,7 @@ public class MSGFDB {
 				+ "\t[-c13 0/1/2] (Number of allowed C13, Default: 1)\n"
 				+ "\t[-nnet 0/1/2] (Number of allowed non-enzymatic termini, Default: 1)\n"
 				+ "\t[-mod modificationFileName (Default: standard amino acids with fixed C+57)]\n"
+				+ "\t[-tda 0/1 (0: don't search decoy database (default), 1: search decoy database to compute FDR]\n"
 				+ "\t[-minLength minPepLength] (Default: 6)\n"
 				+ "\t[-maxLength maxPepLength] (Default: 40)\n"
 				+ "\t[-n numMatchesPerSpec (Default: 1)]\n"
@@ -343,8 +360,6 @@ public class MSGFDB {
 		else if(activationMethod != null)
 			scorer = NewScorerFactory.get(activationMethod, instType, enzyme);
 
-//		scorer.doNotUseError();
-		
 		if(enzyme == null)
 			numAllowedNonEnzymaticTermini = 2;
 		

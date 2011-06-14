@@ -54,7 +54,7 @@ public class TDATest {
 		String dbFileName = "/home/sangtaekim/Research/Data/ISBControl/Mix_7/ORBITRAP/Database/18mix.fasta";
 		SuffixArray sa = new SuffixArray(new SuffixArraySequence(dbFileName));
 		
-		String resultName = "/home/sangtaekim/Research/Data/TDATest/ASMS/TDATest_S3_Target.txt";
+		String resultName = "/home/sangtaekim/Research/Data/TDATest/ASMS/TDATest_S3N_Target.txt";
 		int pepColumn = 6;
 		int protColumn = 7;
 

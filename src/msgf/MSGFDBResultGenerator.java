@@ -19,15 +19,25 @@ public class MSGFDBResultGenerator extends ArrayList<MSGFDBResultGenerator.DBMat
 	{
 		Collections.sort(this);
 		double cumulativePValue = 0;
+		boolean useComplicatedFormula = true;
+		if(this.size() > 30000)
+			useComplicatedFormula = false;
 		for(int i=0; i<this.size(); i++)
 		{
 			double specProb = get(i).getSpecProb();
-			cumulativePValue += get(i).getPValue();
+			double pValue = get(i).getPValue();
+			cumulativePValue += pValue;
 			double eTD = (i+1) - cumulativePValue;	// expected target discovery
 			double eDD = cumulativePValue;	// expected decoy discovery
-			for(int j=i+1; j<this.size(); j++)
-				eDD += get(j).getEDD(specProb);
-			eTD += 1-get(i).getPValue();
+			if(useComplicatedFormula)
+			{
+				for(int j=i+1; j<this.size(); j++)
+					eDD += get(j).getEDD(specProb);
+			}
+			else
+			{
+				eDD += pValue*(this.size()-(i+1));
+			}
 			get(i).setEFDR(Math.min(eDD/eTD, 1));
 		}
 	}
