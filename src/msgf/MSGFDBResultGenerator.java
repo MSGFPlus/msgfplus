@@ -9,6 +9,8 @@ public class MSGFDBResultGenerator extends ArrayList<MSGFDBResultGenerator.DBMat
 	/**
 	 * 
 	 */
+	
+	private static final int NUM_SPECS_TO_USE_SIMPLE_ETDA_FORMULA = 30000;
 	private static final long serialVersionUID = 1L;
 	private String header;
 	public MSGFDBResultGenerator(String header)
@@ -17,10 +19,9 @@ public class MSGFDBResultGenerator extends ArrayList<MSGFDBResultGenerator.DBMat
 	}
 	public void computeEFDR()
 	{
-		Collections.sort(this);
 		double cumulativePValue = 0;
 		boolean useComplicatedFormula = true;
-		if(this.size() > 30000)
+		if(this.size() >= NUM_SPECS_TO_USE_SIMPLE_ETDA_FORMULA)
 			useComplicatedFormula = false;
 		for(int i=0; i<this.size(); i++)
 		{
@@ -81,11 +82,10 @@ public class MSGFDBResultGenerator extends ArrayList<MSGFDBResultGenerator.DBMat
 			this.numPeptides = numPeptides;
 			this.resultStr = resultStr;
 			
-			if(scoreDist.isProbSet())
+			if(scoreDist != null && scoreDist.isProbSet())
 			{
 				this.cumScoreDist = new double[scoreDist.getMaxScore()-scoreDist.getMinScore()+1];
 				cumScoreDist[0] = 0;
-//				cumScoreDist[0] = scoreDist.getProbability(scoreDist.getMaxScore()-1);
 				int index = 1;
 				for(int t=scoreDist.getMaxScore()-1; t>=scoreDist.getMinScore(); t--)
 				{
@@ -158,9 +158,9 @@ public class MSGFDBResultGenerator extends ArrayList<MSGFDBResultGenerator.DBMat
 		}
 		@Override
 		public int compareTo(DBMatch arg0) {
-			if(this.specProb < arg0.specProb)
+			if(this.pValue < arg0.pValue)
 				return -1;
-			else if(this.specProb > arg0.specProb)
+			else if(this.pValue > arg0.pValue)
 				return 1;
 			else
 				return 0;

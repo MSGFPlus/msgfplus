@@ -2,6 +2,7 @@ package fdr;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -214,7 +215,7 @@ public class ComputeFDR {
 	public static void computeFDR(File targetFile, File decoyFile, int scoreCol, boolean isGreaterBetter, String delimeter, 
 			int scanNumCol, int pepCol, ArrayList<Pair<Integer,ArrayList<String>>> reqStrList, boolean isConcatenated, boolean includeDecoy, 
 			boolean hasHeader, int dbCol, String decoyPrefix,
-			float fdrThreshold, float pepFDRThreshold, File outputFile) throws Exception
+			float fdrThreshold, float pepFDRThreshold, File outputFile)
 	{
 		TargetDecoyPSMSet psmSet;
 		if(dbCol >= 0)	// both target and decoy are in the same file
@@ -245,9 +246,13 @@ public class ComputeFDR {
 					);
 		}
 		
-		PrintStream out;
+		PrintStream out = null;
 		if(outputFile != null)
-			out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFile)));
+			try {
+				out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFile)));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
 		else
 			out = System.out;
 		

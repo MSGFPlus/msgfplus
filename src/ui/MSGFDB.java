@@ -6,12 +6,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collections;
+
+import fdr.Pair;
 
 import parser.MgfSpectrumParser;
 import parser.MzXMLSpectraMap;
 import suffixarray.SuffixArraySequence;
 
 import msdbsearch.DBScanner;
+import msdbsearch.ReverseDB;
 import msgf.MSGFDBResultGenerator;
 import msgf.Tolerance;
 import msscorer.NewRankScorer;
@@ -41,7 +45,7 @@ public class MSGFDB {
 		int numAllowedC13 = 1;
 		int 	numMatchesPerSpec = 1;
 		Enzyme	enzyme = Enzyme.TRYPSIN;
-		ActivationMethod activationMethod = null;
+		ActivationMethod activationMethod = ActivationMethod.CID;
 		InstrumentType instType = InstrumentType.LOW_RESOLUTION_LTQ;
 		int numAllowedNonEnzymaticTermini = 1;
 		boolean showTitle = false;
@@ -269,6 +273,22 @@ public class MSGFDB {
 		if(activationMethod == ActivationMethod.HCD)
 			instType = InstrumentType.HIGH_RESOLUTION_LTQ;
 		
+		if(useTDA)
+		{
+			String dbFileName = databaseFile.getName();
+			String concatDBFileName = dbFileName.substring(0, dbFileName.lastIndexOf('.'))+".revConcat.fasta";
+			File concatTargetDecoyDBFile = new File(databaseFile.getAbsoluteFile().getParent()+File.separator+concatDBFileName);
+			if(!concatTargetDecoyDBFile.exists())
+			{
+				System.out.println("Creating " + concatDBFileName + ".");
+				if(ReverseDB.reverseDB(databaseFile.getPath(), concatTargetDecoyDBFile.getPath(), true) == false)
+				{
+					printUsageAndExit("Cannot create decoy database file!");
+				}
+			}
+			databaseFile = concatTargetDecoyDBFile;
+		}
+		
 		DBScanner.setAminoAcidProbabilities(databaseFile.getPath(), aaSet);
 		////////// Debug ////////////
 //		aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
@@ -280,7 +300,7 @@ public class MSGFDB {
 		
 		runMSGFDB(specFile, specFormat, databaseFile, paramFile, parentMassTolerance, numAllowedC13,
 	    		outputFile, enzyme, numAllowedNonEnzymaticTermini,
-	    		activationMethod, instType, aaSet, numMatchesPerSpec, showTitle,
+	    		activationMethod, instType, aaSet, numMatchesPerSpec, showTitle, useTDA,
 	    		minPeptideLength, maxPeptideLength);
 		System.out.format("Time: %.3f sec\n", (System.currentTimeMillis()-time)/(float)1000);
 	}
@@ -294,19 +314,19 @@ public class MSGFDB {
 	{
 		if(message != null)
 			System.out.println(message);
-		System.out.println("MSGFDB v2 (05/31/2011)");
+		System.out.println("MSGFDB v2 (06/15/2011)");
 		System.out.print("usage: java -Xmx3500M -jar MSGFDB.jar\n"
 				+ "\t-s SpectrumFile (*.mzXML or *.mgf)\n" //, *.mgf, *.pkl, *.ms2)\n"
 				+ "\t-d Database (*.fasta)\n"
 				+ "\t-t ParentMassTolerance (e.g. 2.5Da or 30ppm, no space is allowed.)\n"
 				+ "\t[-o outputFileName] (Default: stdout)\n"
-				+ "\t[-m FragmentationMethodID] (0: as written in the spectrum (Default), 1: CID , 2: ETD, 3: HCD)\n"//, 3: CID/ETD pair)\n"
+				+ "\t[-tda 0/1 (0: don't search decoy database (default), 1: search decoy database to compute FDR]\n"
+				+ "\t[-m FragmentationMethodID] (0: as written in the spectrum, 1: CID (Default), 2: ETD, 3: HCD)\n"//, 3: CID/ETD pair)\n"
 				+ "\t[-inst InstrumentID] (0: Low-res LCQ/LTQ (Default for CID and ETD), 1: TOF , 2: High-res LTQ (Default for HCD))\n"
 				+ "\t[-e EnzymeID] (0: No enzyme, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N)\n"
 				+ "\t[-c13 0/1/2] (Number of allowed C13, Default: 1)\n"
 				+ "\t[-nnet 0/1/2] (Number of allowed non-enzymatic termini, Default: 1)\n"
 				+ "\t[-mod modificationFileName (Default: standard amino acids with fixed C+57)]\n"
-				+ "\t[-tda 0/1 (0: don't search decoy database (default), 1: search decoy database to compute FDR]\n"
 				+ "\t[-minLength minPepLength] (Default: 6)\n"
 				+ "\t[-maxLength maxPepLength] (Default: 40)\n"
 				+ "\t[-n numMatchesPerSpec (Default: 1)]\n"
@@ -332,6 +352,7 @@ public class MSGFDB {
     		AminoAcidSet aaSet, 
     		int numMatchesPerSpec,
     		boolean showTitle,
+    		boolean useTDA,
     		int minPeptideLength,
     		int maxPeptideLength
     		)
@@ -341,18 +362,6 @@ public class MSGFDB {
 			specAccessor = new MzXMLSpectraMap(specFile.getPath());
 		else if(specFormat == SpecFileFormat.MGF)
 			specAccessor = new SpectraMap(specFile.getPath(), new MgfSpectrumParser());
-		
-		PrintStream out = null;
-		if(outputFile == null)
-			out = System.out;
-		else
-		{
-			try {
-				out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFile)));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
 		
 		NewRankScorer scorer = null;
 		if(paramFile != null)
@@ -397,7 +406,7 @@ public class MSGFDB {
 		
 		String header = 
 			"#SpecFile\tScan#\t"
-			+(scorer == null ? "FragMethod\t" : "")
+			+"FragMethod\t"
 			+(showTitle ? "Title\t" : "")
 			+"Precursor\tPMError("
 			+(parentMassTolerance.isTolerancePPM() ? "ppm" : "Da")
@@ -448,7 +457,7 @@ public class MSGFDB {
 	    	// running MS-GF
 			System.out.print("Computing P-values...");
 	    	time = System.currentTimeMillis(); 
-	    	sa.computeSpecProb();
+	    	sa.computeSpecProb(!useTDA);
 	    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
 	    	
 			System.out.print("Generating results...");
@@ -458,18 +467,63 @@ public class MSGFDB {
 			fromIndex += numSpecScannedTogether;
 		}
 
+		// Sort search results
+		Collections.sort(gen);
+		
 		System.out.print("Computing EFDRs...");
-    	long time = System.currentTimeMillis(); 
-    	if(numMatchesPerSpec == 1)
+    	long time = System.currentTimeMillis();
+    	if(!useTDA && numMatchesPerSpec == 1)
     		gen.computeEFDR();
     	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
     	
 		System.out.print("Writing results...");
     	time = System.currentTimeMillis(); 
-    	gen.writeResults(out, numMatchesPerSpec == 1);
+    	if(!useTDA)
+    	{
+    		PrintStream out = null;
+    		if(outputFile == null)
+    			out = System.out;
+    		else
+    		{
+    			try {
+    				out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFile)));
+    			} catch (IOException e) {
+    				e.printStackTrace();
+    			}
+    		}
+    		gen.writeResults(out, numMatchesPerSpec == 1);
+    		if(out != System.out)
+    			out.close();
+    	}
+    	else
+    	{
+    		try {
+//				File tempFile = File.createTempFile("MSGFDB", "tempResult");
+				File tempFile = new File(outputFile.getPath()+".temp.tsv");
+				PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(tempFile)));
+//				tempFile.deleteOnExit();
+				gen.writeResults(out, false);
+				int scanNumCol = 1;
+				int pepCol = 6;
+				int dbCol = 7;
+				int scoreCol = 11;
+				if(showTitle)
+				{
+					++pepCol;
+					++dbCol;
+					++scoreCol;
+				}
+				fdr.ComputeFDR.computeFDR(tempFile, null, scoreCol, false, "\t", 
+						scanNumCol, pepCol, null, true, true, 
+						true, dbCol, "REV_",
+						1, 1, outputFile);
+//				tempFile.delete();
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+    	}
     	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
 		
-		if(out != System.out)
-			out.close();
 	}	
 }

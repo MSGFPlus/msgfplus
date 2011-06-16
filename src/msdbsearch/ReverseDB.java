@@ -2,13 +2,15 @@ package msdbsearch;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintStream;
 
 public class ReverseDB {
 
-	public static void main(String argv[]) throws Exception
+	public static void main(String argv[])
 	{
 		if(argv.length != 2)
 			printUsageAndExit();
@@ -20,7 +22,7 @@ public class ReverseDB {
 			System.out.println(ext1 + "," + ext2);
 			printUsageAndExit();
 		}
-		reverseDB(argv[0], argv[1]);
+		reverseDB(argv[0], argv[1], false);
 		
 	}
 	
@@ -30,30 +32,62 @@ public class ReverseDB {
 		System.exit(0);
 	}
 	
-	public static void reverseDB(String inFileName, String outFileName) throws Exception
+	public static boolean reverseDB(String inFileName, String outFileName, boolean concat)
 	{
-		BufferedReader in = new BufferedReader(new FileReader(inFileName));
-		PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outFileName)));
+		BufferedReader in = null;
+		PrintStream out = null;
+		try {
+			out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outFileName)));
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		}
+		
 		String s;
+		if(concat)
+		{
+			try {
+				in = new BufferedReader(new FileReader(inFileName));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+			try {
+				while((s = in.readLine()) != null)
+				{
+					out.println(s);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		try {
+			in = new BufferedReader(new FileReader(inFileName));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 		StringBuffer protein = null;
 		String annotation = null;
-		while((s = in.readLine()) != null)
-		{
-			if(s.startsWith(">"))	// start of a protein
+		try {
+			while((s = in.readLine()) != null)
 			{
-				if(annotation != null)
+				if(s.startsWith(">"))	// start of a protein
 				{
-					StringBuffer rev = new StringBuffer();
-					for(int i=protein.length()-1; i>=0; i--)
-						rev.append(protein.charAt(i));
-					out.println(">REV_" + annotation);
-					out.println(rev.toString().trim());
+					if(annotation != null)
+					{
+						StringBuffer rev = new StringBuffer();
+						for(int i=protein.length()-1; i>=0; i--)
+							rev.append(protein.charAt(i));
+						out.println(">REV_" + annotation);
+						out.println(rev.toString().trim());
+					}
+					annotation = s.substring(1);
+					protein = new StringBuffer();
 				}
-				annotation = s.substring(1);
-				protein = new StringBuffer();
+				else
+					protein.append(s);
 			}
-			else
-				protein.append(s);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		if(protein != null && annotation != null)
 		{
@@ -63,7 +97,13 @@ public class ReverseDB {
 			out.println(">REV_" + annotation);
 			out.println(rev.toString().trim());
 		}
-		in.close();
+		try {
+			in.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		out.close();
+		
+		return true;
 	}
 }

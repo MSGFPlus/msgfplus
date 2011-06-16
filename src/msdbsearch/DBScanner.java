@@ -125,8 +125,6 @@ public class DBScanner extends SuffixArray {
 			if(useSpectrumDependentScorer)
 			{
 				scorer = NewScorerFactory.get(spec.getActivationMethod(), enzyme);
-//				if(!useError)
-//					scorer.doNotUseError();
 			}
 			NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
 			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
@@ -807,7 +805,7 @@ public class DBScanner extends SuffixArray {
 		neighboringLcps.rewind();
 	}
 	
-	public void computeSpecProb()
+	public void computeSpecProb(boolean storeScoreDist)
 	{
 		for(int scanNum : scanNumList)
 		{
@@ -866,7 +864,8 @@ public class DBScanner extends SuffixArray {
 				double specProb = gf.getSpectralProbability(score);
 				assert(specProb > 0): scanNum + ": " + match.getDeNovoScore()+" "+match.getScore()+" "+specProb; 
 				match.setSpecProb(specProb);
-				match.setScoreDist(gf.getScoreDist());
+				if(storeScoreDist)
+					match.setScoreDist(gf.getScoreDist());
 			}
 		}
 	}
@@ -927,10 +926,21 @@ public class DBScanner extends SuffixArray {
 					pValueStr = String.valueOf(pValue);
 				else
 					pValueStr = String.valueOf((float)pValue);
+				String actMethodStr;
+				if(activationMethod != null)
+					actMethodStr = activationMethod.getName();
+				else
+				{
+					if(spec.getActivationMethod() == null)
+						actMethodStr = ActivationMethod.CID.getName();
+					else
+						actMethodStr = spec.getActivationMethod().getName();
+				}
+				
 				String resultStr =
 					specFileName+"\t"
 					+scanNum+"\t"
-					+(activationMethod != null ? "" : spec.getActivationMethod()+"\t") 
+					+actMethodStr+"\t" 
 					+(showTitle ? spec.getTitle()+"\t" : "")
 					+spec.getPrecursorPeak().getMz()+"\t"
 					+pmError+"\t"
@@ -941,8 +951,8 @@ public class DBScanner extends SuffixArray {
 					+score+"\t"
 					+specProbStr+"\t"
 					+pValueStr;
-				MSGFDBResultGenerator.DBMatch eFDRMatch = new MSGFDBResultGenerator.DBMatch(specProb, numPeptides, resultStr, match.getScoreDist());		
-				gen.add(eFDRMatch);				
+				MSGFDBResultGenerator.DBMatch dbMatch = new MSGFDBResultGenerator.DBMatch(specProb, numPeptides, resultStr, match.getScoreDist());		
+				gen.add(dbMatch);				
 			}
 		}
 	}
