@@ -321,7 +321,7 @@ public class MSGFDB {
 		if(message != null)
 			System.out.println(message);
 		System.out.println("MSGFDB v2 (06/16/2011)");
-		System.out.print("usage: java -Xmx3500M -jar MSGFDB.jar\n"
+		System.out.print("usage: java -Xmx2000M -jar MSGFDB.jar\n"
 				+ "\t-s SpectrumFile (*.mzXML or *.mgf)\n" //, *.mgf, *.pkl, *.ms2)\n"
 				+ "\t-d Database (*.fasta)\n"
 				+ "\t-t ParentMassTolerance (e.g. 2.5Da or 30ppm, no space is allowed.)\n"
