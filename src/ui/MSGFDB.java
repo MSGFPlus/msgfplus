@@ -335,7 +335,7 @@ public class MSGFDB {
 				+ "\t[-mod modificationFileName] (Modification file, Default: standard amino acids with fixed C+57)\n"
 				+ "\t[-minLength minPepLength] (Minimum peptide length to consider, Default: 6)\n"
 				+ "\t[-maxLength maxPepLength] (Maximum peptide length to consider, Default: 40)\n"
-				+ "\t[-n numMatchesPerSpec (Number of matches per spectrum to be reported, Default: 1)]\n"
+				+ "\t[-n numMatchesPerSpec] (Number of matches per spectrum to be reported, Default: 1)\n"
 //				+ "\t[-param paramFile]\n"
 //				+ "\t[-err 0/1 (0: don't use peak errors (default), 1: use peak errors for scoring]\n"
 //				+ "\t[-title 0/1] (0: don't show title (default), 1: show title)\n"
