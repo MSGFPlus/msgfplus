@@ -93,6 +93,12 @@ public class MSGFDB {
 				{
 					printUsageAndExit(argv[i+1]+" doesn't exist.");
 				}
+				String databaseFileName = databaseFile.getName();
+				String dbExt = databaseFileName.substring(databaseFileName.lastIndexOf('.')+1);
+				if(!dbExt.equalsIgnoreCase("fasta") && !dbExt.equalsIgnoreCase("fa"))
+				{
+					printUsageAndExit("Database file must ends with .fa or .fasta!: " + argv[i+1]);
+				}
 			}
 			else if(argv[i].equalsIgnoreCase("-param"))
 			{
@@ -314,7 +320,7 @@ public class MSGFDB {
 	{
 		if(message != null)
 			System.out.println(message);
-		System.out.println("MSGFDB v2 (06/15/2011)");
+		System.out.println("MSGFDB v2 (06/16/2011)");
 		System.out.print("usage: java -Xmx3500M -jar MSGFDB.jar\n"
 				+ "\t-s SpectrumFile (*.mzXML or *.mgf)\n" //, *.mgf, *.pkl, *.ms2)\n"
 				+ "\t-d Database (*.fasta)\n"
@@ -467,13 +473,15 @@ public class MSGFDB {
 			fromIndex += numSpecScannedTogether;
 		}
 
-		// Sort search results
-		Collections.sort(gen);
 		
 		System.out.print("Computing EFDRs...");
     	long time = System.currentTimeMillis();
+		// Sort search results by spectral probabilities
+		Collections.sort(gen);
     	if(!useTDA && numMatchesPerSpec == 1)
+    	{
     		gen.computeEFDR();
+    	}
     	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
     	
 		System.out.print("Writing results...");
@@ -506,7 +514,7 @@ public class MSGFDB {
 				int scanNumCol = 1;
 				int pepCol = 6;
 				int dbCol = 7;
-				int scoreCol = 11;
+				int scoreCol = 10;
 				if(showTitle)
 				{
 					++pepCol;

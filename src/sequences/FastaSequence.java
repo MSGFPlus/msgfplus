@@ -335,7 +335,7 @@ public class FastaSequence implements Sequence {
     String basepath = filepath.substring(0, filepath.length()-extension.length()-1);
     
     this.baseFilepath = basepath;
-    if(!extension.equalsIgnoreCase("fasta")) {
+    if(!extension.equalsIgnoreCase("fasta") && !extension.equalsIgnoreCase("fa")) {
       System.err.println("Input error: not a fasta file");
       System.exit(-1);
     }

@@ -13,7 +13,7 @@ public class CountID {
 	
 	public static void printUsageAndExit()
 	{
-		System.out.println("usage: java CountID MSGFDBResult.txt EFDRThreshold");
+		System.out.println("usage: java CountID MSGFDBResult.txt FDRThreshold");
 		System.exit(-1);
 	}
 	
@@ -31,14 +31,19 @@ public class CountID {
 		int pepColNum = -1;
 		for(int i=0; i<headerToken.length; i++)
 		{
-			if(headerToken[i].equalsIgnoreCase("EFDR"))
+			if(headerToken[i].equalsIgnoreCase("EFDR") || headerToken[i].equalsIgnoreCase("FDR"))
 				eFDRColNum = i;
 			if(headerToken[i].equalsIgnoreCase("Peptide"))
 				pepColNum = i;
 		}
-		if(eFDRColNum < 0 || pepColNum < 0)
+		if(eFDRColNum < 0)
 		{
-			System.out.println("EFDR or Peptide column is missing!");
+			System.out.println("FDR column is missing!");
+			System.exit(0);
+		}
+		if(pepColNum < 0)
+		{
+			System.out.println("FDR column is missing!");
 			System.exit(0);
 		}
 		
