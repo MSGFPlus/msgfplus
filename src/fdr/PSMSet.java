@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
@@ -120,7 +121,8 @@ public class PSMSet {
 			}
 			
 			String s;
-			String prevScanNum = "asdfasfdasdf";	// randomString
+			HashSet<String> scanNumSet = new HashSet<String>();
+//			String prevScanNum = "asdfasfdasdf";	// randomString
 
 			while((s=in.readLine()) != null)
 			{
@@ -139,10 +141,14 @@ public class PSMSet {
 				
 				String scanNum = token[scanNumCol];
 
-				if(scanNum.equalsIgnoreCase(prevScanNum))
+//				if(scanNum.equalsIgnoreCase(prevScanNum))
+//					continue;
+//				else	// new scan
+//					prevScanNum = scanNum;
+				if(scanNumSet.contains(scanNum))
 					continue;
-				else	// new scan
-					prevScanNum = scanNum;
+				else
+					scanNumSet.add(scanNum);
 
 				if(dbCol >= 0)
 				{
