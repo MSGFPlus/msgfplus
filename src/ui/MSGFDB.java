@@ -53,6 +53,8 @@ public class MSGFDB {
 		boolean useUniformAAProb = false;
 		int minPeptideLength = 6;
 		int maxPeptideLength = 40;
+		int minCharge = 2;
+		int maxCharge = 4;
 		int scanNum = -1;
 		
 		AminoAcidSet aaSet = null;
@@ -319,7 +321,7 @@ public class MSGFDB {
 		runMSGFDB(specFile, specFormat, databaseFile, paramFile, parentMassTolerance, numAllowedC13,
 	    		outputFile, enzyme, numAllowedNonEnzymaticTermini,
 	    		activationMethod, instType, aaSet, numMatchesPerSpec, scanNum, showTitle, useTDA,
-	    		minPeptideLength, maxPeptideLength);
+	    		minPeptideLength, maxPeptideLength, minCharge, maxCharge);
 		System.out.format("Time: %.3f sec\n", (System.currentTimeMillis()-time)/(float)1000);
 	}
 	
@@ -332,7 +334,7 @@ public class MSGFDB {
 	{
 		if(message != null)
 			System.out.println(message);
-		System.out.println("MSGFDB v2 (06/20/2011)");
+		System.out.println("MSGFDB v2 (06/21/2011)");
 		System.out.print("usage: java -Xmx2000M -jar MSGFDB.jar\n"
 				+ "\t-s SpectrumFile (*.mzXML or *.mgf)\n" //, *.mgf, *.pkl, *.ms2)\n"
 				+ "\t-d Database (*.fasta)\n"
@@ -375,7 +377,9 @@ public class MSGFDB {
     		boolean showTitle,
     		boolean useTDA,
     		int minPeptideLength,
-    		int maxPeptideLength
+    		int maxPeptideLength,
+    		int minCharge,
+    		int maxCharge
     		)
 	{
 		SpectrumAccessorByScanNum specAccessor = null;
@@ -440,7 +444,9 @@ public class MSGFDB {
 	    			enzyme,
 	    			numMatchesPerSpec,
 	    			minPeptideLength,
-	    			maxPeptideLength
+	    			maxPeptideLength,
+	    			minCharge,
+	    			maxCharge
 	    			);
 	    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
 	    	
@@ -506,11 +512,19 @@ public class MSGFDB {
     	else
     	{
     		try {
-//				File tempFile = File.createTempFile("MSGFDB", "tempResult");
-				File tempFile = new File(outputFile.getPath()+".temp.tsv");
+				File tempFile;
+				if(outputFile != null)
+					tempFile = new File(outputFile.getPath()+".temp.tsv");
+				else
+				{
+					tempFile = File.createTempFile("MSGFDB", "tempResult");
+					tempFile.deleteOnExit();
+				}
 				PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(tempFile)));
 //				tempFile.deleteOnExit();
 				gen.writeResults(out, false);
+				out.flush();
+				out.close();
 				int scanNumCol = 1;
 				int pepCol = 6;
 				int dbCol = 7;
