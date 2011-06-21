@@ -68,7 +68,7 @@ public class MgfSpectrumParser implements SpectrumParser {
                 {
                     assert(spec != null);
                     String[] token = buf.split("\\s+");
-                    if(token.length != 2)
+                    if(token.length < 2)
                         continue;
                     float mass = Float.parseFloat(token[0]);
                     if(sorted && mass < prevMass)

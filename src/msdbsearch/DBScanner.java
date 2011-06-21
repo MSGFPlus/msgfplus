@@ -53,9 +53,11 @@ public class DBScanner extends SuffixArray {
 	private Tolerance parentMassTolerance;
 	
 	private ActivationMethod activationMethod;
+	
 	private List<Integer> scanNumList;
 	private TreeMap<Float,Integer> pepMassScanNumMap;
 	private HashMap<Integer, FastScorer> scanNumScorerMap;
+	
 	private int[] numDisinctPeptides;
 	
 	// DB search results
@@ -75,11 +77,9 @@ public class DBScanner extends SuffixArray {
 			int numPeptidesPerSpec,
 			int minPeptideLength,
 			int maxPeptideLength
-//			boolean useError
 			) 
 	{
 		super(sequence);
-//		this.factory = factory;
 		aaMass = new double[aaSet.getMaxResidue()];
 		intAAMass = new int[aaSet.getMaxResidue()];
 		for(int i=0; i<aaMass.length; i++)
@@ -90,7 +90,6 @@ public class DBScanner extends SuffixArray {
 		for(AminoAcid aa : aaSet.getAllAminoAcidArr())
 		{
 			aaMass[aa.getResidue()] = aa.getAccurateMass();
-//			intAAMass[aa.getResidue()] = factory.getMassIndex(aa.getMass());
 			intAAMass[aa.getResidue()] = aa.getNominalMass();
 		}
 		
@@ -106,8 +105,6 @@ public class DBScanner extends SuffixArray {
 		this.maxPeptideLength = maxPeptideLength;
 		
 		boolean useSpectrumDependentScorer = scorer == null;
-//		// set amino acid probabilities
-//		setAAProbabilities();
 		
 		pepMassScanNumMap = new TreeMap<Float,Integer>();	// pepMass -> scanNum
 		scanNumScorerMap = new HashMap<Integer, FastScorer>();	// scanNumber -> peptideScorer
@@ -126,6 +123,11 @@ public class DBScanner extends SuffixArray {
 			{
 				scorer = NewScorerFactory.get(spec.getActivationMethod(), enzyme);
 			}
+			if(spec.getCharge() == 0)
+			{
+				
+			}
+			
 			NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
 			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
 			float tolDa = parentMassTolerance.getToleranceAsDa(peptideMass);
@@ -259,9 +261,11 @@ public class DBScanner extends SuffixArray {
 					break;
 				prm[i+1] = prm[i] + m;	// prm[i]: mass of peptide upto ith residue
 				intPRM[i+1] = intPRM[i] + intAAMass[residue];
+				boolean isProteinCTerm = index+i+1 == size || sequence.getCharAt(index+i+1) == Constants.TERMINATOR_CHAR;
+				
 				if(enzymaticSearch && !enzyme.isCleavable(residue))
 				{
-					if(nNET+1 > numberOfAllowableNonEnzymaticTermini)
+					if(!isProteinCTerm && nNET+1 > numberOfAllowableNonEnzymaticTermini)
 						continue;
 				}
 				if(i < minPeptideLength)
@@ -435,8 +439,8 @@ public class DBScanner extends SuffixArray {
 				
 				if(enzymaticSearch && !enzyme.isCleavable(residue))
 				{
-					if(nNET+1 > numberOfAllowableNonEnzymaticTermini)
-						continue;
+					if(!isProteinCTerm && nNET+1 > numberOfAllowableNonEnzymaticTermini)
+							continue;
 				}
 				
 				int peptideCleavageScore;

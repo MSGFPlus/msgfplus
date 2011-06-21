@@ -50,8 +50,10 @@ public class MSGFDB {
 		int numAllowedNonEnzymaticTermini = 1;
 		boolean showTitle = false;
 		boolean useTDA = false;
+		boolean useUniformAAProb = false;
 		int minPeptideLength = 6;
 		int maxPeptideLength = 40;
+		int scanNum = -1;
 		
 		AminoAcidSet aaSet = null;
 		
@@ -224,6 +226,15 @@ public class MSGFDB {
 					printUsageAndExit("Illigal numMatchesPerSpec: " + argv[i+1]);
 				} 
 			}
+			else if(argv[i].equalsIgnoreCase("-scan"))
+			{
+				try {
+					scanNum = Integer.parseInt(argv[i+1]);
+				} catch (NumberFormatException e)
+				{
+					printUsageAndExit("Illigal scanNum: " + argv[i+1]);
+				} 
+			}
 			else if(argv[i].equalsIgnoreCase("-nnet"))
 			{
 				try {
@@ -239,6 +250,11 @@ public class MSGFDB {
 			{
 				if(argv[i+1].equalsIgnoreCase("1"))
 					showTitle = true;
+			}
+			else if(argv[i].equalsIgnoreCase("-uniformAAProb"))
+			{
+				if(argv[i+1].equalsIgnoreCase("1"))
+					useUniformAAProb = true;
 			}
 			else if(argv[i].equalsIgnoreCase("-tda"))
 			{
@@ -295,18 +311,14 @@ public class MSGFDB {
 			databaseFile = concatTargetDecoyDBFile;
 		}
 		
-		DBScanner.setAminoAcidProbabilities(databaseFile.getPath(), aaSet);
-		////////// Debug ////////////
-//		aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
-//		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
-//		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/ABRF/StudyFiles/iPRG2011CCS.fasta", aaSet);
-		//////////////////
+		if(!useUniformAAProb)
+			DBScanner.setAminoAcidProbabilities(databaseFile.getPath(), aaSet);
 		
 		aaSet.registerEnzyme(enzyme);
 		
 		runMSGFDB(specFile, specFormat, databaseFile, paramFile, parentMassTolerance, numAllowedC13,
 	    		outputFile, enzyme, numAllowedNonEnzymaticTermini,
-	    		activationMethod, instType, aaSet, numMatchesPerSpec, showTitle, useTDA,
+	    		activationMethod, instType, aaSet, numMatchesPerSpec, scanNum, showTitle, useTDA,
 	    		minPeptideLength, maxPeptideLength);
 		System.out.format("Time: %.3f sec\n", (System.currentTimeMillis()-time)/(float)1000);
 	}
@@ -320,7 +332,7 @@ public class MSGFDB {
 	{
 		if(message != null)
 			System.out.println(message);
-		System.out.println("MSGFDB v2 (06/16/2011)");
+		System.out.println("MSGFDB v2 (06/20/2011)");
 		System.out.print("usage: java -Xmx2000M -jar MSGFDB.jar\n"
 				+ "\t-s SpectrumFile (*.mzXML or *.mgf)\n" //, *.mgf, *.pkl, *.ms2)\n"
 				+ "\t-d Database (*.fasta)\n"
@@ -336,6 +348,8 @@ public class MSGFDB {
 				+ "\t[-minLength minPepLength] (Minimum peptide length to consider, Default: 6)\n"
 				+ "\t[-maxLength maxPepLength] (Maximum peptide length to consider, Default: 40)\n"
 				+ "\t[-n numMatchesPerSpec] (Number of matches per spectrum to be reported, Default: 1)\n"
+				+ "\t[-uniformAAProb 0/1] (0: use amino acid probabilities computed from the input database (default), 1: use probability 0.05 for all amino acids)\n"
+//				+ "\t[-scan scanNum] (scan number to be searched)\n"
 //				+ "\t[-param paramFile]\n"
 //				+ "\t[-err 0/1 (0: don't use peak errors (default), 1: use peak errors for scoring]\n"
 //				+ "\t[-title 0/1] (0: don't show title (default), 1: show title)\n"
@@ -357,6 +371,7 @@ public class MSGFDB {
     		InstrumentType instType,
     		AminoAcidSet aaSet, 
     		int numMatchesPerSpec,
+    		int scanNum,
     		boolean showTitle,
     		boolean useTDA,
     		int minPeptideLength,
@@ -387,26 +402,11 @@ public class MSGFDB {
 		int numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
 		ArrayList<Integer> scanNumList = specAccessor.getScanNumList();
 		
-		////////// Debug ////////////
-//		aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
-//		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
-//		aaSet.printAASet();
-//		scanNumList.clear();
-//		scanNumList.add(21678);
-//		scanNumList.add(31669);
-//		scanNumList.add(3888);
-//		scanNumList.add(3256);
-//		scanNumList.add(6416);
-//		scanNumList.add(3751);
-//		scanNumList.add(338);	// decoytest
-//		scanNumList.add(857);
-//		scanNumList.add(685);	// Q-17
-//		scanNumList.add(4378);	// Q-17
-//		scanNumList.add(1162);	// M+16
-//		scanNumList.add(3888);
-//		for(int sn=1000; sn<1100; sn++)
-//			scanNumList.add(sn);
-		////////////////////////////////
+		if(scanNum >= 0)
+		{
+			scanNumList.clear();
+			scanNumList.add(scanNum);
+		}
 		
 		int fromIndex = 0;
 		
