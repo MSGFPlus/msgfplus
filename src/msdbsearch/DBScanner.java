@@ -897,6 +897,7 @@ public class DBScanner extends SuffixArray {
 			for(DatabaseMatch match : matchQueue)
 			{
 				int charge = match.getCharge();
+				spec.setCharge(charge);
 				String scanKey = scanNum+":"+charge;
 				GeneratingFunctionGroup<NominalMass> gf = gfMap.get(scanKey);
 				if(gf == null)
