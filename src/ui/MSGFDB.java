@@ -54,7 +54,7 @@ public class MSGFDB {
 		int minPeptideLength = 6;
 		int maxPeptideLength = 40;
 		int minCharge = 2;
-		int maxCharge = 4;
+		int maxCharge = 3;
 		int scanNum = -1;
 		
 		AminoAcidSet aaSet = null;
@@ -237,6 +237,42 @@ public class MSGFDB {
 					printUsageAndExit("Illigal scanNum: " + argv[i+1]);
 				} 
 			}
+			else if(argv[i].equalsIgnoreCase("-minLength"))
+			{
+				try {
+					minPeptideLength = Integer.parseInt(argv[i+1]);
+				} catch (NumberFormatException e)
+				{
+					printUsageAndExit("Illigal minLength: " + argv[i+1]);
+				} 
+			}
+			else if(argv[i].equalsIgnoreCase("-maxLength"))
+			{
+				try {
+					minPeptideLength = Integer.parseInt(argv[i+1]);
+				} catch (NumberFormatException e)
+				{
+					printUsageAndExit("Illigal maxLength: " + argv[i+1]);
+				} 
+			}
+			else if(argv[i].equalsIgnoreCase("-minCharge"))
+			{
+				try {
+					minCharge = Integer.parseInt(argv[i+1]);
+				} catch (NumberFormatException e)
+				{
+					printUsageAndExit("Illigal minCharge: " + argv[i+1]);
+				} 
+			}
+			else if(argv[i].equalsIgnoreCase("-maxCharge"))
+			{
+				try {
+					maxCharge = Integer.parseInt(argv[i+1]);
+				} catch (NumberFormatException e)
+				{
+					printUsageAndExit("Illigal maxCharge: " + argv[i+1]);
+				} 
+			}
 			else if(argv[i].equalsIgnoreCase("-nnet"))
 			{
 				try {
@@ -349,6 +385,8 @@ public class MSGFDB {
 				+ "\t[-mod modificationFileName] (Modification file, Default: standard amino acids with fixed C+57)\n"
 				+ "\t[-minLength minPepLength] (Minimum peptide length to consider, Default: 6)\n"
 				+ "\t[-maxLength maxPepLength] (Maximum peptide length to consider, Default: 40)\n"
+				+ "\t[-minCharge minPrecursorCharge] (Minimum precursor charge to consider if not specified in the spectrum file, Default: 2)\n"
+				+ "\t[-maxCharge maxPrecursorCharge] (Minimum precursor charge to consider if not specified in the spectrum file, Default: 3)\n"
 				+ "\t[-n numMatchesPerSpec] (Number of matches per spectrum to be reported, Default: 1)\n"
 				+ "\t[-uniformAAProb 0/1] (0: use amino acid probabilities computed from the input database (default), 1: use probability 0.05 for all amino acids)\n"
 //				+ "\t[-scan scanNum] (scan number to be searched)\n"
