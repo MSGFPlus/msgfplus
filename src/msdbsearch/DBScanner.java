@@ -947,7 +947,7 @@ public class DBScanner extends SuffixArray {
 		}		
 		
 		Iterator<Entry<Integer, PriorityQueue<DatabaseMatch>>> itr2 = scanNumDBMatchMap.entrySet().iterator();
-		while(itr.hasNext())
+		while(itr2.hasNext())
 		{
 			Entry<Integer, PriorityQueue<DatabaseMatch>> entry = itr2.next();
 			int scanNum = entry.getKey();
