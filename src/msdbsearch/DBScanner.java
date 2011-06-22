@@ -916,14 +916,13 @@ public class DBScanner extends SuffixArray {
 	
 	public void addDBSearchResults(MSGFDBResultGenerator gen, String specFileName, boolean showTitle)
 	{
-		for(String scanKey : scanKeyList)
+		Iterator<Entry<Integer, PriorityQueue<DatabaseMatch>>> itr = scanNumDBMatchMap.entrySet().iterator();
+		while(itr.hasNext())
 		{
-			String[] token = scanKey.split(":");
-			int scanNum = Integer.parseInt(token[0]);
-			int charge = Integer.parseInt(token[1]);
+			Entry<Integer, PriorityQueue<DatabaseMatch>> entry = itr.next();
+			int scanNum = entry.getKey();
+			PriorityQueue<DatabaseMatch> matchQueue = entry.getValue();
 			Spectrum spec = specMap.getSpectrumByScanNum(scanNum);
-			spec.setCharge(charge);
-			PriorityQueue<DatabaseMatch> matchQueue = scanNumDBMatchMap.get(scanKey);
 			if(matchQueue == null)
 				continue;
 
@@ -938,6 +937,7 @@ public class DBScanner extends SuffixArray {
 				if(match.getDeNovoScore() < 0)
 					continue;
 				
+				spec.setCharge(match.getCharge());
 				int index = match.getIndex();
 				int length = match.getLength();
 				
