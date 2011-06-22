@@ -831,7 +831,82 @@ public class DBScanner extends SuffixArray {
 	
 	public void computeSpecProb(boolean storeScoreDist)
 	{
-		// select the best scoring match per scan number
+		Iterator<Entry<String, PriorityQueue<DatabaseMatch>>> itr = scanKeyDBMatchMap.entrySet().iterator();
+		while(itr.hasNext())
+		{
+			Entry<String, PriorityQueue<DatabaseMatch>> entry = itr.next();
+			String scanKey = entry.getKey();
+			PriorityQueue<DatabaseMatch> matchQueue = entry.getValue();
+			if(matchQueue == null)
+				continue;
+
+			String[] token = scanKey.split(":");
+			int scanNum = Integer.parseInt(token[0]);
+			int charge = Integer.parseInt(token[1]);
+			
+			Spectrum spec = specMap.getSpectrumByScanNum(scanNum);
+			spec.setCharge(charge);
+			
+			boolean useProtNTerm = false;
+			boolean useProtCTerm = false;
+			for(DatabaseMatch m : matchQueue)
+			{
+				if(m.isProteinNTerm())
+					useProtNTerm = true;
+				if(m.isProteinCTerm())
+					useProtCTerm = true;
+			}
+			
+			GeneratingFunctionGroup<NominalMass> gf = new GeneratingFunctionGroup<NominalMass>();
+			ScoredSpectrum<NominalMass> scoredSpec = scanKeyScorerMap.get(scanKey);
+			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
+			int nominalPeptideMass = NominalMass.toNominalMass(peptideMass);
+			float tolDa = parentMassTolerance.getToleranceAsDa(peptideMass);
+			int maxPeptideMassIndex, minPeptideMassIndex;
+			if(tolDa > 0.5f)
+			{
+				maxPeptideMassIndex = nominalPeptideMass + Math.round(tolDa-0.5f);
+				minPeptideMassIndex = nominalPeptideMass - Math.round(tolDa-0.5f);
+			}
+			else
+			{
+				maxPeptideMassIndex = nominalPeptideMass;
+				minPeptideMassIndex = nominalPeptideMass-numAllowedC13;
+			}
+			for(int peptideMassIndex = minPeptideMassIndex; peptideMassIndex<=maxPeptideMassIndex; peptideMassIndex++)
+			{
+				DeNovoGraph<NominalMass> graph = new FlexAminoAcidGraph(
+						aaSet, 
+						peptideMassIndex,
+						enzyme,
+						scoredSpec,
+						useProtNTerm,
+						useProtCTerm
+						);
+				
+				GeneratingFunction<NominalMass> gfi = new GeneratingFunction<NominalMass>(graph)
+				.doNotBacktrack()
+				.doNotCalcNumber();
+				gf.registerGF(graph.getPMNode(), gfi);
+			}			
+			gf.computeGeneratingFunction();			
+
+			for(DatabaseMatch match : matchQueue)
+			{
+				match.setDeNovoScore(gf.getMaxScore()-1);
+				int score = match.getScore();
+				double specProb = gf.getSpectralProbability(score);
+				assert(specProb > 0): scanNum + ": " + match.getDeNovoScore()+" "+match.getScore()+" "+specProb; 
+				match.setSpecProb(specProb);
+				if(storeScoreDist)
+					match.setScoreDist(gf.getScoreDist());
+			}
+		}
+	}
+	
+	public void addDBSearchResults(MSGFDBResultGenerator gen, String specFileName, boolean showTitle)
+	{
+		// merge matches from the same scan
 		scanNumDBMatchMap = new HashMap<Integer,PriorityQueue<DatabaseMatch>>();
 		
 		Iterator<Entry<String, PriorityQueue<DatabaseMatch>>> itr = scanKeyDBMatchMap.entrySet().iterator();
@@ -849,7 +924,7 @@ public class DBScanner extends SuffixArray {
 			PriorityQueue<DatabaseMatch> existingQueue = scanNumDBMatchMap.get(scanNum);
 			if(existingQueue == null)
 			{
-				existingQueue = new PriorityQueue<DatabaseMatch>();
+				existingQueue = new PriorityQueue<DatabaseMatch>(this.numPeptidesPerSpec, new DatabaseMatch.SpecProbComparator());
 				scanNumDBMatchMap.put(scanNum, existingQueue);
 			}
 			
@@ -862,98 +937,19 @@ public class DBScanner extends SuffixArray {
 				}
 				else if(existingQueue.size() >= this.numPeptidesPerSpec)
 				{
-					if(match.getScore() > existingQueue.peek().getScore())
+					if(match.getSpecProb() < existingQueue.peek().getSpecProb())
 					{
 						existingQueue.poll();
 						existingQueue.add(match);
 					}
 				}
 			}
-		}
+		}		
 		
 		Iterator<Entry<Integer, PriorityQueue<DatabaseMatch>>> itr2 = scanNumDBMatchMap.entrySet().iterator();
-		while(itr2.hasNext())
-		{
-			Entry<Integer, PriorityQueue<DatabaseMatch>> entry = itr2.next();
-			int scanNum = entry.getKey();
-			PriorityQueue<DatabaseMatch> matchQueue = entry.getValue();
-			if(matchQueue == null)
-				continue;
-
-			Spectrum spec = specMap.getSpectrumByScanNum(scanNum);
-
-			boolean useProtNTerm = false;
-			boolean useProtCTerm = false;
-			for(DatabaseMatch m : matchQueue)
-			{
-				if(m.isProteinNTerm())
-					useProtNTerm = true;
-				if(m.isProteinCTerm())
-					useProtCTerm = true;
-			}
-			
-			HashMap<String, GeneratingFunctionGroup<NominalMass>> gfMap = new HashMap<String, GeneratingFunctionGroup<NominalMass>>();
-
-			for(DatabaseMatch match : matchQueue)
-			{
-				int charge = match.getCharge();
-				spec.setCharge(charge);
-				String scanKey = scanNum+":"+charge;
-				GeneratingFunctionGroup<NominalMass> gf = gfMap.get(scanKey);
-				if(gf == null)
-				{
-					gf = new GeneratingFunctionGroup<NominalMass>();
-					ScoredSpectrum<NominalMass> scoredSpec = scanKeyScorerMap.get(scanKey);
-					float peptideMass = spec.getParentMass() - (float)Composition.H2O;
-					int nominalPeptideMass = NominalMass.toNominalMass(peptideMass);
-					float tolDa = parentMassTolerance.getToleranceAsDa(peptideMass);
-					int maxPeptideMassIndex, minPeptideMassIndex;
-					if(tolDa > 0.5f)
-					{
-						maxPeptideMassIndex = nominalPeptideMass + Math.round(tolDa-0.5f);
-						minPeptideMassIndex = nominalPeptideMass - Math.round(tolDa-0.5f);
-					}
-					else
-					{
-						maxPeptideMassIndex = nominalPeptideMass;
-						minPeptideMassIndex = nominalPeptideMass-numAllowedC13;
-					}
-					for(int peptideMassIndex = minPeptideMassIndex; peptideMassIndex<=maxPeptideMassIndex; peptideMassIndex++)
-					{
-						DeNovoGraph<NominalMass> graph = new FlexAminoAcidGraph(
-								aaSet, 
-								peptideMassIndex,
-								enzyme,
-								scoredSpec,
-								useProtNTerm,
-								useProtCTerm
-								);
-						
-						GeneratingFunction<NominalMass> gfi = new GeneratingFunction<NominalMass>(graph)
-						.doNotBacktrack()
-						.doNotCalcNumber();
-						gf.registerGF(graph.getPMNode(), gfi);
-					}			
-					gf.computeGeneratingFunction();
-					gfMap.put(scanKey, gf);
-				}
-				match.setDeNovoScore(gf.getMaxScore()-1);
-				int score = match.getScore();
-				double specProb = gf.getSpectralProbability(score);
-				assert(specProb > 0): scanNum + ": " + match.getDeNovoScore()+" "+match.getScore()+" "+specProb; 
-				match.setSpecProb(specProb);
-				if(storeScoreDist)
-					match.setScoreDist(gf.getScoreDist());
-			}
-		}
-	}
-	
-	public void addDBSearchResults(MSGFDBResultGenerator gen, String specFileName, boolean showTitle)
-	{
-		Iterator<Entry<Integer, PriorityQueue<DatabaseMatch>>> itr = scanNumDBMatchMap.entrySet().iterator();
 		while(itr.hasNext())
 		{
-			Entry<Integer, PriorityQueue<DatabaseMatch>> entry = itr.next();
+			Entry<Integer, PriorityQueue<DatabaseMatch>> entry = itr2.next();
 			int scanNum = entry.getKey();
 			PriorityQueue<DatabaseMatch> matchQueue = entry.getValue();
 			if(matchQueue == null)

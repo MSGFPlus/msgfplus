@@ -1,5 +1,7 @@
 package msdbsearch;
 
+import java.util.Comparator;
+
 import msgf.ScoreDist;
 
 public class DatabaseMatch implements Comparable<DatabaseMatch> {
@@ -143,6 +145,20 @@ public class DatabaseMatch implements Comparable<DatabaseMatch> {
 		}
 		else
 			return -1;
+	}
+	
+	public static class SpecProbComparator implements Comparator<DatabaseMatch>
+	{
+		@Override
+		public int compare(DatabaseMatch arg0, DatabaseMatch arg1) {
+			if(arg0.getSpecProb() < arg1.getSpecProb())
+				return 1;
+			else if(arg0.getSpecProb() > arg1.getSpecProb())
+				return -1;
+			else
+				return 0;
+		}
+		
 	}
 	
 }
