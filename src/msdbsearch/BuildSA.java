@@ -9,7 +9,7 @@ public class BuildSA {
 	public static void main(String argv[])
 	{
 		if(argv.length != 1)
-			System.out.println("usage: java BuildSA [path (directory or fasta file)]");
+			System.out.println("usage: java BuildSA path(directory or fasta file)");
 		else
 		{
 			File f = new File(argv[0]);
@@ -28,22 +28,42 @@ public class BuildSA {
 		{
 			for(File f : path.listFiles())
 			{
-				if(!f.getName().endsWith(".fasta"))
+				if(!f.getName().endsWith(".fasta") && !f.getName().endsWith(".fa"))
 					continue;
-				System.out.println(f.getName());
-				SuffixArraySequence sequence = new SuffixArraySequence(f.getPath());
-				new SuffixArray(sequence);
-			}
+				buildSAFiles(f);			}
 		}
 		else
 		{
-			if(path.getName().contains(".fa"))
+			if(path.getName().endsWith(".fasta") || path.getName().endsWith(".fa"))
 			{
-				System.out.println(path.getName());
-				SuffixArraySequence sequence = new SuffixArraySequence(path.getPath());
-				new SuffixArray(sequence);
+				buildSAFiles(path);
 			}
 		}
 		System.out.println("Done");
 	}
+	
+	public static void buildSAFiles(File databaseFile)
+	{
+		String dbFileName = databaseFile.getName(); 
+		String concatDBFileName = dbFileName.substring(0, dbFileName.lastIndexOf('.'))+".revConcat.fasta";
+		File concatTargetDecoyDBFile = new File(databaseFile.getAbsoluteFile().getParent()+File.separator+concatDBFileName);
+		if(!concatTargetDecoyDBFile.exists())
+		{
+			System.out.println("Creating " + concatDBFileName + ".");
+			if(ReverseDB.reverseDB(databaseFile.getPath(), concatTargetDecoyDBFile.getPath(), true) == false)
+			{
+				System.err.println("Cannot create decoy database file!");
+				System.exit(-1);
+			}
+		}
+		
+		System.out.println("Building suffix array: " + databaseFile.getPath());
+		SuffixArraySequence sequence = new SuffixArraySequence(databaseFile.getPath());
+		new SuffixArray(sequence);
+
+		System.out.println("Building suffix array: " + databaseFile.getPath());
+		SuffixArraySequence tdaSequence = new SuffixArraySequence(concatTargetDecoyDBFile.getPath());
+		new SuffixArray(tdaSequence);
+	}
 }
+
