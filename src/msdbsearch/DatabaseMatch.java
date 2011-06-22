@@ -6,7 +6,6 @@ public class DatabaseMatch implements Comparable<DatabaseMatch> {
 	private int		index;
 	private byte 	length;
 	private int 	score;
-	private int		charge;
 	
 	// optional
 	private int		deNovoScore;	
@@ -14,14 +13,14 @@ public class DatabaseMatch implements Comparable<DatabaseMatch> {
 	private ScoreDist	scoreDist;
 	private boolean isProteinNTerm;
 	private boolean isProteinCTerm;
+	private int		charge;
 
 	private String pepSeq;
-	public DatabaseMatch(int index, int length, int score, int charge) {
+	public DatabaseMatch(int index, int length, int score) {
 		super();
 		this.index = index;
 		this.length = (byte)length;
 		this.score = score;
-		this.charge = charge;
 		pepSeq = null;
 		isProteinNTerm = false;
 		isProteinCTerm = false;
@@ -44,6 +43,12 @@ public class DatabaseMatch implements Comparable<DatabaseMatch> {
 		this.isProteinCTerm = isProteinCTerm;
 		return this;
 	}
+
+	public DatabaseMatch setCharge(int charge)
+	{
+		this.charge = charge;
+		return this;
+	}
 	
 	public String getPepSeq()
 	{
@@ -57,11 +62,11 @@ public class DatabaseMatch implements Comparable<DatabaseMatch> {
 	public int getLength() {
 		return length;
 	}
-
+	
 	public int getCharge() {
 		return charge;
 	}
-	
+
 	public boolean isProteinNTerm()
 	{
 		return isProteinNTerm;
