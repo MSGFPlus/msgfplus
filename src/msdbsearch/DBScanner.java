@@ -4,9 +4,11 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import parser.BufferedLineReader;
 
@@ -61,7 +63,7 @@ public class DBScanner extends SuffixArray {
 	private int[] numDisinctPeptides;
 	
 	// DB search results
-	private HashMap<String,PriorityQueue<DatabaseMatch>> scanKeyDBMatchMap;
+	private HashMap<Integer,PriorityQueue<DatabaseMatch>> scanNumDBMatchMap;
 
 	public DBScanner(
 //			NominalMassFactory factory,
@@ -200,7 +202,7 @@ public class DBScanner extends SuffixArray {
 	// duplicated for speeding-up the search
 	public void dbSearchCTermEnzymeNoMod(int numberOfAllowableNonEnzymaticTermini, boolean verbose)
 	{
-		scanKeyDBMatchMap = new HashMap<String,PriorityQueue<DatabaseMatch>>();
+		scanNumDBMatchMap = new HashMap<Integer,PriorityQueue<DatabaseMatch>>();
 
 		double[] prm = new double[maxPeptideLength+2];
 		prm[0] = 0;
@@ -298,24 +300,27 @@ public class DBScanner extends SuffixArray {
 					
 					for(String scanKey : matchedScanKeyList)
 					{
+						String[] token = scanKey.split(":");
+						int scanNum = Integer.parseInt(token[0]);
+						int charge = Integer.parseInt(token[1]);
 						FastScorer scorer = scanKeyScorerMap.get(scanKey);
 						int score = nTermAAScore + scorer.getScore(prm, intPRM, 2, i+2) + peptideCleavageScore;
-						PriorityQueue<DatabaseMatch> prevMatchQueue = scanKeyDBMatchMap.get(scanKey);
+						PriorityQueue<DatabaseMatch> prevMatchQueue = scanNumDBMatchMap.get(scanKey);
 						if(prevMatchQueue == null)
 						{
 							prevMatchQueue = new PriorityQueue<DatabaseMatch>();
-							scanKeyDBMatchMap.put(scanKey, prevMatchQueue);
+							scanNumDBMatchMap.put(scanNum, prevMatchQueue);
 						}
 						if(prevMatchQueue.size() < this.numPeptidesPerSpec)
 						{
-							prevMatchQueue.add(new DatabaseMatch(index, i+2, score));
+							prevMatchQueue.add(new DatabaseMatch(index, i+2, score, charge));
 						}
 						else if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
 						{
 							if(score > prevMatchQueue.peek().getScore())
 							{
 								prevMatchQueue.poll();
-								prevMatchQueue.add(new DatabaseMatch(index, i+2, score));
+								prevMatchQueue.add(new DatabaseMatch(index, i+2, score, charge));
 							}
 						}
 					}
@@ -328,7 +333,7 @@ public class DBScanner extends SuffixArray {
 
 	public void dbSearchCTermEnzyme(int numberOfAllowableNonEnzymaticTermini, boolean verbose)
 	{
-		scanKeyDBMatchMap = new HashMap<String,PriorityQueue<DatabaseMatch>>();	// scanKey -> dbHits
+		scanNumDBMatchMap = new HashMap<Integer,PriorityQueue<DatabaseMatch>>();	// scanKey -> dbHits
 
 		CandidatePeptideGrid candidatePepGrid = new CandidatePeptideGrid(aaSet, maxPeptideLength);
 		
@@ -473,24 +478,28 @@ public class DBScanner extends SuffixArray {
 					{
 						for(String scanKey : matchedScanKeyList)
 						{
+							String[] token = scanKey.split(":");
+							int scanNum = Integer.parseInt(token[0]);
+							int charge = Integer.parseInt(token[1]);
+							
 							FastScorer scorer = scanKeyScorerMap.get(scanKey);
 							int score = enzymeScore + scorer.getScore(candidatePepGrid.getPRMGrid()[j], candidatePepGrid.getNominalPRMGrid()[j], 1, i+1); 
-							PriorityQueue<DatabaseMatch> prevMatchQueue = scanKeyDBMatchMap.get(scanKey);
+							PriorityQueue<DatabaseMatch> prevMatchQueue = scanNumDBMatchMap.get(scanKey);
 							if(prevMatchQueue == null)
 							{
 								prevMatchQueue = new PriorityQueue<DatabaseMatch>();
-								scanKeyDBMatchMap.put(scanKey, prevMatchQueue);
+								scanNumDBMatchMap.put(scanNum, prevMatchQueue);
 							}
 							if(prevMatchQueue.size() < this.numPeptidesPerSpec)
 							{
-								prevMatchQueue.add(new DatabaseMatch(index, i+2, score).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
+								prevMatchQueue.add(new DatabaseMatch(index, i+2, score, charge).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
 							}
 							else if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
 							{
 								if(score > prevMatchQueue.peek().getScore())
 								{
 									prevMatchQueue.poll();
-									prevMatchQueue.add(new DatabaseMatch(index, i+2, score).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
+									prevMatchQueue.add(new DatabaseMatch(index, i+2, score, charge).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
 								}
 							}
 						}
@@ -506,7 +515,7 @@ public class DBScanner extends SuffixArray {
 	// dupulicated to speed-up the search
 	public void dbSearchNoEnzyme(boolean verbose)
 	{
-		scanKeyDBMatchMap = new HashMap<String,PriorityQueue<DatabaseMatch>>();	// scanKey -> dbHits
+		scanNumDBMatchMap = new HashMap<Integer,PriorityQueue<DatabaseMatch>>();	// scanKey -> dbHits
 
 		CandidatePeptideGrid candidatePepGrid = new CandidatePeptideGrid(aaSet, maxPeptideLength);
 		
@@ -613,24 +622,27 @@ public class DBScanner extends SuffixArray {
 					{
 						for(String scanKey : matchedScanKeyList)
 						{
+							String[] token = scanKey.split(":");
+							int scanNum = Integer.parseInt(token[0]);
+							int charge = Integer.parseInt(token[1]);
 							FastScorer scorer = scanKeyScorerMap.get(scanKey);
 							int score =  scorer.getScore(candidatePepGrid.getPRMGrid()[j], candidatePepGrid.getNominalPRMGrid()[j], 1, i+2); 
-							PriorityQueue<DatabaseMatch> prevMatchQueue = scanKeyDBMatchMap.get(scanKey);
+							PriorityQueue<DatabaseMatch> prevMatchQueue = scanNumDBMatchMap.get(scanKey);
 							if(prevMatchQueue == null)
 							{
 								prevMatchQueue = new PriorityQueue<DatabaseMatch>();
-								scanKeyDBMatchMap.put(scanKey, prevMatchQueue);
+								scanNumDBMatchMap.put(scanNum, prevMatchQueue);
 							}
 							if(prevMatchQueue.size() < this.numPeptidesPerSpec)
 							{
-								prevMatchQueue.add(new DatabaseMatch(index-1, i+2, score).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
+								prevMatchQueue.add(new DatabaseMatch(index-1, i+2, score, charge).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
 							}
 							else if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
 							{
 								if(score > prevMatchQueue.peek().getScore())
 								{
 									prevMatchQueue.poll();
-									prevMatchQueue.add(new DatabaseMatch(index-1, i+2, score).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
+									prevMatchQueue.add(new DatabaseMatch(index-1, i+2, score, charge).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
 								}
 							}
 						}
@@ -645,7 +657,7 @@ public class DBScanner extends SuffixArray {
 	
 	public void dbSearchNTermEnzyme(int numberOfAllowableNonEnzymaticTermini, boolean verbose)
 	{
-		scanKeyDBMatchMap = new HashMap<String,PriorityQueue<DatabaseMatch>>();	// scanKey -> dbHits
+		scanNumDBMatchMap = new HashMap<Integer,PriorityQueue<DatabaseMatch>>();	// scanKey -> dbHits
 
 		CandidatePeptideGrid candidatePepGrid = new CandidatePeptideGrid(aaSet, maxPeptideLength);
 		
@@ -791,24 +803,27 @@ public class DBScanner extends SuffixArray {
 					{
 						for(String scanKey : matchedScanKeyList)
 						{
+							String[] token = scanKey.split(":");
+							int scanNum = Integer.parseInt(token[0]);
+							int charge = Integer.parseInt(token[1]);
 							FastScorer scorer = scanKeyScorerMap.get(scanKey);
 							int score = enzymeScore + scorer.getScore(candidatePepGrid.getPRMGrid()[j], candidatePepGrid.getNominalPRMGrid()[j], 1, i+2); 
-							PriorityQueue<DatabaseMatch> prevMatchQueue = scanKeyDBMatchMap.get(scanKey);
+							PriorityQueue<DatabaseMatch> prevMatchQueue = scanNumDBMatchMap.get(scanKey);
 							if(prevMatchQueue == null)
 							{
 								prevMatchQueue = new PriorityQueue<DatabaseMatch>();
-								scanKeyDBMatchMap.put(scanKey, prevMatchQueue);
+								scanNumDBMatchMap.put(scanNum, prevMatchQueue);
 							}
 							if(prevMatchQueue.size() < this.numPeptidesPerSpec)
 							{
-								prevMatchQueue.add(new DatabaseMatch(index-1, i+2, score).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
+								prevMatchQueue.add(new DatabaseMatch(index-1, i+2, score, charge).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
 							}
 							else if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
 							{
 								if(score > prevMatchQueue.peek().getScore())
 								{
 									prevMatchQueue.poll();
-									prevMatchQueue.add(new DatabaseMatch(index-1, i+2, score).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
+									prevMatchQueue.add(new DatabaseMatch(index-1, i+2, score, charge).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
 								}
 							}
 							
@@ -824,15 +839,16 @@ public class DBScanner extends SuffixArray {
 	
 	public void computeSpecProb(boolean storeScoreDist)
 	{
-		for(String scanKey : scanKeyList)
+		Iterator<Entry<Integer, PriorityQueue<DatabaseMatch>>> itr = scanNumDBMatchMap.entrySet().iterator();
+		while(itr.hasNext())
 		{
-			String[] token = scanKey.split(":");
-			int scanNum = Integer.parseInt(token[0]);
-			int charge = Integer.parseInt(token[1]);
-			PriorityQueue<DatabaseMatch> matchQueue = scanKeyDBMatchMap.get(scanKey);
+			Entry<Integer, PriorityQueue<DatabaseMatch>> entry = itr.next();
+			int scanNum = entry.getKey();
+			PriorityQueue<DatabaseMatch> matchQueue = entry.getValue();
 			if(matchQueue == null)
 				continue;
 
+			Spectrum spec = specMap.getSpectrumByScanNum(scanNum);
 			boolean useProtNTerm = false;
 			boolean useProtCTerm = false;
 			for(DatabaseMatch m : matchQueue)
@@ -842,44 +858,51 @@ public class DBScanner extends SuffixArray {
 				if(m.isProteinCTerm())
 					useProtCTerm = true;
 			}
-			Spectrum spec = specMap.getSpectrumByScanNum(scanNum);
-			spec.setCharge(charge);
-			ScoredSpectrum<NominalMass> scoredSpec = scanKeyScorerMap.get(scanKey);
-			GeneratingFunctionGroup<NominalMass> gf = new GeneratingFunctionGroup<NominalMass>();
-			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
-			int nominalPeptideMass = NominalMass.toNominalMass(peptideMass);
-			float tolDa = parentMassTolerance.getToleranceAsDa(peptideMass);
-			int maxPeptideMassIndex, minPeptideMassIndex;
-			if(tolDa > 0.5f)
-			{
-				maxPeptideMassIndex = nominalPeptideMass + Math.round(tolDa-0.5f);
-				minPeptideMassIndex = nominalPeptideMass - Math.round(tolDa-0.5f);
-			}
-			else
-			{
-				maxPeptideMassIndex = nominalPeptideMass;
-				minPeptideMassIndex = nominalPeptideMass-numAllowedC13;
-			}
-			for(int peptideMassIndex = minPeptideMassIndex; peptideMassIndex<=maxPeptideMassIndex; peptideMassIndex++)
-			{
-				DeNovoGraph<NominalMass> graph = new FlexAminoAcidGraph(
-						aaSet, 
-						peptideMassIndex,
-						enzyme,
-						scoredSpec,
-						useProtNTerm,
-						useProtCTerm
-						);
-				
-				GeneratingFunction<NominalMass> gfi = new GeneratingFunction<NominalMass>(graph)
-				.doNotBacktrack()
-				.doNotCalcNumber();
-				gf.registerGF(graph.getPMNode(), gfi);
-			}			
-			gf.computeGeneratingFunction();
 			
+			// scanKey -> GF
+			HashMap<String, GeneratingFunctionGroup<NominalMass>> gfMap = new HashMap<String, GeneratingFunctionGroup<NominalMass>>();
 			for(DatabaseMatch match : matchQueue)
 			{
+				String scanKey = scanNum+":"+match.getCharge();
+				GeneratingFunctionGroup<NominalMass> gf = gfMap.get(scanKey);
+				if(gf == null)
+				{
+					gf = new GeneratingFunctionGroup<NominalMass>();
+					spec.setCharge(match.getCharge());
+					ScoredSpectrum<NominalMass> scoredSpec = scanKeyScorerMap.get(scanKey);
+					float peptideMass = spec.getParentMass() - (float)Composition.H2O;
+					int nominalPeptideMass = NominalMass.toNominalMass(peptideMass);
+					float tolDa = parentMassTolerance.getToleranceAsDa(peptideMass);
+					int maxPeptideMassIndex, minPeptideMassIndex;
+					if(tolDa > 0.5f)
+					{
+						maxPeptideMassIndex = nominalPeptideMass + Math.round(tolDa-0.5f);
+						minPeptideMassIndex = nominalPeptideMass - Math.round(tolDa-0.5f);
+					}
+					else
+					{
+						maxPeptideMassIndex = nominalPeptideMass;
+						minPeptideMassIndex = nominalPeptideMass-numAllowedC13;
+					}
+					for(int peptideMassIndex = minPeptideMassIndex; peptideMassIndex<=maxPeptideMassIndex; peptideMassIndex++)
+					{
+						DeNovoGraph<NominalMass> graph = new FlexAminoAcidGraph(
+								aaSet, 
+								peptideMassIndex,
+								enzyme,
+								scoredSpec,
+								useProtNTerm,
+								useProtCTerm
+								);
+						
+						GeneratingFunction<NominalMass> gfi = new GeneratingFunction<NominalMass>(graph)
+						.doNotBacktrack()
+						.doNotCalcNumber();
+						gf.registerGF(graph.getPMNode(), gfi);
+					}			
+					gf.computeGeneratingFunction();
+					gfMap.put(scanKey, gf);
+				}
 				match.setDeNovoScore(gf.getMaxScore()-1);
 				int score = match.getScore();
 				double specProb = gf.getSpectralProbability(score);
@@ -900,7 +923,7 @@ public class DBScanner extends SuffixArray {
 			int charge = Integer.parseInt(token[1]);
 			Spectrum spec = specMap.getSpectrumByScanNum(scanNum);
 			spec.setCharge(charge);
-			PriorityQueue<DatabaseMatch> matchQueue = scanKeyDBMatchMap.get(scanKey);
+			PriorityQueue<DatabaseMatch> matchQueue = scanNumDBMatchMap.get(scanKey);
 			if(matchQueue == null)
 				continue;
 
