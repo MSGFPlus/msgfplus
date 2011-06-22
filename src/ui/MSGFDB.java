@@ -386,7 +386,7 @@ public class MSGFDB {
 				+ "\t[-minLength minPepLength] (Minimum peptide length to consider, Default: 6)\n"
 				+ "\t[-maxLength maxPepLength] (Maximum peptide length to consider, Default: 40)\n"
 				+ "\t[-minCharge minPrecursorCharge] (Minimum precursor charge to consider if not specified in the spectrum file, Default: 2)\n"
-				+ "\t[-maxCharge maxPrecursorCharge] (Minimum precursor charge to consider if not specified in the spectrum file, Default: 3)\n"
+				+ "\t[-maxCharge maxPrecursorCharge] (Maximum precursor charge to consider if not specified in the spectrum file, Default: 3)\n"
 				+ "\t[-n numMatchesPerSpec] (Number of matches per spectrum to be reported, Default: 1)\n"
 				+ "\t[-uniformAAProb 0/1] (0: use amino acid probabilities computed from the input database (default), 1: use probability 0.05 for all amino acids)\n"
 //				+ "\t[-scan scanNum] (scan number to be searched)\n"
