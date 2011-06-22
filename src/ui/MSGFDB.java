@@ -324,6 +324,12 @@ public class MSGFDB {
 		if(parentMassTolerance == null)
 			printUsageAndExit("Parent mass tolerance is not specified.");
 
+		if(minPeptideLength > maxPeptideLength)
+			printUsageAndExit("MinPepLength must not be larger than MaxPepLength!");
+			
+		if(minCharge > maxCharge)
+			printUsageAndExit("MinPrecursorCharge must not be larger than MaxPrecursorCharge!");
+		
 		if(isTolerancePPM != null)
 			parentMassTolerance = new Tolerance(parentMassTolerance.getValue(), isTolerancePPM);
 	
