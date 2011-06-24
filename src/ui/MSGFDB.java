@@ -8,10 +8,9 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import fdr.Pair;
-
 import parser.MgfSpectrumParser;
 import parser.MzXMLSpectraMap;
+import parser.PNNLSpectrumParser;
 import suffixarray.SuffixArraySequence;
 
 import msdbsearch.DBScanner;
@@ -76,15 +75,22 @@ public class MSGFDB {
 				}
 				else
 				{
-					int posDot = specFile.getName().lastIndexOf('.');
+					String specFileName = specFile.getName();
+					int posDot = specFileName.lastIndexOf('.');
 					if(posDot >= 0)
 					{
-						String extension = specFile.getName().substring(posDot);
+						String extension = specFileName.substring(posDot);
 						if(extension.equalsIgnoreCase(".mzXML"))
 							specFormat = SpecFileFormat.MZXML;
 						else if(extension.equalsIgnoreCase(".mgf"))
 							specFormat = SpecFileFormat.MGF;
-					}					
+					}		
+					if(specFormat == null && specFileName.length() > 8)
+					{
+						String suffix = specFileName.substring(specFileName.length()-8);
+						if(suffix.equalsIgnoreCase("_dta.txt"))
+							specFormat = SpecFileFormat.DTA_TXT;
+					}
 				}
 
 				if(specFormat == null)
@@ -376,9 +382,9 @@ public class MSGFDB {
 	{
 		if(message != null)
 			System.out.println(message);
-		System.out.println("MSGFDB v2 (06/21/2011)");
+		System.out.println("MSGFDB v2 (06/24/2011)");
 		System.out.print("usage: java -Xmx2000M -jar MSGFDB.jar\n"
-				+ "\t-s SpectrumFile (*.mzXML or *.mgf)\n" //, *.mgf, *.pkl, *.ms2)\n"
+				+ "\t-s SpectrumFile (*.mzXML, *.mgf, or *_dta.txt)\n" //, *.mgf, *.pkl, *.ms2)\n"
 				+ "\t-d Database (*.fasta)\n"
 				+ "\t-t ParentMassTolerance (e.g. 2.5Da or 30ppm, no space is allowed.)\n"
 				+ "\t[-o outputFileName] (Default: stdout)\n"
@@ -391,8 +397,8 @@ public class MSGFDB {
 				+ "\t[-mod ModificationFileName] (Modification file, Default: standard amino acids with fixed C+57)\n"
 				+ "\t[-minLength MinPepLength] (Minimum peptide length to consider, Default: 6)\n"
 				+ "\t[-maxLength MaxPepLength] (Maximum peptide length to consider, Default: 40)\n"
-				+ "\t[-minCharge MinPrecursorCharge] (Minimum precursor charge to consider if not specified in the spectrum file, Default: 2)\n"
-				+ "\t[-maxCharge MaxPrecursorCharge] (Maximum precursor charge to consider if not specified in the spectrum file, Default: 3)\n"
+				+ "\t[-minCharge MinPrecursorCharge] (Minimum precursor charge to consider if charges are not specified in the spectrum file, Default: 2)\n"
+				+ "\t[-maxCharge MaxPrecursorCharge] (Maximum precursor charge to consider if charges are not specified in the spectrum file, Default: 3)\n"
 				+ "\t[-n NumMatchesPerSpec] (Number of matches per spectrum to be reported, Default: 1)\n"
 				+ "\t[-uniformAAProb 0/1] (0: use amino acid probabilities computed from the input database (default), 1: use probability 0.05 for all amino acids)\n"
 //				+ "\t[-scan scanNum] (scan number to be searched)\n"
@@ -431,6 +437,8 @@ public class MSGFDB {
 			specAccessor = new MzXMLSpectraMap(specFile.getPath());
 		else if(specFormat == SpecFileFormat.MGF)
 			specAccessor = new SpectraMap(specFile.getPath(), new MgfSpectrumParser());
+		else if(specFormat == SpecFileFormat.DTA_TXT)
+			specAccessor = new SpectraMap(specFile.getPath(), new PNNLSpectrumParser());
 		
 		NewRankScorer scorer = null;
 		if(paramFile != null)

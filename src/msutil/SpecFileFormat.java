@@ -5,5 +5,6 @@ public enum SpecFileFormat {
 	MZXML,
 	MS2,
 	PKL,
+	DTA_TXT,
 	DIR,
 }
