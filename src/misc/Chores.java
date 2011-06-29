@@ -59,7 +59,8 @@ public class Chores {
 //		System.out.println(aaSet.getPeptideCleavageCredit());
 //		System.out.println(aaSet.getPeptideCleavagePenalty());
 //		efdrTest();
-		System.out.println(Composition.getMass("HO3P"));
+		System.out.println((Composition.N15-Composition.N)*2+(Composition.C13-Composition.C)*6);
+		System.out.println((Composition.N15-Composition.N)*4+(Composition.C13-Composition.C)*6);
 	}
 
 	public static void efdrTest() throws Exception

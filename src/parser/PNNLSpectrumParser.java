@@ -101,22 +101,29 @@ public class PNNLSpectrumParser implements SpectrumParser {
 	
 	public static void main(String argv[]) throws Exception
 	{
+		long time = System.currentTimeMillis();
 		String fileName = System.getProperty("user.home")+"/Research/ToolDistribution/PNNLTest/AID_STM_DJS_001_FTa_26Apr05_Pegasus_0305-07_dta.txt";
-//		SpectraIterator itr = new SpectraIterator(fileName, new PNNLSpectrumParser());
+		SpectraIterator itr = new SpectraIterator(fileName, new PNNLSpectrumParser());
 		int numSpecs = 0;
-//		while(itr.hasNext())
-//		{
-//			Spectrum spec = itr.next();
-//			numSpecs++;
+		while(itr.hasNext())
+		{
+			Spectrum spec = itr.next();
+			numSpecs++;
 //			System.out.println(spec+ "\t" + spec.getScanNum()+"\t"+(spec.getParentMass()+(float)Composition.PROTON)+"\t"+spec.getCharge());
-//		}
+		}
+		System.out.println("NumSpecs: " + numSpecs);
+		System.out.println("Time: " + (System.currentTimeMillis()-time));
+		
+		time = System.currentTimeMillis();
 		SpectraMap map = new SpectraMap(fileName, new PNNLSpectrumParser());
+		numSpecs = 0;
 		for(int scanNum : map.getScanNumList())
 		{
 			Spectrum spec = map.getSpectrumByScanNum(scanNum);
 			numSpecs++;
-			System.out.println(spec+ "\t" + spec.getScanNum()+"\t"+(spec.getParentMass()+(float)Composition.PROTON)+"\t"+spec.getCharge());
+//			System.out.println(spec+ "\t" + spec.getScanNum()+"\t"+(spec.getParentMass()+(float)Composition.PROTON)+"\t"+spec.getCharge());
 		}
 		System.out.println("NumSpecs: " + numSpecs);
+		System.out.println("Time: " + (System.currentTimeMillis()-time));
 	}
 }

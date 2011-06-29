@@ -12,6 +12,7 @@ public class Composition extends Matter
 	public static final double H = 1.007825035;
 	public static final double DEUTERIUM = 2.014101779;	
 	public static final double N = 14.003074;
+	public static final double N15 = 15.000108898;
 	public static final double O = 15.99491463;
 	public static final double S = 31.9720707;
 	public static final double P = 30.973762;

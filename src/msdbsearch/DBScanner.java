@@ -31,6 +31,7 @@ import msutil.AminoAcidSet;
 import msutil.Composition;
 import msutil.Enzyme;
 import msutil.Peptide;
+import msutil.SpecKey;
 import msutil.Spectrum;
 import msutil.SpectrumAccessorByScanNum;
 import msutil.Modification.Location;
@@ -42,9 +43,6 @@ public class DBScanner extends SuffixArray {
 
 	private int minPeptideLength;
 	private int maxPeptideLength;
-	private int minCharge;
-	private int maxCharge;
-//	private NominalMassFactory factory;
 	
 	private AminoAcidSet aaSet;
 	private double[] aaMass;
@@ -58,9 +56,9 @@ public class DBScanner extends SuffixArray {
 	
 	private ActivationMethod activationMethod;
 	
-	private List<String> scanKeyList;
-	private TreeMap<Float,String> pepMassScanKeyMap;
-	private HashMap<String, FastScorer> scanKeyScorerMap;
+	private List<SpecKey> specKeyList;
+	private TreeMap<Float,String> pepMassSpecKeyMap;
+	private HashMap<String, FastScorer> specKeyScorerMap;
 	
 	private int[] numDisinctPeptides;
 	
@@ -73,7 +71,7 @@ public class DBScanner extends SuffixArray {
 			SuffixArraySequence sequence, 
 			AminoAcidSet aaSet,
 			SpectrumAccessorByScanNum specMap,
-			List<Integer> scanNumList,
+			List<SpecKey> specKeyList,
 			Tolerance parentMassTolerance,
 			int numAllowedC13,
 			NewRankScorer scorer,
@@ -105,21 +103,20 @@ public class DBScanner extends SuffixArray {
 		this.enzyme = enzyme;
 		this.numAllowedC13 = numAllowedC13;
 		this.activationMethod = activationMethod;
-		this.scanKeyList = new ArrayList<String>();
 		this.specMap = specMap;
+		this.specKeyList = specKeyList;
 		this.numPeptidesPerSpec = numPeptidesPerSpec;
 		this.minPeptideLength = minPeptideLength;
 		this.maxPeptideLength = maxPeptideLength;
-		this.minCharge = minCharge;
-		this.maxCharge = maxCharge;
 		
 		boolean useSpectrumDependentScorer = scorer == null;
 		
 		pepMassScanKeyMap = new TreeMap<Float,String>();	// pepMass -> scanNum:charge
 		scanKeyScorerMap = new HashMap<String, FastScorer>();	// scanNum:charge -> peptideScorer
 		
-		for(int scanNum : scanNumList)
+		for(SpecKey specKey : specKeyList)
 		{
+			int scanNum = specKey.getScanNum();
 			Spectrum spec = specMap.getSpectrumByScanNum(scanNum);
 			if(activationMethod != null && spec.getActivationMethod() != null && (spec.getActivationMethod() != activationMethod))
 				continue;
@@ -133,52 +130,40 @@ public class DBScanner extends SuffixArray {
 				scorer = NewScorerFactory.get(spec.getActivationMethod(), enzyme);
 			}
 			
-			ArrayList<Integer> chargeList = new ArrayList<Integer>();
-			if(spec.getCharge() == 0)
-			{
-				for(int c=minCharge; c<=maxCharge; c++)
-					chargeList.add(c);
-			}
-			else
-				chargeList.add(spec.getCharge());
+			int charge = specKey.getCharge();
+			spec.setCharge(charge);
+			NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
+			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
+			float tolDa = parentMassTolerance.getToleranceAsDa(peptideMass);
+			int maxNominalPeptideMass = NominalMass.toNominalMass(peptideMass + tolDa);
 			
-			for(Integer charge : chargeList)
+			if(scorer.supportEdgeScores())
+				scanKeyScorerMap.put(scanKey, new DBScanScorer(scoredSpec, maxNominalPeptideMass));
+			else
+				scanKeyScorerMap.put(scanKey, new FastScorer(scoredSpec, maxNominalPeptideMass));
+			while(pepMassScanKeyMap.get(peptideMass) != null)
+				peptideMass = Math.nextUp(peptideMass);
+			pepMassScanKeyMap.put(peptideMass, scanKey);
+			
+			if(numAllowedC13 > 0 && parentMassTolerance.getToleranceAsDa(peptideMass) <= 2)
 			{
-				String scanKey = scanNum+":"+charge;
-				scanKeyList.add(scanKey);
-				spec.setCharge(charge);
-				NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
-				float peptideMass = spec.getParentMass() - (float)Composition.H2O;
-				float tolDa = parentMassTolerance.getToleranceAsDa(peptideMass);
-				int maxNominalPeptideMass = NominalMass.toNominalMass(peptideMass + tolDa);
-				
-				if(scorer.supportEdgeScores())
-					scanKeyScorerMap.put(scanKey, new DBScanScorer(scoredSpec, maxNominalPeptideMass));
-				else
-					scanKeyScorerMap.put(scanKey, new FastScorer(scoredSpec, maxNominalPeptideMass));
-				while(pepMassScanKeyMap.get(peptideMass) != null)
-					peptideMass = Math.nextUp(peptideMass);
-				pepMassScanKeyMap.put(peptideMass, scanKey);
-				
-				if(numAllowedC13 > 0 && parentMassTolerance.getToleranceAsDa(peptideMass) <= 2)
+				if(numAllowedC13 >= 1)
 				{
-					if(numAllowedC13 >= 1)
-					{
-						float mass1 = peptideMass-(float)Composition.ISOTOPE;
-						while(pepMassScanKeyMap.get(mass1) != null)
-							mass1 = Math.nextUp(mass1);
-						pepMassScanKeyMap.put(mass1, scanKey);
-					}
-					
-					if(numAllowedC13 >= 2)
-					{
-						float mass2 = peptideMass-2*(float)Composition.ISOTOPE;
-						while(pepMassScanKeyMap.get(mass2) != null)
-							mass2 = Math.nextUp(mass2);
-						pepMassScanKeyMap.put(mass2, scanKey);
-					}
-				}				
-			}
+					float mass1 = peptideMass-(float)Composition.ISOTOPE;
+					while(pepMassScanKeyMap.get(mass1) != null)
+						mass1 = Math.nextUp(mass1);
+					pepMassScanKeyMap.put(mass1, scanKey);
+				}
+				
+				if(numAllowedC13 >= 2)
+				{
+					float mass2 = peptideMass-2*(float)Composition.ISOTOPE;
+					while(pepMassScanKeyMap.get(mass2) != null)
+						mass2 = Math.nextUp(mass2);
+					pepMassScanKeyMap.put(mass2, scanKey);
+				}
+			}				
+			
 		}		
 		
 		// compute the number of distinct peptides

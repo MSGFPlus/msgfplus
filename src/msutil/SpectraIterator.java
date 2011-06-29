@@ -122,6 +122,4 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
 	public Iterator<Spectrum> iterator() {
 		return this;
 	}
-		
-	
 }

@@ -2,15 +2,21 @@ package ui;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 
+import parser.MS2SpectrumParser;
 import parser.MgfSpectrumParser;
+import parser.MzXMLSpectraIterator;
 import parser.MzXMLSpectraMap;
 import parser.PNNLSpectrumParser;
+import parser.PklSpectrumParser;
+import parser.SpectrumParser;
 import suffixarray.SuffixArraySequence;
 
 import msdbsearch.DBScanner;
@@ -24,7 +30,10 @@ import msutil.Enzyme;
 import msutil.ActivationMethod;
 import msutil.InstrumentType;
 import msutil.SpecFileFormat;
+import msutil.SpecKey;
+import msutil.SpectraIterator;
 import msutil.SpectraMap;
+import msutil.Spectrum;
 import msutil.SpectrumAccessorByScanNum;
 
 public class MSGFDB {
@@ -432,13 +441,39 @@ public class MSGFDB {
     		int maxCharge
     		)
 	{
+    	
+    	Iterator<Spectrum> specItr = null;
 		SpectrumAccessorByScanNum specAccessor = null;
+		
 		if(specFormat == SpecFileFormat.MZXML)
+		{
+			specItr = new MzXMLSpectraIterator(specFile.getPath());
 			specAccessor = new MzXMLSpectraMap(specFile.getPath());
-		else if(specFormat == SpecFileFormat.MGF)
-			specAccessor = new SpectraMap(specFile.getPath(), new MgfSpectrumParser());
-		else if(specFormat == SpecFileFormat.DTA_TXT)
-			specAccessor = new SpectraMap(specFile.getPath(), new PNNLSpectrumParser());
+		}
+		else
+		{
+			SpectrumParser parser = null;
+			if(specFormat == SpecFileFormat.MGF)
+				parser = new MgfSpectrumParser();
+			else if(specFormat == SpecFileFormat.DTA_TXT)
+				parser = new PNNLSpectrumParser();
+			else if(specFormat == SpecFileFormat.MS2)
+				parser = new MS2SpectrumParser();
+			else if(specFormat == SpecFileFormat.PKL)
+				parser = new PklSpectrumParser();
+			
+			try {
+				specItr = new SpectraIterator(specFile.getPath(), parser);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+			specAccessor = new SpectraMap(specFile.getPath(), parser);
+		}
+		
+		if(specItr == null || specAccessor == null)
+		{
+			printUsageAndExit("Error while parsing spectrum file: " + specFile.getPath());
+		}
 		
 		NewRankScorer scorer = null;
 		if(paramFile != null)
@@ -456,12 +491,19 @@ public class MSGFDB {
 		int avgPeptideMass = 2000;
 		int numBytesPerMass = 8;
 		int numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
-		ArrayList<Integer> scanNumList = specAccessor.getScanNumList();
+		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specItr, minCharge, maxCharge);
 		
 		if(scanNum >= 0)
 		{
-			scanNumList.clear();
-			scanNumList.add(scanNum);
+			specKeyList.clear();
+			Spectrum spec = specAccessor.getSpectrumByScanNum(scanNum);
+			if(spec.getCharge() == 0)
+			{
+				for(int c=minCharge; c<=maxCharge; c++)
+					specKeyList.add(new SpecKey(scanNum, c));
+			}
+			else
+				specKeyList.add(new SpecKey(scanNum, spec.getCharge()));
 		}
 		
 		int fromIndex = 0;
@@ -476,10 +518,10 @@ public class MSGFDB {
 		MSGFDBResultGenerator gen = new MSGFDBResultGenerator(header);	
 		while(true)
 		{
-			if(fromIndex >= scanNumList.size())
+			if(fromIndex >= specKeyList.size())
 				break;
-			int toIndex = Math.min(scanNumList.size(), fromIndex+numSpecScannedTogether);
-			System.out.println("Spectrum " + fromIndex + "-" + (toIndex-1) + " (total: " + scanNumList.size() + ")");
+			int toIndex = Math.min(specKeyList.size(), fromIndex+numSpecScannedTogether);
+			System.out.println("Spectrum " + fromIndex + "-" + (toIndex-1) + " (total: " + specKeyList.size() + ")");
 			
 			// spectrum preprocessing
 	    	System.out.print("Preprocessing spectra...");
@@ -488,7 +530,7 @@ public class MSGFDB {
 	    			new SuffixArraySequence(databaseFile.getPath()), 
 	    			aaSet,
 	    			specAccessor,
-	    			scanNumList.subList(fromIndex, toIndex),
+	    			specKeyList.subList(fromIndex, toIndex),
 	    			parentMassTolerance,
 	    			numAllowedC13,
 	    			scorer,
