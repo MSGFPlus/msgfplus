@@ -48,7 +48,9 @@ public class MSGFDB {
 		File 	databaseFile 	= null;
 		File	paramFile		= null;
 		File	outputFile = null;
-		Tolerance parentMassTolerance = null;
+//		Tolerance parentMassTolerance = null;
+		Tolerance leftParentMassTolerance = null;
+		Tolerance rightParentMassTolerance = null;
 		Boolean isTolerancePPM = null;
 		int numAllowedC13 = 1;
 		int 	numMatchesPerSpec = 1;
@@ -133,10 +135,27 @@ public class MSGFDB {
 			}
 			else if(argv[i].equalsIgnoreCase("-t"))
 			{
-				parentMassTolerance = Tolerance.parseToleranceStr(argv[i+1]);
-				if(parentMassTolerance == null)
+				String[] token = argv[i+1].split(",");
+				if(token.length == 1)
+				{
+					leftParentMassTolerance = rightParentMassTolerance = Tolerance.parseToleranceStr(token[0]);
+				}
+				else if(token.length == 2)
+				{
+					leftParentMassTolerance = Tolerance.parseToleranceStr(token[0]);
+					rightParentMassTolerance = Tolerance.parseToleranceStr(token[1]);
+				}
+				if(leftParentMassTolerance == null || rightParentMassTolerance == null)
 				{
 					printUsageAndExit("Illegal tolerance value: " + argv[i+1]);
+				}
+				if(leftParentMassTolerance.isTolerancePPM() != rightParentMassTolerance.isTolerancePPM())
+				{
+					printUsageAndExit("Left and right tolerance units must be the same: " + argv[i+1]);
+				}
+				if(leftParentMassTolerance.getValue() < 0 || rightParentMassTolerance.getValue() < 0)
+				{
+					printUsageAndExit("Parent mass tolerance must not be negative: " + argv[i+1]);
 				}
 			}
 			else if(argv[i].equalsIgnoreCase("-u"))	// hidden option for ccms workflow
@@ -340,7 +359,7 @@ public class MSGFDB {
 		if(databaseFile == null)
 			printUsageAndExit("Database is not specified.");
 		
-		if(parentMassTolerance == null)
+		if(leftParentMassTolerance == null || rightParentMassTolerance == null)
 			printUsageAndExit("Parent mass tolerance is not specified.");
 
 		if(minPeptideLength > maxPeptideLength)
@@ -350,7 +369,10 @@ public class MSGFDB {
 			printUsageAndExit("MinPrecursorCharge must not be larger than MaxPrecursorCharge!");
 		
 		if(isTolerancePPM != null)
-			parentMassTolerance = new Tolerance(parentMassTolerance.getValue(), isTolerancePPM);
+		{
+			leftParentMassTolerance = new Tolerance(leftParentMassTolerance.getValue(), isTolerancePPM);
+			rightParentMassTolerance = new Tolerance(rightParentMassTolerance.getValue(), isTolerancePPM);
+		}
 	
 		if(aaSet == null)
 			aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
@@ -358,7 +380,7 @@ public class MSGFDB {
 		if(activationMethod == ActivationMethod.HCD)
 			instType = InstrumentType.HIGH_RESOLUTION_LTQ;
 		
-		if(parentMassTolerance.getToleranceAsDa(1000) >= 0.5f)
+		if(rightParentMassTolerance.getToleranceAsDa(1000) >= 0.5f)
 			numAllowedC13 = 0;
 		
 		if(useTDA)
@@ -382,7 +404,7 @@ public class MSGFDB {
 		
 		aaSet.registerEnzyme(enzyme);
 		
-		runMSGFDB(specFile, specFormat, databaseFile, paramFile, parentMassTolerance, numAllowedC13,
+		runMSGFDB(specFile, specFormat, databaseFile, paramFile, leftParentMassTolerance, rightParentMassTolerance, numAllowedC13,
 	    		outputFile, enzyme, numAllowedNonEnzymaticTermini,
 	    		activationMethod, instType, aaSet, numMatchesPerSpec, scanNum, showTitle, useTDA,
 	    		minPeptideLength, maxPeptideLength, minCharge, maxCharge);
@@ -398,11 +420,12 @@ public class MSGFDB {
 	{
 		if(message != null)
 			System.out.println(message);
-		System.out.println("MSGFDB v2 (06/29/2011)");
+		System.out.println("MSGFDB v2 (06/30/2011)");
 		System.out.print("Usage: java -Xmx2000M -jar MSGFDB.jar\n"
 				+ "\t-s SpectrumFile (*.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt)\n" //, *.mgf, *.pkl, *.ms2)\n"
 				+ "\t-d Database (*.fasta or *.fa)\n"
-				+ "\t-t ParentMassTolerance (e.g. 2.5Da or 30ppm, no space is allowed.)\n"
+				+ "\t-t ParentMassTolerance (e.g. 2.5Da, 30ppm or 0.5Da,2.5Da)\n"
+				+ "\t   Use comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (expMass<theoMass) and 2.5Da to the right (expMass>theoMass).\n"
 				+ "\t[-o outputFileName] (Default: stdout)\n"
 				+ "\t[-tda 0/1] (0: don't search decoy database (default), 1: search decoy database to compute FDR)\n"
 				+ "\t[-m FragmentationMethodID] (0: as written in the spectrum or CID if no info (Default), 1: CID, 2: ETD, 3: HCD)\n"
@@ -431,7 +454,8 @@ public class MSGFDB {
     		SpecFileFormat specFormat, 
     		File databaseFile, 
     		File paramFile, 
-    		Tolerance parentMassTolerance, 
+    		Tolerance leftParentMassTolerance, 
+    		Tolerance rightParentMassTolerance, 
     		int numAllowedC13,
     		File outputFile, 
     		Enzyme enzyme, 
@@ -521,7 +545,7 @@ public class MSGFDB {
 			+"FragMethod\t"
 			+(showTitle ? "Title\t" : "")
 			+"Precursor\tPMError("
-			+(parentMassTolerance.isTolerancePPM() ? "ppm" : "Da")
+			+(rightParentMassTolerance.isTolerancePPM() ? "ppm" : "Da")
 			+")\tCharge\tPeptide\tProtein\tDeNovoScore\tMSGFScore\tSpecProb\tP-value";
 		MSGFDBResultGenerator gen = new MSGFDBResultGenerator(header);	
 		while(true)
@@ -539,7 +563,8 @@ public class MSGFDB {
 	    			aaSet,
 	    			specAccessor,
 	    			specKeyList.subList(fromIndex, toIndex),
-	    			parentMassTolerance,
+	    			leftParentMassTolerance,
+	    			rightParentMassTolerance,
 	    			numAllowedC13,
 	    			scorer,
 	    			activationMethod,
@@ -569,7 +594,7 @@ public class MSGFDB {
 			System.out.println("Database search... " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
 
 	    	// running MS-GF
-			System.out.print("Computing P-values...");
+			System.out.print("Computing Spectral Probabilities and P-values...");
 	    	time = System.currentTimeMillis(); 
 	    	sa.computeSpecProb(!useTDA);
 	    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");

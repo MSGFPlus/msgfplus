@@ -52,7 +52,8 @@ public class DBScanner extends SuffixArray {
 	private int numPeptidesPerSpec;
 	
 	private SpectrumAccessorByScanNum specMap;
-	private Tolerance parentMassTolerance;
+	private Tolerance leftParentMassTolerance;
+	private Tolerance rightParentMassTolerance;
 	
 	private ActivationMethod activationMethod;
 	
@@ -71,7 +72,8 @@ public class DBScanner extends SuffixArray {
 			AminoAcidSet aaSet,
 			SpectrumAccessorByScanNum specMap,
 			List<SpecKey> specKeyList,
-			Tolerance parentMassTolerance,
+			Tolerance leftParentMassTolerance,
+			Tolerance rightParentMassTolerance,
 			int numAllowedC13,
 			NewRankScorer scorer,
 			ActivationMethod activationMethod,
@@ -98,7 +100,8 @@ public class DBScanner extends SuffixArray {
 		}
 		
 		this.aaSet = aaSet;
-		this.parentMassTolerance = parentMassTolerance;
+		this.leftParentMassTolerance = leftParentMassTolerance;
+		this.rightParentMassTolerance = rightParentMassTolerance;
 		this.enzyme = enzyme;
 		this.numAllowedC13 = numAllowedC13;
 		this.activationMethod = activationMethod;
@@ -132,8 +135,9 @@ public class DBScanner extends SuffixArray {
 			spec.setCharge(charge);
 			NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
 			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
-			float tolDa = parentMassTolerance.getToleranceAsDa(peptideMass);
-			int maxNominalPeptideMass = NominalMass.toNominalMass(peptideMass) + Math.round(tolDa-0.5f);
+			
+			float tolDaLeft = leftParentMassTolerance.getToleranceAsDa(peptideMass);
+			int maxNominalPeptideMass = NominalMass.toNominalMass(peptideMass) + Math.round(tolDaLeft-0.4999f);
 			
 			if(scorer.supportEdgeScores())
 				specKeyScorerMap.put(specKey, new DBScanScorer(scoredSpec, maxNominalPeptideMass));
@@ -143,7 +147,8 @@ public class DBScanner extends SuffixArray {
 				peptideMass = Math.nextUp(peptideMass);
 			pepMassSpecKeyMap.put(peptideMass, specKey);
 			
-			if(numAllowedC13 > 0 && parentMassTolerance.getToleranceAsDa(peptideMass) < 0.5f)
+			float tolDaRight = rightParentMassTolerance.getToleranceAsDa(peptideMass);
+			if(numAllowedC13 > 0 && tolDaRight < 0.5f)
 			{
 				if(numAllowedC13 >= 1)
 				{
@@ -275,9 +280,10 @@ public class DBScanner extends SuffixArray {
 					continue;
 				
 				float peptideMass = (float)prm[i+1];
-				float tolDa = parentMassTolerance.getToleranceAsDa(peptideMass);
+				float tolDaLeft = leftParentMassTolerance.getToleranceAsDa(peptideMass);
+				float tolDaRight = rightParentMassTolerance.getToleranceAsDa(peptideMass);
 				
-				Collection<SpecKey> matchedSpecKeyList = pepMassSpecKeyMap.subMap(peptideMass-tolDa, peptideMass+tolDa).values();
+				Collection<SpecKey> matchedSpecKeyList = pepMassSpecKeyMap.subMap(peptideMass-tolDaRight, peptideMass+tolDaLeft).values();
 				if(matchedSpecKeyList.size() > 0)
 				{
 					int peptideCleavageScore;
@@ -457,8 +463,10 @@ public class DBScanner extends SuffixArray {
 				for(int j=0; j<candidatePepGrid.size(); j++)
 				{
 					float peptideMass = candidatePepGrid.getPeptideMass(j);
-					float tolDa = parentMassTolerance.getToleranceAsDa(peptideMass);
-					Collection<SpecKey> matchedSpecKeyList = pepMassSpecKeyMap.subMap(peptideMass-tolDa, peptideMass+tolDa).values();
+					float tolDaLeft = leftParentMassTolerance.getToleranceAsDa(peptideMass);
+					float tolDaRight = rightParentMassTolerance.getToleranceAsDa(peptideMass);
+					
+					Collection<SpecKey> matchedSpecKeyList = pepMassSpecKeyMap.subMap(peptideMass-tolDaRight, peptideMass+tolDaLeft).values();
 					if(matchedSpecKeyList.size() > 0)
 					{
 						for(SpecKey specKey : matchedSpecKeyList)
@@ -597,11 +605,13 @@ public class DBScanner extends SuffixArray {
 				for(int j=0; j<candidatePepGrid.size(); j++)
 				{
 					float peptideMass = candidatePepGrid.getPeptideMass(j);
-					float tolDa = parentMassTolerance.getToleranceAsDa(peptideMass);
-					Collection<SpecKey> matchedScanKeyList = pepMassSpecKeyMap.subMap(peptideMass-tolDa, peptideMass+tolDa).values();
-					if(matchedScanKeyList.size() > 0)
+					float tolDaLeft = leftParentMassTolerance.getToleranceAsDa(peptideMass);
+					float tolDaRight = rightParentMassTolerance.getToleranceAsDa(peptideMass);
+					
+					Collection<SpecKey> matchedSpecKeyList = pepMassSpecKeyMap.subMap(peptideMass-tolDaRight, peptideMass+tolDaLeft).values();
+					if(matchedSpecKeyList.size() > 0)
 					{
-						for(SpecKey specKey : matchedScanKeyList)
+						for(SpecKey specKey : matchedSpecKeyList)
 						{
 							FastScorer scorer = specKeyScorerMap.get(specKey);
 							int score =  scorer.getScore(candidatePepGrid.getPRMGrid()[j], candidatePepGrid.getNominalPRMGrid()[j], 1, i+2); 
@@ -775,8 +785,10 @@ public class DBScanner extends SuffixArray {
 				for(int j=0; j<candidatePepGrid.size(); j++)
 				{
 					float peptideMass = candidatePepGrid.getPeptideMass(j);
-					float tolDa = parentMassTolerance.getToleranceAsDa(peptideMass);
-					Collection<SpecKey> matchedSpecKeyList = pepMassSpecKeyMap.subMap(peptideMass-tolDa, peptideMass+tolDa).values();
+					float tolDaLeft = leftParentMassTolerance.getToleranceAsDa(peptideMass);
+					float tolDaRight = rightParentMassTolerance.getToleranceAsDa(peptideMass);
+					
+					Collection<SpecKey> matchedSpecKeyList = pepMassSpecKeyMap.subMap(peptideMass-tolDaRight, peptideMass+tolDaLeft).values();
 					if(matchedSpecKeyList.size() > 0)
 					{
 						for(SpecKey specKey : matchedSpecKeyList)
@@ -844,18 +856,14 @@ public class DBScanner extends SuffixArray {
 			ScoredSpectrum<NominalMass> scoredSpec = specKeyScorerMap.get(specKey);
 			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
 			int nominalPeptideMass = NominalMass.toNominalMass(peptideMass);
-			float tolDa = parentMassTolerance.getToleranceAsDa(peptideMass);
+			float tolDaLeft = leftParentMassTolerance.getToleranceAsDa(peptideMass);
+			float tolDaRight = rightParentMassTolerance.getToleranceAsDa(peptideMass);
 			int maxPeptideMassIndex, minPeptideMassIndex;
-			if(tolDa >= 0.5f)
-			{
-				maxPeptideMassIndex = nominalPeptideMass + Math.round(tolDa-0.5f);
-				minPeptideMassIndex = nominalPeptideMass - Math.round(tolDa-0.5f);
-			}
-			else
-			{
-				maxPeptideMassIndex = nominalPeptideMass;
-				minPeptideMassIndex = nominalPeptideMass-numAllowedC13;
-			}
+			maxPeptideMassIndex = nominalPeptideMass + Math.round(tolDaLeft-0.4999f);
+			minPeptideMassIndex = nominalPeptideMass - Math.round(tolDaRight-0.4999f);
+			if(tolDaRight < 0.5f)
+				minPeptideMassIndex -= numAllowedC13;
+			
 			for(int peptideMassIndex = minPeptideMassIndex; peptideMassIndex<=maxPeptideMassIndex; peptideMassIndex++)
 			{
 				DeNovoGraph<NominalMass> graph = new FlexAminoAcidGraph(
@@ -962,14 +970,16 @@ public class DBScanner extends SuffixArray {
 				float theoMass = pep.getParentMass();
 				float pmError = Float.MAX_VALUE;
 				float peptideMass = spec.getParentMass() - (float)Composition.H2O;
-				int nC13 = parentMassTolerance.getToleranceAsDa(peptideMass) >= 0.5f ? numAllowedC13 : 0;
+				
+				float tolDaRight = rightParentMassTolerance.getToleranceAsDa(peptideMass);
+				int nC13 = tolDaRight >= 0.5f ? 0 : numAllowedC13;
 				for(int numC13=0; numC13<=nC13; numC13++)
 				{
 					float error = expMass-theoMass-(float)(Composition.ISOTOPE)*numC13; 
 					if(Math.abs(error) < Math.abs(pmError))
 						pmError = error;
 				}
-				if(parentMassTolerance.isTolerancePPM())
+				if(rightParentMassTolerance.isTolerancePPM())
 					pmError = pmError/theoMass*1e6f;
 				
 				String protein = getAnnotation(index+1);
