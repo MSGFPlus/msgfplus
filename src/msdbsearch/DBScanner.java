@@ -135,7 +135,7 @@ public class DBScanner extends SuffixArray {
 			NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
 			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
 			float tolDa = parentMassTolerance.getToleranceAsDa(peptideMass);
-			int maxNominalPeptideMass = NominalMass.toNominalMass(peptideMass + tolDa);
+			int maxNominalPeptideMass = NominalMass.toNominalMass(peptideMass) + Math.round(tolDa-0.5f);
 			
 			if(scorer.supportEdgeScores())
 				specKeyScorerMap.put(specKey, new DBScanScorer(scoredSpec, maxNominalPeptideMass));
@@ -825,6 +825,7 @@ public class DBScanner extends SuffixArray {
 			if(matchQueue == null)
 				continue;
 
+//			System.out.println(specKey);
 			int scanNum = specKey.getScanNum();
 			int charge = specKey.getCharge();
 			
