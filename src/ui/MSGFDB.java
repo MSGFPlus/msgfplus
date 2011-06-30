@@ -53,7 +53,7 @@ public class MSGFDB {
 		int numAllowedC13 = 1;
 		int 	numMatchesPerSpec = 1;
 		Enzyme	enzyme = Enzyme.TRYPSIN;
-		ActivationMethod activationMethod = ActivationMethod.CID;
+		ActivationMethod activationMethod = null;
 		InstrumentType instType = InstrumentType.LOW_RESOLUTION_LTQ;
 		int numAllowedNonEnzymaticTermini = 1;
 		boolean showTitle = false;
@@ -93,6 +93,10 @@ public class MSGFDB {
 							specFormat = SpecFileFormat.MZXML;
 						else if(extension.equalsIgnoreCase(".mgf"))
 							specFormat = SpecFileFormat.MGF;
+						else if(extension.equalsIgnoreCase(".ms2"))
+							specFormat = SpecFileFormat.MS2;
+						else if(extension.equalsIgnoreCase(".pkl"))
+							specFormat = SpecFileFormat.PKL;
 					}		
 					if(specFormat == null && specFileName.length() > 8)
 					{
@@ -264,7 +268,7 @@ public class MSGFDB {
 			else if(argv[i].equalsIgnoreCase("-maxLength"))
 			{
 				try {
-					minPeptideLength = Integer.parseInt(argv[i+1]);
+					maxPeptideLength = Integer.parseInt(argv[i+1]);
 				} catch (NumberFormatException e)
 				{
 					printUsageAndExit("Illigal maxLength: " + argv[i+1]);
@@ -391,14 +395,14 @@ public class MSGFDB {
 	{
 		if(message != null)
 			System.out.println(message);
-		System.out.println("MSGFDB v2 (06/24/2011)");
-		System.out.print("usage: java -Xmx2000M -jar MSGFDB.jar\n"
-				+ "\t-s SpectrumFile (*.mzXML, *.mgf, or *_dta.txt)\n" //, *.mgf, *.pkl, *.ms2)\n"
-				+ "\t-d Database (*.fasta)\n"
+		System.out.println("MSGFDB v2 (06/29/2011)");
+		System.out.print("Usage: java -Xmx2000M -jar MSGFDB.jar\n"
+				+ "\t-s SpectrumFile (*.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt)\n" //, *.mgf, *.pkl, *.ms2)\n"
+				+ "\t-d Database (*.fasta or *.fa)\n"
 				+ "\t-t ParentMassTolerance (e.g. 2.5Da or 30ppm, no space is allowed.)\n"
 				+ "\t[-o outputFileName] (Default: stdout)\n"
 				+ "\t[-tda 0/1] (0: don't search decoy database (default), 1: search decoy database to compute FDR)\n"
-				+ "\t[-m FragmentationMethodID] (0: as written in the spectrum, 1: CID (Default), 2: ETD, 3: HCD)\n"
+				+ "\t[-m FragmentationMethodID] (0: as written in the spectrum or CID if no info (Default), 1: CID, 2: ETD, 3: HCD)\n"
 				+ "\t[-inst InstrumentID] (0: Low-res LCQ/LTQ (Default for CID and ETD), 1: TOF , 2: High-res LTQ (Default for HCD))\n"
 				+ "\t[-e EnzymeID] (0: No enzyme, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N)\n"
 				+ "\t[-c13 0/1/2] (Number of allowed C13, Default: 1)\n"
@@ -415,6 +419,7 @@ public class MSGFDB {
 //				+ "\t[-err 0/1 (0: don't use peak errors (default), 1: use peak errors for scoring]\n"
 //				+ "\t[-title 0/1] (0: don't show title (default), 1: show title)\n"
 				);
+		System.out.println("Example: java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 30ppm -c13 1 -o testMSGFDB.tsv -tda 1");
 		System.exit(-1);
 	}
 	

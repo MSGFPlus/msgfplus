@@ -15,11 +15,13 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 		suffixScore = new float[peptideMass];
 		for(int i=0; i<prefixScore.length; i++)
 			prefixScore[i] = Float.MIN_VALUE;
+//		System.out.println("*************");
 		for(int nominalMass=1; nominalMass<peptideMass; nominalMass++)
 		{
 			NominalMass node = new NominalMass(nominalMass);
 			prefixScore[nominalMass] = scoredSpec.getNodeScore(node, true);
 			suffixScore[nominalMass] = scoredSpec.getNodeScore(node, false);
+//			System.out.println(nominalMass+"\t"+prefixScore[nominalMass]+"\t"+suffixScore[nominalMass]);
 		}
 		mainIonDirection = scoredSpec.getMainIonDirection();
 	}

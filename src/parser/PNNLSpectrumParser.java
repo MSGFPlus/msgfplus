@@ -1,5 +1,6 @@
 package parser;
 
+import java.util.HashSet;
 import java.util.Hashtable;
 
 import msutil.Composition;
@@ -102,13 +103,20 @@ public class PNNLSpectrumParser implements SpectrumParser {
 	public static void main(String argv[]) throws Exception
 	{
 		long time = System.currentTimeMillis();
-		String fileName = System.getProperty("user.home")+"/Research/ToolDistribution/PNNLTest/AID_STM_DJS_001_FTa_26Apr05_Pegasus_0305-07_dta.txt";
+		String fileName = System.getProperty("user.home")+"/Research/ToolDistribution/PNNLTest/QC_Shew_08_04_pt5_b_22Jan09_Owl_09-01-04_dta.txt";
 		SpectraIterator itr = new SpectraIterator(fileName, new PNNLSpectrumParser());
 		int numSpecs = 0;
+		HashSet<Integer> scanNumSet = new HashSet<Integer>();
 		while(itr.hasNext())
 		{
 			Spectrum spec = itr.next();
 			numSpecs++;
+			if(scanNumSet.contains(spec.getScanNum()))
+			{
+				System.out.println(spec.getScanNum());
+			}
+			else
+				scanNumSet.add(spec.getScanNum());
 //			System.out.println(spec+ "\t" + spec.getScanNum()+"\t"+(spec.getParentMass()+(float)Composition.PROTON)+"\t"+spec.getCharge());
 		}
 		System.out.println("NumSpecs: " + numSpecs);
