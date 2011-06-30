@@ -358,6 +358,9 @@ public class MSGFDB {
 		if(activationMethod == ActivationMethod.HCD)
 			instType = InstrumentType.HIGH_RESOLUTION_LTQ;
 		
+		if(parentMassTolerance.getToleranceAsDa(1000) >= 0.5f)
+			numAllowedC13 = 0;
+		
 		if(useTDA)
 		{
 			String dbFileName = databaseFile.getName();

@@ -56,7 +56,6 @@ public class DBScanner extends SuffixArray {
 	
 	private ActivationMethod activationMethod;
 	
-	private List<SpecKey> specKeyList;
 	private TreeMap<Float,SpecKey> pepMassSpecKeyMap;
 	private HashMap<SpecKey,FastScorer> specKeyScorerMap;
 	
@@ -104,7 +103,6 @@ public class DBScanner extends SuffixArray {
 		this.numAllowedC13 = numAllowedC13;
 		this.activationMethod = activationMethod;
 		this.specMap = specMap;
-		this.specKeyList = specKeyList;
 		this.numPeptidesPerSpec = numPeptidesPerSpec;
 		this.minPeptideLength = minPeptideLength;
 		this.maxPeptideLength = maxPeptideLength;
@@ -145,7 +143,7 @@ public class DBScanner extends SuffixArray {
 				peptideMass = Math.nextUp(peptideMass);
 			pepMassSpecKeyMap.put(peptideMass, specKey);
 			
-			if(numAllowedC13 > 0 && parentMassTolerance.getToleranceAsDa(peptideMass) <= 2)
+			if(numAllowedC13 > 0 && parentMassTolerance.getToleranceAsDa(peptideMass) < 0.5f)
 			{
 				if(numAllowedC13 >= 1)
 				{
@@ -436,7 +434,7 @@ public class DBScanner extends SuffixArray {
 					}
 				}
 				
-//				if(sequence.getSubsequence(index, index+i+1).equalsIgnoreCase("ADEAGSEADHEGTHST"))
+//				if(sequence.getSubsequence(index, index+i+1).equalsIgnoreCase("KTQDAHFQR"))
 //					System.out.println("Debug");
 
 				if(i < minPeptideLength)
@@ -848,7 +846,7 @@ public class DBScanner extends SuffixArray {
 			int nominalPeptideMass = NominalMass.toNominalMass(peptideMass);
 			float tolDa = parentMassTolerance.getToleranceAsDa(peptideMass);
 			int maxPeptideMassIndex, minPeptideMassIndex;
-			if(tolDa > 0.5f)
+			if(tolDa >= 0.5f)
 			{
 				maxPeptideMassIndex = nominalPeptideMass + Math.round(tolDa-0.5f);
 				minPeptideMassIndex = nominalPeptideMass - Math.round(tolDa-0.5f);
@@ -963,7 +961,9 @@ public class DBScanner extends SuffixArray {
 				float expMass = spec.getParentMass();
 				float theoMass = pep.getParentMass();
 				float pmError = Float.MAX_VALUE;
-				for(int numC13=0; numC13<=numAllowedC13; numC13++)
+				float peptideMass = spec.getParentMass() - (float)Composition.H2O;
+				int nC13 = parentMassTolerance.getToleranceAsDa(peptideMass) >= 0.5f ? numAllowedC13 : 0;
+				for(int numC13=0; numC13<=nC13; numC13++)
 				{
 					float error = expMass-theoMass-(float)(Composition.ISOTOPE)*numC13; 
 					if(Math.abs(error) < Math.abs(pmError))
