@@ -445,7 +445,7 @@ public class MSGFDB {
 //				+ "\t[-err 0/1 (0: don't use peak errors (default), 1: use peak errors for scoring]\n"
 //				+ "\t[-title 0/1] (0: don't show title (default), 1: show title)\n"
 				);
-		System.out.println("Example: java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 30ppm -c13 1 -o testMSGFDB.tsv -tda 1");
+		System.out.println("Example: java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 30ppm -c13 1 -o testMSGFDB.tsv -nnet 0 -tda 1");
 		System.exit(-1);
 	}
 	
