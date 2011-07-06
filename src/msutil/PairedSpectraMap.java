@@ -6,7 +6,7 @@ public class PairedSpectraMap implements SpectrumAccessorByScanNum {
 	private SpectrumAccessorByScanNum specMap;
 	private ArrayList<Integer> scanNumList;
 	
-	public PairedSpectraMap(SpectrumAccessorByScanNum specMap)
+	public PairedSpectraMap(SpectraIterator itr)
 	{
 		this.specMap = specMap;
 	}

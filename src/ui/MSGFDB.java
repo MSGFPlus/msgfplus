@@ -428,7 +428,7 @@ public class MSGFDB {
 				+ "\t   Use comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (expMass<theoMass) and 2.5Da to the right (expMass>theoMass).\n"
 				+ "\t[-o outputFileName] (Default: stdout)\n"
 				+ "\t[-tda 0/1] (0: don't search decoy database (default), 1: search decoy database to compute FDR)\n"
-				+ "\t[-m FragmentationMethodID] (0: as written in the spectrum or CID if no info (Default), 1: CID, 2: ETD, 3: HCD)\n"
+				+ "\t[-m FragmentationMethodID] (0: as written in the spectrum or CID if no info (Default), 1: CID, 2: ETD, 3: HCD, 4: )\n"
 				+ "\t[-inst InstrumentID] (0: Low-res LCQ/LTQ (Default for CID and ETD), 1: TOF , 2: High-res LTQ (Default for HCD))\n"
 				+ "\t[-e EnzymeID] (0: No enzyme, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N)\n"
 				+ "\t[-c13 0/1/2] (Number of allowed C13, Default: 1)\n"
@@ -439,8 +439,8 @@ public class MSGFDB {
 				+ "\t[-minCharge MinPrecursorCharge] (Minimum precursor charge to consider if charges are not specified in the spectrum file, Default: 2)\n"
 				+ "\t[-maxCharge MaxPrecursorCharge] (Maximum precursor charge to consider if charges are not specified in the spectrum file, Default: 3)\n"
 				+ "\t[-n NumMatchesPerSpec] (Number of matches per spectrum to be reported, Default: 1)\n"
-				+ "\t[-uniformAAProb 0/1] (0: use amino acid probabilities computed from the input database (default), 1: use probability 0.05 for all amino acids)\n"
-//				+ "\t[-scan scanNum] (scan number to be searched)\n"
+				+ "\t[-uniformAAProb 0/1] (0: use amino acid probabilities computed from the input database (Default), 1: use probability 0.05 for all amino acids)\n"
+//				+ "\t[-scan scanNum] (scan number to be searched)\n" => hidden option
 //				+ "\t[-param paramFile]\n"
 //				+ "\t[-err 0/1 (0: don't use peak errors (default), 1: use peak errors for scoring]\n"
 //				+ "\t[-title 0/1] (0: don't show title (default), 1: show title)\n"
@@ -475,12 +475,12 @@ public class MSGFDB {
 	{
     	
     	Iterator<Spectrum> specItr = null;
-		SpectrumAccessorByScanNum specAccessor = null;
+		SpectrumAccessorByScanNum specMap = null;
 		
 		if(specFormat == SpecFileFormat.MZXML)
 		{
 			specItr = new MzXMLSpectraIterator(specFile.getPath());
-			specAccessor = new MzXMLSpectraMap(specFile.getPath());
+			specMap = new MzXMLSpectraMap(specFile.getPath());
 		}
 		else
 		{
@@ -499,10 +499,10 @@ public class MSGFDB {
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
-			specAccessor = new SpectraMap(specFile.getPath(), parser);
+			specMap = new SpectraMap(specFile.getPath(), parser);
 		}
 		
-		if(specItr == null || specAccessor == null)
+		if(specItr == null || specMap == null)
 		{
 			printUsageAndExit("Error while parsing spectrum file: " + specFile.getPath());
 		}
@@ -528,7 +528,7 @@ public class MSGFDB {
 		if(scanNum >= 0)
 		{
 			specKeyList.clear();
-			Spectrum spec = specAccessor.getSpectrumByScanNum(scanNum);
+			Spectrum spec = specMap.getSpectrumByScanNum(scanNum);
 			if(spec.getCharge() == 0)
 			{
 				for(int c=minCharge; c<=maxCharge; c++)
@@ -561,7 +561,7 @@ public class MSGFDB {
 	    	DBScanner sa = new DBScanner(
 	    			new SuffixArraySequence(databaseFile.getPath()), 
 	    			aaSet,
-	    			specAccessor,
+	    			specMap,
 	    			specKeyList.subList(fromIndex, toIndex),
 	    			leftParentMassTolerance,
 	    			rightParentMassTolerance,
@@ -605,7 +605,6 @@ public class MSGFDB {
 	    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
 			fromIndex += numSpecScannedTogether;
 		}
-
 		
 		System.out.print("Computing EFDRs...");
     	long time = System.currentTimeMillis();

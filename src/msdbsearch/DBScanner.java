@@ -67,7 +67,6 @@ public class DBScanner extends SuffixArray {
 	private HashMap<Integer,PriorityQueue<DatabaseMatch>> scanNumDBMatchMap;
 
 	public DBScanner(
-//			NominalMassFactory factory,
 			SuffixArraySequence sequence, 
 			AminoAcidSet aaSet,
 			SpectrumAccessorByScanNum specMap,
@@ -86,6 +85,8 @@ public class DBScanner extends SuffixArray {
 			) 
 	{
 		super(sequence);
+		
+		// Initialize mass arrays for a faster search
 		aaMass = new double[aaSet.getMaxResidue()];
 		intAAMass = new int[aaSet.getMaxResidue()];
 		for(int i=0; i<aaMass.length; i++)
@@ -166,7 +167,6 @@ public class DBScanner extends SuffixArray {
 					pepMassSpecKeyMap.put(mass2, specKey);
 				}
 			}				
-			
 		}		
 		
 		// compute the number of distinct peptides
