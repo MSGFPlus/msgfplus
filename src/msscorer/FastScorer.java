@@ -33,11 +33,16 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 
 	protected FastScorer() {}
 	
+	@Override
 	public Peak getPrecursorPeak()	{ return precursor; }
+	
+	@Override
+	public String getActivationMethodName()	{ return activationMethodName; }
+	
 	public float getParentMass()	{ return precursor.getMass(); }
 	public float getPeptideMass()	{ return precursor.getMass()-(float)(Composition.H2O); }
 	public int getCharge()			{ return precursor.getCharge(); }
-	public String getActivationMethodStr()	{ return activationMethodName; }
+	
 	
 	// fromIndex: inclusive, toIndex: exclusive
 	@Override
@@ -68,10 +73,5 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 	@Override
 	public boolean getMainIonDirection() {
 		return mainIonDirection;
-	}
-
-	@Override
-	public String getActivationMethodName() {
-		return activationMethodName;
 	}
 }

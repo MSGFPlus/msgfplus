@@ -922,16 +922,7 @@ public class DBScanner extends SuffixArray {
 					pValueStr = String.valueOf(pValue);
 				else
 					pValueStr = String.valueOf((float)pValue);
-				String actMethodStr;
-				if(specScanner.getActivationMethod() != null)
-					actMethodStr = specScanner.getActivationMethod().getName();
-				else
-				{
-					if(scorer.getActivationMethodStr() == null)
-						actMethodStr = ActivationMethod.CID.getName();
-					else
-						actMethodStr = scorer.getActivationMethodStr();
-				}
+				String actMethodStr = scorer.getActivationMethodName();
 				
 				String resultStr =
 					specFileName+"\t"
