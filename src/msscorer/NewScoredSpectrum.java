@@ -7,7 +7,6 @@ import msutil.Matter;
 import msutil.Peak;
 import msutil.Spectrum;
 
-//TODO: Implement CachedScoredSpectrum
 public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 
 	private Spectrum spec;
@@ -16,15 +15,11 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 	private IonType[][] ionTypes;	// segmentNum, ionType
 	private final int charge;
 	private final float parentMass;
+	private final Peak precursor;
+	private String activationMethodName;
 	private IonType mainIon;
 	private Partition partition;	// partition of the last segment
 	private float probPeak;
-	
-//	private HashMap<T, Float> prefixScore = null;
-//	private HashMap<T, Float> suffixScore = null;
-
-	//	// used if scorer supports edgeScore
-//	private HashMap<T, Float> nodeMass = null;
 	
 	public NewScoredSpectrum(Spectrum spec, NewRankScorer scorer)
 	{
@@ -34,6 +29,8 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 		this.charge = spec.getCharge();
 		this.parentMass = spec.getParentMass();
 		this.mme = scorer.mme;
+		this.precursor = (Peak)(spec.getPrecursorPeak().clone());
+		this.activationMethodName = scorer.getActivationMethod().getName();
 		
 		int numSegments = scorer.getNumSegments();
 		ionTypes = new IonType[numSegments][];
@@ -51,7 +48,14 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 		
 		float approxNumBins = spec.getPeptideMass()/(scorer.getMME().getValue()*2);
 		probPeak = spec.size()/approxNumBins;
+		spec.getParentMass();
 	}
+	
+	@Override
+	public Peak getPrecursorPeak()	{ return precursor; }
+	
+	@Override
+	public String getActivationMethodName()	{ return activationMethodName; }
 	
 	@Override
 	public int getNodeScore(T prm, T srm) 
@@ -162,45 +166,4 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 		
 		return score;
 	}
-
-//	public void precomputeNodeScores(ArrayList<T> nodes)
-//	{
-//		if(prefixScore != null)
-//			return;
-//		prefixScore = new HashMap<T, Float>();
-//		suffixScore = new HashMap<T, Float>();
-//		
-//		// intermediate nodes
-//		for(T node : nodes)
-//		{
-//			float prefScore = getNodeScore(node, true);
-//			float sufScore = getNodeScore(node, false);
-//			prefixScore.put(node, prefScore);
-//			suffixScore.put(node, sufScore);
-//		}
-//	}
-//	
-//	public void precomputeNodeMasses(ArrayList<T> nodes)
-//	{
-//		if(!scorer.supportEdgeScores())
-//			return;
-//		if(nodeMass != null)
-//			return;
-//		
-//		nodeMass = new HashMap<T, Float>();
-//		
-//		int numNodesWithPeaks = 0;
-//		for(T node : nodes)
-//		{
-//			float theoMass = mainIon.getMz(node.getMass());
-//			Peak p = spec.getPeakByMass(theoMass, scorer.getMME());
-//			if(p != null)
-//			{
-//				nodeMass.put(node, mainIon.getMass(p.getMz()));
-//				numNodesWithPeaks++;
-//			}
-//		}
-//		
-//		this.probPeak = numNodesWithPeaks/(float)nodes.size();
-//	}	
 }

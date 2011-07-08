@@ -4,7 +4,10 @@ import java.io.File;
 import java.util.Calendar;
 
 import msscorer.ScoringParameterGeneratorWithErrors;
+import msutil.ActivationMethod;
 import msutil.AminoAcidSet;
+import msutil.Enzyme;
+import msutil.InstrumentType;
 
 public class TrainScoringParameters {
 	
@@ -86,6 +89,26 @@ public class TrainScoringParameters {
 			if(specFileName.endsWith(".mgf"))
 			{
 				String id = specFileName.substring(0, specFileName.lastIndexOf('.'));
+				String[] token = id.split("_");
+				if(token.length != 3)
+				{
+					System.err.println("Wrong file name: " + specFile.getName());
+					System.exit(-1);
+				}
+				String actMethodStr = token[0];
+				String instTypeStr = token[1];
+				String enzymeStr = token[2];
+				
+				ActivationMethod actMethod = ActivationMethod.get(actMethodStr);
+				InstrumentType instType = InstrumentType.get(instTypeStr);
+				Enzyme enzyme = Enzyme.getEnzymeByName(enzymeStr);
+				
+				if(actMethod == null || instType == null || enzyme == null)
+				{
+					System.err.println("Wrong file name: " + specFile.getName());
+					System.exit(-1);
+				}
+				
 				String paramFileName = id+".param";
 				File outputFile = new File(PARAM_DIR, paramFileName);
 				System.out.println("Generating " + outputFile.getPath());
@@ -104,7 +127,7 @@ public class TrainScoringParameters {
 //				{
 //					errorScalingFactor = 0;
 //				}
-				ScoringParameterGeneratorWithErrors.generateParameters(specFile, numSpecsPerPeptide, errorScalingFactor, outputFile, aaSet, false, false);
+				ScoringParameterGeneratorWithErrors.generateParameters(specFile, actMethod, instType, enzyme, numSpecsPerPeptide, errorScalingFactor, outputFile, aaSet, false, false);
 			}
 		}
 		System.out.println("Success!");

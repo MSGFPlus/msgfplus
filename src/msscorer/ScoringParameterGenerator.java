@@ -30,7 +30,7 @@ import parser.MgfSpectrumParser;
 /**
  * This only supports low accuracy fragment ions.
  * @author sangtaekim
- *
+ * @deprecated
  */
 public class ScoringParameterGenerator extends NewRankScorer {
 	private static final float MIN_OFFSET_MASS = -38f;	// for ion types

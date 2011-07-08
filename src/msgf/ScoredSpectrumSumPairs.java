@@ -1,16 +1,19 @@
 package msgf;
 
 import msutil.Matter;
+import msutil.Peak;
 
 public class ScoredSpectrumSumPairs<T extends Matter> implements ScoredSpectrum<T> {
 
 	private ScoredSpectrum<T> scoredSpec1;
 	private ScoredSpectrum<T> scoredSpec2;
+	private String activationMethodName;
 	
 	public ScoredSpectrumSumPairs(ScoredSpectrum<T> scoredSpec1, ScoredSpectrum<T> scoredSpec2)
 	{
 		this.scoredSpec1 = scoredSpec1;
 		this.scoredSpec2 = scoredSpec2;
+		activationMethodName = scoredSpec1.getActivationMethodName()+"/"+scoredSpec2.getActivationMethodName();
 	}
 	
 	@Override
@@ -27,6 +30,16 @@ public class ScoredSpectrumSumPairs<T extends Matter> implements ScoredSpectrum<
 	public boolean getMainIonDirection() {
 		assert(false): "Not supported!";
 		return false;
+	}
+
+	@Override
+	public String getActivationMethodName() {
+		return activationMethodName;
+	}
+
+	@Override
+	public Peak getPrecursorPeak() {
+		return scoredSpec1.getPrecursorPeak();
 	}
 	
 }

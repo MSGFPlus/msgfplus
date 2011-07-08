@@ -3,14 +3,30 @@ package msgf;
 import java.util.List;
 
 import msutil.Matter;
+import msutil.Peak;
 
 public class ScoredSpectrumSum<T extends Matter> implements ScoredSpectrum<T> {
 
 	private List<ScoredSpectrum<T>> scoredSpecList;
+	private final String activationMethodName;
+	private Peak precursor;
 	
 	public ScoredSpectrumSum(List<ScoredSpectrum<T>> scoredSpecList)
 	{
 		this.scoredSpecList = scoredSpecList;
+		StringBuffer buf = null;
+		for(ScoredSpectrum<T> scoredSpec : scoredSpecList)
+		{
+			if(buf != null)
+				buf.append("/"+scoredSpec.getActivationMethodName());
+			else
+			{
+				buf = new StringBuffer();
+				buf.append(scoredSpec.getActivationMethodName());
+				precursor = scoredSpec.getPrecursorPeak().clone();
+			}
+		}
+		activationMethodName = buf.toString();
 	}
 	
 	@Override
@@ -33,5 +49,15 @@ public class ScoredSpectrumSum<T extends Matter> implements ScoredSpectrum<T> {
 	public boolean getMainIonDirection() {
 		assert(false): "Not supported!";
 		return false;
+	}
+
+	@Override
+	public String getActivationMethodName() {
+		return activationMethodName;
+	}
+
+	@Override
+	public Peak getPrecursorPeak() {
+		return precursor;
 	}
 }

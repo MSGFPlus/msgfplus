@@ -1,6 +1,5 @@
 package msdbsearch;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
@@ -22,6 +21,11 @@ import msutil.Spectrum;
 import msutil.SpectrumAccessorByScanNum;
 
 public class SpectraScanner {
+	private Tolerance leftParentMassTolerance;
+	private Tolerance rightParentMassTolerance;
+	private ActivationMethod activationMethod;
+	private int numAllowedC13;
+
 	private TreeMap<Float,SpecKey> pepMassSpecKeyMap;
 	private HashMap<SpecKey,FastScorer> specKeyScorerMap;
 
@@ -36,6 +40,13 @@ public class SpectraScanner {
 			Enzyme enzyme
 			)
 	{
+		this.leftParentMassTolerance = leftParentMassTolerance;
+		this.rightParentMassTolerance = rightParentMassTolerance;
+		this.activationMethod = activationMethod;
+		this.numAllowedC13 = numAllowedC13;
+		
+		pepMassSpecKeyMap = new TreeMap<Float,SpecKey>();
+		specKeyScorerMap = new HashMap<SpecKey,FastScorer>();
 		for(SpecKey specKey : specKeyList)
 		{
 			int scanNum = specKey.getScanNum();
@@ -89,4 +100,12 @@ public class SpectraScanner {
 			}				
 		}		
 	}
+	
+	public Tolerance getLeftParentMassTolerance()				{ return leftParentMassTolerance; }
+	public Tolerance getRightParentMassTolerance()				{ return rightParentMassTolerance; }
+	public ActivationMethod getActivationMethod()				{ return activationMethod; }
+	public int getNumAllowedC13()								{ return numAllowedC13; }
+	public TreeMap<Float,SpecKey> getPepMassSpecKeyMap()		{ return pepMassSpecKeyMap; }
+	public HashMap<SpecKey,FastScorer> getSpecKeyScorerMap()	{ return specKeyScorerMap; }
+	
 }

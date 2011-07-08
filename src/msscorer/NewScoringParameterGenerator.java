@@ -24,7 +24,7 @@ import parser.MgfSpectrumParser;
 /**
  * This supports both low and high accuracy fragment ions.
  * @author sangtaekim
- *
+ * @deprecated
  */
 public class NewScoringParameterGenerator extends NewRankScorer {
 	private static final float MIN_PRECURSOR_OFFSET = -300f;	// for precursors

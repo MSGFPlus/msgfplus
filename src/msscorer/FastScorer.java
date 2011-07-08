@@ -1,6 +1,8 @@
 package msscorer;
 
 import msgf.NominalMass;
+import msutil.Composition;
+import msutil.Peak;
 
 // this does not use edge scores
 public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
@@ -8,6 +10,8 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 	protected float[] prefixScore = null;
 	protected float[] suffixScore = null;
 	private boolean mainIonDirection;
+	protected Peak precursor;
+	protected String activationMethodName;
 	
 	public FastScorer(NewScoredSpectrum<NominalMass> scoredSpec, int peptideMass)
 	{
@@ -15,16 +19,25 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 		suffixScore = new float[peptideMass];
 		for(int i=0; i<prefixScore.length; i++)
 			prefixScore[i] = Float.MIN_VALUE;
-//		System.out.println("*************");
 		for(int nominalMass=1; nominalMass<peptideMass; nominalMass++)
 		{
 			NominalMass node = new NominalMass(nominalMass);
 			prefixScore[nominalMass] = scoredSpec.getNodeScore(node, true);
 			suffixScore[nominalMass] = scoredSpec.getNodeScore(node, false);
-//			System.out.println(nominalMass+"\t"+prefixScore[nominalMass]+"\t"+suffixScore[nominalMass]);
 		}
 		mainIonDirection = scoredSpec.getMainIonDirection();
+		
+		this.precursor = scoredSpec.getPrecursorPeak();
+		this.activationMethodName = scoredSpec.getActivationMethodName();
 	}
+
+	protected FastScorer() {}
+	
+	public Peak getPrecursorPeak()	{ return precursor; }
+	public float getParentMass()	{ return precursor.getMass(); }
+	public float getPeptideMass()	{ return precursor.getMass()-(float)(Composition.H2O); }
+	public int getCharge()			{ return precursor.getCharge(); }
+	public String getActivationMethodStr()	{ return activationMethodName; }
 	
 	// fromIndex: inclusive, toIndex: exclusive
 	@Override
@@ -55,5 +68,10 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 	@Override
 	public boolean getMainIonDirection() {
 		return mainIonDirection;
+	}
+
+	@Override
+	public String getActivationMethodName() {
+		return activationMethodName;
 	}
 }

@@ -13,9 +13,12 @@ import msgf.Histogram;
 import msgf.IntHistogram;
 import msgf.NominalMass;
 import msgf.Tolerance;
+import msutil.ActivationMethod;
 import msutil.AminoAcid;
 import msutil.AminoAcidSet;
 import msutil.Composition;
+import msutil.Enzyme;
+import msutil.InstrumentType;
 import msutil.IonType;
 import msutil.Pair;
 import msutil.Peak;
@@ -56,6 +59,10 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
 		int numSpecsPerPeptide = 1;
 		int errorScalingFactor = 10;
+		
+		ActivationMethod activationMethod = null;
+		InstrumentType instType = null;
+		Enzyme enzyme = null;
 		
 		for(int i=0; i<argv.length; i+=2)
 		{
@@ -107,6 +114,67 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			{
 				errorScalingFactor = Integer.parseInt(argv[i+1]);
 			}
+			else if(argv[i].equalsIgnoreCase("-m"))	// Fragmentation method
+			{
+				// (0: written in the spectrum, 1: CID , 2: ETD, 3: HCD)
+				if(argv[i+1].equalsIgnoreCase("1"))
+				{
+					activationMethod = ActivationMethod.CID;
+				}
+				else if(argv[i+1].equalsIgnoreCase("2"))
+				{
+					activationMethod = ActivationMethod.ETD;
+				}
+				else if(argv[i+1].equalsIgnoreCase("3"))
+				{
+					activationMethod = ActivationMethod.HCD;
+				}
+				else
+				{
+					printUsageAndExit("Illegal activation method: " + argv[i+1]);
+				}
+			}			
+			else if(argv[i].equalsIgnoreCase("-inst"))	// Instrument type
+			{
+				if(argv[i+1].equalsIgnoreCase("0"))
+				{
+					instType = InstrumentType.LOW_RESOLUTION_LTQ;
+				}
+				else if(argv[i+1].equalsIgnoreCase("1"))
+				{
+					instType = InstrumentType.TOF;
+				}
+				else if(argv[i+1].equalsIgnoreCase("2"))
+				{
+					instType = InstrumentType.HIGH_RESOLUTION_LTQ;
+				}
+				else
+				{
+					printUsageAndExit("Illegal instrument type: " + argv[i+1]);
+				}
+			}		
+			else if(argv[i].equalsIgnoreCase("-e"))	// Enzyme
+			{
+				// 0: No enzyme, 1: Trypsin, 2: Chymotrypsin, 3: LysC, 4: LysN, 5: GluC, 6: ArgC, 7: AspN
+				if(argv[i+1].equalsIgnoreCase("0"))
+					enzyme = null;
+				else if(argv[i+1].equalsIgnoreCase("1"))
+					enzyme = Enzyme.TRYPSIN;
+				else if(argv[i+1].equalsIgnoreCase("2"))
+					enzyme = Enzyme.CHYMOTRYPSIN;
+				else if(argv[i+1].equalsIgnoreCase("3"))
+					enzyme = Enzyme.LysC;
+				else if(argv[i+1].equalsIgnoreCase("4"))
+					enzyme = Enzyme.LysN;
+				else if(argv[i+1].equalsIgnoreCase("5"))
+					enzyme = Enzyme.GluC;
+				else if(argv[i+1].equalsIgnoreCase("6"))
+					enzyme = Enzyme.ArgC;
+				else if(argv[i+1].equalsIgnoreCase("7"))
+					enzyme = Enzyme.AspN;
+				else
+					printUsageAndExit("Illegal enzyme: " + argv[i+1]);
+			}			
 			else
 				printUsageAndExit("Illegal parameters!");
 		}
@@ -114,8 +182,12 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			printUsageAndExit("missing annotatedMgfFileName!");
 		if(outputFile == null)
 			printUsageAndExit("missing outputFileName!");
+		if(activationMethod == null)
+			printUsageAndExit("missing activationMethod!");
+		if(instType == null)
+			printUsageAndExit("missing instrumentType!");
 		
-		generateParameters(specFile, numSpecsPerPeptide, errorScalingFactor, outputFile, aaSet, isText, false);
+		generateParameters(specFile, activationMethod, instType, enzyme, numSpecsPerPeptide, errorScalingFactor, outputFile, aaSet, isText, false);
 	}
 	
 	public static void printUsageAndExit(String message)
@@ -124,7 +196,10 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		System.out.println("usage: java -Xmx2000M -cp MSGF.jar msscorer.ScoringParameterGenerator\n" +
 				"\t-i annotatedMgfFileName (*.mgf)\n" +
 				"\t-o outputFileName (e.g. CID_Tryp.param)\n" +
-				"\t[-fixMod 0/1/2] (0: NoCysteineProtection, 1: CarbamidomethyC (default), 2: CarboxymethylC)\n" + 
+				"\t-m FragmentationMethodID (1: CID, 2: ETD, 3: HCD)\n" +
+				"\t-inst InstrumentID (0: Low-res LCQ/LTQ, 1: TOF , 2: High-res LTQ)\n" +
+				"\t-e EnzymeID (0: No enzyme, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N)\n" +
+				"\t[-fixMod 0/1/2] (0: NoCysteineProtection, 1: CarbamidomethyC (default), 2: CarboxymethylC)\n" +
 				"\t[-pep numPeptidesPerSpec]  (default: 1)\n" +
 				"\t[-err errorScalingFactor]  (default: 10)"
 		);
@@ -133,6 +208,9 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 	
 	public static void generateParameters(
 			File specFile, 
+			ActivationMethod activationMethod,
+			InstrumentType instType,
+			Enzyme enzyme,
 			int numSpecsPerPeptide, 
 			int errorScalingFactor,
 			File outputFile, 
@@ -164,7 +242,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			for(Spectrum spec : specList)
 				specContOnePerPep.add(spec);
 		
-		ScoringParameterGeneratorWithErrors gen = new ScoringParameterGeneratorWithErrors(specContOnePerPep);
+		ScoringParameterGeneratorWithErrors gen = new ScoringParameterGeneratorWithErrors(specContOnePerPep, activationMethod, instType, enzyme);
 		// set up the tolerance
 		gen.tolerance(new Tolerance(0.5f));
 		
@@ -216,9 +294,12 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 	// Required
 	private SpectraContainer specContainer;
 	
-	public ScoringParameterGeneratorWithErrors(SpectraContainer specContainer)
+	public ScoringParameterGeneratorWithErrors(SpectraContainer specContainer, ActivationMethod actMethod, InstrumentType instType, Enzyme enzyme)
 	{
 		this.specContainer = specContainer;
+		super.activationMethod = actMethod;
+		super.instType = instType;
+		super.enzyme = enzyme;
 	}
 	
 	public void partition(int numSegments)

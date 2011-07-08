@@ -21,6 +21,7 @@ import suffixarray.SuffixArraySequence;
 
 import msdbsearch.DBScanner;
 import msdbsearch.ReverseDB;
+import msdbsearch.SpectraScanner;
 import msgf.MSGFDBResultGenerator;
 import msgf.Tolerance;
 import msscorer.NewRankScorer;
@@ -58,7 +59,7 @@ public class MSGFDB {
 		ActivationMethod activationMethod = null;
 		InstrumentType instType = InstrumentType.LOW_RESOLUTION_LTQ;
 		int numAllowedNonEnzymaticTermini = 1;
-		boolean showTitle = false;
+//		boolean showTitle = false;
 		boolean useTDA = false;
 		boolean useUniformAAProb = false;
 		int minPeptideLength = 6;
@@ -198,6 +199,10 @@ public class MSGFDB {
 				{
 					activationMethod = ActivationMethod.HCD;
 				}
+				else if(argv[i+1].equalsIgnoreCase("4"))
+				{
+					activationMethod = ActivationMethod.FUSION;
+				}
 			}			
 			else if(argv[i].equalsIgnoreCase("-inst"))	// Instrument type
 			{
@@ -322,11 +327,11 @@ public class MSGFDB {
 					printUsageAndExit("Illigal numMatchesPerSpec: " + argv[i+1]);
 				} 
 			}
-			else if(argv[i].equalsIgnoreCase("-title"))
-			{
-				if(argv[i+1].equalsIgnoreCase("1"))
-					showTitle = true;
-			}
+//			else if(argv[i].equalsIgnoreCase("-title"))
+//			{
+//				if(argv[i+1].equalsIgnoreCase("1"))
+//					showTitle = true;
+//			}
 			else if(argv[i].equalsIgnoreCase("-uniformAAProb"))
 			{
 				if(argv[i+1].equalsIgnoreCase("1"))
@@ -380,6 +385,10 @@ public class MSGFDB {
 		if(activationMethod == ActivationMethod.HCD)
 			instType = InstrumentType.HIGH_RESOLUTION_LTQ;
 		
+		if(activationMethod == ActivationMethod.FUSION && specFormat != SpecFileFormat.MZXML)
+		{
+			printUsageAndExit("-m 4 parameter requires mzXML spectrum file!");
+		}
 		if(rightParentMassTolerance.getToleranceAsDa(1000) >= 0.5f)
 			numAllowedC13 = 0;
 		
@@ -406,7 +415,7 @@ public class MSGFDB {
 		
 		runMSGFDB(specFile, specFormat, databaseFile, paramFile, leftParentMassTolerance, rightParentMassTolerance, numAllowedC13,
 	    		outputFile, enzyme, numAllowedNonEnzymaticTermini,
-	    		activationMethod, instType, aaSet, numMatchesPerSpec, scanNum, showTitle, useTDA,
+	    		activationMethod, instType, aaSet, numMatchesPerSpec, scanNum, useTDA,
 	    		minPeptideLength, maxPeptideLength, minCharge, maxCharge);
 		System.out.format("Time: %.3f sec\n", (System.currentTimeMillis()-time)/(float)1000);
 	}
@@ -419,7 +428,7 @@ public class MSGFDB {
 	public static void printUsageAndExit(String message)
 	{
 		if(message != null)
-			System.out.println(message);
+			System.out.println("Error: " + message + "\n");
 		System.out.println("MSGFDB v2 (06/30/2011)");
 		System.out.print("Usage: java -Xmx2000M -jar MSGFDB.jar\n"
 				+ "\t-s SpectrumFile (*.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt)\n" //, *.mgf, *.pkl, *.ms2)\n"
@@ -428,7 +437,7 @@ public class MSGFDB {
 				+ "\t   Use comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (expMass<theoMass) and 2.5Da to the right (expMass>theoMass).\n"
 				+ "\t[-o outputFileName] (Default: stdout)\n"
 				+ "\t[-tda 0/1] (0: don't search decoy database (default), 1: search decoy database to compute FDR)\n"
-				+ "\t[-m FragmentationMethodID] (0: as written in the spectrum or CID if no info (Default), 1: CID, 2: ETD, 3: HCD, 4: )\n"
+				+ "\t[-m FragmentationMethodID] (0: as written in the spectrum or CID if no info (Default), 1: CID, 2: ETD, 3: HCD, 4: Fuse Spectra From Same Precursor)\n"
 				+ "\t[-inst InstrumentID] (0: Low-res LCQ/LTQ (Default for CID and ETD), 1: TOF , 2: High-res LTQ (Default for HCD))\n"
 				+ "\t[-e EnzymeID] (0: No enzyme, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N)\n"
 				+ "\t[-c13 0/1/2] (Number of allowed C13, Default: 1)\n"
@@ -465,7 +474,6 @@ public class MSGFDB {
     		AminoAcidSet aaSet, 
     		int numMatchesPerSpec,
     		int scanNum,
-    		boolean showTitle,
     		boolean useTDA,
     		int minPeptideLength,
     		int maxPeptideLength,
@@ -516,8 +524,6 @@ public class MSGFDB {
 		if(enzyme == null)
 			numAllowedNonEnzymaticTermini = 2;
 		
-//		NominalMassFactory factory = new NominalMassFactory(aaSet, enzyme, maxPeptideLength);
-		
 		// determine the number of spectra to be scanned together 
 		long maxMemory = Runtime.getRuntime().maxMemory();
 		int avgPeptideMass = 2000;
@@ -543,7 +549,7 @@ public class MSGFDB {
 		String header = 
 			"#SpecFile\tScan#\t"
 			+"FragMethod\t"
-			+(showTitle ? "Title\t" : "")
+//			+(showTitle ? "Title\t" : "")
 			+"Precursor\tPMError("
 			+(rightParentMassTolerance.isTolerancePPM() ? "ppm" : "Da")
 			+")\tCharge\tPeptide\tProtein\tDeNovoScore\tMSGFScore\tSpecProb\tP-value";
@@ -558,9 +564,7 @@ public class MSGFDB {
 			// spectrum preprocessing
 	    	System.out.print("Preprocessing spectra...");
 	    	long time = System.currentTimeMillis();
-	    	DBScanner sa = new DBScanner(
-	    			new SuffixArraySequence(databaseFile.getPath()), 
-	    			aaSet,
+	    	SpectraScanner specScanner = new SpectraScanner(
 	    			specMap,
 	    			specKeyList.subList(fromIndex, toIndex),
 	    			leftParentMassTolerance,
@@ -568,7 +572,13 @@ public class MSGFDB {
 	    			numAllowedC13,
 	    			scorer,
 	    			activationMethod,
+	    			enzyme
+	    			);
+	    	DBScanner sa = new DBScanner(
+	    			specScanner,
+	    			new SuffixArraySequence(databaseFile.getPath()),
 	    			enzyme,
+	    			aaSet,
 	    			numMatchesPerSpec,
 	    			minPeptideLength,
 	    			maxPeptideLength,
@@ -601,7 +611,7 @@ public class MSGFDB {
 	    	
 			System.out.print("Generating results...");
 	    	time = System.currentTimeMillis(); 
-	    	sa.addDBSearchResults(gen, specFile.getName(), showTitle);
+	    	sa.addDBSearchResults(gen, specFile.getName());
 	    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
 			fromIndex += numSpecScannedTogether;
 		}
@@ -655,12 +665,12 @@ public class MSGFDB {
 				int pepCol = 6;
 				int dbCol = 7;
 				int scoreCol = 10;
-				if(showTitle)
-				{
-					++pepCol;
-					++dbCol;
-					++scoreCol;
-				}
+//				if(showTitle)
+//				{
+//					++pepCol;
+//					++dbCol;
+//					++scoreCol;
+//				}
 				fdr.ComputeFDR.computeFDR(tempFile, null, scoreCol, false, "\t", 
 						scanNumCol, pepCol, null, true, true, 
 						true, dbCol, "REV_",

@@ -150,7 +150,7 @@ public class MSGF {
 				else if(argv[i+1].equalsIgnoreCase("1"))
 					activationMethod = ActivationMethod.ETD;
 				else if(argv[i+1].equalsIgnoreCase("2"))
-					activationMethod = ActivationMethod.CID_ETD;
+					activationMethod = ActivationMethod.HCD;
 				else
 					printUsageAndExit("Wrong fragmentation method: " + argv[i+1]);
 			}			
@@ -244,7 +244,7 @@ public class MSGF {
 				+ "\t-d SpecDir\n"// or -mgf annotatedMgfFile\n"
 				+ "\t[-o OutputFileName] (Default: stdout)\n"
 				+ "\t[-db DatabaseFileName] (for computing AA probabilities, if not specified, 1/20 is used for all AAs)\n"
-				+ "\t[-m FragmentationMethod 0/1] (0: CID (default), 1: ETD, 2: CID/ETD pairs)\n"
+				+ "\t[-m FragmentationMethod 0/1] (0: CID (default), 1: ETD, 2: HCD)\n"
 				+ "\t[-e Enzyme 0/1/2/3/4/5/6/7] (0: No enzyme, 1: Trypsin (default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N)\n"
 				+ "\t[-fixMod 0/1/2] (0: NoCysteineProtection, 1: CarbamidomethyC (default), 2: CarboxymethylC)\n"
 //				+ "\t[-nFixedMod NTermFixedModMass] (Default: 0)\n"

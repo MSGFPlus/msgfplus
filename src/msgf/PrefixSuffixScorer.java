@@ -3,6 +3,8 @@ package msgf;
 import msgf.IntMassFactory.IntMass;
 import msscorer.NewScoredSpectrum;
 import msscorer.SimpleDBSearchScorer;
+import msutil.ActivationMethod;
+import msutil.Peak;
 
 public class PrefixSuffixScorer implements SimpleDBSearchScorer<IntMass> {
 
@@ -10,6 +12,8 @@ public class PrefixSuffixScorer implements SimpleDBSearchScorer<IntMass> {
 	private float[] suffixScore = null;
 	private final boolean useVariablePMBin;
 	private boolean mainIonDirection;
+	private final String activationMethodName;
+	private final Peak precursor;
 	
 	public PrefixSuffixScorer(IntMassFactory factory, NewScoredSpectrum<IntMass> scoredSpec, int peptideMassIndex)
 	{
@@ -29,6 +33,8 @@ public class PrefixSuffixScorer implements SimpleDBSearchScorer<IntMass> {
 			useVariablePMBin = true;
 		else
 			useVariablePMBin = false;
+		this.activationMethodName = scoredSpec.getActivationMethodName();
+		this.precursor = scoredSpec.getPrecursorPeak();
 	}
 	
 	// fromIndex: inclusive, toIndex: exclusive
@@ -60,5 +66,15 @@ public class PrefixSuffixScorer implements SimpleDBSearchScorer<IntMass> {
 	@Override
 	public boolean getMainIonDirection() {
 		return mainIonDirection;
+	}
+
+	@Override
+	public String getActivationMethodName() {
+		return activationMethodName;
+	}
+
+	@Override
+	public Peak getPrecursorPeak() {
+		return precursor;
 	}
 }

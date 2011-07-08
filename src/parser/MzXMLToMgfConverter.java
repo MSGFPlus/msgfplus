@@ -64,11 +64,13 @@ public class MzXMLToMgfConverter {
 			}
 			else if(argv[i].equalsIgnoreCase("-m"))
 			{
-				// 0: CID, 1: ETD, 2: CID/IOExceptionETD pair
+				// 0: All, 1: CID, 2: ETD, 3: HCD
 				if(argv[i+1].equalsIgnoreCase("1"))
-					activationMethod = ActivationMethod.ETD;
+					activationMethod = ActivationMethod.CID;
 				else if(argv[i+1].equalsIgnoreCase("2"))
-					activationMethod = ActivationMethod.CID_ETD;
+					activationMethod = ActivationMethod.ETD;
+				else if(argv[i+1].equalsIgnoreCase("3"))
+					activationMethod = ActivationMethod.HCD;
 			}
 			else if(argv[i].equalsIgnoreCase("-l"))
 			{
@@ -115,7 +117,7 @@ public class MzXMLToMgfConverter {
 				+ "\t-s mzXMLFileName\n"
 				+ "\t-t mgfFileName\n"
 				+ "\t[-c charge (Default: all, e.g. 2, 2:4, :3, 2:)]\n"
-				+ "\t[-m 0/1/2 (0: All (default), 1: CID, 2: ETD)]\n"
+				+ "\t[-m 0/1/2 (0: All (default), 1: CID, 2: ETD, 3: HCD)]\n"
 				+ "\t[-l msLevel (Default: 2, e.g. 2, 2:4, :3, 2:)]\n"
 		);
 		System.exit(-1);

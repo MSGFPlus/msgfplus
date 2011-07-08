@@ -22,10 +22,11 @@ import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import msgf.Histogram;
-import msgf.NominalMass;
-import msgf.ScoredSpectrum;
 import msgf.Tolerance;
+import msutil.ActivationMethod;
 import msutil.AminoAcidSet;
+import msutil.Enzyme;
+import msutil.InstrumentType;
 import msutil.IonType;
 import msutil.Matter;
 import msutil.Spectrum;
@@ -36,6 +37,11 @@ public class NewRankScorer implements NewAdditiveScorer {
 
 	// Optional
 	protected WindowFilter filter = new WindowFilter(6, 50);
+	
+	// Type of the data
+	protected ActivationMethod activationMethod;
+	protected InstrumentType instType;
+	protected Enzyme enzyme;
 	
 	// Parameters to be used for scoring
 	protected int numSegments = 1;
@@ -61,7 +67,9 @@ public class NewRankScorer implements NewAdditiveScorer {
 	private HashMap<Partition, IonType> mainIonTable;
 	private HashMap<Partition, IonType[]> ionTypeTable;
 
-	public NewRankScorer() {}
+	public NewRankScorer() 
+	{
+	}
 	
 	public NewRankScorer(String paramFileName)
 	{
@@ -76,6 +84,21 @@ public class NewRankScorer implements NewAdditiveScorer {
 	public<T extends Matter> NewScoredSpectrum<T>  getScoredSpectrum(Spectrum spec)
 	{
 		return new NewScoredSpectrum<T>(spec, this);
+	}
+	
+	public ActivationMethod getActivationMethod()
+	{
+		return activationMethod;
+	}
+	
+	public InstrumentType getInstrumentType()
+	{
+		return instType;
+	}
+	
+	public Enzyme getEnzyme()
+	{
+		return enzyme;
 	}
 	
 	public void filterPrecursorPeaks(Spectrum spec)
@@ -190,6 +213,32 @@ public class NewRankScorer implements NewAdditiveScorer {
 
 			if(verbose)
 				System.out.println("CreationDate: " + year + "/" + (month+1) + "/" + date);
+
+			// Read activation method
+			StringBuffer bufMet = new StringBuffer();
+			byte lenActMethod = in.readByte();
+			for(byte i=0; i<lenActMethod; i++)
+				bufMet.append(in.readChar());
+			this.activationMethod = ActivationMethod.get(bufMet.toString());
+			
+			// Read instrument type
+			StringBuffer bufInst = new StringBuffer();
+			byte lenInst = in.readByte();
+			for(byte i=0; i<lenInst; i++)
+				bufInst.append(in.readChar());
+			this.instType = InstrumentType.get(bufInst.toString());
+
+			// Read enzyme
+			StringBuffer bufEnz = new StringBuffer();
+			byte lenEnz = in.readByte();
+			if(lenEnz != 0)
+			{
+				for(byte i=0; i<lenEnz; i++)
+					bufEnz.append(in.readChar());
+				this.enzyme = Enzyme.getEnzymeByName(bufEnz.toString());
+			}
+			else
+				this.enzyme = null;
 			
 			// MME
 			boolean isTolerancePPM = in.readBoolean();
@@ -572,6 +621,23 @@ public class NewRankScorer implements NewAdditiveScorer {
 			out.writeInt(Calendar.getInstance().get(Calendar.MONTH));
 			out.writeInt(Calendar.getInstance().get(Calendar.DATE));
 
+			// Write method
+			out.writeByte(activationMethod.getName().length());
+			out.writeChars(activationMethod.getName());
+			
+			// Write instrument type
+			out.writeByte(instType.getName().length());
+			out.writeChars(instType.getName());
+			
+			// Write enzyme
+			if(enzyme != null)
+			{
+				out.writeByte(enzyme.getName().length());
+				out.writeChars(enzyme.getName());
+			}
+			else
+				out.writeByte((byte)0);
+			
 			// Maximum mass error
 			out.writeBoolean(mme.isTolerancePPM());
 			out.writeFloat(mme.getValue());
@@ -698,6 +764,18 @@ public class NewRankScorer implements NewAdditiveScorer {
 		out.println("#MSGFScoringParameters\tv"+	
 				new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime()));
 
+		// Write method
+		if(activationMethod != null)
+			out.println("#Activation Method: " + activationMethod.getName());
+		
+		// Write instrument type
+		if(instType != null)
+			out.println("#Instrument type: " + instType.getName());
+		
+		// Write enzyme
+		if(enzyme != null)
+			out.println("#Enzyme: " + enzyme.getName());
+		
 		// Write mme
 		out.println("#Maximum mass error: " + mme.toString());
 		// Charge histogram
@@ -785,13 +863,6 @@ public class NewRankScorer implements NewAdditiveScorer {
 	{
 		readWriteTest();
 //		paramTest();
-	}
-	
-	public static void paramTest() throws Exception
-	{
-//		NewRankScorer scorer = NewScorerFactory.get(ActivationMethod.CID, Enzyme.TRYPSIN);
-		NewRankScorer scorer = new NewRankScorer(System.getProperty("user.home")+"/Research/ScoringFunctionTest/CID_Tryp.param");
-		scorer.writeParametersPlainText(new File("param.txt"));
 	}
 	
 	public static void readWriteTest() throws Exception

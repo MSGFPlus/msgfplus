@@ -1,5 +1,7 @@
 package msutil;
 
+import java.util.HashMap;
+
 public class InstrumentType {
 	private String name;
 	boolean isHighResolution;
@@ -30,6 +32,12 @@ public class InstrumentType {
 		return this.name.hashCode();
 	}
 
+	public static InstrumentType get(String name)
+	{
+		return table.get(name);
+	}
+	
+	public static HashMap<String,InstrumentType> table = new HashMap<String,InstrumentType>();
 	public static final InstrumentType LOW_RESOLUTION_LTQ;
 	public static final InstrumentType TOF;
 	public static final InstrumentType HIGH_RESOLUTION_LTQ;
@@ -38,6 +46,10 @@ public class InstrumentType {
 		LOW_RESOLUTION_LTQ = new InstrumentType("LowRes", false);
 		HIGH_RESOLUTION_LTQ = new InstrumentType("HighRes", false);
 		TOF = new InstrumentType("TOF", true);
+		
+		table.put(LOW_RESOLUTION_LTQ.getName(), LOW_RESOLUTION_LTQ);
+		table.put(HIGH_RESOLUTION_LTQ.getName(), HIGH_RESOLUTION_LTQ);
+		table.put(TOF.getName(), TOF);
 	}
 
 }
