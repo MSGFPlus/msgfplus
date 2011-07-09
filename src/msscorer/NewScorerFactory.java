@@ -44,9 +44,18 @@ public class NewScorerFactory {
 	
 	private static Hashtable<Condition, NewRankScorer> scorerTable = new Hashtable<Condition, NewRankScorer>();
 	
+	/**
+	 * @deprecated Use get(ActivationMethod method, InstrumentType instType, Enzyme enzyme) instead
+	 * @param method
+	 * @param enzyme
+	 * @return
+	 */
 	public static NewRankScorer get(ActivationMethod method, Enzyme enzyme)
 	{
-		return get(method, InstrumentType.LOW_RESOLUTION_LTQ, enzyme);
+		if(method != ActivationMethod.HCD)
+			return get(method, InstrumentType.LOW_RESOLUTION_LTQ, enzyme);
+		else
+			return get(method, InstrumentType.HIGH_RESOLUTION_LTQ, enzyme);
 	}
 	
 	public static NewRankScorer get(ActivationMethod method, InstrumentType instType, Enzyme enzyme)

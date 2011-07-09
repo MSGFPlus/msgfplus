@@ -60,4 +60,12 @@ public class ScoredSpectrumSum<T extends Matter> implements ScoredSpectrum<T> {
 	public Peak getPrecursorPeak() {
 		return precursor;
 	}
+
+	@Override
+	public float getNodeScore(T node, boolean isPrefix) {
+		float sum = 0;
+		for(ScoredSpectrum<T> scoredSpec : scoredSpecList)
+			sum += scoredSpec.getNodeScore(node, isPrefix);
+		return sum;
+	}
 }

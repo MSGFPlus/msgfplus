@@ -1,6 +1,7 @@
 package msscorer;
 
 import msgf.NominalMass;
+import msgf.ScoredSpectrum;
 import msutil.Composition;
 import msutil.Peak;
 
@@ -13,7 +14,7 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 	protected Peak precursor;
 	protected String activationMethodName;
 	
-	public FastScorer(NewScoredSpectrum<NominalMass> scoredSpec, int peptideMass)
+	public FastScorer(ScoredSpectrum<NominalMass> scoredSpec, int peptideMass)
 	{
 		prefixScore = new float[peptideMass];
 		suffixScore = new float[peptideMass];
@@ -31,8 +32,6 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 		this.activationMethodName = scoredSpec.getActivationMethodName();
 	}
 
-	protected FastScorer() {}
-	
 	@Override
 	public Peak getPrecursorPeak()	{ return precursor; }
 	
@@ -73,5 +72,13 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 	@Override
 	public boolean getMainIonDirection() {
 		return mainIonDirection;
+	}
+
+	@Override
+	public float getNodeScore(NominalMass node, boolean isPrefix) {
+		if(isPrefix)
+			return prefixScore[node.getNominalMass()];
+		else
+			return suffixScore[node.getNominalMass()];
 	}
 }

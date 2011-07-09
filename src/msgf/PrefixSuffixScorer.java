@@ -77,4 +77,12 @@ public class PrefixSuffixScorer implements SimpleDBSearchScorer<IntMass> {
 	public Peak getPrecursorPeak() {
 		return precursor;
 	}
+
+	@Override
+	public float getNodeScore(IntMass node, boolean isPrefix) {
+		if(isPrefix)
+			return prefixScore[node.getNominalMass()];
+		else
+			return suffixScore[node.getNominalMass()];
+	}
 }

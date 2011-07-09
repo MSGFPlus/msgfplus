@@ -21,7 +21,7 @@ import suffixarray.SuffixArraySequence;
 
 import msdbsearch.DBScanner;
 import msdbsearch.ReverseDB;
-import msdbsearch.SpectraScanner;
+import msdbsearch.ScoredSpectraMap;
 import msgf.MSGFDBResultGenerator;
 import msgf.Tolerance;
 import msscorer.NewRankScorer;
@@ -187,7 +187,11 @@ public class MSGFDB {
 			else if(argv[i].equalsIgnoreCase("-m"))	// Fragmentation method
 			{
 				// (0: written in the spectrum, 1: CID , 2: ETD, 3: HCD)
-				if(argv[i+1].equalsIgnoreCase("1"))
+				if(argv[i+1].equalsIgnoreCase("0"))
+				{
+					activationMethod = null;
+				}
+				else if(argv[i+1].equalsIgnoreCase("1"))
 				{
 					activationMethod = ActivationMethod.CID;
 				}
@@ -385,10 +389,10 @@ public class MSGFDB {
 		if(activationMethod == ActivationMethod.HCD)
 			instType = InstrumentType.HIGH_RESOLUTION_LTQ;
 		
-		if(activationMethod == ActivationMethod.FUSION && specFormat != SpecFileFormat.MZXML)
-		{
-			printUsageAndExit("-m 4 parameter requires mzXML spectrum file!");
-		}
+//		if(activationMethod == ActivationMethod.FUSION && specFormat != SpecFileFormat.MZXML)
+//		{
+//			printUsageAndExit("-m 4 parameter requires mzXML spectrum file!");
+//		}
 		if(rightParentMassTolerance.getToleranceAsDa(1000) >= 0.5f)
 			numAllowedC13 = 0;
 		
@@ -413,7 +417,7 @@ public class MSGFDB {
 		
 		aaSet.registerEnzyme(enzyme);
 		
-		runMSGFDB(specFile, specFormat, databaseFile, paramFile, leftParentMassTolerance, rightParentMassTolerance, numAllowedC13,
+		runMSGFDB(specFile, specFormat, databaseFile, leftParentMassTolerance, rightParentMassTolerance, numAllowedC13,
 	    		outputFile, enzyme, numAllowedNonEnzymaticTermini,
 	    		activationMethod, instType, aaSet, numMatchesPerSpec, scanNum, useTDA,
 	    		minPeptideLength, maxPeptideLength, minCharge, maxCharge);
@@ -429,7 +433,7 @@ public class MSGFDB {
 	{
 		if(message != null)
 			System.out.println("Error: " + message + "\n");
-		System.out.println("MSGFDB v2 (06/30/2011)");
+		System.out.println("MSGFDB v2 (07/08/2011)");
 		System.out.print("Usage: java -Xmx2000M -jar MSGFDB.jar\n"
 				+ "\t-s SpectrumFile (*.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt)\n" //, *.mgf, *.pkl, *.ms2)\n"
 				+ "\t-d Database (*.fasta or *.fa)\n"
@@ -462,7 +466,6 @@ public class MSGFDB {
     		File specFile, 
     		SpecFileFormat specFormat, 
     		File databaseFile, 
-    		File paramFile, 
     		Tolerance leftParentMassTolerance, 
     		Tolerance rightParentMassTolerance, 
     		int numAllowedC13,
@@ -515,11 +518,11 @@ public class MSGFDB {
 			printUsageAndExit("Error while parsing spectrum file: " + specFile.getPath());
 		}
 		
-		NewRankScorer scorer = null;
-		if(paramFile != null)
-			scorer = new NewRankScorer(paramFile.getPath());
-		else if(activationMethod != null)
-			scorer = NewScorerFactory.get(activationMethod, instType, enzyme);
+//		NewRankScorer scorer = null;
+//		if(paramFile != null)
+//			scorer = new NewRankScorer(paramFile.getPath());
+//		else if(activationMethod != null)
+//			scorer = NewScorerFactory.get(activationMethod, instType, enzyme);
 
 		if(enzyme == null)
 			numAllowedNonEnzymaticTermini = 2;
@@ -529,7 +532,7 @@ public class MSGFDB {
 		int avgPeptideMass = 2000;
 		int numBytesPerMass = 8;
 		int numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
-		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specItr, minCharge, maxCharge);
+		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specItr, minCharge, maxCharge, activationMethod);
 		
 		if(scanNum >= 0)
 		{
@@ -564,14 +567,14 @@ public class MSGFDB {
 			// spectrum preprocessing
 	    	System.out.print("Preprocessing spectra...");
 	    	long time = System.currentTimeMillis();
-	    	SpectraScanner specScanner = new SpectraScanner(
+	    	ScoredSpectraMap specScanner = new ScoredSpectraMap(
 	    			specMap,
 	    			specKeyList.subList(fromIndex, toIndex),
 	    			leftParentMassTolerance,
 	    			rightParentMassTolerance,
 	    			numAllowedC13,
-	    			scorer,
 	    			activationMethod,
+	    			instType,
 	    			enzyme
 	    			);
 	    	DBScanner sa = new DBScanner(

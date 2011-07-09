@@ -73,6 +73,7 @@ public class ActivationMethod {
 		table.put(CID.name, CID);
 		table.put(ETD.name, ETD);
 		table.put(HCD.name, HCD);
+		table.put("ETD+SA", ETD);
 		table.put(FUSION.name, FUSION);
 	}
 }

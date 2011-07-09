@@ -867,17 +867,5 @@ public class NewRankScorer implements NewAdditiveScorer {
 	
 	public static void readWriteTest() throws Exception
 	{
-//		File specFile = new File(System.getProperty("user.home")+"/Research/Data/ISBETD/AnnotatedSpectra/annotatedISBETD_ipro09.mgf");
-//		File specFile = new File(System.getProperty("user.home")+"/Research/Data/HeckRevision/AnnotatedSpectra/CID_Tryp_Confident.mgf");
-		File specFile = new File(System.getProperty("user.home")+"/Research/Data/Zubarev/AnnotatedSpectra/Zubarev_HCD_Annotated.mgf");
-		// Read/Write test
-		File tmpFile = File.createTempFile("param", "tmp");
-		tmpFile.deleteOnExit();
-		
-		ScoringParameterGenerator.generateParameters(specFile, 1, tmpFile, AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys(), false, false);
-		System.out.println("Generation complete!");
-		NewRankScorer scorer = new NewRankScorer();
-		scorer.readFromFile(tmpFile, true);
-		System.out.println("Success");
 	}
 }

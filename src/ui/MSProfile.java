@@ -207,7 +207,7 @@ public class MSProfile {
 	{
 		if(message != null)
 			System.err.println(message);
-		System.out.println("MSProfile v20101112");
+		System.out.println("MSProfile 07/08/2011");
 		System.out.println("usage: java -Xmx2000M -jar MSProfile.jar \n"
 				+ "\t-i SpecFileName (*.mzXML)\n"
 				+ "\t[-gp GappedPeptideOutputFileName] (Default: stdout)\n"

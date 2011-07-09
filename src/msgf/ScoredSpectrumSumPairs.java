@@ -41,5 +41,10 @@ public class ScoredSpectrumSumPairs<T extends Matter> implements ScoredSpectrum<
 	public Peak getPrecursorPeak() {
 		return scoredSpec1.getPrecursorPeak();
 	}
+
+	@Override
+	public float getNodeScore(T node, boolean isPrefix) {
+		return scoredSpec1.getNodeScore(node, isPrefix)+scoredSpec2.getNodeScore(node, isPrefix);
+	}
 	
 }

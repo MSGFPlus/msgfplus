@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.PriorityQueue;
-import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import parser.BufferedLineReader;
@@ -18,22 +16,13 @@ import msgf.MSGFDBResultGenerator;
 import msgf.GeneratingFunction;
 import msgf.GeneratingFunctionGroup;
 import msgf.NominalMass;
-import msgf.ScoredSpectrum;
-import msgf.Tolerance;
-import msscorer.DBScanScorer;
-import msscorer.FastScorer;
-import msscorer.NewRankScorer;
-import msscorer.NewScoredSpectrum;
-import msscorer.NewScorerFactory;
-import msutil.ActivationMethod;
+import msscorer.SimpleDBSearchScorer;
 import msutil.AminoAcid;
 import msutil.AminoAcidSet;
 import msutil.Composition;
 import msutil.Enzyme;
 import msutil.Peptide;
 import msutil.SpecKey;
-import msutil.Spectrum;
-import msutil.SpectrumAccessorByScanNum;
 import msutil.Modification.Location;
 import sequences.Constants;
 import suffixarray.SuffixArray;
@@ -53,14 +42,14 @@ public class DBScanner extends SuffixArray {
 	private int[] numDisinctPeptides;
 
 	// Input spectra
-	private SpectraScanner specScanner;
+	private ScoredSpectraMap specScanner;
 	
 	// DB search results
 	private HashMap<SpecKey,PriorityQueue<DatabaseMatch>> specKeyDBMatchMap;
 	private HashMap<Integer,PriorityQueue<DatabaseMatch>> scanNumDBMatchMap;
 
 	public DBScanner(
-			SpectraScanner specScanner,
+			ScoredSpectraMap specScanner,
 			SuffixArraySequence sequence,
 			Enzyme enzyme,
 			AminoAcidSet aaSet,
@@ -219,7 +208,7 @@ public class DBScanner extends SuffixArray {
 					
 					for(SpecKey specKey : matchedSpecKeyList)
 					{
-						FastScorer scorer = specScanner.getSpecKeyScorerMap().get(specKey);
+						SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(specKey);
 						int score = nTermAAScore + scorer.getScore(prm, intPRM, 2, i+2) + peptideCleavageScore;
 						PriorityQueue<DatabaseMatch> prevMatchQueue = specKeyDBMatchMap.get(specKey);
 						if(prevMatchQueue == null)
@@ -396,7 +385,7 @@ public class DBScanner extends SuffixArray {
 					{
 						for(SpecKey specKey : matchedSpecKeyList)
 						{
-							FastScorer scorer = specScanner.getSpecKeyScorerMap().get(specKey);
+							SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(specKey);
 							int score = enzymeScore + scorer.getScore(candidatePepGrid.getPRMGrid()[j], candidatePepGrid.getNominalPRMGrid()[j], 1, i+1); 
 							PriorityQueue<DatabaseMatch> prevMatchQueue = specKeyDBMatchMap.get(specKey);
 							if(prevMatchQueue == null)
@@ -538,7 +527,7 @@ public class DBScanner extends SuffixArray {
 					{
 						for(SpecKey specKey : matchedSpecKeyList)
 						{
-							FastScorer scorer = specScanner.getSpecKeyScorerMap().get(specKey);
+							SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(specKey);
 							int score =  scorer.getScore(candidatePepGrid.getPRMGrid()[j], candidatePepGrid.getNominalPRMGrid()[j], 1, i+2); 
 							PriorityQueue<DatabaseMatch> prevMatchQueue = specKeyDBMatchMap.get(specKey);
 							if(prevMatchQueue == null)
@@ -718,7 +707,7 @@ public class DBScanner extends SuffixArray {
 					{
 						for(SpecKey specKey : matchedSpecKeyList)
 						{
-							FastScorer scorer = specScanner.getSpecKeyScorerMap().get(specKey);
+							SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(specKey);
 							int score = enzymeScore + scorer.getScore(candidatePepGrid.getPRMGrid()[j], candidatePepGrid.getNominalPRMGrid()[j], 1, i+2); 
 							PriorityQueue<DatabaseMatch> prevMatchQueue = specKeyDBMatchMap.get(specKey);
 							if(prevMatchQueue == null)
@@ -777,9 +766,9 @@ public class DBScanner extends SuffixArray {
 			}
 			
 			GeneratingFunctionGroup<NominalMass> gf = new GeneratingFunctionGroup<NominalMass>();
-			FastScorer scoredSpec = specScanner.getSpecKeyScorerMap().get(specKey);
+			SimpleDBSearchScorer<NominalMass> scoredSpec = specScanner.getSpecKeyScorerMap().get(specKey);
 //			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
-			float peptideMass = scoredSpec.getPeptideMass();
+			float peptideMass = scoredSpec.getPrecursorPeak().getMass() - (float)Composition.H2O;
 			int nominalPeptideMass = NominalMass.toNominalMass(peptideMass);
 			float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
 			float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
@@ -889,11 +878,12 @@ public class DBScanner extends SuffixArray {
 					peptideStr = sequence.getSubsequence(index+1, index+length-1);
 				Peptide pep = aaSet.getPeptide(peptideStr);
 				String annotationStr = sequence.getCharAt(index)+"."+pep+"."+sequence.getCharAt(index+length-1);
-				FastScorer scorer = specScanner.getSpecKeyScorerMap().get(new SpecKey(scanNum, match.getCharge()));
-				float expMass = scorer.getParentMass();
+				SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(new SpecKey(scanNum, match.getCharge()));
+//				float expMass = scorer.getParentMass();
+				float expMass = scorer.getPrecursorPeak().getMass();
 				float theoMass = pep.getParentMass();
 				float pmError = Float.MAX_VALUE;
-				float peptideMass = scorer.getParentMass() - (float)Composition.H2O;
+				float peptideMass = expMass - (float)Composition.H2O;
 				
 				float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
 				int nC13 = tolDaRight >= 0.5f ? 0 : specScanner.getNumAllowedC13();
@@ -930,7 +920,7 @@ public class DBScanner extends SuffixArray {
 					+actMethodStr+"\t" 
 					+scorer.getPrecursorPeak().getMz()+"\t"
 					+pmError+"\t"
-					+scorer.getCharge()+"\t"
+					+match.getCharge()+"\t"
 					+annotationStr+"\t"
 					+protein+"\t"
 					+match.getDeNovoScore()+"\t"
