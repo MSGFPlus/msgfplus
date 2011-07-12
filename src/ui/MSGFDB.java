@@ -453,6 +453,7 @@ public class MSGFDB {
 				+ "\t[-maxCharge MaxPrecursorCharge] (Maximum precursor charge to consider if charges are not specified in the spectrum file, Default: 3)\n"
 				+ "\t[-n NumMatchesPerSpec] (Number of matches per spectrum to be reported, Default: 1)\n"
 				+ "\t[-uniformAAProb 0/1] (0: use amino acid probabilities computed from the input database (Default), 1: use probability 0.05 for all amino acids)\n"
+				+ "\t[-prm PrmOutputFileName] ()\n"
 //				+ "\t[-scan scanNum] (scan number to be searched)\n" => hidden option
 //				+ "\t[-param paramFile]\n"
 //				+ "\t[-err 0/1 (0: don't use peak errors (default), 1: use peak errors for scoring]\n"

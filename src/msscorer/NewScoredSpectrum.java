@@ -4,6 +4,7 @@ import msgf.ScoredSpectrum;
 import msgf.Tolerance;
 import msutil.IonType;
 import msutil.Matter;
+import msutil.Pair;
 import msutil.Peak;
 import msutil.Spectrum;
 
@@ -126,9 +127,14 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 			return -1;
 	}
 	
+	@Override
 	public float getNodeScore(T node, boolean isPrefix)
 	{
-		float nodeMass = node.getMass();
+		return getNodeScore(node.getMass(), isPrefix);
+	}
+	
+	public float getNodeScore(float nodeMass, boolean isPrefix)
+	{
 		float score = 0;
 		for(int segIndex=0; segIndex<scorer.getNumSegments(); segIndex++)
 		{
@@ -163,7 +169,59 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 					score += scorer.getMissingIonScore(part, ion);
 			}			
 		}
-		
 		return score;
+	}	
+	
+	public Pair<Float,Float> getNodeMassAndScore(float residueMass, boolean isPrefix)
+	{
+		Float nodeMass = null;
+		float nodeScore = 0;
+		float curBestScore = 0;
+		
+		for(int segIndex=0; segIndex<scorer.getNumSegments(); segIndex++)
+		{
+			for(IonType ion : ionTypes[segIndex])
+			{
+				float theoMass;
+				if(isPrefix)	// prefix
+				{
+					if(ion instanceof IonType.PrefixIon)
+						theoMass = ion.getMz(residueMass);
+					else
+						continue;
+				}
+				else
+				{
+					if(ion instanceof IonType.SuffixIon)
+						theoMass = ion.getMz(residueMass);
+					else
+						continue;
+				}
+				
+				int segNum = scorer.getSegmentNum(theoMass, parentMass);
+				if(segNum != segIndex)
+					continue;
+				
+				Peak p = spec.getPeakByMass(theoMass, mme);
+				Partition part = scorer.getPartition(charge, parentMass, segNum);
+				
+				if(p != null)	// peak exists
+				{
+					float score = scorer.getNodeScore(part, ion, p.getRank());
+					if(score > curBestScore)
+					{
+						nodeMass = ion.getMass(p.getMz());
+						curBestScore = score;
+					}
+					nodeScore += scorer.getNodeScore(part, ion, p.getRank());
+				}
+				else	// missing peak
+				{
+					nodeScore += scorer.getMissingIonScore(part, ion);
+				}
+			}			
+		}
+		return new Pair<Float,Float>(nodeMass,nodeScore);
 	}
+	
 }

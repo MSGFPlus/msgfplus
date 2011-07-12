@@ -81,6 +81,5 @@ public class Tolerance implements Serializable { // Serializable is needed in or
 			return null;
 		else
 			return new Tolerance(val, isTolerancePPM);
-		
 	}
 }

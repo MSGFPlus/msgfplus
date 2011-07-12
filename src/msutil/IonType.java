@@ -90,19 +90,6 @@ public abstract class IonType {
         this.offset = offset;
     }
 
-    /*
-    // name : [by][2]
-    public IonType(String name)
-    {
-            this.name = name;
-            this.isPrefix = name.startsWith("b");
-            this.charge = 1;
-            if(Character.isDigit(name.charAt(1)))
-                    this.charge = Integer.parseInt(name.substring(1, 2));
-
-    }
-    */
-
     public int getCharge() { return charge; }
     public String getName() { return name; }
     public float getOffset() { return offset; }

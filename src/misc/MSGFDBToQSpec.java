@@ -27,6 +27,7 @@ public class MSGFDBToQSpec {
 		String s;
 		String header = in.readLine();
 		
+		System.out.println("protid\tprotLen\t0\t1");
 		Histogram<String> control = new Histogram<String>();
 		Histogram<String> treatment = new Histogram<String>();
 		
@@ -37,6 +38,7 @@ public class MSGFDBToQSpec {
 			if(fdr > 0.01)
 				continue;
 			String protein = token[7];
+			protein = protein.split("\\s+")[0].trim();
 			String annotation = token[6];
 			String pepStr = annotation.substring(annotation.indexOf('.')+1, annotation.lastIndexOf('.'));
 			if(pepStr.endsWith("K+8.014") || pepStr.endsWith("R+10.008"))
@@ -58,7 +60,6 @@ public class MSGFDBToQSpec {
 	
 	public static HashMap<String,Integer> getAnnotationProtLengthMap(String dbFileName) throws Exception
 	{
-		System.out.println("protid\tprotLen\t0\t1");
 		HashMap<String,Integer> map = new HashMap<String,Integer>();
 		
 		BufferedLineReader in = new BufferedLineReader(dbFileName);
@@ -74,7 +75,7 @@ public class MSGFDBToQSpec {
 				if(annotation != null)
 					map.put(annotation, length);
 				length = 0;
-				annotation = s.substring(1);
+				annotation = s.substring(1).split("\\s+")[0].trim();
 			}
 			else
 			{
