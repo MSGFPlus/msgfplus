@@ -105,8 +105,8 @@ public class ProfileGF<T extends Matter> {
 		int thresholdScore = gf.getThresholdScore(specProb)+1;
 		if(thresholdScore >= gf.getMaxScore())
 			thresholdScore = gf.getMaxScore()-1;
-		else if(thresholdScore < gf.getMaxScore()-gf.getNumScoreBinsPerNode())
-			thresholdScore = gf.getMaxScore()-gf.getNumScoreBinsPerNode();
+//		else if(thresholdScore < gf.getMaxScore()-gf.getNumScoreBinsPerNode())
+//			thresholdScore = gf.getMaxScore()-gf.getNumScoreBinsPerNode();
 		
 		return computeProfile(thresholdScore);
 	}

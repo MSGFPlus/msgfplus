@@ -1,7 +1,9 @@
 package msgf;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -18,7 +20,7 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 	private boolean calcProb = true;
 	private Enzyme enzyme = Enzyme.TRYPSIN;
 	
-	private int numScoreBinsPerNode = 1000;
+//	private int numScoreBinsPerNode = 1000;
 	private int gfTableCapacity;
 	
 	private ScoreDist distribution = null;
@@ -45,6 +47,8 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 	}
 	
 	private HashMap<T, ScoreDist> fwdTable;
+	private HashMap<T, Integer> minScoreTable = null;
+	
 	private boolean isGFComputed = false;
 	
 //	private HashMap<T, Integer> srmScore = null;
@@ -60,14 +64,14 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 	public GeneratingFunction<T> doNotCalcNumber()	{ this.calcNumber = false; return this; }
 	public GeneratingFunction<T> doNotCalcProb()	{ this.calcProb = false; return this; }
 	public GeneratingFunction<T> enzyme(Enzyme enzyme)	{ this.enzyme = enzyme; return this; }
-	public GeneratingFunction<T> numScoreBinsPerNode(int numBins)	{ this.numScoreBinsPerNode = numBins; return this; }
+//	public GeneratingFunction<T> numScoreBinsPerNode(int numBins)	{ this.numScoreBinsPerNode = numBins; return this; }
 	public GeneratingFunction<T> gfTableCapacity(int gfTableCapacity) { this.gfTableCapacity = gfTableCapacity; return this;}
 	
 	public boolean backtrack()		{ return backtrack; }
 	public boolean calcNumber()		{ return calcNumber; }
 	public boolean calcProb()		{ return calcProb; }
 	public Enzyme getEnzyme()	{ return enzyme; }
-	public int getNumScoreBinsPerNode()	{ return numScoreBinsPerNode; }
+//	public int getNumScoreBinsPerNode()	{ return numScoreBinsPerNode; }
 	public boolean isGFComputed()	{ return this.isGFComputed; }
 	public DeNovoGraph<T> getGraph()	{ return graph; }
 	
@@ -229,6 +233,45 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 	@Override
 	public int getMaxScore()	{ return this.distribution.getMaxScore(); }
 	
+	public void setUpScoreThreshold(int score)
+	{
+		minScoreTable = new HashMap<T, Integer>();
+		if(enzyme != null)
+			score -= graph.getAASet().getNeighboringAACleavageCredit();
+		
+		for(T sink : graph.getSinkList())
+		{
+			minScoreTable.put(sink, score);
+			for(DeNovoGraph.Edge<T> edge : graph.getEdges(sink))
+			{
+				T prevNode = edge.getPrevNode();
+				int newPrevMinScore = score - edge.getEdgeScore();
+				Integer prevMinScore = minScoreTable.get(prevNode);
+				if(prevMinScore == null || prevMinScore > newPrevMinScore)
+					minScoreTable.put(prevNode, newPrevMinScore);
+			}
+		}
+		
+		ArrayList<T> intermediateNodeList = graph.getIntermediateNodeList();
+		
+		for(int i=intermediateNodeList.size()-1; i>=0; i--)
+		{
+			T curNode = intermediateNodeList.get(i);
+			Integer curScore = minScoreTable.get(curNode);
+			if(curScore == null)
+				continue;
+			int curNodeScore = graph.getNodeScore(curNode);
+			for(DeNovoGraph.Edge<T> edge : graph.getEdges(curNode))
+			{
+				T prevNode = edge.getPrevNode();
+				int newPrevMinScore = curScore - (curNodeScore + edge.getEdgeScore());
+				Integer prevMinScore = minScoreTable.get(prevNode);
+				if(prevMinScore == null || prevMinScore > newPrevMinScore)
+					minScoreTable.put(prevNode, newPrevMinScore);
+			}
+		}
+	}
+	
 	@Override
 	public boolean computeGeneratingFunction()
 	{
@@ -335,8 +378,17 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 	private void setCurNode(T curNode, ScoreDistFactory scoreDistFactory)
 	{
 		int curNodeScore = graph.getNodeScore(curNode);
-		int curMaxScore = Integer.MIN_VALUE;;
-		int curMinScore = Integer.MAX_VALUE;
+		int curMaxScore = Integer.MIN_VALUE;
+		int curMinScore;
+		if(minScoreTable == null)
+			curMinScore = Integer.MAX_VALUE;
+		else
+		{
+			Integer min = minScoreTable.get(curNode);
+			if(min == null)
+				return;
+			curMinScore = min;
+		}
 		// determine minScore and maxScore
 		ArrayList<DeNovoGraph.Edge<T>> edges = new ArrayList<DeNovoGraph.Edge<T>>(); // modified by kyowon
 		for(DeNovoGraph.Edge<T> edge : graph.getEdges(curNode))
@@ -349,27 +401,16 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 				int combinedScore = curNodeScore + edgeScore;
 				if(prevDist.getMaxScore()+combinedScore > curMaxScore)
 					curMaxScore = prevDist.getMaxScore() + combinedScore;
-				if(prevDist.getMinScore()+combinedScore < curMinScore)
-					curMinScore = prevDist.getMinScore() + combinedScore;
+				if(minScoreTable == null)
+				{
+					if(prevDist.getMinScore()+combinedScore < curMinScore)
+						curMinScore = prevDist.getMinScore() + combinedScore;
+				}
 				edges.add(edge);
-//				if(
-//						curNode.getNominalMass() == 850 && prevNode.getNominalMass() == 763
-//						|| curNode.getNominalMass() == 763 && prevNode.getNominalMass() == 616
-//						|| curNode.getNominalMass() == 616 && prevNode.getNominalMass() == 502
-//						|| curNode.getNominalMass() == 502 && prevNode.getNominalMass() == 346
-//						|| curNode.getNominalMass() == 346 && prevNode.getNominalMass() == 289
-//						|| curNode.getNominalMass() == 289 && prevNode.getNominalMass() == 160
-//						|| curNode.getNominalMass() == 160 && prevNode.getNominalMass() == 0
-//					)
-//				{
-//					System.out.println(curNode.getNominalMass()+"->"+prevNode.getNominalMass()+" "+combinedScore);
-//				}
 			}
 		}
 		if(curMinScore >= curMaxScore)
 			return;
-		if(curMaxScore-curMinScore > numScoreBinsPerNode)
-			curMinScore = curMaxScore-numScoreBinsPerNode;
 
 		ScoreDist curDist = scoreDistFactory.getInstance(curMinScore, curMaxScore);
 		BacktrackPointer backPointer = null;
@@ -381,9 +422,6 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 			ScoreDist prevDist = fwdTable.get(prevNode);
 			if(prevDist != null)
 			{
-				// debug
-//				if(curNode.getNominalMass() == 3535)
-//					System.out.println("Debug");
 				int edgeScore = edge.getEdgeScore();
 				int combinedScore = curNodeScore + edgeScore;
 
@@ -409,6 +447,5 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 		fwdTable.put(curNode, curDist);
 		if(backtrack)
 			backtrackTable.put(curNode, backPointer);	
-//		System.out.println("**********\t"+curNode.getNominalMass()+"\t"+curDist.getProbability(curMaxScore-1));
 	}
 }

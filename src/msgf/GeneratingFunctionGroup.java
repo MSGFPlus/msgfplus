@@ -22,29 +22,31 @@ public class GeneratingFunctionGroup<T extends Matter> extends HashMap<T, Genera
 	{
 		int minScore = Integer.MAX_VALUE;
 		int maxScore = Integer.MIN_VALUE;
-		boolean isGFComputed = true;
 		for(Entry<T, GeneratingFunction<T>> entry : this.entrySet())
 		{
 			GeneratingFunction<T> gf = entry.getValue();
 			if(!gf.isGFComputed())
 			{
-				if(gf.computeGeneratingFunction() == false)
-					isGFComputed = false;
-				int curMinScore = gf.getMinScore();
-				if(minScore > curMinScore)
-					minScore = curMinScore;
-				int curMaxScore = gf.getMaxScore();
-				if(maxScore < curMaxScore)
-					maxScore = curMaxScore;
+				if(gf.computeGeneratingFunction() == true)
+				{
+					int curMinScore = gf.getMinScore();
+					if(minScore > curMinScore)
+						minScore = curMinScore;
+					int curMaxScore = gf.getMaxScore();
+					if(maxScore < curMaxScore)
+						maxScore = curMaxScore;
+				}
 			}
 		}
+		if(minScore >= maxScore)
+			return false;
 		mergedScoreDist = factory.getInstance(minScore, maxScore);
 		for(Entry<T, GeneratingFunction<T>> entry : this.entrySet())
 		{
 			GeneratingFunction<T> gf = entry.getValue();
 			mergedScoreDist.addProbDist(gf.getScoreDist(), 0, 1f);
 		}		
-		return isGFComputed;
+		return true;
 	}
 	
 	@Override

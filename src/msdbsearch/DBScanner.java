@@ -753,12 +753,15 @@ public class DBScanner extends SuffixArray {
 			
 			boolean useProtNTerm = false;
 			boolean useProtCTerm = false;
+			int minScore = Integer.MAX_VALUE;
 			for(DatabaseMatch m : matchQueue)
 			{
 				if(m.isProteinNTerm())
 					useProtNTerm = true;
 				if(m.isProteinCTerm())
 					useProtCTerm = true;
+				if(m.getScore() < minScore)
+					minScore = m.getScore();
 			}
 			
 			GeneratingFunctionGroup<NominalMass> gf = new GeneratingFunctionGroup<NominalMass>();
@@ -788,10 +791,12 @@ public class DBScanner extends SuffixArray {
 				GeneratingFunction<NominalMass> gfi = new GeneratingFunction<NominalMass>(graph)
 				.doNotBacktrack()
 				.doNotCalcNumber();
+				gfi.setUpScoreThreshold(minScore);
 				gf.registerGF(graph.getPMNode(), gfi);
-			}			
-			gf.computeGeneratingFunction();			
+			}
 
+			gf.computeGeneratingFunction();
+			
 			for(DatabaseMatch match : matchQueue)
 			{
 				match.setDeNovoScore(gf.getMaxScore()-1);
