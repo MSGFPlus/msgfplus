@@ -23,7 +23,7 @@ import msutil.Enzyme;
 import msutil.InstrumentType;
 import msutil.SpecKey;
 import msutil.Spectrum;
-import msutil.SpectrumAccessorByScanNum;
+import msutil.SpectrumAccessorBySpecIndex;
 
 public class ScoredSpectraMap {
 	private Tolerance leftParentMassTolerance;
@@ -34,7 +34,7 @@ public class ScoredSpectraMap {
 	private HashMap<SpecKey,SimpleDBSearchScorer<NominalMass>> specKeyScorerMap;
 
 	public ScoredSpectraMap(
-			SpectrumAccessorByScanNum specMap,
+			SpectrumAccessorBySpecIndex specMap,
 			List<SpecKey> specKeyList,
     		Tolerance leftParentMassTolerance, 
     		Tolerance rightParentMassTolerance, 
@@ -58,7 +58,7 @@ public class ScoredSpectraMap {
 	}
 	
 	public void preProcessSpectra(
-			SpectrumAccessorByScanNum specMap,
+			SpectrumAccessorBySpecIndex specMap,
 			List<SpecKey> specKeyList,
 			ActivationMethod activationMethod,
 			InstrumentType instType,
@@ -71,8 +71,8 @@ public class ScoredSpectraMap {
 		
 		for(SpecKey specKey : specKeyList)
 		{
-			int scanNum = specKey.getScanNum();
-			Spectrum spec = specMap.getSpectrumByScanNum(scanNum);
+			int specIndex = specKey.getSpecIndex();
+			Spectrum spec = specMap.getSpectrumBySpecIndex(specIndex);
 			if(spec.size() < Constants.MIN_NUM_PEAKS_PER_SPECTRUM)
 			{
 //				System.out.println("Spectrum " + spec.getScanNum() + " has too few peaks (#Peaks: " + spec.size()+"): ignored.");
@@ -121,7 +121,7 @@ public class ScoredSpectraMap {
 	}
 	
 	public void preProcessFusedSpectra(
-			SpectrumAccessorByScanNum specMap,
+			SpectrumAccessorBySpecIndex specMap,
 			List<SpecKey> specKeyList,
 			InstrumentType instType,
 			Enzyme enzyme
@@ -129,16 +129,16 @@ public class ScoredSpectraMap {
 	{
 		for(SpecKey specKey : specKeyList)
 		{
-			ArrayList<Integer> scanNumList = specKey.getScanNumList();
-			if(scanNumList == null)
+			ArrayList<Integer> specIndexList = specKey.getSpecIndexList();
+			if(specIndexList == null)
 			{
-				scanNumList = new ArrayList<Integer>();
-				scanNumList.add(specKey.getScanNum());
+				specIndexList = new ArrayList<Integer>();
+				specIndexList.add(specKey.getSpecIndex());
 			}
 			ArrayList<ScoredSpectrum<NominalMass>> scoredSpecList = new ArrayList<ScoredSpectrum<NominalMass>>();
-			for(int scanNum : scanNumList)
+			for(int specIndex : specIndexList)
 			{
-				Spectrum spec = specMap.getSpectrumByScanNum(scanNum);
+				Spectrum spec = specMap.getSpectrumBySpecIndex(specIndex);
 				if(spec.size() < Constants.MIN_NUM_PEAKS_PER_SPECTRUM)
 				{
 //					System.out.println("Spectrum " + spec.getScanNum() + " has too few peaks (#Peaks: " + spec.size()+"): ignored.");

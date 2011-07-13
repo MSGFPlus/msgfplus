@@ -14,8 +14,9 @@ public class PrefixSuffixScorer implements SimpleDBSearchScorer<IntMass> {
 	private boolean mainIonDirection;
 	private final String activationMethodName;
 	private final Peak precursor;
+	private final int scanNum;
 	
-	public PrefixSuffixScorer(IntMassFactory factory, NewScoredSpectrum<IntMass> scoredSpec, int peptideMassIndex)
+	public PrefixSuffixScorer(IntMassFactory factory, ScoredSpectrum<IntMass> scoredSpec, int peptideMassIndex)
 	{
 		prefixScore = new float[peptideMassIndex];
 		suffixScore = new float[peptideMassIndex];
@@ -35,6 +36,7 @@ public class PrefixSuffixScorer implements SimpleDBSearchScorer<IntMass> {
 			useVariablePMBin = false;
 		this.activationMethodName = scoredSpec.getActivationMethodName();
 		this.precursor = scoredSpec.getPrecursorPeak();
+		this.scanNum = scoredSpec.getScanNum();
 	}
 	
 	// fromIndex: inclusive, toIndex: exclusive
@@ -84,5 +86,10 @@ public class PrefixSuffixScorer implements SimpleDBSearchScorer<IntMass> {
 			return prefixScore[node.getNominalMass()];
 		else
 			return suffixScore[node.getNominalMass()];
+	}
+
+	@Override
+	public int getScanNum() {
+		return scanNum;
 	}
 }

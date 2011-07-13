@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import msutil.ActivationMethod;
 import msutil.Peak;
 import msutil.Spectrum;
-import msutil.SpectrumAccessorByScanNum;
+import msutil.SpectrumAccessorBySpecIndex;
 
 import org.systemsbiology.jrap.stax.MSXMLParser;
 import org.systemsbiology.jrap.stax.Scan;
@@ -20,7 +20,7 @@ import org.systemsbiology.jrap.stax.ScanHeader;
  * @author jung
  *
  */
-public class MzXMLSpectraMap implements SpectrumAccessorByScanNum {
+public class MzXMLSpectraMap implements SpectrumAccessorBySpecIndex {
 	private	MSXMLParser parser;
 
 	// the pattern to extract the retention time string from text field
@@ -70,6 +70,7 @@ public class MzXMLSpectraMap implements SpectrumAccessorByScanNum {
 
 		Spectrum spec = new Spectrum(header.getPrecursorMz(), precursorCharge, header.getPrecursorIntensity());
 		spec.setScanNum(header.getNum());
+		spec.setSpecIndex(header.getNum());
 
 		// parse retention time. Note that retention time is a required field
 		String rtStr = header.getRetentionTime();
@@ -118,7 +119,11 @@ public class MzXMLSpectraMap implements SpectrumAccessorByScanNum {
 		return spec;
 	}
 
-
+	@Override
+	public Spectrum getSpectrumBySpecIndex(int specIndex)
+	{
+		return getSpectrumByScanNum(specIndex);
+	}
 
 	/**
 	 * Get the number of scans in this file.
@@ -128,20 +133,20 @@ public class MzXMLSpectraMap implements SpectrumAccessorByScanNum {
 		return parser.getScanCount();
 	}
 
-	private ArrayList<Integer> scanNumList = null;
+	private ArrayList<Integer> specIndexList = null;
 	
 	@Override
-	public ArrayList<Integer> getScanNumList() {
-		if(scanNumList == null)
+	public ArrayList<Integer> getSpecIndexList() {
+		if(specIndexList == null)
 		{
-			scanNumList = new ArrayList<Integer>();
-			for(int scanNumber = 0; scanNumber<=parser.getScanCount(); scanNumber++)
+			specIndexList = new ArrayList<Integer>();
+			for(int scanNumber = 1; scanNumber<=parser.getScanCount(); scanNumber++)
 			{
 				Scan scanObj = parser.rap(scanNumber);
 				if (scanObj != null && scanObj.getHeader() != null && scanObj.getHeader().getMsLevel() == 2)
-					scanNumList.add(scanNumber);
+					specIndexList.add(scanNumber);
 			}
 		}
-		return scanNumList;
+		return specIndexList;
 	}
 }

@@ -7,13 +7,13 @@ import parser.MzXMLSpectraIterator;
 
 public class SpecKey extends Pair<Integer, Integer> {
 
-	private ArrayList<Integer> scanNumList;
+	private ArrayList<Integer> specIndexList;
 
-	public SpecKey(int scanNum, int charge) {
-		super(scanNum, charge);
+	public SpecKey(int specIndex, int charge) {
+		super(specIndex, charge);
 	}
 	
-	public int getScanNum()
+	public int getSpecIndex()
 	{
 		return super.getFirst();
 	}
@@ -25,7 +25,7 @@ public class SpecKey extends Pair<Integer, Integer> {
 	
 	public String getSpecKeyString()
 	{
-		return getScanNum()+":"+getCharge();
+		return getSpecIndex()+":"+getCharge();
 	}
 
 	public static SpecKey getSpecKey(String specKeyString)
@@ -36,17 +36,17 @@ public class SpecKey extends Pair<Integer, Integer> {
 	
 	public void addScanNum(int scanNum)
 	{
-		if(scanNumList == null)
+		if(specIndexList == null)
 		{
-			scanNumList = new ArrayList<Integer>();
-			scanNumList.add(super.getFirst());
+			specIndexList = new ArrayList<Integer>();
+			specIndexList.add(super.getFirst());
 		}
-		scanNumList.add(scanNum);
+		specIndexList.add(scanNum);
 	}
 	
-	public ArrayList<Integer> getScanNumList()
+	public ArrayList<Integer> getSpecIndexList()
 	{
-		return scanNumList;
+		return specIndexList;
 	}
 	
 	public static ArrayList<SpecKey> getSpecKeyList(Iterator<Spectrum> itr, int minCharge, int maxCharge, ActivationMethod activationMethod)
@@ -59,7 +59,7 @@ public class SpecKey extends Pair<Integer, Integer> {
 		while(itr.hasNext())
 		{
 			Spectrum spec = itr.next();
-			int scanNum = spec.getScanNum();
+			int specIndex = spec.getSpecIndex();
 			int charge = spec.getCharge();
 			
 			if(activationMethod != null && spec.getActivationMethod() != null && spec.getActivationMethod() != activationMethod)
@@ -68,11 +68,11 @@ public class SpecKey extends Pair<Integer, Integer> {
 			if(charge == 0)
 			{
 				for(int c=minCharge; c<=maxCharge; c++)
-					specKeyList.add(new SpecKey(scanNum, c));
+					specKeyList.add(new SpecKey(specIndex, c));
 			}
 			else if(charge > 0)
 			{
-				specKeyList.add(new SpecKey(scanNum, charge));
+				specKeyList.add(new SpecKey(specIndex, charge));
 			}
 		}
 		return specKeyList;
@@ -89,25 +89,25 @@ public class SpecKey extends Pair<Integer, Integer> {
 		while(itr.hasNext())
 		{
 			Spectrum spec = itr.next();
-			int scanNum = spec.getScanNum();
+			int specIndex = spec.getSpecIndex();
 			int charge = spec.getCharge();
 			float precursorMz = spec.getPrecursorPeak().getMz();
 			if(spec.getActivationMethod() == null)
 			{
-				System.out.println("Error: activation method is not available: Scan=" + spec.getScanNum()+", PrecursorMz=" + precursorMz);
+				System.out.println("Error: activation method is not available: Scan=" + spec.getSpecIndex()+", PrecursorMz=" + precursorMz);
 				System.exit(-1);
 			}
 			
-			if(scanNum == prevScanNum+1 && charge == prevCharge && precursorMz == previousPrecursorMz)
+			if(specIndex == prevScanNum+1 && charge == prevCharge && precursorMz == previousPrecursorMz)
 			{
 				if(charge == 0)
 				{
 					for(int i=0; i<maxCharge-minCharge; i++)
-						specKeyList.get(specKeyList.size()-1-i).addScanNum(scanNum);
+						specKeyList.get(specKeyList.size()-1-i).addScanNum(specIndex);
 				}
 				else if(charge > 0)
 				{
-					specKeyList.get(specKeyList.size()-1).addScanNum(scanNum);
+					specKeyList.get(specKeyList.size()-1).addScanNum(specIndex);
 				}
 			}
 			else
@@ -115,14 +115,14 @@ public class SpecKey extends Pair<Integer, Integer> {
 				if(charge == 0)
 				{
 					for(int c=minCharge; c<=maxCharge; c++)
-						specKeyList.add(new SpecKey(scanNum, c));
+						specKeyList.add(new SpecKey(specIndex, c));
 				}
 				else if(charge > 0)
 				{
-					specKeyList.add(new SpecKey(scanNum, charge));
+					specKeyList.add(new SpecKey(specIndex, charge));
 				}
 			}
-			prevScanNum = scanNum;
+			prevScanNum = specIndex;
 			prevCharge = charge;
 			previousPrecursorMz = precursorMz;
 		}
@@ -142,8 +142,8 @@ public class SpecKey extends Pair<Integer, Integer> {
 		ArrayList<SpecKey> list = SpecKey.getFusedSpecKeyList(itr, minCharge, maxCharge);
 		for(SpecKey specKey : list)
 		{
-			if(specKey.getScanNumList() == null || specKey.getScanNumList().size() != 2)
-				System.out.println(specKey.getSpecKeyString()+"\t"+specKey.getScanNumList());
+			if(specKey.getSpecIndexList() == null || specKey.getSpecIndexList().size() != 2)
+				System.out.println(specKey.getSpecKeyString()+"\t"+specKey.getSpecIndexList());
 		}
 		System.out.println("Size: " + list.size());
 	}

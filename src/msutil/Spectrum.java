@@ -24,8 +24,9 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
   private Peak precursor = null;
 
   // optional members
-  private int startScanNum = -1;
-  private int endScanNum = -1;
+  private int startScanNum = 0;
+  private int endScanNum = 0;
+  private int specIndex = 0;	// 
   private String title = null;
   private Peptide annotation = null;
   private ArrayList<String> seqList = null;	// SEQ fields of mgf spectrum
@@ -113,6 +114,12 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
    * @return the start scan number of this spectrum if present. -1 otherwise.
    */
   public int getScanNum() { return getStartScanNum(); }
+
+  /**
+   * Gets the spectrum index of this spectrum. Spectrum index is a 1-based sequential number of this spectrum in the file.
+   * @return the spectrum index of this spectrum if present. 0 otherwise.
+   */
+  public int getSpecIndex() { return specIndex; }
   
   /**
    * Gets the start scan number of the spectrum.
@@ -186,6 +193,12 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
    * @param scanNum                    scan number from the file.
    */
   public void setScanNum(int scanNum) { this.startScanNum = scanNum; }
+
+  /**
+   * Sets the spectrum index of this spectrum.
+   * @param scanNum                    scan spectrum index.
+   */
+  public void setSpecIndex(int specIndex) { this.specIndex = specIndex; }
   
   /**
    * Sets title property.

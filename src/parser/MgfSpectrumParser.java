@@ -109,8 +109,8 @@ public class MgfSpectrumParser implements SpectrumParser {
   			else if(buf.startsWith("SCANS"))
   			{
   				// for mgf files, scan number is set as the zero based sequence number of the spectrum
-//  				scanNum = Integer.valueOf(buf.substring(buf.indexOf("=")+1));
-//  				spec.setScanNum(scanNum);
+  				int scanNum = Integer.valueOf(buf.substring(buf.indexOf("=")+1));
+  				spec.setScanNum(scanNum);
   			}
   			else if(buf.startsWith("ACTIVATION"))
   			{
@@ -132,27 +132,26 @@ public class MgfSpectrumParser implements SpectrumParser {
 	}	
 
 	/**
-	 * Implementation of getScanNumMap object. Reads the entire spectrum file and
-	 * generates a map from a scan number of a spectrum and the position of the spectrum.
-	 * If scan numbers are not available, make sequential scan numbers starting from 0.
+	 * Implementation of getSpecIndexMap object. Reads the entire spectrum file and
+	 * generates a map from a spectrum index of a spectrum and the position of the spectrum.
 	 * @param lineReader a LineReader object that points to the start of a file.
-	 * @return A hashtable maps scan numbers to spectral positions in the file.
+	 * @return A hashtable maps spectrum indexes to spectral positions in the file.
 	 */
 	@Override
-	public Hashtable<Integer, Long> getScanNumMap(BufferedRandomAccessLineReader lineReader)
+	public Hashtable<Integer, Long> getSpecIndexMap(BufferedRandomAccessLineReader lineReader)
 	{
-		Hashtable<Integer, Long> scanNumMap = new Hashtable<Integer, Long>();
+		Hashtable<Integer, Long> specIndexMap = new Hashtable<Integer, Long>();
 		String buf;
 		long offset = 0;
 		long specOffset = 0;
-		int seqNum = -1;
+		int specIndex = 0;
 		while((buf = lineReader.readLine()) != null)
 		{
 			if(buf.startsWith("BEGIN IONS"))
 			{
-				seqNum++;
+				specIndex++;
 				specOffset = offset;
-				scanNumMap.put(seqNum, specOffset);
+				specIndexMap.put(specIndex, specOffset);
 			}
 //			else if(buf.startsWith("SCANS="))
 //			{
@@ -167,7 +166,7 @@ public class MgfSpectrumParser implements SpectrumParser {
 //			}
 			offset = lineReader.getPosition();
 		}
-		return scanNumMap;
+		return specIndexMap;
 	}
 	
 	// test code

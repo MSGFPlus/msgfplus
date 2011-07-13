@@ -203,7 +203,7 @@ public class ComputeFDR {
 				"\t -s scoreCol 0/1 (0: smaller better, 1: greater better)\n" +
 				"\t [-o outputFileName (default: stdout)]\n" +
 				"\t [-delim delimeter] (default: \\t)\n" +
-				"\t [-m colNum keyword (the column 'colNum' must contain 'keyword'. If 'keyword' is delimetered by ',' (e.g. A,B,C), then at least one must be matched.)]\n" +
+				"\t [-m colNum keyword (the column 'colNum' must contain 'keyword'. If 'keyword' is delimeted by ',' (e.g. A,B,C), then at least one must be matched.)]\n" +
 				"\t [-h 0/1] (0: no header, 1: header (default))\n" +
 				"\t [-fdr fdrThreshold]\n" +
 				"\t [-pepfdr pepFDRThreshod]\n" +

@@ -25,11 +25,11 @@ public class CombinePairedSpectra {
 		SpectraContainer container1 = new SpectraContainer();
 		SpectraContainer container2 = new SpectraContainer();
 		
-		for(int scanNum1 : map1.getScanNumList())
+		for(int scanNum1 : map1.getSpecIndexList())
 		{
 			int scanNum2 = scanNum1+1;
-			Spectrum spec2 = map2.getSpectrumByScanNum(scanNum2);
-			Spectrum spec1 = map1.getSpectrumByScanNum(scanNum1);
+			Spectrum spec2 = map2.getSpectrumBySpecIndex(scanNum2);
+			Spectrum spec1 = map1.getSpectrumBySpecIndex(scanNum1);
 			if(spec1 != null && spec2 != null)
 			{
 				if(spec1.getCharge() == charge && spec2.getCharge() == charge)

@@ -15,8 +15,8 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
 	private boolean hasNext;
 	protected Spectrum currentSpectrum;
 	LineReader lineReader;
-	private boolean hasScanNum;
-	private int sequentialScanNum;		// this will be used when spectra don't have scan numbers
+//	private boolean hasScanNum;
+	private int specIndex;		// this will be used when spectra don't have scan numbers
 	
 	/**
 	 * Added by Louis
@@ -30,7 +30,7 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
 		this.filenames=filenames;
         nextFileIndex=0;
         this.parser=parser;
-        sequentialScanNum = 0;
+        specIndex = 0;
         if (!nextFile()) throw new FileNotFoundException("No files found.");
 	}
 	
@@ -67,7 +67,7 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
 		nextSpecFilePath=fileName;
 		lineReader = new BufferedLineReader(fileName);
 		this.parser = parser;
-		sequentialScanNum = 0;
+		specIndex = 0;
 		parseFirstSpectrum();
 	}
 	
@@ -75,7 +75,7 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
 	{
 		this.lineReader = lineReader;
 		this.parser = parser;
-		sequentialScanNum = 0;
+		specIndex = 0;
 		parseFirstSpectrum();
 	}
 	
@@ -91,8 +91,10 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
 		if(currentSpectrum == null) { // Means file has ended
 			if (filenames==null || !nextFile()) hasNext = false;
 		}
-		if (hasNext && !hasScanNum) // currentSpectrum possible set to first spec from new file in nextFile()
-			currentSpectrum.setScanNum(sequentialScanNum++);
+		else
+		{
+			currentSpectrum.setSpecIndex(++specIndex);
+		}
 		return curSpecCopy;
 	}
 
@@ -105,15 +107,11 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
 	{
 		currentSpectrum = parser.readSpectrum(lineReader);
 		if (currentSpectrum==null) throw new Error("Error while parsing spectrum");
-		if(currentSpectrum.getScanNum() < 0)
-		{
-			hasScanNum = false;
-			currentSpectrum.setScanNum(sequentialScanNum++);
-		}
-		else
-			hasScanNum = true;
 		if(currentSpectrum != null)
+		{
 			hasNext = true;
+			currentSpectrum.setSpecIndex(++specIndex);
+		}
 		else
 			hasNext = false;
 	}

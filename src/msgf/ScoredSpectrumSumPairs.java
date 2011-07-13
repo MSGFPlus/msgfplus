@@ -47,4 +47,9 @@ public class ScoredSpectrumSumPairs<T extends Matter> implements ScoredSpectrum<
 		return scoredSpec1.getNodeScore(node, isPrefix)+scoredSpec2.getNodeScore(node, isPrefix);
 	}
 	
+	@Override
+	public int getScanNum() {
+		return scoredSpec1.getScanNum();
+	}
+	
 }

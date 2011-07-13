@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import msutil.Composition;
 import msutil.Peak;
 import msutil.SpectraIterator;
+import msutil.SpectraMap;
 import msutil.Spectrum;
 
 /**
@@ -74,42 +75,59 @@ public class MS2SpectrumParser implements SpectrumParser {
 	}
 	
 	/**
-	 * Read the entire ms2 file and generates a map from scan numbers to file positions of spectra.
+	 * Read the entire ms2 file and generates a map from spectrum indexes to file positions of spectra.
 	 * @param lineReader A reader points to the start of the spectrum.
-	 * @return A Hashtable object maps a scan number into a file position.
+	 * @return A Hashtable object maps a spectrum index into a file position.
 	 */
 	@Override
-	public Hashtable<Integer, Long> getScanNumMap(
+	public Hashtable<Integer, Long> getSpecIndexMap(
 			BufferedRandomAccessLineReader lineReader) {
-		Hashtable<Integer, Long> scanNumMap = new Hashtable<Integer, Long>();
+		Hashtable<Integer, Long> specIndexMap = new Hashtable<Integer, Long>();
 		String buf;
 		long offset = 0;
+		int specIndex = 0;
 		while((buf = lineReader.readLine()) != null)
 		{
 			if(buf.startsWith(":"))
 			{
-				String[] token = buf.substring(1).split("\\.");
-				int startScanNum = Integer.parseInt(token[0]);
-                scanNumMap.put(startScanNum, offset);
+				specIndex++;
+				specIndexMap.put(specIndex, offset);
+//				String[] token = buf.substring(1).split("\\.");
+//				int startScanNum = Integer.parseInt(token[0]);
+//                scanNumMap.put(startScanNum, offset);
 			}
 			
 			offset = lineReader.getPosition();
 		}
-		return scanNumMap;	
+		return specIndexMap;	
 	}
 	
 	public static void test() throws Exception
 	{
-		// String fileName = System.getProperty("user.home")+"/Research/Data/Shewanella/spectra/SBShew_08m_13Sep04_Andro_0904-1_4-8_dta.ms2";
-		String fileName = System.getProperty("user.home")+"/Data/Spectra/SOneSpectra/Yufeng_LTQ_15um_4000psi_50ngShew_dd_4_dta.ms2";
-		SpectraIterator iterator = new SpectraIterator(fileName, new MS2SpectrumParser());
-    int numSpecs = 0;
-    while(iterator.hasNext())
-    {
-    	iterator.next();
-    	numSpecs++;
-    }
-    System.out.println("NumSpectra: " + numSpecs);
+		String fileName = System.getProperty("user.home")+"/Research/ToolDistribution/RefTest/SpecFormatTest/Yufeng_8LTQ005_010_F3a_dta.ms2";
+	    SpectraIterator iterator = new SpectraIterator(fileName, new MS2SpectrumParser());
+	    int numSpecs = 0;
+	    while(iterator.hasNext())
+	    {
+	    	Spectrum spec = iterator.next();
+	    	numSpecs++;
+	    	System.out.println(spec.getPrecursorPeak().getMz()+" "+spec.getCharge()+" "+spec.getSpecIndex()+" "+spec.getScanNum());
+	    	if(numSpecs > 5)
+	    		break;
+	    }
+	    System.out.println("NumSpectra: " + numSpecs);
+	    
+	    numSpecs = 0;
+	    SpectraMap map = new SpectraMap(fileName, new MS2SpectrumParser());
+	    for(int specIndex : map.getSpecIndexList())
+	    {
+	    	Spectrum spec = map.getSpectrumBySpecIndex(specIndex);
+	    	numSpecs++;
+	    	System.out.println(spec.getPrecursorPeak().getMz()+" "+spec.getCharge()+" "+spec.getSpecIndex()+" "+spec.getScanNum());
+	    	if(numSpecs > 5)
+	    		break;
+	    }
+	    System.out.println("NumSpectra: " + numSpecs);
 	}
 	
 	public static void main(String argv[]) throws Exception

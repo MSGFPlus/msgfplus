@@ -13,7 +13,7 @@ import msutil.Peptide;
 import msutil.SpectraContainer;
 import msutil.SpectraMap;
 import msutil.Spectrum;
-import msutil.SpectrumAccessorByScanNum;
+import msutil.SpectrumAccessorBySpecIndex;
 import parser.BufferedLineReader;
 import parser.MgfSpectrumParser;
 import parser.MzXMLSpectraMap;
@@ -227,7 +227,7 @@ public class AnnotatedSpecGenerator {
 		else
 			itr = resultList.iterator();
 
-		HashMap<String,SpectrumAccessorByScanNum> specAccessorMap = new HashMap<String,SpectrumAccessorByScanNum>(); 
+		HashMap<String,SpectrumAccessorBySpecIndex> specAccessorMap = new HashMap<String,SpectrumAccessorBySpecIndex>(); 
 		SpectraContainer container = new SpectraContainer();
 		while(itr.hasNext())
 		{
@@ -235,7 +235,7 @@ public class AnnotatedSpecGenerator {
 			String[] token = str.split("\t");
 			
 			String specFileName = token[specFileCol];
-			SpectrumAccessorByScanNum specMap = specAccessorMap.get(specFileName);
+			SpectrumAccessorBySpecIndex specMap = specAccessorMap.get(specFileName);
 			if(specMap == null)
 			{
 				String ext = specFileName.substring(specFileName.lastIndexOf('.'));
@@ -256,7 +256,7 @@ public class AnnotatedSpecGenerator {
 				pep = pep.substring(pep.indexOf('.')+1, pep.lastIndexOf('.'));
 			int scanNum = Integer.parseInt(token[scanNumCol]);
 			
-			Spectrum spec = specMap.getSpectrumByScanNum(scanNum);
+			Spectrum spec = specMap.getSpectrumBySpecIndex(scanNum);
 			if(spec == null)
 			{
 				System.out.println(specFileName+":"+scanNum+" is not available!");

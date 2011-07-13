@@ -10,4 +10,5 @@ public interface ScoredSpectrum<T extends Matter> {
 	public boolean getMainIonDirection();	// true: prefix, false: suffix
 	public Peak getPrecursorPeak();
 	public String getActivationMethodName();
+	public int getScanNum();
 }

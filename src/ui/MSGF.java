@@ -26,7 +26,7 @@ import msutil.Constants;
 import msutil.Enzyme;
 import msutil.SpectraMap;
 import msutil.Spectrum;
-import msutil.SpectrumAccessorByScanNum;
+import msutil.SpectrumAccessorBySpecIndex;
 
 import parser.InsPecTPSM;
 import parser.InsPecTParser;
@@ -321,7 +321,7 @@ public class MSGF {
 			return;
 		}
 //		Collections.sort(psmList, new PSM.PSMSpecFileAndScanNumComparator());
-		SpectrumAccessorByScanNum specAccessor = null;
+		SpectrumAccessorBySpecIndex specAccessor = null;
 		String prevFileName = "";
 		int prevScanNum = -1;
 		Spectrum spec = null;
@@ -344,7 +344,7 @@ public class MSGF {
 					assert(spec != null);
 				else	// different spectrum
 				{
-					spec = specAccessor.getSpectrumByScanNum(prevScanNum = psm.getScanNum());
+					spec = specAccessor.getSpectrumBySpecIndex(prevScanNum = psm.getScanNum());
 					prevScanNum = psm.getScanNum();
 					if(onePerSpec)
 						keyList.add(psm.getSpecFileName()+":"+psm.getScanNum());
@@ -400,7 +400,7 @@ public class MSGF {
 					out.println();
 					continue;
 				}
-				spec = specAccessor.getSpectrumByScanNum(prevScanNum = psm.getScanNum());
+				spec = specAccessor.getSpectrumBySpecIndex(prevScanNum = psm.getScanNum());
 				if(onePerSpec)
 					keyList.add(psm.getSpecFileName()+":"+psm.getScanNum());
 			}
@@ -535,7 +535,7 @@ public class MSGF {
 			return;
 		}
 //		Collections.sort(psmList, new PSM.PSMSpecFileAndScanNumComparator());
-		SpectrumAccessorByScanNum specAccessor = null;
+		SpectrumAccessorBySpecIndex specAccessor = null;
 		String prevFileName = "";
 		int prevScanNum = -1;
 		Spectrum spec = null;
@@ -559,7 +559,7 @@ public class MSGF {
 					assert(spec != null);
 				else	// different spectrum
 				{
-					spec = specAccessor.getSpectrumByScanNum(prevScanNum = psm.getScanNum());
+					spec = specAccessor.getSpectrumBySpecIndex(prevScanNum = psm.getScanNum());
 					prevScanNum = psm.getScanNum();
 					if(onePerSpec)
 						keyList.add(psm.getSpecFileName()+":"+psm.getScanNum());
@@ -615,7 +615,7 @@ public class MSGF {
 					out.println();
 					continue;
 				}
-				spec = specAccessor.getSpectrumByScanNum(prevScanNum = psm.getScanNum());
+				spec = specAccessor.getSpectrumBySpecIndex(prevScanNum = psm.getScanNum());
 				if(onePerSpec)
 					keyList.add(psm.getSpecFileName()+":"+psm.getScanNum());
 			}

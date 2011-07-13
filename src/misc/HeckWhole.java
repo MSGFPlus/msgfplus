@@ -28,7 +28,7 @@ import msutil.SpectraContainer;
 import msutil.SpectraIterator;
 import msutil.SpectraMap;
 import msutil.Spectrum;
-import msutil.SpectrumAccessorByScanNum;
+import msutil.SpectrumAccessorBySpecIndex;
 import msutil.SpectrumAnnotator;
 
 public class HeckWhole {
@@ -996,7 +996,7 @@ public class HeckWhole {
 		
 		String metID = method+enzyme;
 		
-		Hashtable<String, SpectrumAccessorByScanNum> specTable = new Hashtable<String, SpectrumAccessorByScanNum>(); 
+		Hashtable<String, SpectrumAccessorBySpecIndex> specTable = new Hashtable<String, SpectrumAccessorBySpecIndex>(); 
 		for(File f : specDir.listFiles())
 		{
 			if(f.getName().contains(enzyme))
@@ -1066,9 +1066,9 @@ public class HeckWhole {
 			int scanNum = Integer.parseInt(token[1]);
 			int msgfScore = Integer.parseInt(token[2]);
 			int peptideScore = (int)Float.parseFloat(token[3]);
-			SpectrumAccessorByScanNum map = specTable.get(fileName);
+			SpectrumAccessorBySpecIndex map = specTable.get(fileName);
 			assert(map != null);
-			Spectrum spec = map.getSpectrumByScanNum(scanNum);
+			Spectrum spec = map.getSpectrumBySpecIndex(scanNum);
 			assert(spec != null);
 			Float specProb = pepScoreTable.get(pep);
 			assert(specProb != null);
@@ -1089,7 +1089,7 @@ public class HeckWhole {
 		
 		String metID = method+enzyme;
 		
-		Hashtable<String, SpectrumAccessorByScanNum> specTable = new Hashtable<String, SpectrumAccessorByScanNum>(); 
+		Hashtable<String, SpectrumAccessorBySpecIndex> specTable = new Hashtable<String, SpectrumAccessorBySpecIndex>(); 
 		for(File f : specDir.listFiles())
 		{
 			if(f.getName().contains(enzyme))
@@ -1151,9 +1151,9 @@ public class HeckWhole {
 			String specInfo = pepSpecTable.get(pep);
 			String fileName = specInfo.substring(specInfo.indexOf("_nm_")+4, specInfo.lastIndexOf("raw")-5);
 			int scanNum = Integer.parseInt(specInfo.substring(specInfo.lastIndexOf("ScanNumber:")+12));
-			SpectrumAccessorByScanNum map = specTable.get(fileName);
+			SpectrumAccessorBySpecIndex map = specTable.get(fileName);
 			assert(map != null);
-			Spectrum spec = map.getSpectrumByScanNum(scanNum);
+			Spectrum spec = map.getSpectrumBySpecIndex(scanNum);
 			assert(spec != null);
 			Float mascotScore = pepScoreTable.get(pep);
 			assert(mascotScore != null);
@@ -1173,7 +1173,7 @@ public class HeckWhole {
 		File resDir = new File(dir.getPath()+"/Results0209");
 		File specDir = new File(dir.getPath()+"/Spectra");
 		
-		Hashtable<String, SpectrumAccessorByScanNum> specTable = new Hashtable<String, SpectrumAccessorByScanNum>(); 
+		Hashtable<String, SpectrumAccessorBySpecIndex> specTable = new Hashtable<String, SpectrumAccessorBySpecIndex>(); 
 		for(File f : specDir.listFiles())
 		{
 			if(f.getName().endsWith("mzXML"))
@@ -1247,11 +1247,11 @@ public class HeckWhole {
 			int msgfScore = Integer.parseInt(token[2]);
 			int peptideScore = (int)Float.parseFloat(token[3]);
 			
-			SpectrumAccessorByScanNum map = specTable.get(fileName);
+			SpectrumAccessorBySpecIndex map = specTable.get(fileName);
 			assert(map != null);
 			
-			Spectrum specCID = map.getSpectrumByScanNum(scanNumCID);
-			Spectrum specETD = map.getSpectrumByScanNum(scanNumETD);
+			Spectrum specCID = map.getSpectrumBySpecIndex(scanNumCID);
+			Spectrum specETD = map.getSpectrumBySpecIndex(scanNumETD);
 			assert(specCID != null && specETD != null);
 			Float specProb = pepScoreTable.get(pep);
 			assert(specProb != null);

@@ -17,6 +17,7 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 	private final int charge;
 	private final float parentMass;
 	private final Peak precursor;
+	private final int scanNum;
 	private String activationMethodName;
 	private IonType mainIon;
 	private Partition partition;	// partition of the last segment
@@ -32,6 +33,7 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 		this.mme = scorer.mme;
 		this.precursor = (Peak)(spec.getPrecursorPeak().clone());
 		this.activationMethodName = scorer.getActivationMethod().getName();
+		this.scanNum = spec.getScanNum();
 		
 		int numSegments = scorer.getNumSegments();
 		ionTypes = new IonType[numSegments][];
@@ -213,7 +215,7 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 						nodeMass = ion.getMass(p.getMz());
 						curBestScore = score;
 					}
-					nodeScore += scorer.getNodeScore(part, ion, p.getRank());
+					nodeScore += score;
 				}
 				else	// missing peak
 				{
@@ -223,5 +225,9 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 		}
 		return new Pair<Float,Float>(nodeMass,nodeScore);
 	}
-	
+
+	@Override
+	public int getScanNum() {
+		return scanNum;
+	}
 }

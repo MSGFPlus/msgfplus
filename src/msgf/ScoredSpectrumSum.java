@@ -10,6 +10,7 @@ public class ScoredSpectrumSum<T extends Matter> implements ScoredSpectrum<T> {
 	private List<ScoredSpectrum<T>> scoredSpecList;
 	private final String activationMethodName;
 	private Peak precursor;
+	private int scanNum;
 	
 	public ScoredSpectrumSum(List<ScoredSpectrum<T>> scoredSpecList)
 	{
@@ -24,6 +25,7 @@ public class ScoredSpectrumSum<T extends Matter> implements ScoredSpectrum<T> {
 				buf = new StringBuffer();
 				buf.append(scoredSpec.getActivationMethodName());
 				precursor = scoredSpec.getPrecursorPeak().clone();
+				scanNum = scoredSpec.getScanNum(); 
 			}
 		}
 		activationMethodName = buf.toString();
@@ -67,5 +69,10 @@ public class ScoredSpectrumSum<T extends Matter> implements ScoredSpectrum<T> {
 		for(ScoredSpectrum<T> scoredSpec : scoredSpecList)
 			sum += scoredSpec.getNodeScore(node, isPrefix);
 		return sum;
+	}
+
+	@Override
+	public int getScanNum() {
+		return scanNum;
 	}
 }

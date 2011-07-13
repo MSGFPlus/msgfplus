@@ -257,7 +257,7 @@ public class HCDCIDETD {
 			if(db.startsWith("Reverse"))
 				continue;
 			int scanNum = Integer.parseInt(token[2]);
-			Spectrum spec = map.getSpectrumByScanNum(scanNum);
+			Spectrum spec = map.getSpectrumBySpecIndex(scanNum);
 			int charge = Integer.parseInt(token[4]);
 			spec.setCharge(charge);
 			float expMass = spec.getParentMass();
@@ -312,7 +312,7 @@ public class HCDCIDETD {
 			if(db.startsWith("Reverse"))
 				continue;
 			int scanNum = Integer.parseInt(token[2]);
-			Spectrum spec = map.getSpectrumByScanNum(scanNum);
+			Spectrum spec = map.getSpectrumBySpecIndex(scanNum);
 			int charge = Integer.parseInt(token[4]);
 			spec.setCharge(charge);
 			float expMass = spec.getParentMass();

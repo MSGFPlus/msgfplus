@@ -25,7 +25,7 @@ import msutil.Enzyme;
 import msutil.Peptide;
 import msutil.SpectraMap;
 import msutil.Spectrum;
-import msutil.SpectrumAccessorByScanNum;
+import msutil.SpectrumAccessorBySpecIndex;
 
 import parser.InsPecTPSM;
 import parser.InsPecTParser;
@@ -42,9 +42,9 @@ public class MSGFTest {
 	public static void dicTest() throws Exception
 	{
 		File specFile = new File("/home/sangtaekim/Research/Data/Zubarev/SACTest/SACTest.mgf");
-		SpectrumAccessorByScanNum specAccessor = new SpectraMap(specFile.getPath(), new MgfSpectrumParser());
+		SpectrumAccessorBySpecIndex specAccessor = new SpectraMap(specFile.getPath(), new MgfSpectrumParser());
 		int scanNum = 3888;
-		Spectrum spec = specAccessor.getSpectrumByScanNum(scanNum);
+		Spectrum spec = specAccessor.getSpectrumBySpecIndex(scanNum);
 		
 		Enzyme enzyme = Enzyme.TRYPSIN;
 //		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile("/home/sangtaekim/Developments/MS_Java_Dev/bin/Mods.txt");
@@ -124,7 +124,7 @@ public class MSGFTest {
 	public static void msgfTest() throws Exception
 	{
 		File specFile = new File(System.getProperty("user.home")+"/Research/Data/ISBControl/Mix_7/ORBITRAP/mgf/ISB02_mAB_ChymoTryp_Tryp.mgf");
-		SpectrumAccessorByScanNum specAccessor = new SpectraMap(specFile.getPath(), new MgfSpectrumParser());
+		SpectrumAccessorBySpecIndex specAccessor = new SpectraMap(specFile.getPath(), new MgfSpectrumParser());
 		
 		File resultFile = new File(System.getProperty("user.home")+"/Research/Data/TDATest/MSGFDBv2/MSGFDB_S10_Target_New.txt");
 		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
@@ -150,7 +150,7 @@ public class MSGFTest {
 //				continue;
 			if(psm.getScanNum() != 7400)
 			continue;
-			Spectrum spec = specAccessor.getSpectrumByScanNum(psm.getScanNum());
+			Spectrum spec = specAccessor.getSpectrumBySpecIndex(psm.getScanNum());
 			
 			NewScoredSpectrum<IntMass> scoredSpec = scorer.getScoredSpectrum(spec);
 			GenericDeNovoGraph<IntMass> graph;

@@ -66,7 +66,7 @@ public class MzXMLSpectraIterator implements Iterator<Spectrum> {
 		Spectrum spec = null;
 		while(++scanNum <= map.getScanCount())
 		{
-			spec = map.getSpectrumByScanNum(scanNum);
+			spec = map.getSpectrumBySpecIndex(scanNum);
 			if(spec != null)
 				break;
 		}

@@ -77,27 +77,28 @@ public class PNNLSpectrumParser implements SpectrumParser {
 	}
 
 	@Override
-	public Hashtable<Integer, Long> getScanNumMap(BufferedRandomAccessLineReader lineReader)
+	public Hashtable<Integer, Long> getSpecIndexMap(BufferedRandomAccessLineReader lineReader)
 	{
-		Hashtable<Integer, Long> scanNumMap = new Hashtable<Integer, Long>();
+		Hashtable<Integer, Long> specIndexMap = new Hashtable<Integer, Long>();
 		String buf;
 		long offset = 0;
+		int specIndex = 0;
 		while((buf = lineReader.readLine()) != null)
 		{
 			if(buf.startsWith("=="))
 			{
-				int lastDotIndex = buf.lastIndexOf('.');
-				int secondLastDotIndex = buf.lastIndexOf('.', lastDotIndex-1);
-				int thirdLastDotIndex = buf.lastIndexOf('.', secondLastDotIndex-1);
-				int fourthLastDotIndex = buf.lastIndexOf('.', thirdLastDotIndex-1);
+//				int lastDotIndex = buf.lastIndexOf('.');
+//				int secondLastDotIndex = buf.lastIndexOf('.', lastDotIndex-1);
+//				int thirdLastDotIndex = buf.lastIndexOf('.', secondLastDotIndex-1);
+//				int fourthLastDotIndex = buf.lastIndexOf('.', thirdLastDotIndex-1);
+//				
+//				int scanNum = Integer.parseInt(buf.substring(fourthLastDotIndex+1, thirdLastDotIndex));
 				
-				int scanNum = Integer.parseInt(buf.substring(fourthLastDotIndex+1, thirdLastDotIndex));
-				
-				scanNumMap.put(scanNum, offset);
+				specIndexMap.put(++specIndex, offset);
 			}
 			offset = lineReader.getPosition();
 		}
-		return scanNumMap;
+		return specIndexMap;
 	}
 	
 	public static void main(String argv[]) throws Exception
@@ -125,9 +126,9 @@ public class PNNLSpectrumParser implements SpectrumParser {
 		time = System.currentTimeMillis();
 		SpectraMap map = new SpectraMap(fileName, new PNNLSpectrumParser());
 		numSpecs = 0;
-		for(int scanNum : map.getScanNumList())
+		for(int specIndex : map.getSpecIndexList())
 		{
-			Spectrum spec = map.getSpectrumByScanNum(scanNum);
+			Spectrum spec = map.getSpectrumBySpecIndex(specIndex);
 			numSpecs++;
 //			System.out.println(spec+ "\t" + spec.getScanNum()+"\t"+(spec.getParentMass()+(float)Composition.PROTON)+"\t"+spec.getCharge());
 		}

@@ -22,7 +22,7 @@ public class AgilentCyclicSpecPreProcess {
     System.out.println("Total number of scans: " + map.getScanCount());
     
     for (int i = 1; i <= map.getScanCount(); i++) {
-      Spectrum s = map.getSpectrumByScanNum(i);
+      Spectrum s = map.getSpectrumBySpecIndex(i);
       s.outputDta(outPath+s.getScanNum()+".dta");
     }
   }

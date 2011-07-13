@@ -46,7 +46,7 @@ public class DBScanner extends SuffixArray {
 	
 	// DB search results
 	private HashMap<SpecKey,PriorityQueue<DatabaseMatch>> specKeyDBMatchMap;
-	private HashMap<Integer,PriorityQueue<DatabaseMatch>> scanNumDBMatchMap;
+	private HashMap<Integer,PriorityQueue<DatabaseMatch>> specIndexDBMatchMap;
 
 	public DBScanner(
 			ScoredSpectraMap specScanner,
@@ -749,11 +749,7 @@ public class DBScanner extends SuffixArray {
 			if(matchQueue == null)
 				continue;
 
-			int scanNum = specKey.getScanNum();
-			int charge = specKey.getCharge();
-			
-//			Spectrum spec = specMap.getSpectrumByScanNum(scanNum);
-//			spec.setCharge(charge);
+			int specIndex = specKey.getSpecIndex();
 			
 			boolean useProtNTerm = false;
 			boolean useProtCTerm = false;
@@ -801,7 +797,7 @@ public class DBScanner extends SuffixArray {
 				match.setDeNovoScore(gf.getMaxScore()-1);
 				int score = match.getScore();
 				double specProb = gf.getSpectralProbability(score);
-				assert(specProb > 0): scanNum + ": " + match.getDeNovoScore()+" "+match.getScore()+" "+specProb; 
+				assert(specProb > 0): specIndex + ": " + match.getDeNovoScore()+" "+match.getScore()+" "+specProb; 
 				match.setSpecProb(specProb);
 				if(storeScoreDist)
 					match.setScoreDist(gf.getScoreDist());
@@ -812,7 +808,7 @@ public class DBScanner extends SuffixArray {
 	public void addDBSearchResults(MSGFDBResultGenerator gen, String specFileName)
 	{
 		// merge matches from the same scan
-		scanNumDBMatchMap = new HashMap<Integer,PriorityQueue<DatabaseMatch>>();
+		specIndexDBMatchMap = new HashMap<Integer,PriorityQueue<DatabaseMatch>>();
 		
 		Iterator<Entry<SpecKey, PriorityQueue<DatabaseMatch>>> itr = specKeyDBMatchMap.entrySet().iterator();
 		while(itr.hasNext())
@@ -823,13 +819,13 @@ public class DBScanner extends SuffixArray {
 			if(matchQueue == null || matchQueue.size() == 0)
 				continue;
 			
-			int scanNum = specKey.getScanNum();
+			int specIndex = specKey.getSpecIndex();
 			int charge = specKey.getCharge();
-			PriorityQueue<DatabaseMatch> existingQueue = scanNumDBMatchMap.get(scanNum);
+			PriorityQueue<DatabaseMatch> existingQueue = specIndexDBMatchMap.get(specIndex);
 			if(existingQueue == null)
 			{
 				existingQueue = new PriorityQueue<DatabaseMatch>(this.numPeptidesPerSpec, new DatabaseMatch.SpecProbComparator());
-				scanNumDBMatchMap.put(scanNum, existingQueue);
+				specIndexDBMatchMap.put(specIndex, existingQueue);
 			}
 			
 			for(DatabaseMatch match : matchQueue)
@@ -850,11 +846,11 @@ public class DBScanner extends SuffixArray {
 			}
 		}		
 		
-		Iterator<Entry<Integer, PriorityQueue<DatabaseMatch>>> itr2 = scanNumDBMatchMap.entrySet().iterator();
+		Iterator<Entry<Integer, PriorityQueue<DatabaseMatch>>> itr2 = specIndexDBMatchMap.entrySet().iterator();
 		while(itr2.hasNext())
 		{
 			Entry<Integer, PriorityQueue<DatabaseMatch>> entry = itr2.next();
-			int scanNum = entry.getKey();
+			int specIndex = entry.getKey();
 			PriorityQueue<DatabaseMatch> matchQueue = entry.getValue();
 			if(matchQueue == null)
 				continue;
@@ -878,7 +874,7 @@ public class DBScanner extends SuffixArray {
 					peptideStr = sequence.getSubsequence(index+1, index+length-1);
 				Peptide pep = aaSet.getPeptide(peptideStr);
 				String annotationStr = sequence.getCharAt(index)+"."+pep+"."+sequence.getCharAt(index+length-1);
-				SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(new SpecKey(scanNum, match.getCharge()));
+				SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(new SpecKey(specIndex, match.getCharge()));
 //				float expMass = scorer.getParentMass();
 				float expMass = scorer.getPrecursorPeak().getMass();
 				float theoMass = pep.getParentMass();
@@ -916,7 +912,8 @@ public class DBScanner extends SuffixArray {
 				
 				String resultStr =
 					specFileName+"\t"
-					+scanNum+"\t"
+					+specIndex+"\t"
+					+scorer.getScanNum()+"\t"
 					+actMethodStr+"\t" 
 					+scorer.getPrecursorPeak().getMz()+"\t"
 					+pmError+"\t"

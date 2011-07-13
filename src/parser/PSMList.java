@@ -12,7 +12,7 @@ import java.util.Hashtable;
 
 import msutil.SpectraMap;
 import msutil.Spectrum;
-import msutil.SpectrumAccessorByScanNum;
+import msutil.SpectrumAccessorBySpecIndex;
 
 public class PSMList<T extends PSM> extends ArrayList<T> {
 
@@ -104,7 +104,7 @@ public class PSMList<T extends PSM> extends ArrayList<T> {
 			e.printStackTrace();
 		}
 		int numSpecs = 0;
-		Hashtable<String, SpectrumAccessorByScanNum> fileList = new Hashtable<String, SpectrumAccessorByScanNum>();
+		Hashtable<String, SpectrumAccessorBySpecIndex> fileList = new Hashtable<String, SpectrumAccessorBySpecIndex>();
 		for(PSM psm : this)
 		{
 			if(psm.getPeptide().isModified())	// modified peptides are ignored
@@ -121,7 +121,7 @@ public class PSMList<T extends PSM> extends ArrayList<T> {
 					!isGreaterBetter && score > threshold)
 				continue;
 				
-			SpectrumAccessorByScanNum specAccessor = null;
+			SpectrumAccessorBySpecIndex specAccessor = null;
 			String fileName = psm.getSpecFileName();
 			if((specAccessor = fileList.get(fileName)) == null)
 			{
@@ -156,7 +156,7 @@ public class PSMList<T extends PSM> extends ArrayList<T> {
 				fileList.put(fileName, specAccessor);
 			}			
 			
-			Spectrum spec = specAccessor.getSpectrumByScanNum(psm.getScanNum());
+			Spectrum spec = specAccessor.getSpectrumBySpecIndex(psm.getScanNum());
 			if(spec == null)
 			{
 				System.err.println("Spectrum doesn't exist: " + psm.getSpecFileName() + ":" + psm.getScanNum());

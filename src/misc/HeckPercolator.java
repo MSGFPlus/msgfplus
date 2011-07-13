@@ -85,7 +85,7 @@ public class HeckPercolator {
 						String specFileID = token[0].substring(token[0].indexOf("090"), token[0].lastIndexOf('_'));
 						String[] titleToken = token[0].split("\\s+");
 						int scanNum = Integer.parseInt(titleToken[titleToken.length-1]);
-						Spectrum spec = specMap.get(specFileID.toLowerCase()).getSpectrumByScanNum(scanNum);
+						Spectrum spec = specMap.get(specFileID.toLowerCase()).getSpectrumBySpecIndex(scanNum);
 						Peptide pep = new Peptide(peptide);
 						spec.setAnnotation(pep);
 						assert(spec != null);

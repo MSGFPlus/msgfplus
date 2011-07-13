@@ -60,7 +60,7 @@ public class PhosAnalysis {
 						String pepString = pep.toString();
 						if(pepString.contains("s") || pepString.contains("t"))
 						{
-							Spectrum spec = map.getSpectrumByScanNum(psm.getScanNum());
+							Spectrum spec = map.getSpectrumBySpecIndex(psm.getScanNum());
 							spec.setCharge(psm.getCharge());
 							float expPM = spec.getParentMass();
 							float theoPM = pep.getParentMass();

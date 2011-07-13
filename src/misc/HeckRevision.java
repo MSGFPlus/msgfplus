@@ -620,7 +620,7 @@ public class HeckRevision {
 					int scanNum = Integer.parseInt(token[token.length-1]);
 					float precursorMz = spec.getPrecursorPeak().getMz();
 					
-					Spectrum mzXMLSpec = specTable.get(fileName).getSpectrumByScanNum(scanNum);
+					Spectrum mzXMLSpec = specTable.get(fileName).getSpectrumBySpecIndex(scanNum);
 					assert(mzXMLSpec != null);
 					float mzXMLPrecursorMz = mzXMLSpec.getPrecursorPeak().getMz();
 					

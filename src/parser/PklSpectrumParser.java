@@ -5,6 +5,7 @@ import java.util.Hashtable;
 
 import msutil.Peak;
 import msutil.SpectraIterator;
+import msutil.SpectraMap;
 import msutil.Spectrum;
 
 /**
@@ -22,7 +23,7 @@ public class PklSpectrumParser implements SpectrumParser {
 	public Spectrum readSpectrum(LineReader lineReader) 
 	{
 		Spectrum spec = null;
-		int scanNum = -1;
+		int specIndex = 0;
 
 		boolean sorted = true;
 		float prevMass = 0;
@@ -37,7 +38,7 @@ public class PklSpectrumParser implements SpectrumParser {
 				float precursorIntensity = Float.parseFloat(token[1]);
 				int charge = Integer.parseInt(token[2]);
                 spec = new Spectrum(precursorMz, charge, precursorIntensity);
-                spec.setScanNum(++scanNum);
+                spec.setSpecIndex(++specIndex);
             }
 			else if(token.length == 2)	// a peak
 			{
@@ -66,37 +67,48 @@ public class PklSpectrumParser implements SpectrumParser {
 	}
 	
 	/**
-	 * Read the entire pkl file and generates a map from scan numbers to file positions of spectra.
+	 * Read the entire pkl file and generates a map from spectrum indexes to file positions of spectra.
 	 * @param lineReader A reader points to the start of the spectrum.
-	 * @return A Hashtable object maps a scan number into a file position.
+	 * @return A Hashtable object maps a spectrum index into a file position.
 	 */
 	@Override
-	public Hashtable<Integer, Long> getScanNumMap(
+	public Hashtable<Integer, Long> getSpecIndexMap(
 			BufferedRandomAccessLineReader lineReader) {
-		Hashtable<Integer, Long> scanNumMap = new Hashtable<Integer, Long>();
+		Hashtable<Integer, Long> specIndexMap = new Hashtable<Integer, Long>();
 		String buf;
 		long offset = 0;
-		int sequentialScanNum = -1;
+		int specIndex = 0;
 		while((buf = lineReader.readLine()) != null)
 		{
 			String[] token = buf.split("\\s+");
 			if(token.length == 3)	// start of a spectrum
-                scanNumMap.put(++sequentialScanNum, offset);
+                specIndexMap.put(++specIndex, offset);
 			
 			offset = lineReader.getPosition();
 		}
-		return scanNumMap;	
+		return specIndexMap;	
 	}
 	
 	public static void test() throws Exception
 	{
-		String fileName = System.getProperty("user.home")+"/Research/Data/NitinSignalPep/HCGS_QToF_Trypsin.pkl";
+		String fileName = System.getProperty("user.home")+"/Research/ToolDistribution/RefTest/SpecFormatTest/TestSpectra.pkl";
 	    SpectraIterator iterator = new SpectraIterator(fileName, new PklSpectrumParser());
 	    int numSpecs = 0;
 	    while(iterator.hasNext())
 	    {
-	    	iterator.next();
+	    	Spectrum spec = iterator.next();
 	    	numSpecs++;
+	    	System.out.println(spec.getPrecursorPeak().getMz()+" "+spec.getCharge()+" "+spec.getSpecIndex()+" "+spec.getScanNum());
+	    }
+	    System.out.println("NumSpectra: " + numSpecs);
+	    
+	    numSpecs = 0;
+	    SpectraMap map = new SpectraMap(fileName, new PklSpectrumParser());
+	    for(int specIndex : map.getSpecIndexList())
+	    {
+	    	Spectrum spec = map.getSpectrumBySpecIndex(specIndex);
+	    	numSpecs++;
+	    	System.out.println(spec.getPrecursorPeak().getMz()+" "+spec.getCharge()+" "+spec.getSpecIndex()+" "+spec.getScanNum());
 	    }
 	    System.out.println("NumSpectra: " + numSpecs);
 	}

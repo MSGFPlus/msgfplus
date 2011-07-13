@@ -35,7 +35,7 @@ import msutil.SpecKey;
 import msutil.SpectraIterator;
 import msutil.SpectraMap;
 import msutil.Spectrum;
-import msutil.SpectrumAccessorByScanNum;
+import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
 	public static void main(String argv[])
@@ -207,6 +207,8 @@ public class MSGFDB {
 				{
 					activationMethod = ActivationMethod.FUSION;
 				}
+				else
+					printUsageAndExit("Illegal activation method: " + argv[i+1]);
 			}			
 			else if(argv[i].equalsIgnoreCase("-inst"))	// Instrument type
 			{
@@ -433,7 +435,7 @@ public class MSGFDB {
 	{
 		if(message != null)
 			System.out.println("Error: " + message + "\n");
-		System.out.println("MSGFDB v2 (07/08/2011)");
+		System.out.println("MSGFDB v2 (07/12/2011)");
 		System.out.print("Usage: java -Xmx2000M -jar MSGFDB.jar\n"
 				+ "\t-s SpectrumFile (*.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt)\n" //, *.mgf, *.pkl, *.ms2)\n"
 				+ "\t-d Database (*.fasta or *.fa)\n"
@@ -453,7 +455,6 @@ public class MSGFDB {
 				+ "\t[-maxCharge MaxPrecursorCharge] (Maximum precursor charge to consider if charges are not specified in the spectrum file, Default: 3)\n"
 				+ "\t[-n NumMatchesPerSpec] (Number of matches per spectrum to be reported, Default: 1)\n"
 				+ "\t[-uniformAAProb 0/1] (0: use amino acid probabilities computed from the input database (Default), 1: use probability 0.05 for all amino acids)\n"
-				+ "\t[-prm PrmOutputFileName] ()\n"
 //				+ "\t[-scan scanNum] (scan number to be searched)\n" => hidden option
 //				+ "\t[-param paramFile]\n"
 //				+ "\t[-err 0/1 (0: don't use peak errors (default), 1: use peak errors for scoring]\n"
@@ -477,7 +478,7 @@ public class MSGFDB {
     		InstrumentType instType,
     		AminoAcidSet aaSet, 
     		int numMatchesPerSpec,
-    		int scanNum,
+    		int specIndex,
     		boolean useTDA,
     		int minPeptideLength,
     		int maxPeptideLength,
@@ -487,7 +488,7 @@ public class MSGFDB {
 	{
     	
     	Iterator<Spectrum> specItr = null;
-		SpectrumAccessorByScanNum specMap = null;
+		SpectrumAccessorBySpecIndex specMap = null;
 		
 		if(specFormat == SpecFileFormat.MZXML)
 		{
@@ -519,11 +520,6 @@ public class MSGFDB {
 			printUsageAndExit("Error while parsing spectrum file: " + specFile.getPath());
 		}
 		
-//		NewRankScorer scorer = null;
-//		if(paramFile != null)
-//			scorer = new NewRankScorer(paramFile.getPath());
-//		else if(activationMethod != null)
-//			scorer = NewScorerFactory.get(activationMethod, instType, enzyme);
 
 		if(enzyme == null)
 			numAllowedNonEnzymaticTermini = 2;
@@ -535,23 +531,23 @@ public class MSGFDB {
 		int numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
 		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specItr, minCharge, maxCharge, activationMethod);
 		
-		if(scanNum >= 0)
+		if(specIndex >= 0)
 		{
 			specKeyList.clear();
-			Spectrum spec = specMap.getSpectrumByScanNum(scanNum);
+			Spectrum spec = specMap.getSpectrumBySpecIndex(specIndex);
 			if(spec.getCharge() == 0)
 			{
 				for(int c=minCharge; c<=maxCharge; c++)
-					specKeyList.add(new SpecKey(scanNum, c));
+					specKeyList.add(new SpecKey(specIndex, c));
 			}
 			else
-				specKeyList.add(new SpecKey(scanNum, spec.getCharge()));
+				specKeyList.add(new SpecKey(specIndex, spec.getCharge()));
 		}
 		
 		int fromIndex = 0;
 		
 		String header = 
-			"#SpecFile\tScan#\t"
+			"#SpecFile\tSpecIndex\tScan#\t"
 			+"FragMethod\t"
 //			+(showTitle ? "Title\t" : "")
 			+"Precursor\tPMError("
@@ -665,21 +661,14 @@ public class MSGFDB {
 				gen.writeResults(out, false);
 				out.flush();
 				out.close();
-				int scanNumCol = 1;
-				int pepCol = 6;
-				int dbCol = 7;
-				int scoreCol = 10;
-//				if(showTitle)
-//				{
-//					++pepCol;
-//					++dbCol;
-//					++scoreCol;
-//				}
+				int specIndexCol = 1;
+				int pepCol = 7;
+				int dbCol = 8;
+				int scoreCol = 11;
 				fdr.ComputeFDR.computeFDR(tempFile, null, scoreCol, false, "\t", 
-						scanNumCol, pepCol, null, true, true, 
+						specIndexCol, pepCol, null, true, true, 
 						true, dbCol, "REV_",
 						1, 1, outputFile);
-//				tempFile.delete();
 				
 			} catch (IOException e) {
 				e.printStackTrace();

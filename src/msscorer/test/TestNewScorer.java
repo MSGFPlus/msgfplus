@@ -56,7 +56,7 @@ public class TestNewScorer {
 		while(itr.hasNext())
 		{
 			Spectrum spec = itr.next();
-			System.out.println(spec.getScanNum());
+			System.out.println(spec.getSpecIndex());
 		}
 	}
 

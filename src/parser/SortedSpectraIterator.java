@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 import msutil.Pair;
 import msutil.Spectrum;
-import msutil.SpectrumAccessorByScanNum;
+import msutil.SpectrumAccessorBySpecIndex;
 
 
 /**
@@ -15,31 +15,31 @@ import msutil.SpectrumAccessorByScanNum;
  *
  */
 public class SortedSpectraIterator implements Iterator<Spectrum> {
-	private SpectrumAccessorByScanNum map;
+	private SpectrumAccessorBySpecIndex map;
 	private boolean hasNext;
 	private Spectrum currentSpectrum;
-	private ArrayList<Integer> scanNumList;
-	private int index = -1;
+	private ArrayList<Integer> specIndexList;
+	private int index;
 	private final int numSpecs;
 	
 	/**
 	 * Constructor taking the file name.
 	 * @param fileName
 	 */
-	public SortedSpectraIterator(Iterator<Spectrum> itr, SpectrumAccessorByScanNum map) {
+	public SortedSpectraIterator(Iterator<Spectrum> itr, SpectrumAccessorBySpecIndex map) {
 		int numSpecs = 0;
 		ArrayList<Pair<Integer,Float>> scanNumPMPairList = new ArrayList<Pair<Integer,Float>>();
 		while(itr.hasNext())
 		{
 			Spectrum spec = itr.next();
-			scanNumPMPairList.add(new Pair<Integer,Float>(spec.getScanNum(), spec.getParentMass()));
+			scanNumPMPairList.add(new Pair<Integer,Float>(spec.getSpecIndex(), spec.getParentMass()));
 			numSpecs++;
 		}
 		this.numSpecs = numSpecs;
 		Collections.sort(scanNumPMPairList, new Pair.PairComparator<Integer,Float>(true));
-		scanNumList = new ArrayList<Integer>();
+		specIndexList = new ArrayList<Integer>();
 		for(Pair<Integer,Float> p : scanNumPMPairList)
-			scanNumList.add(p.getFirst());
+			specIndexList.add(p.getFirst());
 		
 		this.map = map;
 		index = -1;
@@ -81,10 +81,10 @@ public class SortedSpectraIterator implements Iterator<Spectrum> {
 	private Spectrum parseNextSpectrum()
 	{
 		++index;
-		if(index >= scanNumList.size())
+		if(index >= specIndexList.size())
 			return null;
-		int scanNum = scanNumList.get(index);
-		return map.getSpectrumByScanNum(scanNum);
+		int specIndex = specIndexList.get(index);
+		return map.getSpectrumBySpecIndex(specIndex);
 	}
 
 	@Override

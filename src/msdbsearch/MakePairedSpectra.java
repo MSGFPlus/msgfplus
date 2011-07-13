@@ -52,13 +52,13 @@ public class MakePairedSpectra {
 		SpectraMap etdMap = new SpectraMap(etdFile.getPath(), new MgfSpectrumParser());
 		SpectraContainer mergedContainer = new SpectraContainer();
 		
-		for(Integer cidScanNum : cidMap.getScanNumList())
+		for(Integer cidScanNum : cidMap.getSpecIndexList())
 		{
 			int etdScanNum = cidScanNum+1;
-			Spectrum etdSpec = etdMap.getSpectrumByScanNum(etdScanNum);
+			Spectrum etdSpec = etdMap.getSpectrumBySpecIndex(etdScanNum);
 			if(etdSpec != null)
 			{
-				Spectrum cidSpec = cidMap.getSpectrumByScanNum(cidScanNum);
+				Spectrum cidSpec = cidMap.getSpectrumBySpecIndex(cidScanNum);
 				float cidPreMz = cidSpec.getPrecursorPeak().getMz();
 				float etdPreMz = etdSpec.getPrecursorPeak().getMz();
 				float error = Math.abs(cidPreMz-etdPreMz);

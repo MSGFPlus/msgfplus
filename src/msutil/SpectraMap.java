@@ -7,7 +7,7 @@ import java.util.Hashtable;
 import parser.BufferedRandomAccessLineReader;
 import parser.SpectrumParser;
 
-public class SpectraMap implements SpectrumAccessorByScanNum {
+public class SpectraMap implements SpectrumAccessorBySpecIndex {
 	private Hashtable<Integer, Long> scanNumMap = null; 	// key: scanNum, value: filePos
 	private SpectrumParser parser;
 	private BufferedRandomAccessLineReader lineReader;
@@ -19,19 +19,19 @@ public class SpectraMap implements SpectrumAccessorByScanNum {
 		
 		this.parser = parser;
 		// set map
-	    scanNumMap = parser.getScanNumMap(lineReader);
+	    scanNumMap = parser.getSpecIndexMap(lineReader);
 	}
 	
-	public Spectrum getSpectrumByScanNum(int scanNum)
+	public Spectrum getSpectrumBySpecIndex(int specIndex)
 	{
-		Long filePos = scanNumMap.get(scanNum);
+		Long filePos = scanNumMap.get(specIndex);
 		if(filePos == null)
 			return null;
 		else
 		{
 			lineReader.seek(filePos);
 			Spectrum spec = parser.readSpectrum(lineReader);
-			spec.setScanNum(scanNum);
+			spec.setSpecIndex(specIndex);
 			return spec;
 		}
 	}
@@ -49,7 +49,7 @@ public class SpectraMap implements SpectrumAccessorByScanNum {
 	}
 	
 	@Override
-	public ArrayList<Integer> getScanNumList()
+	public ArrayList<Integer> getSpecIndexList()
 	{
 		if(scanNumList == null)
 		{

@@ -124,8 +124,8 @@ public class MSDicLauncher extends ToolLauncher {
 	    	{
 	    		String title = spec.getTitle();
 	    		if(title == null)
-	    			title = "Spec:"+spec.getScanNum();
-	    		out.println("#"+spec.getTitle()+"\t"+spec.getScanNum()+"\t"+spec.getPrecursorPeak().getMz()+"\t"+charge+"\t"+(gf.getMaxScore()-1));
+	    			title = "Spec:"+spec.getSpecIndex();
+	    		out.println("#"+spec.getTitle()+"\t"+spec.getSpecIndex()+"\t"+spec.getPrecursorPeak().getMz()+"\t"+charge+"\t"+(gf.getMaxScore()-1));
 	    		for(String s : dictionary)
 	    		{
 	    			Peptide p = new Peptide(s, aaSet);
@@ -153,7 +153,7 @@ public class MSDicLauncher extends ToolLauncher {
 						double specProb = gf.getSpectralProbability(peptideScore);
 						String id = matchedPeptides.get(i);
 						
-						out.println(spec.getTitle()+"\t"+spec.getScanNum()+"\t"+id+"\t"+matchedProteinAnnotations.get(i)+"\t"+spec.getPrecursorPeak().getMz()+"\t"+spec.getCharge()+"\t"+(gf.getMaxScore()-1)+
+						out.println(spec.getTitle()+"\t"+spec.getSpecIndex()+"\t"+id+"\t"+matchedProteinAnnotations.get(i)+"\t"+spec.getPrecursorPeak().getMz()+"\t"+spec.getCharge()+"\t"+(gf.getMaxScore()-1)+
 								"\t"+peptideScore+"\t"+specProb);
 					}
 				}	    		

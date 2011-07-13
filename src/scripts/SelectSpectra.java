@@ -90,7 +90,7 @@ public class SelectSpectra {
           currentFile = filename;
         }
         
-        Spectrum s = sm.getSpectrumByScanNum(scanNum);
+        Spectrum s = sm.getSpectrumBySpecIndex(scanNum);
         s.setCharge(charge);
         
         //System.out.printf("%.2f %.2f\n", s.getParentMass(), new Peptide(tokens[3]).getMass());

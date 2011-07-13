@@ -13,6 +13,7 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 	private boolean mainIonDirection;
 	protected Peak precursor;
 	protected String activationMethodName;
+	private int scanNum;
 	
 	public FastScorer(ScoredSpectrum<NominalMass> scoredSpec, int peptideMass)
 	{
@@ -30,6 +31,7 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 		
 		this.precursor = scoredSpec.getPrecursorPeak();
 		this.activationMethodName = scoredSpec.getActivationMethodName();
+		this.scanNum = scoredSpec.getScanNum();
 	}
 
 	@Override
@@ -81,4 +83,10 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 		else
 			return suffixScore[node.getNominalMass()];
 	}
+
+	@Override
+	public int getScanNum() {
+		return scanNum;
+	}
+	
 }

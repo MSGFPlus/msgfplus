@@ -118,7 +118,7 @@ public class ControlNew {
 			}
 			if(!controlProtein)
 				continue;
-			Spectrum spec = specDB.getSpectrumByScanNum(psm.getScanNum());
+			Spectrum spec = specDB.getSpectrumBySpecIndex(psm.getScanNum());
 			spec.setAnnotation(psm.getPeptide());
 			spec.setCharge(psm.getCharge());
 			spec.setScanNum(psm.getScanNum());

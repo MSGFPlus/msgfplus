@@ -298,7 +298,7 @@ public class MSProfile {
 				spec.setActivationMethod(ActivationMethod.CID);
 			}
 			// spectrum file must include "scan number" field
-			if(spec.getScanNum() < 0)
+			if(spec.getScanNum() <= 0)
 			{
 				System.err.println("No scan number info in the spectrum!");
 				System.exit(-1);

@@ -6,5 +6,5 @@ import msutil.Spectrum;
 
 public interface SpectrumParser {
 	public Spectrum readSpectrum(LineReader lineReader);
-	Hashtable<Integer, Long> getScanNumMap(BufferedRandomAccessLineReader lineReader);
+	Hashtable<Integer, Long> getSpecIndexMap(BufferedRandomAccessLineReader lineReader);
 }

@@ -140,7 +140,7 @@ public class Chores {
 		String fileName = "/home/sangtaekim/Research/Data/HeckWhole/Spectra/090121_NM_Trypsin_20.mzXML";
 		MzXMLSpectraMap map = new MzXMLSpectraMap(fileName);
 		System.out.println("LoadingTime: " + (System.currentTimeMillis()-time));
-		map.getSpectrumByScanNum(100);
+		map.getSpectrumBySpecIndex(100);
 		System.out.println("Time: " + (System.currentTimeMillis()-time));
 	}
 	
