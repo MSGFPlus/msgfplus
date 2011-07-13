@@ -64,11 +64,13 @@ public class NewScorerFactory {
 			method = ActivationMethod.CID;
 		if(enzyme == null)
 			enzyme = Enzyme.TRYPSIN;
+		if(method == ActivationMethod.HCD)
+			instType = InstrumentType.HIGH_RESOLUTION_LTQ;
 		Condition condition = new Condition(method, instType, enzyme);
 		NewRankScorer scorer = scorerTable.get(condition);
 		if(scorer == null)
 		{
-			InputStream is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+method+".param");
+			InputStream is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+condition+".param");
 			if(is == null)	// param file does not exist. Change enzyme.
 			{
 				// change enzyme
