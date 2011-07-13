@@ -435,7 +435,7 @@ public class MSGFDB {
 	{
 		if(message != null)
 			System.out.println("Error: " + message + "\n");
-		System.out.println("MSGFDB v2 (07/12/2011)");
+		System.out.println("MSGFDB v2 (07/13/2011)");
 		System.out.print("Usage: java -Xmx2000M -jar MSGFDB.jar\n"
 				+ "\t-s SpectrumFile (*.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt)\n" //, *.mgf, *.pkl, *.ms2)\n"
 				+ "\t-d Database (*.fasta or *.fa)\n"
