@@ -485,7 +485,8 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
       out.println("TITLE=" + getTitle());
     if(this.annotation != null)
       out.println("SEQ=" + getAnnotationStr());
-    
+    if(this.getActivationMethod() != null)
+    	out.println("ACTIVATION=" + this.getActivationMethod().getName());
     float precursorMz = precursor.getMz();
     out.println("PEPMASS=" + precursorMz);
     if(startScanNum > 0)
