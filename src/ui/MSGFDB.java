@@ -21,6 +21,7 @@ import parser.PklSpectrumParser;
 import parser.SpectrumParser;
 import suffixarray.SuffixArraySequence;
 
+import msdbsearch.ConcurrentMSGFDB;
 import msdbsearch.DBScanner;
 import msdbsearch.ReverseDB;
 import msdbsearch.ScoredSpectraMap;
@@ -589,6 +590,7 @@ public class MSGFDB {
 	    			specDataType
 	    			);
 			specScanner.makePepMassSpecKeyMap();
+			
 			// Thread pool
 			ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 			
@@ -608,14 +610,13 @@ public class MSGFDB {
 			}
 			
 			for(int i=0; i<numThreads; i++)
-				executor.execute(new msdbsearch.ConcurrentMSGFDB.PreProcessSpectra(specScanner, startIndex[i], endIndex[i]));
+				executor.execute(new ConcurrentMSGFDB.PreProcessSpectra(specScanner, startIndex[i], endIndex[i]));
 			
 			executor.shutdown();
 			while(!executor.isTerminated()) {}	// wait until all threads terminate
 			
 //	    	specScanner.preProcessSpectra(specKeyList.subList(fromIndexGlobal, toIndexGlobal));
-			
-//	    	specScanner.preProcessSpectra(specKeyList.subList(fromIndexGlobal, toIndexGlobal), 4);
+			System.out.println("NumPreprocessedSpecs: " + specScanner.getSpecKeyScorerMap().keySet().size());
 	    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
 	    	
 	    	// db search
@@ -648,7 +649,16 @@ public class MSGFDB {
 	    	// running MS-GF
 			System.out.print("Computing Spectral Probabilities and P-values...");
 	    	time = System.currentTimeMillis(); 
-	    	sa.computeSpecProb(!useTDA);
+			
+			// Concurrent running
+			executor = Executors.newFixedThreadPool(numThreads);
+			for(int i=0; i<numThreads; i++)
+				executor.execute(new ConcurrentMSGFDB.ComputeSpecProb(sa, !useTDA, startIndex[i], endIndex[i]));
+
+			executor.shutdown();
+			while(!executor.isTerminated()) {}	// wait until all threads terminate
+			
+//	    	sa.computeSpecProb(!useTDA, fromIndexGlobal, toIndexGlobal);
 	    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
 	    	
 			System.out.print("Generating results...");

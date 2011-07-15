@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import sequences.Constants;
-
 import msgf.NominalMass;
 import msgf.ScoredSpectrum;
 import msgf.ScoredSpectrumSum;
@@ -56,9 +54,16 @@ public class ScoredSpectraMap {
 		this.numAllowedC13 = numAllowedC13;
 		this.specDataType = specDataType;
 		
-		pepMassSpecKeyMap = Collections.synchronizedSortedMap(new TreeMap<Double,SpecKey>());
+		pepMassSpecKeyMap = new TreeMap<Double,SpecKey>();
 		specKeyScorerMap = Collections.synchronizedMap(new HashMap<SpecKey,SimpleDBSearchScorer<NominalMass>>());
 	}
+	
+	public SortedMap<Double,SpecKey> getPepMassSpecKeyMap()		{ return pepMassSpecKeyMap; }
+	public Map<SpecKey,SimpleDBSearchScorer<NominalMass>> getSpecKeyScorerMap()	{ return specKeyScorerMap; }
+	public Tolerance getLeftParentMassTolerance()				{ return leftParentMassTolerance; }
+	public Tolerance getRightParentMassTolerance()				{ return rightParentMassTolerance; }
+	public int getNumAllowedC13()								{ return numAllowedC13; }
+	public List<SpecKey> getSpecKeyList()	{ return specKeyList; }
 	
 	public void makePepMassSpecKeyMap()
 	{
@@ -95,6 +100,11 @@ public class ScoredSpectraMap {
 		}
 	}
 	
+	public void preProcessSpectra()
+	{
+		preProcessSpectra(0, specKeyList.size());
+	}
+	
 	public void preProcessSpectra(int fromIndex, int toIndex)
 	{
 		if(specDataType.getActivationMethod() != ActivationMethod.FUSION)
@@ -117,11 +127,6 @@ public class ScoredSpectraMap {
 		{
 			int specIndex = specKey.getSpecIndex();
 			Spectrum spec = specMap.getSpectrumBySpecIndex(specIndex);
-			if(spec.size() < Constants.MIN_NUM_PEAKS_PER_SPECTRUM)
-			{
-//				System.out.println("Spectrum " + spec.getScanNum() + " has too few peaks (#Peaks: " + spec.size()+"): ignored.");
-				continue;
-			}
 			if(activationMethod == null || activationMethod == ActivationMethod.FUSION)
 				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme);
 			
@@ -157,11 +162,6 @@ public class ScoredSpectraMap {
 			for(int specIndex : specIndexList)
 			{
 				Spectrum spec = specMap.getSpectrumBySpecIndex(specIndex);
-				if(spec.size() < Constants.MIN_NUM_PEAKS_PER_SPECTRUM)
-				{
-//					System.out.println("Spectrum " + spec.getScanNum() + " has too few peaks (#Peaks: " + spec.size()+"): ignored.");
-					continue;
-				}
 				
 				NewRankScorer scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme);
 				int charge = specKey.getCharge();
@@ -179,11 +179,4 @@ public class ScoredSpectraMap {
 			specKeyScorerMap.put(specKey, new FastScorer(scoredSpec, maxNominalPeptideMass));
 		}				
 	}
-	
-	public SortedMap<Double,SpecKey> getPepMassSpecKeyMap()		{ return pepMassSpecKeyMap; }
-	public Map<SpecKey,SimpleDBSearchScorer<NominalMass>> getSpecKeyScorerMap()	{ return specKeyScorerMap; }
-	public Tolerance getLeftParentMassTolerance()				{ return leftParentMassTolerance; }
-	public Tolerance getRightParentMassTolerance()				{ return rightParentMassTolerance; }
-	public int getNumAllowedC13()								{ return numAllowedC13; }
-	
 }

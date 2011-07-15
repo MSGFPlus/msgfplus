@@ -3,8 +3,11 @@ package msdbsearch;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Map.Entry;
 
@@ -45,8 +48,8 @@ public class DBScanner extends SuffixArray {
 	private ScoredSpectraMap specScanner;
 	
 	// DB search results
-	private HashMap<SpecKey,PriorityQueue<DatabaseMatch>> specKeyDBMatchMap;
-	private HashMap<Integer,PriorityQueue<DatabaseMatch>> specIndexDBMatchMap;
+	private Map<SpecKey,PriorityQueue<DatabaseMatch>> specKeyDBMatchMap;
+	private Map<Integer,PriorityQueue<DatabaseMatch>> specIndexDBMatchMap;
 
 	public DBScanner(
 			ScoredSpectraMap specScanner,
@@ -87,6 +90,9 @@ public class DBScanner extends SuffixArray {
 		numDisinctPeptides = new int[maxPeptideLength+2];
 		for(int length=minPeptideLength; length<=maxPeptideLength+1; length++)
 			numDisinctPeptides[length] = getNumDistinctSeq(length);
+		
+		specKeyDBMatchMap = Collections.synchronizedMap(new HashMap<SpecKey,PriorityQueue<DatabaseMatch>>());
+		specIndexDBMatchMap = Collections.synchronizedMap(new HashMap<Integer,PriorityQueue<DatabaseMatch>>());
 	}
 
 	// builder
@@ -109,8 +115,6 @@ public class DBScanner extends SuffixArray {
 	// duplicated for speeding-up the search
 	public void dbSearchCTermEnzymeNoMod(int numberOfAllowableNonEnzymaticTermini, boolean verbose)
 	{
-		specKeyDBMatchMap = new HashMap<SpecKey,PriorityQueue<DatabaseMatch>>();
-
 		double[] prm = new double[maxPeptideLength+2];
 		prm[0] = 0;
 		int[] intPRM = new int[maxPeptideLength+2];
@@ -240,8 +244,6 @@ public class DBScanner extends SuffixArray {
 
 	public void dbSearchCTermEnzyme(int numberOfAllowableNonEnzymaticTermini, boolean verbose)
 	{
-		specKeyDBMatchMap = new HashMap<SpecKey,PriorityQueue<DatabaseMatch>>();	// specKey -> dbHits
-
 		CandidatePeptideGrid candidatePepGrid = new CandidatePeptideGrid(aaSet, maxPeptideLength);
 		
 		int i = Integer.MAX_VALUE;
@@ -422,8 +424,6 @@ public class DBScanner extends SuffixArray {
 	// dupulicated to speed-up the search
 	public void dbSearchNoEnzyme(boolean verbose)
 	{
-		specKeyDBMatchMap = new HashMap<SpecKey,PriorityQueue<DatabaseMatch>>();	// specKey -> dbHits
-
 		CandidatePeptideGrid candidatePepGrid = new CandidatePeptideGrid(aaSet, maxPeptideLength);
 		
 		int i = 0;
@@ -565,8 +565,6 @@ public class DBScanner extends SuffixArray {
 	
 	public void dbSearchNTermEnzyme(int numberOfAllowableNonEnzymaticTermini, boolean verbose)
 	{
-		specKeyDBMatchMap = new HashMap<SpecKey,PriorityQueue<DatabaseMatch>>();	// specKey -> dbHits
-
 		CandidatePeptideGrid candidatePepGrid = new CandidatePeptideGrid(aaSet, maxPeptideLength);
 		
 		int i = Integer.MAX_VALUE;
@@ -735,7 +733,6 @@ public class DBScanner extends SuffixArray {
 									prevMatchQueue.add(new DatabaseMatch(index-1, i+2, score).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
 								}
 							}
-							
 						}
 					}					
 				}
@@ -746,14 +743,19 @@ public class DBScanner extends SuffixArray {
 		neighboringLcps.rewind();
 	}
 	
-	public void computeSpecProb(boolean storeScoreDist)
+	public void computeSpecProb(boolean storeScoreDist, int fromIndex, int toIndex)
 	{
-		Iterator<Entry<SpecKey, PriorityQueue<DatabaseMatch>>> itr = specKeyDBMatchMap.entrySet().iterator();
-		while(itr.hasNext())
+		List<SpecKey> specKeyList = specScanner.getSpecKeyList().subList(fromIndex, toIndex);
+		
+//		Iterator<Entry<SpecKey, PriorityQueue<DatabaseMatch>>> itr = specKeyDBMatchMap.entrySet().iterator();
+//		while(itr.hasNext())
+//		{
+//			Entry<SpecKey, PriorityQueue<DatabaseMatch>> entry = itr.next();
+//			SpecKey specKey = entry.getKey();
+//			PriorityQueue<DatabaseMatch> matchQueue = entry.getValue();
+		for(SpecKey specKey : specKeyList)
 		{
-			Entry<SpecKey, PriorityQueue<DatabaseMatch>> entry = itr.next();
-			SpecKey specKey = entry.getKey();
-			PriorityQueue<DatabaseMatch> matchQueue = entry.getValue();
+			PriorityQueue<DatabaseMatch> matchQueue = specKeyDBMatchMap.get(specKey);
 			if(matchQueue == null)
 				continue;
 
@@ -820,9 +822,6 @@ public class DBScanner extends SuffixArray {
 	
 	public void addDBSearchResults(MSGFDBResultGenerator gen, String specFileName)
 	{
-		// merge matches from the same scan
-		specIndexDBMatchMap = new HashMap<Integer,PriorityQueue<DatabaseMatch>>();
-		
 		Iterator<Entry<SpecKey, PriorityQueue<DatabaseMatch>>> itr = specKeyDBMatchMap.entrySet().iterator();
 		while(itr.hasNext())
 		{

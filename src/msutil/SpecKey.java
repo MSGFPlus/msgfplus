@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import parser.MzXMLSpectraIterator;
+import sequences.Constants;
 
 public class SpecKey extends Pair<Integer, Integer> {
 
@@ -65,6 +66,11 @@ public class SpecKey extends Pair<Integer, Integer> {
 			if(activationMethod != null && spec.getActivationMethod() != null && spec.getActivationMethod() != activationMethod)
 				continue;
 
+			if(spec.size() < Constants.MIN_NUM_PEAKS_PER_SPECTRUM)
+			{
+//				System.out.println("Spectrum " + spec.getScanNum() + " has too few peaks (#Peaks: " + spec.size()+"): ignored.");
+				continue;
+			}
 			if(charge == 0)
 			{
 				for(int c=minCharge; c<=maxCharge; c++)
