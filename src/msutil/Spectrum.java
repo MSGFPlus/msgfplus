@@ -26,7 +26,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
   // optional members
   private int startScanNum = 0;
   private int endScanNum = 0;
-  private int specIndex = 0;	// 
+  private int specIndex = -1;	// 
   private String title = null;
   private Peptide annotation = null;
   private ArrayList<String> seqList = null;	// SEQ fields of mgf spectrum
