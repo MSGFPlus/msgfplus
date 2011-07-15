@@ -1,24 +1,23 @@
 package msdbsearch;
 
-import java.util.List;
-
-import msutil.SpecKey;
-
 public class ConcurrentMSGFDB {
 	public static class PreProcessSpectra implements Runnable {
 
 		private final ScoredSpectraMap specMap;
-		private final List<SpecKey> specKeyList;
-		public PreProcessSpectra(final ScoredSpectraMap specMap, final List<SpecKey> specKeyList)
+		private final int fromIndex;
+		private final int toIndex;
+		
+		public PreProcessSpectra(final ScoredSpectraMap specMap, final int fromIndex, final int toIndex)
 		{
 			this.specMap = specMap;
-			this.specKeyList = specKeyList;
+			this.fromIndex = fromIndex;
+			this.toIndex = toIndex;
 		}
 		
 		@Override
 		public void run() 
 		{
-			specMap.preProcessSpectra(specKeyList);
+			specMap.preProcessSpectra(fromIndex, toIndex);
 		}
 	}
 }

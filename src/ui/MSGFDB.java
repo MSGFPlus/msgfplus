@@ -582,12 +582,13 @@ public class MSGFDB {
 	    	long time = System.currentTimeMillis();
 	    	ScoredSpectraMap specScanner = new ScoredSpectraMap(
 	    			specMap,
+	    			specKeyList.subList(fromIndexGlobal, toIndexGlobal),
 	    			leftParentMassTolerance,
 	    			rightParentMassTolerance,
 	    			numAllowedC13,
 	    			specDataType
 	    			);
-			
+			specScanner.makePepMassSpecKeyMap();
 			// Thread pool
 			ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 			
@@ -607,7 +608,7 @@ public class MSGFDB {
 			}
 			
 			for(int i=0; i<numThreads; i++)
-				executor.execute(new msdbsearch.ConcurrentMSGFDB.PreProcessSpectra(specScanner, specKeyList.subList(startIndex[i], endIndex[i])));
+				executor.execute(new msdbsearch.ConcurrentMSGFDB.PreProcessSpectra(specScanner, startIndex[i], endIndex[i]));
 			
 			executor.shutdown();
 			while(!executor.isTerminated()) {}	// wait until all threads terminate

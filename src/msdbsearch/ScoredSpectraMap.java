@@ -31,6 +31,7 @@ import msutil.SpectrumAccessorBySpecIndex;
 
 public class ScoredSpectraMap {
 	private final SpectrumAccessorBySpecIndex specMap;
+	private final List<SpecKey> specKeyList;
 	private final Tolerance leftParentMassTolerance;
 	private final Tolerance rightParentMassTolerance;
 	private final int numAllowedC13;
@@ -41,6 +42,7 @@ public class ScoredSpectraMap {
 
 	public ScoredSpectraMap(
 			SpectrumAccessorBySpecIndex specMap,
+			List<SpecKey> specKeyList,			
     		Tolerance leftParentMassTolerance, 
     		Tolerance rightParentMassTolerance, 
 			int numAllowedC13,
@@ -48,6 +50,7 @@ public class ScoredSpectraMap {
 			)
 	{
 		this.specMap = specMap;
+		this.specKeyList = specKeyList;
 		this.leftParentMassTolerance = leftParentMassTolerance;
 		this.rightParentMassTolerance = rightParentMassTolerance;
 		this.numAllowedC13 = numAllowedC13;
@@ -57,49 +60,12 @@ public class ScoredSpectraMap {
 		specKeyScorerMap = Collections.synchronizedMap(new HashMap<SpecKey,SimpleDBSearchScorer<NominalMass>>());
 	}
 	
-	public void preProcessSpectra(List<SpecKey> specKeyList)
+	public void makePepMassSpecKeyMap()
 	{
-		if(specDataType.getActivationMethod() != ActivationMethod.FUSION)
-			preProcessIndividualSpectra(specKeyList);
-		else
-			preProcessFusedSpectra(specKeyList);
-	}
-	
-	private void preProcessIndividualSpectra(List<SpecKey> specKeyList)
-	{
-		NewRankScorer scorer = null;
-		ActivationMethod activationMethod = specDataType.getActivationMethod();
-		InstrumentType instType = specDataType.getInstrumentType();
-		Enzyme enzyme = specDataType.getEnzyme();
-		
-		if(activationMethod != null && activationMethod != ActivationMethod.FUSION)
-			scorer = NewScorerFactory.get(activationMethod, instType, enzyme);
-		
 		for(SpecKey specKey : specKeyList)
 		{
-			int specIndex = specKey.getSpecIndex();
-			Spectrum spec = specMap.getSpectrumBySpecIndex(specIndex);
-			if(spec.size() < Constants.MIN_NUM_PEAKS_PER_SPECTRUM)
-			{
-//				System.out.println("Spectrum " + spec.getScanNum() + " has too few peaks (#Peaks: " + spec.size()+"): ignored.");
-				continue;
-			}
-			if(activationMethod == null || activationMethod == ActivationMethod.FUSION)
-				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme);
-			
-			int charge = specKey.getCharge();
-			spec.setCharge(charge);
-			NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
-			
+			Spectrum spec = specMap.getSpectrumBySpecIndex(specKey.getSpecIndex());
 			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
-			float tolDaLeft = leftParentMassTolerance.getToleranceAsDa(peptideMass);
-			int maxNominalPeptideMass = NominalMass.toNominalMass(peptideMass) + Math.round(tolDaLeft-0.4999f);
-			
-			if(scorer.supportEdgeScores())
-				specKeyScorerMap.put(specKey, new DBScanScorer(scoredSpec, maxNominalPeptideMass));
-			else
-				specKeyScorerMap.put(specKey, new FastScorer(scoredSpec, maxNominalPeptideMass));
-			
 			double peptideMassKey = (double)peptideMass;
 			while(pepMassSpecKeyMap.get(peptideMassKey) != null)	// for speeding up
 				peptideMassKey = Math.nextUp(peptideMassKey);
@@ -125,16 +91,61 @@ public class ScoredSpectraMap {
 						mass2Key = Math.nextUp(mass2Key);
 					pepMassSpecKeyMap.put(mass2Key, specKey);
 				}
-			}				
+			}					
+		}
+	}
+	
+	public void preProcessSpectra(int fromIndex, int toIndex)
+	{
+		if(specDataType.getActivationMethod() != ActivationMethod.FUSION)
+			preProcessIndividualSpectra(fromIndex, toIndex);
+		else
+			preProcessFusedSpectra(fromIndex, toIndex);
+	}
+	
+	private void preProcessIndividualSpectra(int fromIndex, int toIndex)
+	{
+		NewRankScorer scorer = null;
+		ActivationMethod activationMethod = specDataType.getActivationMethod();
+		InstrumentType instType = specDataType.getInstrumentType();
+		Enzyme enzyme = specDataType.getEnzyme();
+		
+		if(activationMethod != null && activationMethod != ActivationMethod.FUSION)
+			scorer = NewScorerFactory.get(activationMethod, instType, enzyme);
+		
+		for(SpecKey specKey : specKeyList.subList(fromIndex, toIndex))
+		{
+			int specIndex = specKey.getSpecIndex();
+			Spectrum spec = specMap.getSpectrumBySpecIndex(specIndex);
+			if(spec.size() < Constants.MIN_NUM_PEAKS_PER_SPECTRUM)
+			{
+//				System.out.println("Spectrum " + spec.getScanNum() + " has too few peaks (#Peaks: " + spec.size()+"): ignored.");
+				continue;
+			}
+			if(activationMethod == null || activationMethod == ActivationMethod.FUSION)
+				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme);
+			
+			int charge = specKey.getCharge();
+			spec.setCharge(charge);
+			NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
+			
+			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
+			float tolDaLeft = leftParentMassTolerance.getToleranceAsDa(peptideMass);
+			int maxNominalPeptideMass = NominalMass.toNominalMass(peptideMass) + Math.round(tolDaLeft-0.4999f);
+			
+			if(scorer.supportEdgeScores())
+				specKeyScorerMap.put(specKey, new DBScanScorer(scoredSpec, maxNominalPeptideMass));
+			else
+				specKeyScorerMap.put(specKey, new FastScorer(scoredSpec, maxNominalPeptideMass));
 		}				
 	}
 	
-	private void preProcessFusedSpectra(List<SpecKey> specKeyList)
+	private void preProcessFusedSpectra(int fromIndex, int toIndex)
 	{
 		InstrumentType instType = specDataType.getInstrumentType();
 		Enzyme enzyme = specDataType.getEnzyme();
 		
-		for(SpecKey specKey : specKeyList)
+		for(SpecKey specKey : specKeyList.subList(fromIndex, toIndex))
 		{
 			ArrayList<Integer> specIndexList = specKey.getSpecIndexList();
 			if(specIndexList == null)
@@ -166,33 +177,6 @@ public class ScoredSpectraMap {
 			float tolDaLeft = leftParentMassTolerance.getToleranceAsDa(peptideMass);
 			int maxNominalPeptideMass = NominalMass.toNominalMass(peptideMass) + Math.round(tolDaLeft-0.4999f);
 			specKeyScorerMap.put(specKey, new FastScorer(scoredSpec, maxNominalPeptideMass));
-			
-			double peptideMassKey = (double)peptideMass;
-			while(pepMassSpecKeyMap.get(peptideMassKey) != null)	// for speeding up
-				peptideMassKey = Math.nextUp(peptideMassKey);
-			pepMassSpecKeyMap.put(peptideMassKey, specKey);
-			
-			float tolDaRight = rightParentMassTolerance.getToleranceAsDa(peptideMass);
-			if(numAllowedC13 > 0 && tolDaRight < 0.5f)
-			{
-				if(numAllowedC13 >= 1)
-				{
-					float mass1 = peptideMass-(float)Composition.ISOTOPE;
-					double mass1Key = (double)mass1;
-					while(pepMassSpecKeyMap.get(mass1Key) != null)
-						mass1Key = Math.nextUp(mass1Key);
-					pepMassSpecKeyMap.put(mass1Key, specKey);
-				}
-				
-				if(numAllowedC13 >= 2)
-				{
-					float mass2 = peptideMass-2*(float)Composition.ISOTOPE;
-					double mass2Key = (double)mass2;
-					while(pepMassSpecKeyMap.get(mass2Key) != null)
-						mass2Key = Math.nextUp(mass2Key);
-					pepMassSpecKeyMap.put(mass2Key, specKey);
-				}
-			}				
 		}				
 	}
 	
