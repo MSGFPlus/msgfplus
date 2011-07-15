@@ -61,7 +61,8 @@ public class Chores {
 //		efdrTest();
 //		System.out.println((Composition.N15-Composition.N)*2+(Composition.C13-Composition.C)*6);
 //		System.out.println((Composition.N15-Composition.N)*4+(Composition.C13-Composition.C)*6);
-		System.out.println(Composition.OFFSET_Y);
+//		System.out.println(Composition.OFFSET_Y);
+//		System.out.println(Runtime.getRuntime().availableProcessors());
 	}
 
 	public static void efdrTest() throws Exception

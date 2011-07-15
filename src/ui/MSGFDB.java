@@ -9,6 +9,8 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import parser.MS2SpectrumParser;
 import parser.MgfSpectrumParser;
@@ -26,6 +28,7 @@ import msgf.MSGFDBResultGenerator;
 import msgf.Tolerance;
 import msscorer.NewRankScorer;
 import msscorer.NewScorerFactory;
+import msscorer.NewScorerFactory.SpecDataType;
 import msutil.AminoAcidSet;
 import msutil.Enzyme;
 import msutil.ActivationMethod;
@@ -67,6 +70,7 @@ public class MSGFDB {
 		int minCharge = 2;
 		int maxCharge = 3;
 		int scanNum = -1;
+		int numThreads = Runtime.getRuntime().availableProcessors();
 		
 		AminoAcidSet aaSet = null;
 		
@@ -286,6 +290,15 @@ public class MSGFDB {
 					printUsageAndExit("Illigal scanNum: " + argv[i+1]);
 				} 
 			}
+			else if(argv[i].equalsIgnoreCase("-thread"))
+			{
+				try {
+					numThreads = Integer.parseInt(argv[i+1]);
+				} catch (NumberFormatException e)
+				{
+					printUsageAndExit("Illigal number of threads: " + argv[i+1]);
+				} 
+			}
 			else if(argv[i].equalsIgnoreCase("-minLength"))
 			{
 				try {
@@ -422,7 +435,7 @@ public class MSGFDB {
 		runMSGFDB(specFile, specFormat, databaseFile, leftParentMassTolerance, rightParentMassTolerance, numAllowedC13,
 	    		outputFile, enzyme, numAllowedNonEnzymaticTermini,
 	    		activationMethod, instType, aaSet, numMatchesPerSpec, scanNum, useTDA,
-	    		minPeptideLength, maxPeptideLength, minCharge, maxCharge);
+	    		minPeptideLength, maxPeptideLength, minCharge, maxCharge, numThreads);
 		System.out.format("Time: %.3f sec\n", (System.currentTimeMillis()-time)/(float)1000);
 	}
 	
@@ -442,6 +455,7 @@ public class MSGFDB {
 				+ "\t-t ParentMassTolerance (e.g. 2.5Da, 30ppm or 0.5Da,2.5Da)\n"
 				+ "\t   Use comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (expMass<theoMass) and 2.5Da to the right (expMass>theoMass).\n"
 				+ "\t[-o outputFileName] (Default: stdout)\n"
+				+ "\t[-thread NumOfThreads] (Number of concurrent threads to be executed, Default: Number of available cores)\n"
 				+ "\t[-tda 0/1] (0: don't search decoy database (default), 1: search decoy database to compute FDR)\n"
 				+ "\t[-m FragmentationMethodID] (0: as written in the spectrum or CID if no info (Default), 1: CID, 2: ETD, 3: HCD, 4: Merge spectra from the same precursor)\n"
 				+ "\t[-inst InstrumentID] (0: Low-res LCQ/LTQ (Default for CID and ETD), 1: TOF , 2: High-res LTQ (Default for HCD))\n"
@@ -483,7 +497,8 @@ public class MSGFDB {
     		int minPeptideLength,
     		int maxPeptideLength,
     		int minCharge,
-    		int maxCharge
+    		int maxCharge,
+    		int numThreads
     		)
 	{
     	
@@ -544,7 +559,8 @@ public class MSGFDB {
 				specKeyList.add(new SpecKey(specIndex, spec.getCharge()));
 		}
 		
-		int fromIndex = 0;
+		SpecDataType specDataType = new SpecDataType(activationMethod, instType, enzyme);
+		int fromIndexGlobal = 0;
 		
 		String header = 
 			"#SpecFile\tSpecIndex\tScan#\t"
@@ -556,24 +572,53 @@ public class MSGFDB {
 		MSGFDBResultGenerator gen = new MSGFDBResultGenerator(header);	
 		while(true)
 		{
-			if(fromIndex >= specKeyList.size())
+			if(fromIndexGlobal >= specKeyList.size())
 				break;
-			int toIndex = Math.min(specKeyList.size(), fromIndex+numSpecScannedTogether);
-			System.out.println("Spectrum " + fromIndex + "-" + (toIndex-1) + " (total: " + specKeyList.size() + ")");
-			
+			int toIndexGlobal = Math.min(specKeyList.size(), fromIndexGlobal+numSpecScannedTogether);
+			System.out.println("Spectrum " + fromIndexGlobal + "-" + (toIndexGlobal-1) + " (total: " + specKeyList.size() + ")");
+
 			// spectrum preprocessing
 	    	System.out.print("Preprocessing spectra...");
 	    	long time = System.currentTimeMillis();
 	    	ScoredSpectraMap specScanner = new ScoredSpectraMap(
 	    			specMap,
-	    			specKeyList.subList(fromIndex, toIndex),
 	    			leftParentMassTolerance,
 	    			rightParentMassTolerance,
 	    			numAllowedC13,
-	    			activationMethod,
-	    			instType,
-	    			enzyme
+	    			specDataType
 	    			);
+			
+			// Thread pool
+			ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+			
+			// Partition specKeyList
+			int size = toIndexGlobal - fromIndexGlobal;
+			int subListSize = size/numThreads;
+			int residue = size % numThreads;
+			
+			int[] startIndex = new int[numThreads];
+			int[] endIndex = new int[numThreads];
+			
+			for(int i=0; i<numThreads; i++)
+			{
+				startIndex[i] = fromIndexGlobal + (i > 0 ? endIndex[i-1] : 0);
+				endIndex[i] = startIndex[i] + subListSize + (i < residue ? 1 : 0);
+//				System.out.println(startIndex[i]+"\t"+endIndex[i]+"\t"+specKeyList.get(startIndex[i])+"\t"+specKeyList.get(endIndex[i]-1));
+			}
+			
+			for(int i=0; i<numThreads; i++)
+				executor.execute(new msdbsearch.ConcurrentMSGFDB.PreProcessSpectra(specScanner, specKeyList.subList(startIndex[i], endIndex[i])));
+			
+			executor.shutdown();
+			while(!executor.isTerminated()) {}	// wait until all threads terminate
+			
+//	    	specScanner.preProcessSpectra(specKeyList.subList(fromIndexGlobal, toIndexGlobal));
+			
+//	    	specScanner.preProcessSpectra(specKeyList.subList(fromIndexGlobal, toIndexGlobal), 4);
+	    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
+	    	
+	    	// db search
+	    	time = System.currentTimeMillis(); 
 	    	DBScanner sa = new DBScanner(
 	    			specScanner,
 	    			new SuffixArraySequence(databaseFile.getPath()),
@@ -585,10 +630,6 @@ public class MSGFDB {
 	    			minCharge,
 	    			maxCharge
 	    			);
-	    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
-	    	
-	    	// db search
-	    	time = System.currentTimeMillis(); 
 			if(enzyme == null)
 				sa.dbSearchNoEnzyme(true);	// currently not supported
 			else if(enzyme.isCTerm())
@@ -613,7 +654,7 @@ public class MSGFDB {
 	    	time = System.currentTimeMillis(); 
 	    	sa.addDBSearchResults(gen, specFile.getName());
 	    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
-			fromIndex += numSpecScannedTogether;
+			fromIndexGlobal += numSpecScannedTogether;
 		}
 		
 		System.out.print("Computing EFDRs...");

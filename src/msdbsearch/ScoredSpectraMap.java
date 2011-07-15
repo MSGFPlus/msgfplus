@@ -1,8 +1,11 @@
 package msdbsearch;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import sequences.Constants;
@@ -17,6 +20,7 @@ import msscorer.NewRankScorer;
 import msscorer.NewScoredSpectrum;
 import msscorer.NewScorerFactory;
 import msscorer.SimpleDBSearchScorer;
+import msscorer.NewScorerFactory.SpecDataType;
 import msutil.ActivationMethod;
 import msutil.Composition;
 import msutil.Enzyme;
@@ -26,46 +30,48 @@ import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
 public class ScoredSpectraMap {
-	private Tolerance leftParentMassTolerance;
-	private Tolerance rightParentMassTolerance;
-	private int numAllowedC13;
-
-	private TreeMap<Float,SpecKey> pepMassSpecKeyMap;
-	private HashMap<SpecKey,SimpleDBSearchScorer<NominalMass>> specKeyScorerMap;
+	private final SpectrumAccessorBySpecIndex specMap;
+	private final Tolerance leftParentMassTolerance;
+	private final Tolerance rightParentMassTolerance;
+	private final int numAllowedC13;
+	private final SpecDataType specDataType;
+	
+	private SortedMap<Double,SpecKey> pepMassSpecKeyMap;
+	private Map<SpecKey,SimpleDBSearchScorer<NominalMass>> specKeyScorerMap;
 
 	public ScoredSpectraMap(
 			SpectrumAccessorBySpecIndex specMap,
-			List<SpecKey> specKeyList,
     		Tolerance leftParentMassTolerance, 
     		Tolerance rightParentMassTolerance, 
 			int numAllowedC13,
-			ActivationMethod activationMethod,
-			InstrumentType instType,
-			Enzyme enzyme
+			SpecDataType specDataType
 			)
 	{
+		this.specMap = specMap;
 		this.leftParentMassTolerance = leftParentMassTolerance;
 		this.rightParentMassTolerance = rightParentMassTolerance;
 		this.numAllowedC13 = numAllowedC13;
+		this.specDataType = specDataType;
 		
-		pepMassSpecKeyMap = new TreeMap<Float,SpecKey>();
-		specKeyScorerMap = new HashMap<SpecKey,SimpleDBSearchScorer<NominalMass>>();
-		
-		if(activationMethod != ActivationMethod.FUSION)
-			preProcessSpectra(specMap, specKeyList, activationMethod, instType, enzyme);
-		else
-			preProcessFusedSpectra(specMap, specKeyList, instType, enzyme);
+		pepMassSpecKeyMap = Collections.synchronizedSortedMap(new TreeMap<Double,SpecKey>());
+		specKeyScorerMap = Collections.synchronizedMap(new HashMap<SpecKey,SimpleDBSearchScorer<NominalMass>>());
 	}
 	
-	public void preProcessSpectra(
-			SpectrumAccessorBySpecIndex specMap,
-			List<SpecKey> specKeyList,
-			ActivationMethod activationMethod,
-			InstrumentType instType,
-			Enzyme enzyme
-			)
+	public void preProcessSpectra(List<SpecKey> specKeyList)
+	{
+		if(specDataType.getActivationMethod() != ActivationMethod.FUSION)
+			preProcessIndividualSpectra(specKeyList);
+		else
+			preProcessFusedSpectra(specKeyList);
+	}
+	
+	private void preProcessIndividualSpectra(List<SpecKey> specKeyList)
 	{
 		NewRankScorer scorer = null;
+		ActivationMethod activationMethod = specDataType.getActivationMethod();
+		InstrumentType instType = specDataType.getInstrumentType();
+		Enzyme enzyme = specDataType.getEnzyme();
+		
 		if(activationMethod != null && activationMethod != ActivationMethod.FUSION)
 			scorer = NewScorerFactory.get(activationMethod, instType, enzyme);
 		
@@ -94,9 +100,10 @@ public class ScoredSpectraMap {
 			else
 				specKeyScorerMap.put(specKey, new FastScorer(scoredSpec, maxNominalPeptideMass));
 			
-			while(pepMassSpecKeyMap.get(peptideMass) != null)	// for speeding up
-				peptideMass = Math.nextUp(peptideMass);
-			pepMassSpecKeyMap.put(peptideMass, specKey);
+			double peptideMassKey = (double)peptideMass;
+			while(pepMassSpecKeyMap.get(peptideMassKey) != null)	// for speeding up
+				peptideMassKey = Math.nextUp(peptideMassKey);
+			pepMassSpecKeyMap.put(peptideMassKey, specKey);
 			
 			float tolDaRight = rightParentMassTolerance.getToleranceAsDa(peptideMass);
 			if(numAllowedC13 > 0 && tolDaRight < 0.5f)
@@ -104,29 +111,29 @@ public class ScoredSpectraMap {
 				if(numAllowedC13 >= 1)
 				{
 					float mass1 = peptideMass-(float)Composition.ISOTOPE;
-					while(pepMassSpecKeyMap.get(mass1) != null)
-						mass1 = Math.nextUp(mass1);
-					pepMassSpecKeyMap.put(mass1, specKey);
+					double mass1Key = (double)mass1;
+					while(pepMassSpecKeyMap.get(mass1Key) != null)
+						mass1Key = Math.nextUp(mass1Key);
+					pepMassSpecKeyMap.put(mass1Key, specKey);
 				}
 				
 				if(numAllowedC13 >= 2)
 				{
 					float mass2 = peptideMass-2*(float)Composition.ISOTOPE;
-					while(pepMassSpecKeyMap.get(mass2) != null)
-						mass2 = Math.nextUp(mass2);
-					pepMassSpecKeyMap.put(mass2, specKey);
+					double mass2Key = (double)mass2;
+					while(pepMassSpecKeyMap.get(mass2Key) != null)
+						mass2Key = Math.nextUp(mass2Key);
+					pepMassSpecKeyMap.put(mass2Key, specKey);
 				}
 			}				
 		}				
 	}
 	
-	public void preProcessFusedSpectra(
-			SpectrumAccessorBySpecIndex specMap,
-			List<SpecKey> specKeyList,
-			InstrumentType instType,
-			Enzyme enzyme
-			)
+	private void preProcessFusedSpectra(List<SpecKey> specKeyList)
 	{
+		InstrumentType instType = specDataType.getInstrumentType();
+		Enzyme enzyme = specDataType.getEnzyme();
+		
 		for(SpecKey specKey : specKeyList)
 		{
 			ArrayList<Integer> specIndexList = specKey.getSpecIndexList();
@@ -160,9 +167,10 @@ public class ScoredSpectraMap {
 			int maxNominalPeptideMass = NominalMass.toNominalMass(peptideMass) + Math.round(tolDaLeft-0.4999f);
 			specKeyScorerMap.put(specKey, new FastScorer(scoredSpec, maxNominalPeptideMass));
 			
-			while(pepMassSpecKeyMap.get(peptideMass) != null)	// for speeding up
-				peptideMass = Math.nextUp(peptideMass);
-			pepMassSpecKeyMap.put(peptideMass, specKey);
+			double peptideMassKey = (double)peptideMass;
+			while(pepMassSpecKeyMap.get(peptideMassKey) != null)	// for speeding up
+				peptideMassKey = Math.nextUp(peptideMassKey);
+			pepMassSpecKeyMap.put(peptideMassKey, specKey);
 			
 			float tolDaRight = rightParentMassTolerance.getToleranceAsDa(peptideMass);
 			if(numAllowedC13 > 0 && tolDaRight < 0.5f)
@@ -170,24 +178,26 @@ public class ScoredSpectraMap {
 				if(numAllowedC13 >= 1)
 				{
 					float mass1 = peptideMass-(float)Composition.ISOTOPE;
-					while(pepMassSpecKeyMap.get(mass1) != null)
-						mass1 = Math.nextUp(mass1);
-					pepMassSpecKeyMap.put(mass1, specKey);
+					double mass1Key = (double)mass1;
+					while(pepMassSpecKeyMap.get(mass1Key) != null)
+						mass1Key = Math.nextUp(mass1Key);
+					pepMassSpecKeyMap.put(mass1Key, specKey);
 				}
 				
 				if(numAllowedC13 >= 2)
 				{
 					float mass2 = peptideMass-2*(float)Composition.ISOTOPE;
-					while(pepMassSpecKeyMap.get(mass2) != null)
-						mass2 = Math.nextUp(mass2);
-					pepMassSpecKeyMap.put(mass2, specKey);
+					double mass2Key = (double)mass2;
+					while(pepMassSpecKeyMap.get(mass2Key) != null)
+						mass2Key = Math.nextUp(mass2Key);
+					pepMassSpecKeyMap.put(mass2Key, specKey);
 				}
-			}					
+			}				
 		}				
 	}
 	
-	public TreeMap<Float,SpecKey> getPepMassSpecKeyMap()		{ return pepMassSpecKeyMap; }
-	public HashMap<SpecKey,SimpleDBSearchScorer<NominalMass>> getSpecKeyScorerMap()	{ return specKeyScorerMap; }
+	public SortedMap<Double,SpecKey> getPepMassSpecKeyMap()		{ return pepMassSpecKeyMap; }
+	public Map<SpecKey,SimpleDBSearchScorer<NominalMass>> getSpecKeyScorerMap()	{ return specKeyScorerMap; }
 	public Tolerance getLeftParentMassTolerance()				{ return leftParentMassTolerance; }
 	public Tolerance getRightParentMassTolerance()				{ return rightParentMassTolerance; }
 	public int getNumAllowedC13()								{ return numAllowedC13; }

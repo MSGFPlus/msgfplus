@@ -197,7 +197,9 @@ public class DBScanner extends SuffixArray {
 				float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
 				float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
 				
-				Collection<SpecKey> matchedSpecKeyList = specScanner.getPepMassSpecKeyMap().subMap(peptideMass-tolDaRight, peptideMass+tolDaLeft).values();
+				double leftThr = (double)(peptideMass - tolDaRight);
+				double rightThr = (double)(peptideMass + tolDaLeft);
+				Collection<SpecKey> matchedSpecKeyList = specScanner.getPepMassSpecKeyMap().subMap(leftThr, rightThr).values();
 				if(matchedSpecKeyList.size() > 0)
 				{
 					int peptideCleavageScore;
@@ -380,7 +382,9 @@ public class DBScanner extends SuffixArray {
 					float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
 					float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
 					
-					Collection<SpecKey> matchedSpecKeyList = specScanner.getPepMassSpecKeyMap().subMap(peptideMass-tolDaRight, peptideMass+tolDaLeft).values();
+					double leftThr = (double)(peptideMass - tolDaRight);
+					double rightThr = (double)(peptideMass + tolDaLeft);
+					Collection<SpecKey> matchedSpecKeyList = specScanner.getPepMassSpecKeyMap().subMap(leftThr, rightThr).values();
 					if(matchedSpecKeyList.size() > 0)
 					{
 						for(SpecKey specKey : matchedSpecKeyList)
@@ -522,7 +526,9 @@ public class DBScanner extends SuffixArray {
 					float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
 					float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
 					
-					Collection<SpecKey> matchedSpecKeyList = specScanner.getPepMassSpecKeyMap().subMap(peptideMass-tolDaRight, peptideMass+tolDaLeft).values();
+					double leftThr = (double)(peptideMass - tolDaRight);
+					double rightThr = (double)(peptideMass + tolDaLeft);
+					Collection<SpecKey> matchedSpecKeyList = specScanner.getPepMassSpecKeyMap().subMap(leftThr, rightThr).values();
 					if(matchedSpecKeyList.size() > 0)
 					{
 						for(SpecKey specKey : matchedSpecKeyList)
@@ -702,7 +708,9 @@ public class DBScanner extends SuffixArray {
 					float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
 					float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
 					
-					Collection<SpecKey> matchedSpecKeyList = specScanner.getPepMassSpecKeyMap().subMap(peptideMass-tolDaRight, peptideMass+tolDaLeft).values();
+					double leftThr = (double)(peptideMass - tolDaRight);
+					double rightThr = (double)(peptideMass + tolDaLeft);
+					Collection<SpecKey> matchedSpecKeyList = specScanner.getPepMassSpecKeyMap().subMap(leftThr, rightThr).values();
 					if(matchedSpecKeyList.size() > 0)
 					{
 						for(SpecKey specKey : matchedSpecKeyList)

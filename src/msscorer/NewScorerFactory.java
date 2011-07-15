@@ -11,17 +11,17 @@ import msutil.InstrumentType;
 public class NewScorerFactory {
 	private NewScorerFactory() {}
 	
-	private static class Condition {
-		public Condition(ActivationMethod method, InstrumentType instType, Enzyme enzyme) {
+	public static class SpecDataType {
+		public SpecDataType(ActivationMethod method, InstrumentType instType, Enzyme enzyme) {
 			this.method = method;
 			this.instType = instType;
 			this.enzyme = enzyme;
 		}
 		@Override
 		public boolean equals(Object obj) {
-			if(obj instanceof Condition)
+			if(obj instanceof SpecDataType)
 			{
-				Condition other = (Condition)obj;
+				SpecDataType other = (SpecDataType)obj;
 				if(this.method == other.method &&
 					this.instType == other.instType &&
 					this.enzyme == other.enzyme)
@@ -37,12 +37,17 @@ public class NewScorerFactory {
 		public String toString() {
 			return method.getName()+"_"+instType.getName()+"_"+enzyme.getName();			
 		}
-		ActivationMethod method;
-		InstrumentType instType;
-		Enzyme enzyme;
+		
+		public ActivationMethod getActivationMethod()	{ return method; }
+		public InstrumentType getInstrumentType()		{ return instType; }
+		public Enzyme getEnzyme()						{ return enzyme; }
+		
+		private ActivationMethod method;
+		private InstrumentType instType;
+		private Enzyme enzyme;
 	}
 	
-	private static Hashtable<Condition, NewRankScorer> scorerTable = new Hashtable<Condition, NewRankScorer>();
+	private static Hashtable<SpecDataType, NewRankScorer> scorerTable = new Hashtable<SpecDataType, NewRankScorer>();
 	
 	/**
 	 * @deprecated Use get(ActivationMethod method, InstrumentType instType, Enzyme enzyme) instead
@@ -66,7 +71,7 @@ public class NewScorerFactory {
 			enzyme = Enzyme.TRYPSIN;
 		if(method == ActivationMethod.HCD)
 			instType = InstrumentType.HIGH_RESOLUTION_LTQ;
-		Condition condition = new Condition(method, instType, enzyme);
+		SpecDataType condition = new SpecDataType(method, instType, enzyme);
 		NewRankScorer scorer = scorerTable.get(condition);
 		if(scorer == null)
 		{
@@ -79,7 +84,7 @@ public class NewScorerFactory {
 					alternativeEnzyme = Enzyme.TRYPSIN;
 				else
 					alternativeEnzyme = Enzyme.LysN;
-				Condition newCond = new Condition(method, instType, alternativeEnzyme);
+				SpecDataType newCond = new SpecDataType(method, instType, alternativeEnzyme);
 				is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+newCond+".param");
 				
 				if(is == null)	// param file still does not exist. Change method.
@@ -89,12 +94,12 @@ public class NewScorerFactory {
 						alternativeMethod = ActivationMethod.ETD;
 					else
 						alternativeMethod = ActivationMethod.CID;
-					newCond = new Condition(alternativeMethod, instType, enzyme);
+					newCond = new SpecDataType(alternativeMethod, instType, enzyme);
 					is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+newCond+".param");
 					
 					if(is == null)
 					{
-						newCond = new Condition(alternativeMethod, instType, alternativeEnzyme);
+						newCond = new SpecDataType(alternativeMethod, instType, alternativeEnzyme);
 						is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+newCond+".param");						
 					}
 				}
