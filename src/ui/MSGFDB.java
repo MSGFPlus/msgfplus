@@ -632,17 +632,51 @@ public class MSGFDB {
 	    			minCharge,
 	    			maxCharge
 	    			);
+	    	// Concurrent running
+			executor = Executors.newFixedThreadPool(numThreads);
+			int searchMode = 0;
 			if(enzyme == null)
-				sa.dbSearchNoEnzyme(true);	// currently not supported
+				searchMode = 1;	
 			else if(enzyme.isCTerm())
 			{
 				if(!aaSet.containsModification())
-					sa.dbSearchCTermEnzymeNoMod(numAllowedNonEnzymaticTermini, true);
+					searchMode = 2;
 				else
-					sa.dbSearchCTermEnzyme(numAllowedNonEnzymaticTermini, true);
+					searchMode = 0;
 			}
 			else
-				sa.dbSearchNTermEnzyme(numAllowedNonEnzymaticTermini, true);
+				searchMode = 3;
+			
+			int dbSize = sa.getSize();
+			int dbSubListSize = dbSize/numThreads;
+			int dbResidue = size % numThreads;
+			
+			int[] fromIndex = new int[numThreads];
+			int[] toIndex = new int[numThreads];
+			
+			for(int i=0; i<numThreads; i++)
+			{
+				fromIndex[i] = (i > 0 ? toIndex[i-1] : 0);
+				toIndex[i] = fromIndex[i] + dbSubListSize + (i < dbResidue ? 1 : 0);
+			}
+			
+			for(int i=0; i<numThreads; i++)
+				executor.execute(new ConcurrentMSGFDB.RunDBSearch(sa, numAllowedNonEnzymaticTermini, searchMode, fromIndex[i], toIndex[i]));
+
+			executor.shutdown();
+			while(!executor.isTerminated()) {}	// wait until all threads terminate
+	    	
+//			if(enzyme == null)
+//				sa.dbSearchNoEnzyme(true);	// currently not supported
+//			else if(enzyme.isCTerm())
+//			{
+//				if(!aaSet.containsModification())
+//					sa.dbSearchCTermEnzymeNoMod(numAllowedNonEnzymaticTermini, true);
+//				else
+//					sa.dbSearchCTermEnzyme(numAllowedNonEnzymaticTermini, true);
+//			}
+//			else
+//				sa.dbSearchNTermEnzyme(numAllowedNonEnzymaticTermini, true);
 			
 			System.out.println("Database search... " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
 

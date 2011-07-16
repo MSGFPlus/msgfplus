@@ -8,11 +8,8 @@ import java.util.*;
 import msgf.Tolerance;
 import msutil.AminoAcid;
 import msutil.AminoAcidSet;
-import msutil.Pair;
 
 import sequences.Constants;
-
-
 
 /**
  * SuffixArray class for fast exact matching.
@@ -255,7 +252,11 @@ public class SuffixArray {
 		this(sequence, sequence.getBaseFilepath() + SUFFIX_EXTENSION);
 	}
 
-
+	public int getSize()
+	{
+		return size;
+	}
+	
 	/**
 	 * Helper function to initialize the leftMiddleLcps and middleRightLcps.
 	 * @param nLcps the neigboring lcps.
@@ -453,7 +454,7 @@ public class SuffixArray {
 	 * @param suffixFile the suffix array file.
 	 * @return returns the id of this file for consistency check.
 	 */
-	private int readSuffixArrayFile(String suffixFile) {
+	protected int readSuffixArrayFile(String suffixFile) {
 		try {
 			// read the first integer which encodes for the size of the file
 			DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(suffixFile)));
@@ -531,6 +532,7 @@ public class SuffixArray {
 		return 0;
 	}
 
+	@Override
 	public String toString() {
 		String retVal = "Size of the suffix array: " + this.size + "\n";
 		int rank = 0;

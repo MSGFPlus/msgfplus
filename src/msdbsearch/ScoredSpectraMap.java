@@ -54,7 +54,7 @@ public class ScoredSpectraMap {
 		this.numAllowedC13 = numAllowedC13;
 		this.specDataType = specDataType;
 		
-		pepMassSpecKeyMap = new TreeMap<Double,SpecKey>();
+		pepMassSpecKeyMap = Collections.synchronizedSortedMap((new TreeMap<Double,SpecKey>()));
 		specKeyScorerMap = Collections.synchronizedMap(new HashMap<SpecKey,SimpleDBSearchScorer<NominalMass>>());
 	}
 	

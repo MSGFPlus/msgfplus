@@ -25,7 +25,7 @@ public class PNNLSpectrumParser implements SpectrumParser {
 				else
 					continue;
 			}
-			else if(buf.startsWith("="))
+			else if(buf.startsWith("=="))
 			{
 				if(spec != null)
 				{

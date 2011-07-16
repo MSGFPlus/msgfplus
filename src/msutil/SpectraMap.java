@@ -22,7 +22,7 @@ public class SpectraMap implements SpectrumAccessorBySpecIndex {
 	    scanNumMap = parser.getSpecIndexMap(lineReader);
 	}
 	
-	public Spectrum getSpectrumBySpecIndex(int specIndex)
+	public synchronized Spectrum getSpectrumBySpecIndex(int specIndex)
 	{
 		Long filePos = scanNumMap.get(specIndex);
 		if(filePos == null)
@@ -36,7 +36,7 @@ public class SpectraMap implements SpectrumAccessorBySpecIndex {
 		}
 	}
 	
-	public Spectrum getSpectrumByPos(long filePos)
+	public synchronized Spectrum getSpectrumByPos(long filePos)
 	{
 		if(filePos < 0 || filePos > lineReader.size())
 			return null;
@@ -49,7 +49,7 @@ public class SpectraMap implements SpectrumAccessorBySpecIndex {
 	}
 	
 	@Override
-	public ArrayList<Integer> getSpecIndexList()
+	public synchronized ArrayList<Integer> getSpecIndexList()
 	{
 		if(scanNumList == null)
 		{

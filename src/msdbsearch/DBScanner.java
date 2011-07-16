@@ -1,7 +1,17 @@
 package msdbsearch;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.IntBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,6 +29,7 @@ import msgf.MSGFDBResultGenerator;
 import msgf.GeneratingFunction;
 import msgf.GeneratingFunctionGroup;
 import msgf.NominalMass;
+import msgf.Tolerance;
 import msscorer.SimpleDBSearchScorer;
 import msutil.AminoAcid;
 import msutil.AminoAcidSet;
@@ -30,6 +41,7 @@ import msutil.Modification.Location;
 import sequences.Constants;
 import suffixarray.SuffixArray;
 import suffixarray.SuffixArraySequence;
+import suffixarray.SuffixFactory;
 
 public class DBScanner extends SuffixArray {
 
@@ -112,8 +124,13 @@ public class DBScanner extends SuffixArray {
 		return this;
 	}
 	
-	// duplicated for speeding-up the search
 	public void dbSearchCTermEnzymeNoMod(int numberOfAllowableNonEnzymaticTermini, boolean verbose)
+	{
+		dbSearchCTermEnzymeNoMod(numberOfAllowableNonEnzymaticTermini, 0, size, verbose);
+	}
+	
+	// duplicated for speeding-up the search
+	public void dbSearchCTermEnzymeNoMod(int numberOfAllowableNonEnzymaticTermini, int fromIndex, int toIndex, boolean verbose)
 	{
 		double[] prm = new double[maxPeptideLength+2];
 		prm[0] = 0;
@@ -122,7 +139,7 @@ public class DBScanner extends SuffixArray {
 		
 		int i = Integer.MAX_VALUE;
 		
-		int rank = -1;
+//		int rank = -1;
 		boolean enzymaticSearch;
 		if(numberOfAllowableNonEnzymaticTermini == 2)
 			enzymaticSearch = false;
@@ -134,13 +151,17 @@ public class DBScanner extends SuffixArray {
 		int peptideCleavageCredit = aaSet.getPeptideCleavageCredit();
 		int peptideCleavagePenalty = aaSet.getPeptideCleavagePenalty();
 		
+		Tolerance leftPMTolerance = specScanner.getLeftParentMassTolerance();
+		Tolerance rightPMTolerance = specScanner.getRightParentMassTolerance();
+		
 		boolean isProteinNTerm = true;
 		int nTermAAScore = neighboringAACleavageCredit;
 		int nNET = 0;	// number of non-enzymatic termini
-		while(indices.hasRemaining()) {
-			int index = indices.get();
-			rank++;
-			int lcp = this.neighboringLcps.get(rank);
+		int bufferIndex = fromIndex-1;
+		while(++bufferIndex < toIndex) {
+			int index = indices.get(bufferIndex);
+//			rank++;
+			int lcp = this.neighboringLcps.get(bufferIndex);
 
 			if(lcp > i)		// skip redundant peptide
 				continue;
@@ -176,8 +197,8 @@ public class DBScanner extends SuffixArray {
 				}
 			}
 			
-			if(verbose && rank % 1000000 == 0)
-				System.out.println("DBSearch: " + rank/(float)size*100 + "%");
+//			if(verbose && rank % 1000000 == 0)
+//				System.out.println("DBSearch: " + rank/(float)size*100 + "%");
 			
 			for(i=lcp > 1 ? lcp : 1; i<maxPeptideLength+1 && index+i<size; i++)	// ith character of a peptide
 			{
@@ -198,8 +219,8 @@ public class DBScanner extends SuffixArray {
 					continue;
 				
 				float peptideMass = (float)prm[i+1];
-				float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
-				float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
+				float tolDaLeft = leftPMTolerance.getToleranceAsDa(peptideMass);
+				float tolDaRight = rightPMTolerance.getToleranceAsDa(peptideMass);
 				
 				double leftThr = (double)(peptideMass - tolDaRight);
 				double rightThr = (double)(peptideMass + tolDaLeft);
@@ -242,13 +263,13 @@ public class DBScanner extends SuffixArray {
 		neighboringLcps.rewind();
 	}  	
 
-	public void dbSearchCTermEnzyme(int numberOfAllowableNonEnzymaticTermini, boolean verbose)
+	public void dbSearchCTermEnzyme(int numberOfAllowableNonEnzymaticTermini, int fromIndex, int toIndex, boolean verbose)
 	{
 		CandidatePeptideGrid candidatePepGrid = new CandidatePeptideGrid(aaSet, maxPeptideLength);
 		
 		int i = Integer.MAX_VALUE;
 		
-		int rank = -1;
+//		int rank = -1;
 		boolean enzymaticSearch;
 		if(numberOfAllowableNonEnzymaticTermini == 2)
 			enzymaticSearch = false;
@@ -266,11 +287,14 @@ public class DBScanner extends SuffixArray {
 		int nTermAAScore = neighboringAACleavageCredit;
 		boolean isExtensionAtTheSameIndex;
 		int nNET = 0;	// number of non-enzymatic termini
-		while(indices.hasRemaining()) {
-			int index = indices.get();
-			rank++;
+		int bufferIndex = fromIndex-1;
+		while(++bufferIndex < toIndex) {
+			int index = indices.get(bufferIndex);
+//			rank++;
+			int lcp = this.neighboringLcps.get(bufferIndex);
+
 			isExtensionAtTheSameIndex = false;
-			int lcp = this.neighboringLcps.get(rank);
+//			int lcp = this.neighboringLcps.get(rank);
 			
 			if(lcp > i)		// skip redundant peptide
 				continue;
@@ -307,8 +331,8 @@ public class DBScanner extends SuffixArray {
 			}
 			
 			
-			if(verbose && rank % 1000000 == 0)
-				System.out.println("DBSearch: " + rank/(float)size*100 + "%");
+//			if(verbose && rank % 1000000 == 0)
+//				System.out.println("DBSearch: " + rank/(float)size*100 + "%");
 
 			for(i=lcp > 1 ? lcp : 1; i<maxPeptideLength+1 && index+i<size-1; i++)	// ith character of a peptide
 			{
@@ -422,23 +446,23 @@ public class DBScanner extends SuffixArray {
 	}  		
 	
 	// dupulicated to speed-up the search
-	public void dbSearchNoEnzyme(boolean verbose)
+	public void dbSearchNoEnzyme(int fromIndex, int toIndex, boolean verbose)
 	{
 		CandidatePeptideGrid candidatePepGrid = new CandidatePeptideGrid(aaSet, maxPeptideLength);
 		
 		int i = 0;
 		
-		int rank = -1;
+//		int rank = -1;
 		
 		boolean containsCTermMod = aaSet.containsCTermModification();
 		
 		boolean isExtensionAtTheSameIndex;
 		boolean isProteinNTerm = true;
-		while(indices.hasRemaining()) {
-			int index = indices.get();
-			rank++;
-			
-			int lcp = this.neighboringLcps.get(rank);
+		int bufferIndex = fromIndex-1;
+		while(++bufferIndex < toIndex) {
+			int index = indices.get(bufferIndex);
+//			rank++;
+			int lcp = this.neighboringLcps.get(bufferIndex);
 
 			if(lcp > i)		// skip redundant peptide
 				continue;
@@ -462,8 +486,8 @@ public class DBScanner extends SuffixArray {
 			}
 			
 			isExtensionAtTheSameIndex = false;
-			if(verbose && rank % 1000000 == 0)
-				System.out.println("DBSearch: " + rank/(float)size*100 + "%");
+//			if(verbose && rank % 1000000 == 0)
+//				System.out.println("DBSearch: " + rank/(float)size*100 + "%");
 
 			for(i=lcp; i<maxPeptideLength && index+i<size-1; i++)	// (i+1)th character of a peptide, length=i+1
 			{
@@ -563,13 +587,13 @@ public class DBScanner extends SuffixArray {
 		neighboringLcps.rewind();
 	}
 	
-	public void dbSearchNTermEnzyme(int numberOfAllowableNonEnzymaticTermini, boolean verbose)
+	public void dbSearchNTermEnzyme(int numberOfAllowableNonEnzymaticTermini, int fromIndex, int toIndex, boolean verbose)
 	{
 		CandidatePeptideGrid candidatePepGrid = new CandidatePeptideGrid(aaSet, maxPeptideLength);
 		
 		int i = Integer.MAX_VALUE;
 		
-		int rank = -1;
+//		int rank = -1;
 		boolean enzymaticSearch;
 		if(enzyme == null || numberOfAllowableNonEnzymaticTermini == 2)
 			enzymaticSearch = false;	// consider all positions in the db
@@ -588,11 +612,12 @@ public class DBScanner extends SuffixArray {
 		int peptideCleavageScore = 0;	// N-term residue, when i=0
 		
 		int nNET = 0;	// number of non-enzymatic termini
-		while(indices.hasRemaining()) {
-			int index = indices.get();
-			rank++;
+		int bufferIndex = fromIndex-1;
+		while(++bufferIndex < toIndex) {
+			int index = indices.get(bufferIndex);
+//			rank++;
+			int lcp = this.neighboringLcps.get(bufferIndex);
 			isExtensionAtTheSameIndex = false;
-			int lcp = this.neighboringLcps.get(rank);
 
 			if(lcp > i)		// skip redundant peptide
 				continue;
@@ -630,8 +655,8 @@ public class DBScanner extends SuffixArray {
 				}
 			}
 			
-			if(verbose && rank % 1000000 == 0)
-				System.out.println("DBSearch: " + rank/(float)size*100 + "%");
+//			if(verbose && rank % 1000000 == 0)
+//				System.out.println("DBSearch: " + rank/(float)size*100 + "%");
 
 			for(i=lcp; i<maxPeptideLength+1 && index+i<size-1; i++)	// (i+1)th character of a peptide, length=i+1
 			{
@@ -988,4 +1013,83 @@ public class DBScanner extends SuffixArray {
 				aa.setProbability(0.05f);
 		}
 	}
+	
+	@Override
+	protected int readSuffixArrayFile(String suffixFile) {
+		try {
+			// read the first integer which encodes for the size of the file
+			DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(suffixFile)));
+			this.size = in.readInt();
+			// the second integer is the id
+			int id = in.readInt();
+			in.close();
+
+			FileChannel fc = new FileInputStream(suffixFile).getChannel();
+
+			// System.out.println("Reading the sorted indices.");
+			long startPos = 2*INT_BYTE_SIZE;
+			long sizeOfIndices = ((long)size)*INT_BYTE_SIZE;
+
+			// read indices
+			final int MAX_READ_SIZE = INT_BYTE_SIZE*(Integer.MAX_VALUE/4);
+			IntBuffer[] dsts = new IntBuffer[(int)(sizeOfIndices/MAX_READ_SIZE)+1];
+			for(int i=0; i<dsts.length; i++)
+			{
+				if(i<dsts.length-1)
+				{
+					dsts[i] = fc.map(FileChannel.MapMode.READ_ONLY, startPos, MAX_READ_SIZE).asIntBuffer();
+					startPos += MAX_READ_SIZE;
+				}
+				else
+				{
+					dsts[i] = fc.map(FileChannel.MapMode.READ_ONLY, startPos, sizeOfIndices-(MAX_READ_SIZE)*(dsts.length-1)).asIntBuffer();
+					startPos += sizeOfIndices-MAX_READ_SIZE*(dsts.length-1);
+				}
+			}
+
+			if(dsts.length == 1)
+				this.indices = dsts[0];
+			else
+			{
+				// When sizeOfIndices > Integer.MAX_VALUE
+				// It takes extra 5 seconds
+				// totalCapacity must be smaller than Integer.MAX_VALUE
+				long totalCapacity = 0;
+				for(IntBuffer buf : dsts)
+					totalCapacity += buf.capacity();
+				assert(totalCapacity <= Integer.MAX_VALUE);
+				//    	  System.out.println(totalCapacity);
+				//   	  System.out.println(Runtime.getRuntime().totalMemory()+" " + Runtime.getRuntime().maxMemory()+" "+Runtime.getRuntime().freeMemory());
+				this.indices = IntBuffer.allocate((int)totalCapacity);
+				for(int i=0; i<dsts.length; i++)
+				{
+					for(int j=0; j<dsts[i].capacity(); j++)
+						indices.put(dsts[i].get());
+				}
+				indices.rewind();
+			}
+
+			int sizeOfLcps = size;
+			// leftMiddleLcps are not read.
+//			this.leftMiddleLcps = fc.map(FileChannel.MapMode.READ_ONLY, startPos, sizeOfLcps).asReadOnlyBuffer();
+
+			startPos += sizeOfLcps;
+			// middleRightLcps are not read.
+//			this.middleRightLcps = fc.map(FileChannel.MapMode.READ_ONLY, startPos, sizeOfLcps).asReadOnlyBuffer();
+
+			// added by Sangtae
+			startPos += sizeOfLcps;
+			neighboringLcps = fc.map(FileChannel.MapMode.READ_ONLY, startPos, sizeOfLcps).asReadOnlyBuffer();
+//			neighboringLcps = 
+			fc.close();
+
+			return id;
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
+
+		return 0;
+	}	
 }
