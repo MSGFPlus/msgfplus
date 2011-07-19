@@ -55,8 +55,15 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 		{
 			int prefixMass = nominalPrefixMassArr[i];
 			int suffixMass = peptideMass - prefixMass;
+//			try {
 			int curScore = Math.round(prefixScore[prefixMass]+suffixScore[suffixMass]);
 			score += curScore;
+//			} catch (ArrayIndexOutOfBoundsException e)
+//			{
+////				System.out.println("*******"+prefixMass+" "+suffixMass+" "+fromIndex+" "+toIndex+" "+scanNum);
+//				e.printStackTrace();
+//				System.exit(-1);
+//			}
 		}
 		return score;
 	}

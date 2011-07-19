@@ -1,7 +1,5 @@
 package msdbsearch;
 
-import msutil.Enzyme;
-
 public class ConcurrentMSGFDB {
 	public static class PreProcessSpectra implements Runnable {
 		private final ScoredSpectraMap specMap;
@@ -71,6 +69,5 @@ public class ConcurrentMSGFDB {
 			else
 				scanner.dbSearchCTermEnzyme(numberOfAllowableNonEnzymaticTermini, fromIndex, toIndex, true);
 		}
-		
 	}
 }

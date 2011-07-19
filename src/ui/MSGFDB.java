@@ -9,6 +9,8 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,6 +25,7 @@ import suffixarray.SuffixArraySequence;
 
 import msdbsearch.ConcurrentMSGFDB;
 import msdbsearch.DBScanner;
+import msdbsearch.DatabaseMatch;
 import msdbsearch.ReverseDB;
 import msdbsearch.ScoredSpectraMap;
 import msgf.MSGFDBResultGenerator;
@@ -70,7 +73,8 @@ public class MSGFDB {
 		int maxPeptideLength = 40;
 		int minCharge = 2;
 		int maxCharge = 3;
-		int scanNum = -1;
+		int startScanNum = -1;
+		int endScanNum = -1;
 		int numThreads = Runtime.getRuntime().availableProcessors();
 		
 		AminoAcidSet aaSet = null;
@@ -284,8 +288,17 @@ public class MSGFDB {
 			}
 			else if(argv[i].equalsIgnoreCase("-scan"))
 			{
+				String[] token = argv[i+1].split(",");
+				if(token.length != 1 && token.length != 2)
+				{
+					printUsageAndExit("Illigal scanNum: " + argv[i+1]);
+				}
 				try {
-					scanNum = Integer.parseInt(argv[i+1]);
+					startScanNum = Integer.parseInt(token[0]);
+					if(token.length == 2)
+						endScanNum = Integer.parseInt(token[1]);
+					else
+						endScanNum = startScanNum+1;
 				} catch (NumberFormatException e)
 				{
 					printUsageAndExit("Illigal scanNum: " + argv[i+1]);
@@ -435,7 +448,7 @@ public class MSGFDB {
 		
 		runMSGFDB(specFile, specFormat, databaseFile, leftParentMassTolerance, rightParentMassTolerance, numAllowedC13,
 	    		outputFile, enzyme, numAllowedNonEnzymaticTermini,
-	    		activationMethod, instType, aaSet, numMatchesPerSpec, scanNum, useTDA,
+	    		activationMethod, instType, aaSet, numMatchesPerSpec, startScanNum, endScanNum, useTDA,
 	    		minPeptideLength, maxPeptideLength, minCharge, maxCharge, numThreads);
 		System.out.format("Time: %.3f sec\n", (System.currentTimeMillis()-time)/(float)1000);
 	}
@@ -493,7 +506,8 @@ public class MSGFDB {
     		InstrumentType instType,
     		AminoAcidSet aaSet, 
     		int numMatchesPerSpec,
-    		int specIndex,
+    		int startScanNum,
+    		int endScanNum,
     		boolean useTDA,
     		int minPeptideLength,
     		int maxPeptideLength,
@@ -505,6 +519,8 @@ public class MSGFDB {
     	
     	Iterator<Spectrum> specItr = null;
 		SpectrumAccessorBySpecIndex specMap = null;
+		
+		System.out.println("Using " + numThreads + " threads.");
 		
 		if(specFormat == SpecFileFormat.MZXML)
 		{
@@ -547,17 +563,22 @@ public class MSGFDB {
 		int numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
 		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specItr, minCharge, maxCharge, activationMethod);
 		
-		if(specIndex >= 0)
+		if(startScanNum >= 0)
 		{
 			specKeyList.clear();
-			Spectrum spec = specMap.getSpectrumBySpecIndex(specIndex);
-			if(spec.getCharge() == 0)
+			for(int scanNum = startScanNum; scanNum<endScanNum; scanNum++)
 			{
-				for(int c=minCharge; c<=maxCharge; c++)
-					specKeyList.add(new SpecKey(specIndex, c));
+				Spectrum spec = specMap.getSpectrumBySpecIndex(scanNum);
+				if(spec == null)
+					continue;
+				if(spec.getCharge() == 0)
+				{
+					for(int c=minCharge; c<=maxCharge; c++)
+						specKeyList.add(new SpecKey(scanNum, c));
+				}
+				else
+					specKeyList.add(new SpecKey(scanNum, spec.getCharge()));
 			}
-			else
-				specKeyList.add(new SpecKey(specIndex, spec.getCharge()));
 		}
 		
 		SpecDataType specDataType = new SpecDataType(activationMethod, instType, enzyme);
@@ -616,7 +637,7 @@ public class MSGFDB {
 			while(!executor.isTerminated()) {}	// wait until all threads terminate
 			
 //	    	specScanner.preProcessSpectra(specKeyList.subList(fromIndexGlobal, toIndexGlobal));
-			System.out.println("NumPreprocessedSpecs: " + specScanner.getSpecKeyScorerMap().keySet().size());
+//			System.out.println("NumPreprocessedSpecs: " + specScanner.getSpecKeyScorerMap().keySet().size());
 	    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
 	    	
 	    	// db search
@@ -649,7 +670,7 @@ public class MSGFDB {
 			
 			int dbSize = sa.getSize();
 			int dbSubListSize = dbSize/numThreads;
-			int dbResidue = size % numThreads;
+			int dbResidue = dbSize % numThreads;
 			
 			int[] fromIndex = new int[numThreads];
 			int[] toIndex = new int[numThreads];
@@ -660,12 +681,18 @@ public class MSGFDB {
 				toIndex[i] = fromIndex[i] + dbSubListSize + (i < dbResidue ? 1 : 0);
 			}
 			
+			ConcurrentMSGFDB.RunDBSearch[] dbSearchExecutor = new ConcurrentMSGFDB.RunDBSearch[numThreads];
 			for(int i=0; i<numThreads; i++)
-				executor.execute(new ConcurrentMSGFDB.RunDBSearch(sa, numAllowedNonEnzymaticTermini, searchMode, fromIndex[i], toIndex[i]));
+			{
+				dbSearchExecutor[i] = new ConcurrentMSGFDB.RunDBSearch(sa, numAllowedNonEnzymaticTermini, searchMode, fromIndex[i], toIndex[i]);
+				executor.execute(dbSearchExecutor[i]);
+			}
 
 			executor.shutdown();
 			while(!executor.isTerminated()) {}	// wait until all threads terminate
-	    	
+			System.out.println("Database search... " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
+
+			time = System.currentTimeMillis();
 //			if(enzyme == null)
 //				sa.dbSearchNoEnzyme(true);	// currently not supported
 //			else if(enzyme.isCTerm())
@@ -678,7 +705,6 @@ public class MSGFDB {
 //			else
 //				sa.dbSearchNTermEnzyme(numAllowedNonEnzymaticTermini, true);
 			
-			System.out.println("Database search... " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
 
 	    	// running MS-GF
 			System.out.print("Computing Spectral Probabilities and P-values...");
