@@ -120,7 +120,7 @@ public class DBScanner extends SuffixArray {
 		return this;
 	}
 	
-	public void addDBMatches(Map<SpecKey,PriorityQueue<DatabaseMatch>> map)
+	public synchronized void addDBMatches(Map<SpecKey,PriorityQueue<DatabaseMatch>> map)
 	{
 		if(map == null)
 			return;
