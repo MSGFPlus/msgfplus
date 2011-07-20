@@ -105,6 +105,11 @@ public class CandidatePeptideGrid {
 	{
 		return (float)prm[index][length];
 	}
+
+	public int getNominalPeptideMass(int index)
+	{
+		return nominalPRM[index][length];
+	}
 	
 	public String getPeptideSeq(int index)
 	{

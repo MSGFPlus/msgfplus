@@ -65,7 +65,7 @@ public class ScoredSpectraMap {
 	public int getNumAllowedC13()								{ return numAllowedC13; }
 	public List<SpecKey> getSpecKeyList()	{ return specKeyList; }
 	
-	public void makePepMassSpecKeyMap()
+	public ScoredSpectraMap makePepMassSpecKeyMap()
 	{
 		for(SpecKey specKey : specKeyList)
 		{
@@ -98,6 +98,7 @@ public class ScoredSpectraMap {
 				}
 			}					
 		}
+		return this;
 	}
 	
 	public void preProcessSpectra()

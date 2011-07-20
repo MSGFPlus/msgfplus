@@ -73,6 +73,8 @@ public class GeneratingFunctionGroup<T extends Matter> extends HashMap<T, Genera
 	@Override
 	public int getMaxScore()
 	{
+		if(mergedScoreDist == null)
+			System.out.println("Debug");
 		return mergedScoreDist.getMaxScore();
 	}
 	
