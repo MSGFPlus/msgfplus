@@ -137,7 +137,7 @@ public class ScoredSpectraMap {
 			
 			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
 			float tolDaLeft = leftParentMassTolerance.getToleranceAsDa(peptideMass);
-			int maxNominalPeptideMass = NominalMass.toNominalMass(peptideMass) + Math.round(tolDaLeft-0.4999f);
+			int maxNominalPeptideMass = NominalMass.toNominalMass(peptideMass) + Math.round(tolDaLeft-0.4999f) + 1;
 			
 			if(scorer.supportEdgeScores())
 				specKeyScorerMap.put(specKey, new DBScanScorer(scoredSpec, maxNominalPeptideMass));
@@ -176,7 +176,7 @@ public class ScoredSpectraMap {
 			ScoredSpectrumSum<NominalMass> scoredSpec = new ScoredSpectrumSum<NominalMass>(scoredSpecList);
 			float peptideMass = scoredSpec.getPrecursorPeak().getMass() - (float)Composition.H2O;
 			float tolDaLeft = leftParentMassTolerance.getToleranceAsDa(peptideMass);
-			int maxNominalPeptideMass = NominalMass.toNominalMass(peptideMass) + Math.round(tolDaLeft-0.4999f);
+			int maxNominalPeptideMass = NominalMass.toNominalMass(peptideMass) + Math.round(tolDaLeft-0.4999f) + 1;
 			specKeyScorerMap.put(specKey, new FastScorer(scoredSpec, maxNominalPeptideMass));
 		}				
 	}
