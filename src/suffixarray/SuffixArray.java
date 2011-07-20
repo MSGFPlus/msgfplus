@@ -794,22 +794,6 @@ public class SuffixArray {
 		return;
 	}
 
-	public int getNumDistinctSeq(int length)
-	{
-		int numDistinctSeq = 0;
-		while(neighboringLcps.hasRemaining())
-		{
-			int lcp = neighboringLcps.get();
-			if(lcp < length)
-			{
-				numDistinctSeq++;
-			}
-		}
-		neighboringLcps.rewind();
-		indices.rewind();
-		return numDistinctSeq++;
-	}
-
 	public void printAllPeptides(AminoAcidSet aaSet, int minLength, int maxLength)
 	{
 		//		  ArrayList<Pair<Float,Integer>> pepList = new ArrayList<Pair<Float,Integer>>();

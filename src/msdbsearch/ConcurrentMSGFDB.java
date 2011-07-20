@@ -87,7 +87,7 @@ public class ConcurrentMSGFDB {
 		
 		public RunMSGFDB(
 				ScoredSpectraMap specScanner,
-				SuffixArraySequence sequence,
+				SuffixArrayForMSGFDB sa,
 				Enzyme enzyme,
 				AminoAcidSet aaSet,
 				int numPeptidesPerSpec,
@@ -100,7 +100,7 @@ public class ConcurrentMSGFDB {
 				)
 		{
 			this.specScanner = specScanner;
-			this.scanner = new DBScanner(specScanner, sequence, enzyme, aaSet, numPeptidesPerSpec, minPeptideLength, maxPeptideLength);
+			this.scanner = new DBScanner(specScanner, sa, enzyme, aaSet, numPeptidesPerSpec, minPeptideLength, maxPeptideLength);
 			this.numberOfAllowableNonEnzymaticTermini = numberOfAllowableNonEnzymaticTermini;
 			this.storeScoreDist = storeScoreDist;
 			this.specFileName = specFileName;
@@ -119,6 +119,7 @@ public class ConcurrentMSGFDB {
 			else
 				searchMode = 3;
 			this.searchMode = searchMode;
+			
 		}
 		
 		@Override
@@ -128,6 +129,8 @@ public class ConcurrentMSGFDB {
 			
 			// Pre-process spectra
 			long time = System.currentTimeMillis();
+			if(specScanner.getPepMassSpecKeyMap().size() == 0)
+				specScanner.makePepMassSpecKeyMap();
 			specScanner.preProcessSpectra();
 			System.out.print(threadName+": Preprocessing spectra... ");
 			System.out.format("%.3f sec\n", (float)((System.currentTimeMillis()-time)/1000));

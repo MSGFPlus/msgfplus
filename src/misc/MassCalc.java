@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import msutil.AminoAcid;
 import msutil.AminoAcidSet;
 import msutil.Composition;
 import msutil.Peptide;
@@ -12,38 +11,29 @@ import msutil.Peptide;
 public class MassCalc {
 	public static void main(String argv[])
 	{
-		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
-		if(argv.length == 0)
-		{
-			while(true)
-			{
-				System.out.print("Sequence : ");
-				Peptide seq = aaSet.getPeptide(readLine());
-				Composition composition = seq.getComposition();
-				System.out.println("Mass : " + seq.getAccurateMass() + " (" + composition + ")\t" 
-						+ (seq.getMass() + Composition.H2O) + "\t"
-						+ (seq.getMass() + Composition.H2O + Composition.PROTON) + "\t"
-						+ ((seq.getMass() + Composition.H2O + 2*Composition.PROTON)/2) + "\t" 
-						+ ((seq.getMass() + Composition.H2O + 3*Composition.PROTON)/3) 
-						);
-			}
-		}
+		AminoAcidSet aaSet;
+		if(argv.length > 0)
+			aaSet = AminoAcidSet.getStandardAminoAcidSet();
 		else
+			aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
+		while(true)
 		{
-			if(argv[0].equalsIgnoreCase("0"))
-			{
-				while(true)
-				{
-					System.out.print("Sequence : ");
-					Peptide seq = aaSet.getPeptide(readLine());
-					float mass = 0;
-					for(AminoAcid aa : seq)
-					{
-						mass += aa.getNominalMass();
-					}
-					System.out.println("Mass : " + mass);
-				}
-			}
+			System.out.print("Sequence : ");
+			String pepStr = readLine();
+			if(pepStr.matches("[A-Z]*\\..+\\.[A-Z]*"))
+				pepStr = pepStr.substring(pepStr.indexOf('.')+1, pepStr.lastIndexOf('.'));
+
+			Peptide pep = new Peptide(pepStr, aaSet);
+			Composition composition = null;
+			if(!pep.isModified())
+				composition = pep.getComposition();
+			System.out.println("Mass : " + pep.getAccurateMass() + " (" + composition + ")\t" 
+					+ pep.getNominalMass() + "\t"
+					+ (pep.getMass() + Composition.H2O) + "\t"
+					+ (pep.getMass() + Composition.H2O + Composition.PROTON) + "\t"
+					+ ((pep.getMass() + Composition.H2O + 2*Composition.PROTON)/2) + "\t" 
+					+ ((pep.getMass() + Composition.H2O + 3*Composition.PROTON)/3) 
+					);
 		}
 	}
 	

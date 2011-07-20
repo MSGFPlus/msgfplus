@@ -56,7 +56,7 @@ public class Zubarev {
 //		compareGraphSize();
 //		countTryptic();
 //		paramTest();
-		computeDBSize();
+//		computeDBSize();
 //		testEdgeScoresNominalMass();
 //		testEdgeScoresRandom();
 //		testRandomPeakProb();
@@ -590,15 +590,15 @@ public class Zubarev {
 //		yHistPPM.printSortedRatio();
 	}
 	
-	public static void computeDBSize() throws Exception
-	{
-		String dbFileName = System.getProperty("user.home")+"/Research/Data/IPI/IPI_human_3.79.fasta";
-		dbFileName = System.getProperty("user.home")+"/Research/Data/Arabidopsis/TAIR9_pep_20090619.fasta";
-		dbFileName = System.getProperty("user.home")+"/Research/Data/YeastDB/Yeast_60.fasta";
-		SuffixArray sa = new SuffixArray(new SuffixArraySequence(dbFileName));
-		for(int length=5; length<=50; length++)
-			System.out.println(length+"\t"+sa.getNumDistinctSeq(length));
-	}
+//	public static void computeDBSize() throws Exception
+//	{
+//		String dbFileName = System.getProperty("user.home")+"/Research/Data/IPI/IPI_human_3.79.fasta";
+//		dbFileName = System.getProperty("user.home")+"/Research/Data/Arabidopsis/TAIR9_pep_20090619.fasta";
+//		dbFileName = System.getProperty("user.home")+"/Research/Data/YeastDB/Yeast_60.fasta";
+//		SuffixArray sa = new SuffixArray(new SuffixArraySequence(dbFileName));
+//		for(int length=5; length<=50; length++)
+//			System.out.println(length+"\t"+sa.getNumDistinctSeq(length));
+//	}
 	
 	public static void paramTest() throws Exception
 	{
