@@ -446,7 +446,7 @@ public class MSGFDB {
 		
 		aaSet.registerEnzyme(enzyme);
 		
-		runMSGFDB2(specFile, specFormat, databaseFile, leftParentMassTolerance, rightParentMassTolerance, numAllowedC13,
+		runMSGFDB(specFile, specFormat, databaseFile, leftParentMassTolerance, rightParentMassTolerance, numAllowedC13,
 	    		outputFile, enzyme, numAllowedNonEnzymaticTermini,
 	    		activationMethod, instType, aaSet, numMatchesPerSpec, startScanNum, endScanNum, useTDA,
 	    		minPeptideLength, maxPeptideLength, minCharge, maxCharge, numThreads);
