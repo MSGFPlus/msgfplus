@@ -182,10 +182,7 @@ public class DBScanner extends SuffixArray {
 			boolean verbose)
 	{
 		IntBuffer indexBuf = indices.duplicate();
-		indexBuf.position(fromIndex);
-		
 		ByteBuffer lcpBuf = neighboringLcps.duplicate();
-		lcpBuf.position(fromIndex);
 		
 		Map<SpecKey,PriorityQueue<DatabaseMatch>> curSpecKeyDBMatchMap = new HashMap<SpecKey,PriorityQueue<DatabaseMatch>>();
 		double[] prm = new double[maxPeptideLength+2];
@@ -214,12 +211,12 @@ public class DBScanner extends SuffixArray {
 		int nNET = 0;	// number of non-enzymatic termini
 		for(int bufferIndex=fromIndex; bufferIndex<toIndex; bufferIndex++)
 		{
-			int index = indexBuf.get();
+			int index = indexBuf.get(bufferIndex);
 			int lcp;
 			if(bufferIndex == fromIndex)
 				lcp = 0;
 			else
-				lcp = lcpBuf.get();
+				lcp = lcpBuf.get(bufferIndex);
 			if(lcp > i)		// skip redundant peptide
 				continue;
 			else if(lcp == 0)	// preceding aa is changed
@@ -522,10 +519,7 @@ public class DBScanner extends SuffixArray {
 		int i = 0;
 		
 		IntBuffer indexBuf = indices.duplicate();
-		indexBuf.position(fromIndex);
-		
 		ByteBuffer lcpBuf = neighboringLcps.duplicate();
-		lcpBuf.position(fromIndex);
 		
 		boolean containsCTermMod = aaSet.containsCTermModification();
 		
@@ -533,12 +527,12 @@ public class DBScanner extends SuffixArray {
 		boolean isProteinNTerm = true;
 		for(int bufferIndex=fromIndex; bufferIndex<toIndex; bufferIndex++)
 		{
-			int index = indexBuf.get();
+			int index = indexBuf.get(bufferIndex);
 			int lcp;
 			if(bufferIndex == fromIndex)
 				lcp = 0;
 			else
-				lcp = lcpBuf.get();
+				lcp = lcpBuf.get(bufferIndex);
 
 			if(lcp > i)		// skip redundant peptide
 				continue;
@@ -673,10 +667,7 @@ public class DBScanner extends SuffixArray {
 		int i = Integer.MAX_VALUE;
 		
 		IntBuffer indexBuf = indices.duplicate();
-		indexBuf.position(fromIndex);
-		
 		ByteBuffer lcpBuf = neighboringLcps.duplicate();
-		lcpBuf.position(fromIndex);
 
 		boolean enzymaticSearch;
 		if(enzyme == null || numberOfAllowableNonEnzymaticTermini == 2)
@@ -698,12 +689,12 @@ public class DBScanner extends SuffixArray {
 		int nNET = 0;	// number of non-enzymatic termini
 		for(int bufferIndex=fromIndex; bufferIndex<toIndex; bufferIndex++)
 		{
-			int index = indexBuf.get();
+			int index = indexBuf.get(bufferIndex);
 			int lcp;
 			if(bufferIndex == fromIndex)
 				lcp = 0;
 			else
-				lcp = lcpBuf.get();
+				lcp = lcpBuf.get(bufferIndex);
 			isExtensionAtTheSameIndex = false;
 
 			if(lcp > i)		// skip redundant peptide
