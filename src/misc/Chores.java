@@ -63,6 +63,7 @@ public class Chores {
 //		System.out.println((Composition.N15-Composition.N)*4+(Composition.C13-Composition.C)*6);
 //		System.out.println(Composition.OFFSET_Y);
 //		System.out.println(Runtime.getRuntime().availableProcessors());
+		System.out.println(Composition.getMass("H-2O-1"));
 	}
 
 	public static void efdrTest() throws Exception
