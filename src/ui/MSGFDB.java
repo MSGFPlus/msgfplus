@@ -584,6 +584,8 @@ public class MSGFDB {
 		SpecDataType specDataType = new SpecDataType(activationMethod, instType, enzyme);
 		int fromIndexGlobal = 0;
 		
+		SuffixArraySequence saSeq = new SuffixArraySequence(databaseFile.getPath());
+
 		String header = 
 			"#SpecFile\tSpecIndex\tScan#\t"
 			+"FragMethod\t"
@@ -642,7 +644,7 @@ public class MSGFDB {
 	    	time = System.currentTimeMillis(); 
 	    	DBScanner sa = new DBScanner(
 	    			specScanner,
-	    			new SuffixArraySequence(databaseFile.getPath()),
+	    			saSeq,
 	    			enzyme,
 	    			aaSet,
 	    			numMatchesPerSpec,
@@ -872,7 +874,7 @@ public class MSGFDB {
 			+(rightParentMassTolerance.isTolerancePPM() ? "ppm" : "Da")
 			+")\tCharge\tPeptide\tProtein\tDeNovoScore\tMSGFScore\tSpecProb\tP-value";
 		MSGFDBResultGenerator gen = new MSGFDBResultGenerator(header);	
-		
+		SuffixArraySequence saSeq = new SuffixArraySequence(databaseFile.getPath());
 		while(true)
 		{
 			if(fromIndexGlobal >= specKeyList.size())
@@ -910,7 +912,7 @@ public class MSGFDB {
 		    	
 				ConcurrentMSGFDB.RunMSGFDB msgfdbExecutor = new ConcurrentMSGFDB.RunMSGFDB(
 							specScanner,
-							new SuffixArraySequence(databaseFile.getPath()),
+							saSeq,
 							enzyme,
 							aaSet,
 							numMatchesPerSpec,
