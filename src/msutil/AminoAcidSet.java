@@ -961,7 +961,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 				for(int i=0; i<residueStr.length(); i++)
 				{
 					char residue = residueStr.charAt(i);
-					Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere);
+					Modification.Instance modIns = new Modification.Instance(mod, residue, Location.N_Term);
 					mods.add(modIns);
 				}				
 			}
@@ -1218,8 +1218,8 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	public static void main(String argv[])
 	{
 //		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(System.getProperty("user.home")+"/Research/Data/ABRF/StudyFiles/Mods.txt");
-//		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(System.getProperty("user.home")+"/Developments/MS_Java_Dev/bin/Mods.txt");
-		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile("/home/sangtaekim/Research/ToolDistribution/TempTest/params.xml");
+		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile(System.getProperty("user.home")+"/Downloads/result/params.xml");
+//		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile("/home/sangtaekim/Research/ToolDistribution/TempTest/params.xml");
 //		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
 		aaSet.printAASet();
 //		for(AminoAcid aa : aaSet.getAminoAcids(Location.N_Term, 'E'))
