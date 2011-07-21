@@ -586,7 +586,9 @@ public class MSGFDB {
 			}
 		}
 		
-		numThreads = Math.min(numThreads, Math.round(numSpecScannedTogether/1000f));
+		numThreads = Math.min(numThreads, Math.round(Math.min(specKeyList.size(), numSpecScannedTogether)/1000f));
+		if(numThreads == 0)
+			numThreads = 1;
 		System.out.println("Using " + numThreads + (numThreads == 1 ? " thread." : " threads."));
 		
 		SpecDataType specDataType = new SpecDataType(activationMethod, instType, enzyme);
