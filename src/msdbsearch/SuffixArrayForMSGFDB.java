@@ -42,7 +42,7 @@ public class SuffixArrayForMSGFDB extends SuffixArray {
 	
 	@Override
 	protected int readSuffixArrayFile(String suffixFile) {
-		System.out.println("SAForMSGFDB Reading " + suffixFile);
+//		System.out.println("SAForMSGFDB Reading " + suffixFile);
 		try {
 			// read the first integer which encodes for the size of the file
 			DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(suffixFile)));
