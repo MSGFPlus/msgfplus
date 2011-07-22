@@ -23,9 +23,9 @@ public class MzXMLSpectraMapTest {
 	    String fileName = System.getProperty("user.home")+"/Data/Cyclic/Javier/cyclicPeptides/MTVVI-20_1.medium.mzXML";
 	  
 	    MzXMLSpectraMap map = new MzXMLSpectraMap(fileName);
-	    System.out.println("Total number of scans: " + map.getScanCount());
+	    System.out.println("Total number of scans: " + map.getMaxScanNumber());
 	    
-	    for (int i = 1; i <= map.getScanCount(); i++) {
+	    for (int i = 1; i <= map.getMaxScanNumber(); i++) {
 	      Spectrum s = map.getSpectrumBySpecIndex(i);
 	      if (s != null) {
 	        System.out.println("Scan number found " + s.getScanNum());

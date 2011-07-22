@@ -8,6 +8,7 @@ import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -26,9 +27,12 @@ import msutil.CompositionFactory;
 import msutil.Enzyme;
 import msutil.IonType;
 import msutil.Peptide;
+import msutil.SpectraIterator;
 
 import parser.BufferedLineReader;
 import parser.BufferedRandomAccessLineReader;
+import parser.MgfSpectrumParser;
+import parser.MzXMLSpectraIterator;
 import parser.MzXMLSpectraMap;
 
 public class Chores {
@@ -63,9 +67,60 @@ public class Chores {
 //		System.out.println((Composition.N15-Composition.N)*4+(Composition.C13-Composition.C)*6);
 //		System.out.println(Composition.OFFSET_Y);
 //		System.out.println(Runtime.getRuntime().availableProcessors());
-		System.out.println(Composition.getMass("H-2O-1"));
+//		System.out.println(Composition.getMass("H-2O-1"));
+		printMaxScanNum();
 	}
 
+	public static void printMaxScanNum() throws Exception
+	{
+		String mzXMLFileName = "/home/sangtaekim/Test/CCMS/3297b97db35241ba8547906b22377869/spectrum/00000.mzXML";
+		MzXMLSpectraMap map = new MzXMLSpectraMap(mzXMLFileName);
+		System.out.println(map.getMaxScanNumber());
+	}
+	
+	public static void compareFiles() throws Exception
+	{
+		String mzXMLFileName = "/home/sangtaekim/Test/CCMS/3297b97db35241ba8547906b22377869/spectrum/00000.mzXML";
+		String mgfFileName = "/home/sangtaekim/Test/CCMS/3297b97db35241ba8547906b22377869/spectrum/00000.mgf";
+		
+		SpectraIterator itr = new SpectraIterator(mgfFileName, new MgfSpectrumParser());
+		HashSet<Integer> mgfScanNum = new HashSet<Integer>();
+		while(itr.hasNext())
+		{
+			mgfScanNum.add(itr.next().getScanNum());
+		}
+		
+		MzXMLSpectraIterator itr2 = new MzXMLSpectraIterator(mzXMLFileName);
+		HashSet<Integer> mzXMLScanNum = new HashSet<Integer>();
+		while(itr2.hasNext())
+		{
+			mzXMLScanNum.add(itr2.next().getScanNum());
+		}
+		
+		int mzXMLOnly = 0;
+		for(int scanNum : mzXMLScanNum)
+		{
+			if(!mgfScanNum.contains(scanNum))
+			{
+				System.out.println("MzXMLOnly: " + scanNum);
+				mzXMLOnly++;
+			}
+		}
+
+		int mgfOnly = 0;
+		for(int scanNum : mgfScanNum)
+		{
+			if(!mzXMLScanNum.contains(scanNum))
+			{
+				System.out.println("MgfOnly: " + scanNum);
+				mgfOnly++;
+			}
+		}
+		
+		System.out.println("MzXMLOnly: " + mzXMLOnly);
+		System.out.println("MgfOnly: " + mgfOnly);
+		
+	}
 	public static void efdrTest() throws Exception
 	{
 		double[] specProb = new double[136964];

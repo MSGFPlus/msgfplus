@@ -70,6 +70,7 @@ public class ScoredSpectraMap {
 		for(SpecKey specKey : specKeyList)
 		{
 			Spectrum spec = specMap.getSpectrumBySpecIndex(specKey.getSpecIndex());
+			spec.setCharge(specKey.getCharge());
 			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
 			double peptideMassKey = (double)peptideMass;
 			while(pepMassSpecKeyMap.get(peptideMassKey) != null)	// for speeding up

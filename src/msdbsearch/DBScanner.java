@@ -262,7 +262,6 @@ public class DBScanner {
 				}
 				if(i < minPeptideLength)
 					continue;
-				
 				float peptideMass = (float)prm[i+1];
 				int nominalPeptideMass = intPRM[i+1];
 				float tolDaLeft = leftPMTolerance.getToleranceAsDa(peptideMass);

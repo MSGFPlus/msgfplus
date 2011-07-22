@@ -28,7 +28,7 @@ public class MzXMLToMgf {
 		if(!mzXMLFile.isDirectory())
 		{
 			ext = mzXMLFile.getName().substring(mzXMLFile.getName().lastIndexOf('.')+1);
-			if(!ext.equalsIgnoreCase("mzxml"))
+			if(!ext.equalsIgnoreCase("mzxml") && !ext.equalsIgnoreCase("mzml"))
 				printUsageAndExit(argv[0] + " must be *.mzXML!");
 		}
 		
@@ -86,8 +86,11 @@ public class MzXMLToMgf {
 					if(spec.getActivationMethod() != activationMethod)
 						continue;
 				}
+				if(numSpecs > 0)
+					out.println();
 				spec.outputMgf(out);
 				numSpecs++;
+					
 			}
 		}
 		

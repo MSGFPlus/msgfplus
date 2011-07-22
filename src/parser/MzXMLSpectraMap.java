@@ -129,8 +129,8 @@ public class MzXMLSpectraMap implements SpectrumAccessorBySpecIndex {
 	 * Get the number of scans in this file.
 	 * @return the number of total scans.
 	 */
-	public int getScanCount() {
-		return parser.getScanCount();
+	public int getMaxScanNumber() {
+		return parser.getMaxScanNumber();
 	}
 
 	private ArrayList<Integer> specIndexList = null;
@@ -140,7 +140,7 @@ public class MzXMLSpectraMap implements SpectrumAccessorBySpecIndex {
 		if(specIndexList == null)
 		{
 			specIndexList = new ArrayList<Integer>();
-			for(int scanNumber = 1; scanNumber<=parser.getScanCount(); scanNumber++)
+			for(int scanNumber = 1; scanNumber<=parser.getMaxScanNumber(); scanNumber++)
 			{
 				Scan scanObj = parser.rap(scanNumber);
 				if (scanObj != null && scanObj.getHeader() != null && scanObj.getHeader().getMsLevel() == 2)
