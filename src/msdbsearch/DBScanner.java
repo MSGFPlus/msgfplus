@@ -272,7 +272,8 @@ public class DBScanner {
 				Collection<SpecKey> matchedSpecKeyList = specScanner.getPepMassSpecKeyMap().subMap(leftThr, rightThr).values();
 				if(matchedSpecKeyList.size() > 0)
 				{
-//					if(sequence.getSubsequence(index+1, index+i+2).equalsIgnoreCase("SPAASSXTSFPRRACCRRRR"))
+//					String pepStr = sequence.getSubsequence(index+1, index+i+1);
+//					if(pepStr.contains("X"))
 //						System.out.println("*****************"+index);
 //					if(index == 1)
 //						System.out.println("Debug");

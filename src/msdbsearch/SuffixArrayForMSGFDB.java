@@ -57,7 +57,22 @@ public class SuffixArrayForMSGFDB extends SuffixArray {
 
 			int sizeOfLcps = size;
 			// skip leftMiddleLcps and middleRightLcps
-			in.skip(2*sizeOfLcps);
+			long totalBytesSkipped = 0;
+			while(totalBytesSkipped < 2*sizeOfLcps)
+			{
+				long bytesSkipped = in.skip(2*sizeOfLcps-totalBytesSkipped);
+				if(bytesSkipped == 0)
+				{
+					System.out.println("Error while reading suffix array: " + totalBytesSkipped + "!=" +2*sizeOfLcps);
+					System.exit(-1);
+				}
+				totalBytesSkipped += bytesSkipped;
+			}
+			if(totalBytesSkipped != 2*sizeOfLcps)
+			{
+				System.out.println("Error while reading suffix array: " + totalBytesSkipped + "!=" +2*sizeOfLcps);
+				System.exit(-1);
+			}
 			// read neighboringLcps
 			byte[] neighboringLcpArr = new byte[sizeOfLcps];
 			in.read(neighboringLcpArr);
