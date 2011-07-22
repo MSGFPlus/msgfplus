@@ -291,7 +291,7 @@ public class SuffixArray {
 	 * @param sequence the Adapter object that represents the database (text).
 	 * @param suffixFile the output file.
 	 */
-	private void createSuffixArrayFile(SuffixArraySequence sequence, String suffixFile) {
+	protected void createSuffixArrayFile(SuffixArraySequence sequence, String suffixFile) {
 		System.out.println("Creating the suffix array indexed file... Size: " + sequence.getSize());
 
 		// helper local class
