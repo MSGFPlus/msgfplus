@@ -53,7 +53,7 @@ public class SuffixArrayForMSGFDB extends SuffixArray {
 			int[] indexArr = new int[size];
 			for(int i=0; i<indexArr.length; i++)
 				indexArr[i] = in.readInt();
-			indices = IntBuffer.wrap(indexArr);
+			indices = IntBuffer.wrap(indexArr).asReadOnlyBuffer();
 
 			int sizeOfLcps = size;
 			// skip leftMiddleLcps and middleRightLcps
@@ -61,7 +61,7 @@ public class SuffixArrayForMSGFDB extends SuffixArray {
 			// read neighboringLcps
 			byte[] neighboringLcpArr = new byte[sizeOfLcps];
 			in.read(neighboringLcpArr);
-			neighboringLcps = ByteBuffer.wrap(neighboringLcpArr);
+			neighboringLcps = ByteBuffer.wrap(neighboringLcpArr).asReadOnlyBuffer();
 			in.close();
 
 			return id;

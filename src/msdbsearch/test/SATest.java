@@ -23,13 +23,15 @@ public class SATest {
 		System.out.println("SuffixArray");
 		long time = System.currentTimeMillis();
 		SuffixArray sa = new SuffixArray(sequence);
-		sa.getAllMatchedStrings("LIILGSFFVLNLVLGVLSGEFSKEREKAK");
 		System.out.println("Time: " + (System.currentTimeMillis()-time));
 		
 		System.out.println("SuffixArrayForMSGFDB");
 		time = System.currentTimeMillis();
 		SuffixArrayForMSGFDB sa2 = new SuffixArrayForMSGFDB(sequence);
 		System.out.println("Time: " + (System.currentTimeMillis()-time));
+		System.out.println(sa.toString().equals(sa2.toString()));
+		
+		
 	}
 
 }
