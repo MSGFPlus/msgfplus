@@ -15,11 +15,13 @@ public class InsPecTParser {
 	// InsPecT labels
 	public static final String SPEC_FILE = "#SpectrumFile";
 	public static final String SCAN_NUM = "Scan#";
+	public static final String SPEC_INDEX = "SpecIndex";
 	public static final String ANNOTATION = "Annotation";
 	public static final String PROTEIN = "Protein";
 	public static final String CHARGE = "Charge";
 	public static final String MQ_SCORE = "MQScore";
-	public static final String FDR = "p-Value";
+	public static final String FDR = "FDR";
+	public static final String SPEC_PROB = "SpecProb";
 	public static final String F_SCORE = "F-Score";
 	public static final String SPEC_FILE_POS = "SpecFilePos";
 	
@@ -36,6 +38,29 @@ public class InsPecTParser {
 	
 	public String getHeader()	{ return header; }
 	public PSMList<InsPecTPSM> getPSMList()	{ return psmList; }
+	
+	public PSMList<InsPecTPSM> getPSMList(String scoreName, float threshold, boolean isBiggerBetter)
+	{
+		PSMList<InsPecTPSM> filteredList = new PSMList<InsPecTPSM>();
+		
+		PSMList<InsPecTPSM> list = psmList.getDistinctiveSpectralSet();
+		for(InsPecTPSM psm : list)
+		{
+			float score = psm.getScore(scoreName);
+			if(isBiggerBetter)
+			{
+				if(score < threshold)
+					continue;
+			}
+			else
+			{
+				if(score > threshold)
+					continue;
+			}
+			filteredList.add(psm);
+		}
+		return filteredList;
+	}
 	
 	public void parse(String fileName)
 	{
@@ -55,20 +80,23 @@ public class InsPecTParser {
 		}
 		
 		int specFileColumn = -1;
+		int specIndexColumn = -1;
 		int scanNumColumn = -1;
 		int annotationColumn = -1;
 		int proteinColumn = -1;
 		int chargeColumn = -1;
 		int mqScoreColumn = -1;
 		int fdrColumn = -1;
-		@SuppressWarnings("unused")
 		int fScoreColumn = -1;
+		int specProbColumn = -1;
 		int specFilePosColumn = -1;
 		String[] label = labelRow.split("\t");
 		for(int i=0; i<label.length; i++)
 		{
 			if(label[i].equalsIgnoreCase(SPEC_FILE) || label[i].equalsIgnoreCase("#SpecFile"))
 				specFileColumn = i;
+			else if(label[i].equalsIgnoreCase(SPEC_INDEX))
+				specIndexColumn = i;
 			else if(label[i].equalsIgnoreCase(SCAN_NUM))
 				scanNumColumn = i;
 			else if(label[i].equalsIgnoreCase(ANNOTATION) || label[i].equalsIgnoreCase("Peptide"))
@@ -85,6 +113,8 @@ public class InsPecTParser {
 				specFilePosColumn = i;
 			else if(label[i].equalsIgnoreCase(F_SCORE))
 				fScoreColumn = i;
+			else if(label[i].equalsIgnoreCase(SPEC_PROB))
+				specProbColumn = i;
 		}
 		
 		String s;
@@ -112,14 +142,26 @@ public class InsPecTParser {
 				proteinStr = "";
 			int charge = Integer.parseInt(token[chargeColumn]);
 			float mqScore = Float.NaN;
+			float fScore = Float.NaN;
 			float fdr = Float.NaN;
+			float specProb = Float.NaN;
+			int specIndex = -1;
+			
 			long specFilePos = -1;
 			if(mqScoreColumn >= 0)
-					mqScore = Float.parseFloat(token[mqScoreColumn]);
+				mqScore = Float.parseFloat(token[mqScoreColumn]);
+			if(fScoreColumn >= 0)
+				fScore = Float.parseFloat(token[fScoreColumn]);
 			if(fdrColumn >= 0)
 				fdr = Float.parseFloat(token[fdrColumn]);
 			if(specFilePosColumn >= 0)
 				specFilePos = Long.parseLong(token[specFilePosColumn]);
+			if(specProbColumn >= 0)
+				specProb = Float.parseFloat(token[specProbColumn]);
+			if(specIndexColumn >= 0)
+				specIndex = Integer.parseInt(token[specIndexColumn]);
+			// parse specIndex
+
 //			float fScore = Float.parseFloat(token[fScoreColumn]);
 
 			// process specFileName
@@ -160,7 +202,17 @@ public class InsPecTParser {
 				
 			
 			InsPecTPSM psm = new InsPecTPSM();
-			psm.scanNum(scanNum).peptide(peptide).protein(proteinStr).charge(charge).probScore(fdr).rawScore(mqScore);
+			psm.specIndex(specIndex).scanNum(scanNum).peptide(peptide).protein(proteinStr).charge(charge).probScore(fdr).rawScore(mqScore);
+			
+			if(fScore != Float.NaN)
+				psm.score(F_SCORE, fScore);
+			if(mqScore != Float.NaN)
+				psm.score(MQ_SCORE, mqScore);
+			if(fdr != Float.NaN)
+				psm.score(FDR, fdr);
+			if(specProb != Float.NaN)
+				psm.score(SPEC_PROB, specProb);
+			
 			if(s.endsWith("\t"))
 				s = s.substring(0, s.length()-1);
 			psm.setInsPecTString(s);

@@ -88,7 +88,7 @@ public class SpecKey extends Pair<Integer, Integer> {
 	{
 		ArrayList<SpecKey> specKeyList = new ArrayList<SpecKey>();
 		
-		int prevScanNum = Integer.MIN_VALUE;
+		int prevSpecIndex = Integer.MIN_VALUE;
 		int prevCharge = Integer.MIN_VALUE;
 		float previousPrecursorMz = Float.MIN_VALUE;
 		
@@ -104,7 +104,7 @@ public class SpecKey extends Pair<Integer, Integer> {
 				System.exit(-1);
 			}
 			
-			if(specIndex == prevScanNum+1 && charge == prevCharge && precursorMz == previousPrecursorMz)
+			if(specIndex == prevSpecIndex+1 && charge == prevCharge && precursorMz == previousPrecursorMz)
 			{
 				if(charge == 0)
 				{
@@ -128,7 +128,7 @@ public class SpecKey extends Pair<Integer, Integer> {
 					specKeyList.add(new SpecKey(specIndex, charge));
 				}
 			}
-			prevScanNum = specIndex;
+			prevSpecIndex = specIndex;
 			prevCharge = charge;
 			previousPrecursorMz = precursorMz;
 		}

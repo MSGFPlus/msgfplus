@@ -233,9 +233,15 @@ public class Enzyme {
 	
 	static {
 		TRYPSIN = new Enzyme("Tryp", "KR", false);
-		TRYPSIN.setNeighboringAAEfficiency(0.9148273f);
-		TRYPSIN.setPeptideCleavageEffiency(0.98173124f);
+//		TRYPSIN.setNeighboringAAEfficiency(0.9148273f);
+//		TRYPSIN.setPeptideCleavageEffiency(0.98173124f);
 		
+//		TRYPSIN.setNeighboringAAEfficiency(0.9523f);
+//		TRYPSIN.setPeptideCleavageEffiency(0.9742f);
+
+		TRYPSIN.setNeighboringAAEfficiency(0.9999f);
+		TRYPSIN.setPeptideCleavageEffiency(0.9999f);
+
 		CHYMOTRYPSIN = new Enzyme("CHYMOTRYPSIN", "FYWL", false);
 		
 		LysC = new Enzyme("LysC", "K", false);

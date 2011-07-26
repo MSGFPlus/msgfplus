@@ -68,7 +68,12 @@ public class Chores {
 //		System.out.println(Composition.OFFSET_Y);
 //		System.out.println(Runtime.getRuntime().availableProcessors());
 //		System.out.println(Composition.getMass("H-2O-1"));
-		printMaxScanNum();
+//		printMaxScanNum();
+		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
+		aaSet.registerEnzyme(Enzyme.TRYPSIN);
+		System.out.println(aaSet.getNeighboringAACleavageCredit()+" "+aaSet.getNeighboringAACleavagePenalty());
+		System.out.println(aaSet.getPeptideCleavageCredit()+" "+aaSet.getPeptideCleavagePenalty());
+		
 	}
 
 	public static void printMaxScanNum() throws Exception

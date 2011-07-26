@@ -18,11 +18,18 @@ public class PSM {
 		this.specFileName = fileName;
 		return this;
 	}
+	public int getSpecIndex() {
+		return specIndex;
+	}
 	public int getScanNum() {
 		return scanNum;
 	}
 	public PSM scanNum(int scanNum) {
 		this.scanNum = scanNum;
+		return this;
+	}
+	public PSM specIndex(int specIndex) {
+		this.specIndex = specIndex;
 		return this;
 	}
 	public float getPrecursorMz() {
@@ -132,9 +139,9 @@ public class PSM {
 	
 	static class PSMSpecNumComparator implements Comparator<PSM> {
 		public int compare(PSM o1, PSM o2) {
-			if(o1.specNum > o2.specNum)
+			if(o1.specIndex > o2.specIndex)
 				return 1;
-			else if(o1.specNum == o2.specNum)
+			else if(o1.specIndex == o2.specIndex)
 				return 0;
 			else
 				return -1;
@@ -167,7 +174,7 @@ public class PSM {
 	private String specFileName = null;
 	
 	// Spectrum
-	private int specNum = -1;	// sequencial number of the spectrum in the file, starting from 0
+	private int specIndex = -1;	// sequencial number of the spectrum in the file, starting from 0
 	private int scanNum = -1;	// scan number
 	private String title = null;	// Title
 	private float precursorMz = 0;
@@ -189,12 +196,12 @@ public class PSM {
 	
 	public String toString()
 	{
-		return specNum+"\t"+peptide+"\t"+charge+"\t"+probScore;
+		return specIndex+"\t"+scanNum+"\t"+peptide+"\t"+charge+"\t"+probScore;
 	}
 	
 	public String toStringAllFields() 
 	{
-		return (specNum > 0 ? specNum : "") + "\t"+ (scanNum > 0 ? scanNum : "") + "\t" +
+		return (specIndex > 0 ? specIndex : "") + "\t"+ (scanNum > 0 ? scanNum : "") + "\t" +
 		(title != null ? title : "") + "\t" + (charge > 0 ? charge : "") + "\t" +
 		(peptide != null ? peptide : "") + "\t" + (protein != null ? protein : "") + "\t" +
 		(ptm != null ? ptm : "") + "\t" + probScore + "\t" + rawScore;
