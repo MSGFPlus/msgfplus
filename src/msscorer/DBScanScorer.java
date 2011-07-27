@@ -35,9 +35,9 @@ public class DBScanScorer extends FastScorer {
 
 	// fromIndex: inclusive, toIndex: exclusive
 	@Override
-	public int getScore(double[] prefixMassArr, int[] nominalPrefixMassArr, int fromIndex, int toIndex)
+	public int getScore(double[] prefixMassArr, int[] nominalPrefixMassArr, int fromIndex, int toIndex, int numMods)
 	{
-		int nodeScore = super.getScore(prefixMassArr, nominalPrefixMassArr, fromIndex, toIndex);
+		int nodeScore = super.getScore(prefixMassArr, nominalPrefixMassArr, fromIndex, toIndex, numMods);
 		int edgeScore = 0;
 		if(!isNodeMassPRM)	// reverse
 		{

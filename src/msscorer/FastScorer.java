@@ -1,5 +1,6 @@
 package msscorer;
 
+import msgf.FlexAminoAcidGraph;
 import msgf.NominalMass;
 import msgf.ScoredSpectrum;
 import msutil.Composition;
@@ -47,7 +48,7 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 	
 	// fromIndex: inclusive, toIndex: exclusive
 	@Override
-	public int getScore(double[] prefixMassArr, int[] nominalPrefixMassArr, int fromIndex, int toIndex)
+	public int getScore(double[] prefixMassArr, int[] nominalPrefixMassArr, int fromIndex, int toIndex, int numMods)
 	{
 		int score = 0;
 		int peptideMass = nominalPrefixMassArr[toIndex-1];
@@ -55,16 +56,11 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 		{
 			int prefixMass = nominalPrefixMassArr[i];
 			int suffixMass = peptideMass - prefixMass;
-//			try {
 			int curScore = Math.round(prefixScore[prefixMass]+suffixScore[suffixMass]);
 			score += curScore;
-//			} catch (ArrayIndexOutOfBoundsException e)
-//			{
-////				System.out.println("*******"+prefixMass+" "+suffixMass+" "+fromIndex+" "+toIndex+" "+scanNum);
-//				e.printStackTrace();
-//				System.exit(-1);
-//			}
 		}
+		
+		score += FlexAminoAcidGraph.MODIFIED_EDGE_PENALTY*numMods;
 		return score;
 	}
 

@@ -56,12 +56,12 @@ public class Chores {
 //		System.out.println(Double.MIN_NORMAL);
 //		System.out.println(Enzyme.LysN.getPeptideCleavageEfficiency());
 //		System.out.println(Enzyme.LysN.getNeighboringAACleavageEffiency());
-//		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
-//		aaSet.registerEnzyme(Enzyme.LysN);
-//		System.out.println(aaSet.getNeighboringAACleavageCredit());
-//		System.out.println(aaSet.getNeighboringAACleavagePenalty());
-//		System.out.println(aaSet.getPeptideCleavageCredit());
-//		System.out.println(aaSet.getPeptideCleavagePenalty());
+		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
+		aaSet.registerEnzyme(Enzyme.LysC);
+		System.out.println(aaSet.getNeighboringAACleavageCredit());
+		System.out.println(aaSet.getNeighboringAACleavagePenalty());
+		System.out.println(aaSet.getPeptideCleavageCredit());
+		System.out.println(aaSet.getPeptideCleavagePenalty());
 //		efdrTest();
 //		System.out.println((Composition.N15-Composition.N)*2+(Composition.C13-Composition.C)*6);
 //		System.out.println((Composition.N15-Composition.N)*4+(Composition.C13-Composition.C)*6);
@@ -69,10 +69,9 @@ public class Chores {
 //		System.out.println(Runtime.getRuntime().availableProcessors());
 //		System.out.println(Composition.getMass("H-2O-1"));
 //		printMaxScanNum();
-		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
-		aaSet.registerEnzyme(Enzyme.TRYPSIN);
-		System.out.println(aaSet.getNeighboringAACleavageCredit()+" "+aaSet.getNeighboringAACleavagePenalty());
-		System.out.println(aaSet.getPeptideCleavageCredit()+" "+aaSet.getPeptideCleavagePenalty());
+//		aaSet.registerEnzyme(Enzyme.TRYPSIN);
+//		System.out.println(aaSet.getNeighboringAACleavageCredit()+" "+aaSet.getNeighboringAACleavagePenalty());
+//		System.out.println(aaSet.getPeptideCleavageCredit()+" "+aaSet.getPeptideCleavagePenalty());
 		
 	}
 

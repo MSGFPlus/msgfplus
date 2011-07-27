@@ -1,114 +1,117 @@
 package misc;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
 
-import msgf.Histogram;
+import fdr.TargetDecoyPSMSet;
+
 import parser.BufferedLineReader;
+import parser.InsPecTParser;
 
 public class CountPeptide {
 	public static void main(String argv[]) throws Exception
 	{
-		if(argv.length != 2)
+		if(argv.length != 1 && argv.length != 2)
 			printUsageAndExit();
-		countPeptide(argv[0], Double.parseDouble(argv[1]));
+			
+		float threshold = 0.01f;
+		if(argv.length == 2)
+			threshold = Float.parseFloat(argv[1]);
+		countPeptide(argv[0], threshold);
 	}
 	
 	public static void printUsageAndExit()
 	{
-		System.out.println("usage: java CountPeptide MSGFDBResult.txt FDRThreshold");
+		System.out.println("usage: java CountPeptide MSGFDBORInsPecTResult FDRThreshold [0/1] (0: PSMLevel, 1: PeptideLevel)");
 		System.exit(-1);
 	}
 	
-	public static void countPeptide(String fileName, double threshold) throws Exception
+	public static void countPeptide(String fileName, float threshold) throws Exception
 	{
-		BufferedLineReader in = new BufferedLineReader(fileName);
-		String header = in.readLine();
-		if(header == null || !header.startsWith("#"))
-		{
-			System.out.println("Not a valid MSGFDB result file!");
-			System.exit(0);
-		}
-//		String[] headerToken = header.split("\t");
-//		int eFDRColNum = -1;
-//		int pepColNum = -1;
-//		for(int i=0; i<headerToken.length; i++)
-//		{
-//			if(headerToken[i].equalsIgnoreCase("EFDR") || headerToken[i].equalsIgnoreCase("FDR"))
-//				eFDRColNum = i;
-//			if(headerToken[i].equalsIgnoreCase("Peptide") || headerToken[i].equalsIgnoreCase("Annotation"))
-//				pepColNum = i;
-//		}
-//		if(eFDRColNum < 0)
-//		{
-//			System.out.println("FDR column is missing!");
-//			System.exit(0);
-//		}
-//		if(pepColNum < 0)
-//		{
-//			System.out.println("Annotation column is missing!");
-//			System.exit(0);
-//		}
-
 		File tempFile = File.createTempFile("MSGFDB", "tempResult");
 		tempFile.deleteOnExit();
 		
-		int specIndexCol = 1;
-		int pepCol = 7;
-		int dbCol = 8;
-		int scoreCol = 11;
-		fdr.ComputeFDR.computeFDR(tempFile, null, scoreCol, false, "\t", 
-				specIndexCol, pepCol, null, true, true, 
-				true, dbCol, "REV_",
-				1, 0.011, fileName);
-
-	} catch (IOException e) {
-		e.printStackTrace();
+		int specIndexColumn = -1;
+		int scanNumColumn = -1;
+		int annotationColumn = -1;
+		int proteinColumn = -1;
+		int specProbColumn = -1;
+		int fScoreColumn = -1;
+		int mqScoreColumn = -1;
 		
-		int totalID = 0;
-		int numID = 0;
-		String s;
-		Histogram<Integer> nttHist = new Histogram<Integer>();
-		while((s=in.readLine()) != null)
+		BufferedLineReader in = new BufferedLineReader(fileName);
+		String s = in.readLine();
+		String[] label = s.split("\t");
+		for(int i=0; i<label.length; i++)
 		{
-			if(s.startsWith("#"))
-				continue;
-			String[] token = s.split("\t");
-			if(token.length <= eFDRColNum || token.length <= pepColNum)
-				continue;
-			double eFDR = Double.parseDouble(token[eFDRColNum]);
-			totalID++;
-			if(eFDR <= threshold)
-			{
-				numID++;
-				int ntt=0;
-				String annotation = token[pepColNum];
-				char pre = annotation.charAt(0);
-				if(pre == 'K' || pre == 'R' || pre == '_')
-					ntt+=2;
-				String pepStr = annotation.substring(annotation.indexOf('.')+1, annotation.lastIndexOf('.'));
-				StringBuffer unmodStr = new StringBuffer();
-				for(int i=0; i<pepStr.length(); i++)
-					if(Character.isLetter(pepStr.charAt(i)))
-						unmodStr.append(pepStr.charAt(i));
-				char last = unmodStr.charAt(unmodStr.length()-1);
-				if(last == 'K' || last == 'R')
-					ntt+=1;
-				nttHist.add(ntt);
-			}
-			
-//			if(ntt == 0) {
-//				System.out.println(s);
-//				System.exit(0);
-//			}
+			if(label[i].equalsIgnoreCase(InsPecTParser.ANNOTATION) || label[i].equalsIgnoreCase("Peptide"))
+				annotationColumn = i;
+			else if(label[i].equalsIgnoreCase(InsPecTParser.PROTEIN))
+				proteinColumn = i;
+			else if(label[i].equalsIgnoreCase(InsPecTParser.SPEC_PROB))
+				specProbColumn = i;
+			else if(label[i].equalsIgnoreCase(InsPecTParser.F_SCORE))
+				fScoreColumn = i;
+			else if(label[i].equalsIgnoreCase(InsPecTParser.MQ_SCORE))
+				mqScoreColumn = i;
+			else if(label[i].equalsIgnoreCase(InsPecTParser.SPEC_INDEX))
+				specIndexColumn = i;
+			else if(label[i].equalsIgnoreCase(InsPecTParser.SCAN_NUM))
+				scanNumColumn = i;
+		}
+		in.close();
+		
+		int scoreCol = -1;
+		String scoreName = null;
+		boolean isGreaterBetter;
+		if(specProbColumn >= 0)
+		{
+			scoreCol = specProbColumn;
+			isGreaterBetter = false;
+			scoreName = "SpecProb";
+		}
+		else if(fScoreColumn >= 0)
+		{
+			scoreCol = fScoreColumn;
+			isGreaterBetter = true;
+			scoreName = "F-score";
+		}
+		else if(mqScoreColumn >= 0)
+		{
+			scoreCol = mqScoreColumn;
+			isGreaterBetter = true;
+			scoreName = "MQScore";
+		}
+		else
+		{
+			System.out.println("No score!");
+			isGreaterBetter = true;
+			System.exit(-1);
 		}
 		
-		System.out.println("TotalPSM\t" + totalID);
-		System.out.println("NumID\t" + numID+"\t"+numID/(float)totalID);
-		System.out.println("Cleavage hist");
-		nttHist.printSortedRatio();
+		int specIndexCol = -1;
+		if(specIndexColumn >= 0)
+			specIndexCol = specIndexColumn;
+		else if(scanNumColumn >= 0)
+			specIndexCol = scanNumColumn;
+		
+		int pepCol = annotationColumn;
+		int dbCol = proteinColumn;
+		
+		TargetDecoyPSMSet psmSet = new TargetDecoyPSMSet(
+				new File(fileName), 
+				"\t", 
+				true,
+				scoreCol, 
+				isGreaterBetter, 
+				specIndexCol, 
+				pepCol,
+				null,
+				dbCol, 
+				"REV");
+
+		System.out.println("Score: " + scoreName);
+		System.out.println("Threshold: " + threshold);
+		System.out.println("#PSMs: " + psmSet.getNumIdentifiedPSMs(threshold));
+		System.out.println("#Peptides: " + psmSet.getNumIdentifiedPeptides(threshold));
 	}
 }

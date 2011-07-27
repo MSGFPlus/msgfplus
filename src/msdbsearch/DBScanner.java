@@ -286,7 +286,7 @@ public class DBScanner {
 					for(SpecKey specKey : matchedSpecKeyList)
 					{
 						SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(specKey);
-						int score = nTermAAScore + scorer.getScore(prm, intPRM, 2, i+2) + peptideCleavageScore;
+						int score = nTermAAScore + scorer.getScore(prm, intPRM, 2, i+2, 0) + peptideCleavageScore;
 						PriorityQueue<DatabaseMatch> prevMatchQueue = curSpecKeyDBMatchMap.get(specKey);
 						if(prevMatchQueue == null)
 						{
@@ -472,7 +472,7 @@ public class DBScanner {
 						for(SpecKey specKey : matchedSpecKeyList)
 						{
 							SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(specKey);
-							int score = enzymeScore + scorer.getScore(candidatePepGrid.getPRMGrid()[j], candidatePepGrid.getNominalPRMGrid()[j], 1, i+1); 
+							int score = enzymeScore + scorer.getScore(candidatePepGrid.getPRMGrid()[j], candidatePepGrid.getNominalPRMGrid()[j], 1, i+1, candidatePepGrid.getNumMods(j)); 
 							PriorityQueue<DatabaseMatch> prevMatchQueue = curSpecKeyDBMatchMap.get(specKey);
 							if(prevMatchQueue == null)
 							{
@@ -622,7 +622,7 @@ public class DBScanner {
 						for(SpecKey specKey : matchedSpecKeyList)
 						{
 							SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(specKey);
-							int score =  scorer.getScore(candidatePepGrid.getPRMGrid()[j], candidatePepGrid.getNominalPRMGrid()[j], 1, i+2); 
+							int score =  scorer.getScore(candidatePepGrid.getPRMGrid()[j], candidatePepGrid.getNominalPRMGrid()[j], 1, i+2, candidatePepGrid.getNumMods(j)); 
 							PriorityQueue<DatabaseMatch> prevMatchQueue = curSpecKeyDBMatchMap.get(specKey);
 							if(prevMatchQueue == null)
 							{
@@ -812,7 +812,7 @@ public class DBScanner {
 						for(SpecKey specKey : matchedSpecKeyList)
 						{
 							SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(specKey);
-							int score = enzymeScore + scorer.getScore(candidatePepGrid.getPRMGrid()[j], candidatePepGrid.getNominalPRMGrid()[j], 1, i+2); 
+							int score = enzymeScore + scorer.getScore(candidatePepGrid.getPRMGrid()[j], candidatePepGrid.getNominalPRMGrid()[j], 1, i+2, candidatePepGrid.getNumMods(j)); 
 							PriorityQueue<DatabaseMatch> prevMatchQueue = curSpecKeyDBMatchMap.get(specKey);
 							if(prevMatchQueue == null)
 							{

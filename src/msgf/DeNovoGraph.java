@@ -59,6 +59,9 @@ public abstract class DeNovoGraph<T extends Matter> {
 		public int getEdgeScore() {
 			return cleavageScore+errorScore;
 		}
+		public int getErrorScore() {
+			return errorScore;
+		}
 		public float getEdgeProbability() {
 			return probability;
 		}

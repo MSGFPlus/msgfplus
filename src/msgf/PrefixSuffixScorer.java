@@ -40,7 +40,8 @@ public class PrefixSuffixScorer implements SimpleDBSearchScorer<IntMass> {
 	}
 	
 	// fromIndex: inclusive, toIndex: exclusive
-	public int getScore(double[] prefixMassArr, int[] intPrefixMassArr, int fromIndex, int toIndex)
+	@Override
+	public int getScore(double[] prefixMassArr, int[] intPrefixMassArr, int fromIndex, int toIndex, int numMods)
 	{
 		int score = 0;
 		int theoPeptideMass = intPrefixMassArr[toIndex-1];
@@ -51,6 +52,8 @@ public class PrefixSuffixScorer implements SimpleDBSearchScorer<IntMass> {
 			int prefixMass = peptideMass - suffixMass;
 			score += Math.round(prefixScore[prefixMass]+suffixScore[suffixMass]);
 		}
+		score += FlexAminoAcidGraph.MODIFIED_EDGE_PENALTY*numMods;
+
 		return score;
 	}
 

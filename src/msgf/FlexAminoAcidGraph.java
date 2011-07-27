@@ -12,6 +12,7 @@ import msutil.Peptide;
 import msutil.Modification.Location;
 
 public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
+	public static final int MODIFIED_EDGE_PENALTY = 10;
 	private ScoredSpectrum<NominalMass> scoredSpec;
 	private Enzyme enzyme;
 	private boolean direction;	// true: forward (e.g. Lys-C), false: reverse (e.g. Trypsin)
@@ -64,7 +65,6 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
 		sinkNodes.add(pmNode);
 		
 		computeNodeScores();
-		computeEdgeScores();
 	}
 
 	@Override
@@ -188,10 +188,6 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
 		}
 		
 		ArrayList<AminoAcid> aaList = aaSet.getAAList(location);
-//		if(enzymaticCleavageOnly && (direction == enzyme.isNTerm()))
-//			aaList = aaSet.getEnzymeAAList();
-//		else
-//			aaList = aaSet.getAAList(location);
 		makeForwardEdges(source, aaList, enzyme != null && direction == enzyme.isNTerm());
 	}
 	
@@ -243,6 +239,8 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
 					else
 						edge.setCleavageScore(aaSet.getPeptideCleavagePenalty());
 				}
+				if(aa.isModified())
+					edge.setErrorScore(MODIFIED_EDGE_PENALTY);
 			}
 		}
 		edgeMap.put(pmNode, edges);
@@ -250,6 +248,8 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
 	
 	private void makeForwardEdges(NominalMass curNode, ArrayList<AminoAcid> aaList, boolean addCleavageScore)
 	{
+		if(edgeMap.get(curNode) == null)
+			return;
 		int curNominalMass = curNode.getNominalMass();
 		for(AminoAcid aa : aaList)
 		{
@@ -270,6 +270,8 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
 					aaSet.getIndex(aa),
 					aa.getMass());
 			int errorScore = scoredSpec.getEdgeScore(nextNode, curNode, aa.getMass());
+			if(aa.isModified())
+				errorScore += MODIFIED_EDGE_PENALTY;
 			edge.setErrorScore(errorScore);
 			if(addCleavageScore)
 			{
@@ -283,18 +285,19 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
 		}
 	}
 	
-	private void computeEdgeScores()
-	{
-		for(NominalMass curNode : intermediateNodes)
-		{
-			ArrayList<DeNovoGraph.Edge<NominalMass>> edges = edgeMap.get(curNode);
-			for(DeNovoGraph.Edge<NominalMass> edge : edges)
-			{
-				NominalMass prevNode = edge.getPrevNode();
-				int errorScore = scoredSpec.getEdgeScore(curNode, prevNode, edge.getEdgeMass());
-				edge.setErrorScore(errorScore);
-			}
-			edgeMap.put(curNode, edges);
-		}
-	}	
+//	private void computeEdgeScores()
+//	{
+//		for(NominalMass curNode : intermediateNodes)
+//		{
+//			ArrayList<DeNovoGraph.Edge<NominalMass>> edges = edgeMap.get(curNode);
+//			for(DeNovoGraph.Edge<NominalMass> edge : edges)
+//			{
+//				NominalMass prevNode = edge.getPrevNode();
+//				int errorScore = scoredSpec.getEdgeScore(curNode, prevNode, edge.getEdgeMass());
+//				assert(errorScore == edge.getErrorScore());
+//				edge.setErrorScore(errorScore);
+//			}
+//			edgeMap.put(curNode, edges);
+//		}
+//	}	
 }

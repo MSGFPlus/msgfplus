@@ -239,14 +239,17 @@ public class Enzyme {
 //		TRYPSIN.setNeighboringAAEfficiency(0.9523f);
 //		TRYPSIN.setPeptideCleavageEffiency(0.9742f);
 
-		TRYPSIN.setNeighboringAAEfficiency(0.9999f);
-		TRYPSIN.setPeptideCleavageEffiency(0.9999f);
+		// Modified by Sangtae to boost the performance
+		TRYPSIN.setNeighboringAAEfficiency(0.99999f);
+		TRYPSIN.setPeptideCleavageEffiency(0.99999f);
 
 		CHYMOTRYPSIN = new Enzyme("CHYMOTRYPSIN", "FYWL", false);
 		
 		LysC = new Enzyme("LysC", "K", false);
-		LysC.setNeighboringAAEfficiency(0.79f);
-		LysC.setPeptideCleavageEffiency(0.89f);
+//		LysC.setNeighboringAAEfficiency(0.79f);
+//		LysC.setPeptideCleavageEffiency(0.89f);
+		LysC.setNeighboringAAEfficiency(0.999f);
+		LysC.setPeptideCleavageEffiency(0.999f);
 		
 		LysN = new Enzyme("LysN", "K", true);
 		LysN.setNeighboringAAEfficiency(0.79f);

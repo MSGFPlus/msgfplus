@@ -1,10 +1,7 @@
 package msdbsearch;
 
-import java.util.ArrayList;
-
 import msutil.AminoAcid;
 import msutil.AminoAcidSet;
-import msutil.ModifiedAminoAcid;
 import msutil.Modification.Location;
 
 public class CandidatePeptideGrid {
@@ -114,6 +111,11 @@ public class CandidatePeptideGrid {
 	public String getPeptideSeq(int index)
 	{
 		return peptide[index].toString();
+	}
+	
+	public int getNumMods(int index)
+	{
+		return numMods[index][length];
 	}
 	
 	public boolean addProtNTermResidue(char residue)
