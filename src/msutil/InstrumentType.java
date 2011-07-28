@@ -42,6 +42,11 @@ public class InstrumentType {
 	public static final InstrumentType TOF;
 	public static final InstrumentType HIGH_RESOLUTION_LTQ;
 	
+	public static InstrumentType[] getAllRegisteredInstrumentTypes()
+	{
+		return table.values().toArray(new InstrumentType[0]);
+	}
+	
 	static {
 		LOW_RESOLUTION_LTQ = new InstrumentType("LowRes", false);
 		HIGH_RESOLUTION_LTQ = new InstrumentType("HighRes", false);

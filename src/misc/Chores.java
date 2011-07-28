@@ -27,6 +27,7 @@ import msutil.CompositionFactory;
 import msutil.Enzyme;
 import msutil.IonType;
 import msutil.Peptide;
+import msutil.SpecKey;
 import msutil.SpectraIterator;
 
 import parser.BufferedLineReader;
@@ -56,12 +57,12 @@ public class Chores {
 //		System.out.println(Double.MIN_NORMAL);
 //		System.out.println(Enzyme.LysN.getPeptideCleavageEfficiency());
 //		System.out.println(Enzyme.LysN.getNeighboringAACleavageEffiency());
-		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
-		aaSet.registerEnzyme(Enzyme.LysC);
-		System.out.println(aaSet.getNeighboringAACleavageCredit());
-		System.out.println(aaSet.getNeighboringAACleavagePenalty());
-		System.out.println(aaSet.getPeptideCleavageCredit());
-		System.out.println(aaSet.getPeptideCleavagePenalty());
+//		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
+//		aaSet.registerEnzyme(Enzyme.LysC);
+//		System.out.println(aaSet.getNeighboringAACleavageCredit());
+//		System.out.println(aaSet.getNeighboringAACleavagePenalty());
+//		System.out.println(aaSet.getPeptideCleavageCredit());
+//		System.out.println(aaSet.getPeptideCleavagePenalty());
 //		efdrTest();
 //		System.out.println((Composition.N15-Composition.N)*2+(Composition.C13-Composition.C)*6);
 //		System.out.println((Composition.N15-Composition.N)*4+(Composition.C13-Composition.C)*6);
@@ -72,9 +73,25 @@ public class Chores {
 //		aaSet.registerEnzyme(Enzyme.TRYPSIN);
 //		System.out.println(aaSet.getNeighboringAACleavageCredit()+" "+aaSet.getNeighboringAACleavagePenalty());
 //		System.out.println(aaSet.getPeptideCleavageCredit()+" "+aaSet.getPeptideCleavagePenalty());
+		testSpecKey();
 		
 	}
 
+	public static void testSpecKey() throws Exception
+	{
+		String fileName = "/home/sangtaekim/Research/Data/CIDETDPairs/mzXML/090121_NM_Trypsin_20.mzXML";
+		fileName = "/home/sangtaekim/Test/Jesse/SPombe_T.mzXML";
+		int minCharge = 2, maxCharge = 2;
+		MzXMLSpectraIterator itr = new MzXMLSpectraIterator(fileName);
+		ArrayList<SpecKey> list = SpecKey.getFusedSpecKeyList(itr, minCharge, maxCharge);
+		for(SpecKey specKey : list)
+		{
+			if(specKey.getSpecIndexList() == null || specKey.getSpecIndexList().size() != 2)
+				System.out.println(specKey.getSpecKeyString()+"\t"+specKey.getSpecIndexList());
+		}
+		System.out.println("Size: " + list.size());
+	}
+	
 	public static void printMaxScanNum() throws Exception
 	{
 		String mzXMLFileName = "/home/sangtaekim/Test/CCMS/3297b97db35241ba8547906b22377869/spectrum/00000.mzXML";

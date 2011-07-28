@@ -65,12 +65,18 @@ public class NewScorerFactory {
 	
 	public static NewRankScorer get(ActivationMethod method, InstrumentType instType, Enzyme enzyme)
 	{
+		if(method != null && method == ActivationMethod.FUSION)
+			return null;
+		
 		if(method == null)
 			method = ActivationMethod.CID;
 		if(enzyme == null)
 			enzyme = Enzyme.TRYPSIN;
+		if(instType == null)
+			instType = InstrumentType.LOW_RESOLUTION_LTQ;
 		if(method == ActivationMethod.HCD)
 			instType = InstrumentType.HIGH_RESOLUTION_LTQ;
+		
 		SpecDataType condition = new SpecDataType(method, instType, enzyme);
 		NewRankScorer scorer = scorerTable.get(condition);
 		if(scorer == null)
@@ -87,21 +93,38 @@ public class NewScorerFactory {
 				SpecDataType newCond = new SpecDataType(method, instType, alternativeEnzyme);
 				is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+newCond+".param");
 				
-				if(is == null)	// param file still does not exist. Change method.
+//				if(is == null)	// param file still does not exist. Change method.
+//				{
+//					ActivationMethod alternativeMethod;
+//					if(method.isElectronBased())
+//						alternativeMethod = ActivationMethod.ETD;
+//					else
+//						alternativeMethod = ActivationMethod.CID;
+//					newCond = new SpecDataType(alternativeMethod, instType, enzyme);
+//					is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+newCond+".param");
+//					
+//					if(is == null)
+//					{
+//						newCond = new SpecDataType(alternativeMethod, instType, alternativeEnzyme);
+//						is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+newCond+".param");						
+//					}
+//				}
+				
+				if(is == null)	// if all the above failed, try to use CIDorETD-LowRes-Tryp, CIDorETD-LowRes-LysN, or CID-TOF-Tryp
 				{
-					ActivationMethod alternativeMethod;
-					if(method.isElectronBased())
-						alternativeMethod = ActivationMethod.ETD;
+					if((method == ActivationMethod.HCD)
+							&& (instType == InstrumentType.TOF || instType == InstrumentType.HIGH_RESOLUTION_LTQ) 
+							&& enzyme.isCTerm())
+						newCond = new SpecDataType(ActivationMethod.CID, InstrumentType.TOF, Enzyme.TRYPSIN);
+					else if(method.isElectronBased() && enzyme.isCTerm())
+						newCond = new SpecDataType(ActivationMethod.ETD, InstrumentType.LOW_RESOLUTION_LTQ, Enzyme.TRYPSIN);
+					else if(method.isElectronBased() && enzyme.isNTerm())
+						newCond = new SpecDataType(ActivationMethod.ETD, InstrumentType.LOW_RESOLUTION_LTQ, Enzyme.LysN);
+					else if(!method.isElectronBased() && enzyme.isNTerm())
+						newCond = new SpecDataType(ActivationMethod.CID, InstrumentType.LOW_RESOLUTION_LTQ, Enzyme.LysN);
 					else
-						alternativeMethod = ActivationMethod.CID;
-					newCond = new SpecDataType(alternativeMethod, instType, enzyme);
-					is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+newCond+".param");
-					
-					if(is == null)
-					{
-						newCond = new SpecDataType(alternativeMethod, instType, alternativeEnzyme);
-						is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+newCond+".param");						
-					}
+						newCond = new SpecDataType(ActivationMethod.CID, InstrumentType.LOW_RESOLUTION_LTQ, Enzyme.TRYPSIN);
+					is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+newCond+".param");						
 				}
 			}
 			assert(is != null): "param file is missing!: " + method.getName()+" "+enzyme.getName();
@@ -110,5 +133,31 @@ public class NewScorerFactory {
 			scorerTable.put(condition, scorer);
 		}
 		return scorer;
+	}
+	
+	public static void main(String argv[])
+	{
+		for(ActivationMethod method : ActivationMethod.getAllRegisteredActivationMethods())
+		{
+			if(method == ActivationMethod.FUSION)
+				continue;
+			for(InstrumentType inst : InstrumentType.getAllRegisteredInstrumentTypes())
+			{
+				for(Enzyme enzyme : Enzyme.getAllRegisteredEnzymes())
+				{
+					NewRankScorer scorer = NewScorerFactory.get(method, inst, enzyme);
+					System.out.print(method.getName()+" "+inst.getName()+" "+enzyme.getName()+" -> ");
+					if(scorer != null)
+					{
+						System.out.println(scorer.getActivationMethod().getName()+" "+scorer.getInstrumentType().getName()+" "+scorer.getEnzyme().getName());
+					}
+					else
+					{
+						System.err.println("Null!");
+						System.exit(-1);
+					}
+				}
+			}
+		}
 	}
 }

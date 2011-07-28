@@ -231,6 +231,11 @@ public class Enzyme {
 		return registeredEnzyme.get(name);
 	}
 	
+	public static Enzyme[] getAllRegisteredEnzymes()
+	{
+		return registeredEnzyme.values().toArray(new Enzyme[0]);
+	}
+	
 	static {
 		TRYPSIN = new Enzyme("Tryp", "KR", false);
 //		TRYPSIN.setNeighboringAAEfficiency(0.9148273f);

@@ -180,6 +180,25 @@ public class Peak implements Comparable<Peak> {
     return 0;
   }
   
+
+  @Override
+  public int hashCode()
+  {
+	 return (int)(mz+intensity+charge); 
+  }
+  
+  /**
+   * Checks the equality of this peak with another object.
+   * @param obj the other object.
+   * @return true if the intensities and masses are equal, false, otherwise.
+   */
+  @Override
+  public boolean equals(Object obj)
+  {
+	  if(obj instanceof Peak)
+		  return equals((Peak)obj);
+	  return false;
+  }
   
   /**
    * Checks the equality of this peak with another peak.
@@ -188,7 +207,7 @@ public class Peak implements Comparable<Peak> {
    */
   public boolean equals(Peak p) {
     // this might not be a good idea for floats
-    return mz == p.mz && intensity == p.intensity;
+    return mz == p.mz && intensity == p.intensity && charge == p.charge;
   }
   
   

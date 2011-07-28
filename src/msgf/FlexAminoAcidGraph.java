@@ -12,7 +12,7 @@ import msutil.Peptide;
 import msutil.Modification.Location;
 
 public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
-	public static final int MODIFIED_EDGE_PENALTY = 10;
+	public static final int MODIFIED_EDGE_PENALTY = 0;
 	private ScoredSpectrum<NominalMass> scoredSpec;
 	private Enzyme enzyme;
 	private boolean direction;	// true: forward (e.g. Lys-C), false: reverse (e.g. Trypsin)

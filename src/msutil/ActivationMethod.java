@@ -62,7 +62,13 @@ public class ActivationMethod {
 	
 
 	//// static /////////////
+	public static ActivationMethod[] getAllRegisteredActivationMethods()
+	{
+		return table.values().toArray(new ActivationMethod[0]);
+	}
+	
 	private static Hashtable<String, ActivationMethod> table;
+	
 	static {
 		CID = new ActivationMethod("CID");
 		ETD = new ActivationMethod("ETD").electronBased();

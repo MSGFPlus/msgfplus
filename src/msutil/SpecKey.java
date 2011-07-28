@@ -1,7 +1,10 @@
 package msutil;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import parser.MzXMLSpectraIterator;
 import sequences.Constants;
@@ -35,12 +38,12 @@ public class SpecKey extends Pair<Integer, Integer> {
 		return new SpecKey(Integer.parseInt(token[0]), Integer.parseInt(token[1]));
 	}
 	
-	public void addScanNum(int scanNum)
+	public void addSpecIndex(int scanNum)
 	{
 		if(specIndexList == null)
 		{
 			specIndexList = new ArrayList<Integer>();
-			specIndexList.add(super.getFirst());
+//			specIndexList.add(super.getFirst());
 		}
 		specIndexList.add(scanNum);
 	}
@@ -86,51 +89,60 @@ public class SpecKey extends Pair<Integer, Integer> {
 	
 	public static ArrayList<SpecKey> getFusedSpecKeyList(Iterator<Spectrum> itr, int minCharge, int maxCharge)
 	{
-		ArrayList<SpecKey> specKeyList = new ArrayList<SpecKey>();
-		
-		int prevSpecIndex = Integer.MIN_VALUE;
-		int prevCharge = Integer.MIN_VALUE;
-		float previousPrecursorMz = Float.MIN_VALUE;
+		HashMap<Peak, ArrayList<Integer>> precursorSpecIndexMap = new HashMap<Peak, ArrayList<Integer>>();
 		
 		while(itr.hasNext())
 		{
 			Spectrum spec = itr.next();
 			int specIndex = spec.getSpecIndex();
-			int charge = spec.getCharge();
-			float precursorMz = spec.getPrecursorPeak().getMz();
+			Peak precursor = spec.getPrecursorPeak();
 			if(spec.getActivationMethod() == null)
 			{
-				System.out.println("Error: activation method is not available: Scan=" + spec.getSpecIndex()+", PrecursorMz=" + precursorMz);
+				System.out.println("Error: activation method is not available: Scan=" + spec.getSpecIndex()+", PrecursorMz=" + spec.getPrecursorPeak().getMz());
 				System.exit(-1);
 			}
 			
-			if(specIndex == prevSpecIndex+1 && charge == prevCharge && precursorMz == previousPrecursorMz)
+			ArrayList<Integer> list = precursorSpecIndexMap.get(precursor);
+			if(list == null)
 			{
-				if(charge == 0)
+				list = new ArrayList<Integer>();
+				precursorSpecIndexMap.put(precursor, list);
+			}
+			list.add(specIndex);
+		}
+		
+		Iterator<Entry<Peak, ArrayList<Integer>>> mapItr = precursorSpecIndexMap.entrySet().iterator();
+		ArrayList<SpecKey> specKeyList = new ArrayList<SpecKey>();
+		while(mapItr.hasNext())
+		{
+			Entry<Peak, ArrayList<Integer>> entry = mapItr.next();
+			Peak precursor = entry.getKey();
+			ArrayList<Integer> list = entry.getValue();
+			Collections.sort(list);
+			
+			int charge = precursor.getCharge();
+			if(charge == 0)
+			{
+				for(int c=minCharge; c<=maxCharge; c++)
 				{
-					for(int i=0; i<maxCharge-minCharge; i++)
-						specKeyList.get(specKeyList.size()-1-i).addScanNum(specIndex);
+					SpecKey specKey = new SpecKey(list.get(0), c);
+					for(int specIndex : list)
+						specKey.addSpecIndex(specIndex);
+					specKeyList.add(specKey);
 				}
-				else if(charge > 0)
-				{
-					specKeyList.get(specKeyList.size()-1).addScanNum(specIndex);
-				}
+			}
+			else if(charge > 0)
+			{
+				SpecKey specKey = new SpecKey(list.get(0), charge);
+				for(int specIndex : list)
+					specKey.addSpecIndex(specIndex);
+				specKeyList.add(specKey);
 			}
 			else
 			{
-				if(charge == 0)
-				{
-					for(int c=minCharge; c<=maxCharge; c++)
-						specKeyList.add(new SpecKey(specIndex, c));
-				}
-				else if(charge > 0)
-				{
-					specKeyList.add(new SpecKey(specIndex, charge));
-				}
+				System.out.println("Error: negative precursor charge: " + precursor);
+				System.exit(-1);
 			}
-			prevSpecIndex = specIndex;
-			prevCharge = charge;
-			previousPrecursorMz = precursorMz;
 		}
 		return specKeyList;
 	}
@@ -153,5 +165,62 @@ public class SpecKey extends Pair<Integer, Integer> {
 		}
 		System.out.println("Size: " + list.size());
 	}
+	
+//	public static ArrayList<SpecKey> getFusedSpecKeyListOld(Iterator<Spectrum> itr, int minCharge, int maxCharge)
+//	{
+//		ArrayList<SpecKey> specKeyList = new ArrayList<SpecKey>();
+//		
+//		int prevSpecIndex = Integer.MIN_VALUE;
+//		int prevCharge = Integer.MIN_VALUE;
+//		float previousPrecursorMz = Float.MIN_VALUE;
+//		
+//		while(itr.hasNext())
+//		{
+//			Spectrum spec = itr.next();
+//			int specIndex = spec.getSpecIndex();
+//			int charge = spec.getCharge();
+//			float precursorMz = spec.getPrecursorPeak().getMz();
+//			if(spec.getActivationMethod() == null)
+//			{
+//				System.out.println("Error: activation method is not available: Scan=" + spec.getSpecIndex()+", PrecursorMz=" + precursorMz);
+//				System.exit(-1);
+//			}
+//			
+//			if(specIndex == prevSpecIndex+1 && charge == prevCharge && precursorMz == previousPrecursorMz)
+//			{
+//				if(charge == 0)
+//				{
+//					for(int i=0; i<=maxCharge-minCharge; i++)
+//						specKeyList.get(specKeyList.size()-1-i).addSpecIndex(specIndex);
+//				}
+//				else if(charge > 0)
+//				{
+//					specKeyList.get(specKeyList.size()-1).addSpecIndex(specIndex);
+//				}
+//			}
+//			else
+//			{
+//				if(charge == 0)
+//				{
+//					for(int c=minCharge; c<=maxCharge; c++)
+//					{
+//						SpecKey specKey = new SpecKey(specIndex, c);
+//						specKey.addSpecIndex(specIndex);
+//						specKeyList.add(specKey);
+//					}
+//				}
+//				else if(charge > 0)
+//				{
+//					SpecKey specKey = new SpecKey(specIndex, charge);
+//					specKey.addSpecIndex(specIndex);
+//					specKeyList.add(specKey);
+//				}
+//			}
+//			prevSpecIndex = specIndex;
+//			prevCharge = charge;
+//			previousPrecursorMz = precursorMz;
+//		}
+//		return specKeyList;
+//	}
 	
 }
