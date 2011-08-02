@@ -10,22 +10,25 @@ import parser.InsPecTParser;
 public class CountID {
 	public static void main(String argv[]) throws Exception
 	{
-		if(argv.length != 1 && argv.length != 2)
+		if(argv.length > 4)
 			printUsageAndExit();
 			
 		float threshold = 0.01f;
-		if(argv.length == 2)
+		if(argv.length >= 2)
 			threshold = Float.parseFloat(argv[1]);
-		countPeptide(argv[0], threshold);
+		String decoyPrefix = null;
+		if(argv.length == 3)
+			decoyPrefix = argv[2];
+		countPeptide(argv[0], threshold, decoyPrefix);
 	}
 	
 	public static void printUsageAndExit()
 	{
-		System.out.println("usage: java CountPeptide MSGFDBORInsPecTResult FDRThreshold [0/1] (0: PSMLevel, 1: PeptideLevel)");
+		System.out.println("usage: java CountPeptide MSGFDBORInsPecTResult [FDRThreshold] (0: PSMLevel, 1: PeptideLevel) [DecoyPrefix]");
 		System.exit(-1);
 	}
 	
-	public static void countPeptide(String fileName, float threshold) throws Exception
+	public static void countPeptide(String fileName, float threshold, String decoyPrefix) throws Exception
 	{
 		File tempFile = File.createTempFile("MSGFDB", "tempResult");
 		tempFile.deleteOnExit();
@@ -107,7 +110,7 @@ public class CountID {
 				pepCol,
 				null,
 				dbCol, 
-				"REV");
+				(decoyPrefix == null ? "REV" : decoyPrefix));
 
 		System.out.println("Score: " + scoreName);
 		System.out.println("Threshold: " + threshold);
