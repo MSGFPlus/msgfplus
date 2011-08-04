@@ -13,9 +13,9 @@ import parser.PSMList;
 public class CompareSearchResults {
 	public static void main(String argv[]) throws Exception
 	{
-		File inspect = new File("/home/sangtaekim/Test/Heck/inspectFDR.txt");
-		File msgfdb = new File("/home/sangtaekim/Test/Heck/msgfdbCIDTryp20.tsv");
-		compare(inspect, msgfdb);
+		if(argv.length != 2)
+			printUsageAndExit();
+		compare(new File(argv[0]), new File(argv[1]));
 	}
 	
 	public static void printUsageAndExit()

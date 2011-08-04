@@ -24,7 +24,7 @@ public class AnnotatedSpecGenerator {
 		File resultFile = null;
 		File specDir = null;
 		File outputFile = null;
-		int scanNumCol = -1;
+		int specIndexCol = -1;
 		int specFileCol = -1;
 		int peptideCol = -1;
 		int scoreCol = -1;
@@ -70,7 +70,7 @@ public class AnnotatedSpecGenerator {
 			{
 				if(i+1 >= argv.length)
 					printUsageAndExit("Illegal parameter: " + argv[i]);
-				scanNumCol = Integer.parseInt(argv[i+1]);
+				specIndexCol = Integer.parseInt(argv[i+1]);
 				i += 2;
 			}
      		else if(argv[i].equalsIgnoreCase("-f"))
@@ -142,7 +142,7 @@ public class AnnotatedSpecGenerator {
 			printUsageAndExit("-o outputFileName is missing");
 		if(specDir == null)
 			printUsageAndExit("-d specDir is missing");
-		if(scanNumCol < 0)
+		if(specIndexCol < 0)
 			printUsageAndExit("-n scanNumCol is missing");
 		if(specFileCol < 0)
 			printUsageAndExit("-f specFileCol is missing");
@@ -151,7 +151,7 @@ public class AnnotatedSpecGenerator {
 		if(scoreCol < 0)
 			printUsageAndExit("-s scoreCol 0/1 is missing");
 		
-		generateAnnotatedSpectra(resultFile, specDir, outputFile, scanNumCol, specFileCol, peptideCol, scoreCol, isGreaterBetter,
+		generateAnnotatedSpectra(resultFile, specDir, outputFile, specIndexCol, specFileCol, peptideCol, scoreCol, isGreaterBetter,
 				threshold, uniquePeptide, hasHeader);
 		
 	}
@@ -164,7 +164,7 @@ public class AnnotatedSpecGenerator {
 				"\t-d specDir\n" +
 				"\t-o outputFileName\n" +
 				"\t-f specFileCol\n" +
-				"\t-n scanNumCol\n" +
+				"\t-n specIndexCol\n" +
 				"\t-p peptideCol\n" +
 				"\t-s scoreCol 0/1 (0: smaller is better, 1: larger is better)\n" +
 				"\t[-t threshold] \n" +
@@ -198,7 +198,8 @@ public class AnnotatedSpecGenerator {
 			if(token.length <= scanNumCol || token.length <= specFileCol || token.length <= pepCol || token.length <= scoreCol)
 				continue;
 			String pep = token[pepCol];
-			if(pep.matches("[A-Z]\\.[A-Z]+\\.[A-Z]"))
+//			if(pep.matches("[A-Z]\\..+\\.[A-Z]"))
+			if(pep.matches(".\\..+\\.."))
 				pep = pep.substring(pep.indexOf('.')+1, pep.lastIndexOf('.'));
 			float score = Float.parseFloat(token[scoreCol]);
 			
@@ -252,7 +253,8 @@ public class AnnotatedSpecGenerator {
 			}
 			
 			String pep = token[pepCol];
-			if(pep.matches(".*\\.[A-Z]+\\..*"))
+//			if(pep.matches(".*\\.[A-Z]+\\..*"))
+			if(pep.matches(".\\..+\\.."))
 				pep = pep.substring(pep.indexOf('.')+1, pep.lastIndexOf('.'));
 			int scanNum = Integer.parseInt(token[scanNumCol]);
 			
@@ -262,7 +264,8 @@ public class AnnotatedSpecGenerator {
 				System.out.println(specFileName+":"+scanNum+" is not available!");
 				System.exit(-1);
 			}
-			spec.setAnnotation(new Peptide(pep));
+			Peptide peptide = new Peptide(pep);
+			spec.setAnnotation(peptide);
 			container.add(spec);
 		}
 		container.outputMgfFile(outputFile.getPath());

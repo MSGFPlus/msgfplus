@@ -66,7 +66,6 @@ public class CandidatePeptideGrid {
 	
 	private void initializeNTerm()
 	{
-		//TODO: deal with non aa-specific N-term mods 
 		for(int i=0; i<MAX_NUM_VARIATIONS_PER_PEPTIDE; i++)
 		{
 			nominalPRM[i][0] = 0;

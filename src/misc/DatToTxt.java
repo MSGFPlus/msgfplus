@@ -60,7 +60,7 @@ public class DatToTxt {
 				continue;
 			else
 				titleSet.add(psm.getTitle());
-			out.print(psm.getTitle()+"\t"+psm.getCharge()+"\t"+psm.getPrecedingResidue()+"."+psm.getPeptide()+"."+psm.getSucceedingResidue());
+			out.print(psm.getTitle()+"\t"+psm.getCharge()+"\t"+psm.getPrecedingResidue()+"."+psm.getPeptideStr()+"."+psm.getSucceedingResidue());
 			out.print("\t"+psm.getRawScore()+"\t"+psm.getProtein());
 			out.println();
 		}

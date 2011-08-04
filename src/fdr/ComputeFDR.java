@@ -14,6 +14,7 @@ public class ComputeFDR {
 		// required
 		File targetFile = null;
 		int scoreCol = -1;
+		int specFileCol = -1;
 		
 		// optional
 		File outputFile = null;
@@ -22,7 +23,7 @@ public class ComputeFDR {
 		File decoyFile = null;
 		String delimeter = "\t";
 		int pepCol = -1;
-		int scanNumCol = -1;
+		int specIndexCol = -1;
 		boolean isConcatenated = false;
 		boolean includeDecoy = false;
 		
@@ -123,7 +124,19 @@ public class ComputeFDR {
 				if(i+1 >= argv.length)
 					printUsageAndExit("Illegal parameter: " + argv[i]);
 				try {
-					scanNumCol = Integer.parseInt(argv[i+1]);
+					specIndexCol = Integer.parseInt(argv[i+1]);
+				} catch (NumberFormatException e)
+				{
+					printUsageAndExit("Illigal pepCol: " + argv[i+1]);
+				}
+				i+=2;
+			}
+			else if(argv[i].equalsIgnoreCase("-i"))
+			{
+				if(i+1 >= argv.length)
+					printUsageAndExit("Illegal parameter: " + argv[i]);
+				try {
+					specFileCol = Integer.parseInt(argv[i+1]);
 				} catch (NumberFormatException e)
 				{
 					printUsageAndExit("Illigal pepCol: " + argv[i+1]);
@@ -180,26 +193,29 @@ public class ComputeFDR {
 		
 		if(targetFile == null)
 			printUsageAndExit("Target is missing!");
+		if(specFileCol < 0)
+			printUsageAndExit("specFileCol is missing or illegal!");
 		if(scoreCol < 0)
 			printUsageAndExit("scoreCol is missing or illegal!");
 		if(pepCol < 0)
 			printUsageAndExit("pepCol is missing or illegal!");
-		if(scanNumCol < 0)
-			printUsageAndExit("scanNumCol is missing or illegal!");
+		if(specIndexCol < 0)
+			printUsageAndExit("specIndexCol is missing or illegal!");
 		
 		computeFDR(targetFile, decoyFile, 
 				scoreCol, isGreaterBetter, 
-				delimeter, scanNumCol, pepCol, reqStrList, 
+				delimeter, specFileCol, specIndexCol, pepCol, reqStrList, 
 				isConcatenated, includeDecoy, hasHeader, dbCol, decoyPrefix, fdrThreshold, pepFDRThreshold, outputFile);
 	}
 	
 	public static void printUsageAndExit(String message)
 	{
 		System.err.println(message);
-		System.out.print("usage: java -jar ComputeFDR \n" +
+		System.out.print("usage: java -jar ComputeFDR 08/03/2011\n" +
 				"\t -f resuleFileName protCol decoyPrefix or -f targetFileName decoyFileName\n" +
-				"\t -n scanNumCol (the scanNum comlun number)\n" +
-				"\t -p pepCol (the peptide column number)\n" +
+				"\t -i specFileCol (SpecFile comlun number)\n" +
+				"\t -n specIndexCol (specIndex comlun number)\n" +
+				"\t -p pepCol (peptide column number)\n" +
 				"\t -s scoreCol 0/1 (0: smaller better, 1: greater better)\n" +
 				"\t [-o outputFileName (default: stdout)]\n" +
 				"\t [-delim delimeter] (default: \\t)\n" +
@@ -213,7 +229,7 @@ public class ComputeFDR {
 	}
 
 	public static void computeFDR(File targetFile, File decoyFile, int scoreCol, boolean isGreaterBetter, String delimeter, 
-			int scanNumCol, int pepCol, ArrayList<Pair<Integer,ArrayList<String>>> reqStrList, boolean isConcatenated, boolean includeDecoy, 
+			int specFileCol, int specIndexCol, int pepCol, ArrayList<Pair<Integer,ArrayList<String>>> reqStrList, boolean isConcatenated, boolean includeDecoy, 
 			boolean hasHeader, int dbCol, String decoyPrefix,
 			float fdrThreshold, float pepFDRThreshold, File outputFile)
 	{
@@ -226,7 +242,8 @@ public class ComputeFDR {
 					hasHeader,
 					scoreCol, 
 					isGreaterBetter, 
-					scanNumCol, 
+					specFileCol,
+					specIndexCol, 
 					pepCol,
 					reqStrList,
 					dbCol, decoyPrefix);
@@ -240,7 +257,8 @@ public class ComputeFDR {
 					hasHeader,
 					scoreCol, 
 					isGreaterBetter, 
-					scanNumCol, 
+					specFileCol,
+					specIndexCol, 
 					pepCol,
 					reqStrList
 					);

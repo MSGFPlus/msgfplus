@@ -42,6 +42,7 @@ import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
+	public static final String MSGFDB_VERSION = "";
 	public static void main(String argv[])
 	{
 		long time = System.currentTimeMillis();
@@ -771,12 +772,13 @@ public class MSGFDB {
 				gen.writeResults(out, false);
 				out.flush();
 				out.close();
+				int specFileCol = 0;
 				int specIndexCol = 1;
 				int pepCol = 7;
 				int dbCol = 8;
 				int scoreCol = 11;
 				fdr.ComputeFDR.computeFDR(tempFile, null, scoreCol, false, "\t", 
-						specIndexCol, pepCol, null, true, true, 
+						specFileCol, specIndexCol, pepCol, null, true, true, 
 						true, dbCol, "REV_",
 						1, 1, outputFile);
 				
@@ -1000,12 +1002,13 @@ public class MSGFDB {
 				gen.writeResults(out, false);
 				out.flush();
 				out.close();
+				int specFileCol = 0;
 				int specIndexCol = 1;
 				int pepCol = 7;
 				int dbCol = 8;
 				int scoreCol = 11;
 				fdr.ComputeFDR.computeFDR(tempFile, null, scoreCol, false, "\t", 
-						specIndexCol, pepCol, null, true, true, 
+						specFileCol, specIndexCol, pepCol, null, true, true, 
 						true, dbCol, "REV_",
 						1, 1, outputFile);
 				

@@ -107,8 +107,8 @@ public class PSMList<T extends PSM> extends ArrayList<T> {
 		Hashtable<String, SpectrumAccessorBySpecIndex> fileList = new Hashtable<String, SpectrumAccessorBySpecIndex>();
 		for(PSM psm : this)
 		{
-			if(psm.getPeptide().isModified())	// modified peptides are ignored
-				continue;
+//			if(psm.getPeptide().isModified())	// modified peptides are ignored
+//				continue;
 			if(psm.getProtein().contains("DECOY"))
 				continue;
 			Float score = psm.getScore(scoreName);

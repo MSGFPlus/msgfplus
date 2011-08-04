@@ -73,7 +73,9 @@ public class Chores {
 //		aaSet.registerEnzyme(Enzyme.TRYPSIN);
 //		System.out.println(aaSet.getNeighboringAACleavageCredit()+" "+aaSet.getNeighboringAACleavagePenalty());
 //		System.out.println(aaSet.getPeptideCleavageCredit()+" "+aaSet.getPeptideCleavagePenalty());
-		testSpecKey();
+//		testSpecKey();
+		String pep = "-.asdf.AA";
+		System.out.println(pep.matches(".\\..+\\.."));
 		
 	}
 

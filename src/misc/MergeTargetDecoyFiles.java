@@ -7,14 +7,21 @@ import parser.BufferedLineReader;
 public class MergeTargetDecoyFiles {
 	public static void main(String argv[]) throws Exception
 	{
-		if(argv.length != 2)
+		boolean isMascot = false;
+		if(argv.length != 2 && argv.length != 3)
 			printUsageAndExit();
-		mergeSearchResults(argv[0], argv[1]);
+		if(argv.length == 3 && argv[2].equals("1"))
+			isMascot = true;
+			
+		if(!isMascot)
+			mergeSearchResults(argv[0], argv[1]);
+		else
+			mergeMascotSearchResults(argv[0], argv[1]);
 	}
 	
 	public static void printUsageAndExit()
 	{
-		System.out.println("usage: java MergeTargetDecoyFiles targetFile decoyFile");
+		System.out.println("usage: java MergeTargetDecoyFiles targetFile decoyFile [0/1] (0: MSGFDB, 1: Mascot)");
 		System.exit(-1);
 	}
 	
@@ -85,4 +92,64 @@ public class MergeTargetDecoyFiles {
 		
 		in.close();
 	}
+	
+	public static void mergeMascotSearchResults(String targetResults, String decoyResults) throws Exception
+	{
+		HashMap<String,String> resultMap = new HashMap<String,String>();
+		String s;
+		BufferedLineReader in = new BufferedLineReader(targetResults);
+		
+		int scoreCol = -1;
+		int titleCol = -1;
+		String headerStr = in.readLine();	// header
+		String[] header = headerStr.split("\t");
+		for(int i=0; i<header.length; i++)
+		{
+			if(header[i].equalsIgnoreCase("MascotScore"))
+				scoreCol = i;
+			else if(header[i].contains("Title"))
+				titleCol = i;
+		}
+		
+		while((s=in.readLine()) != null)
+		{
+			String[] token = s.split("\t");
+			if(token.length < titleCol || token.length < scoreCol)
+				continue;
+			String title = token[titleCol];
+			if(resultMap.get(title) == null)
+				resultMap.put(title, s);
+		}
+		in.close();
+		
+		in = new BufferedLineReader(decoyResults);
+		// header
+		System.out.println(in.readLine());
+		while((s=in.readLine()) != null)
+		{
+			String[] token = s.split("\t");
+			if(token.length < titleCol || token.length < scoreCol)
+				continue;
+			String title = token[titleCol];
+			
+			String prevResult = resultMap.get(title);
+			if(prevResult == null)
+			{
+				resultMap.put(title, s);
+			}
+			else
+			{
+				float prevScore = Float.parseFloat(prevResult.split("\t")[scoreCol]);
+				float curScore = Float.parseFloat(token[scoreCol]);
+				if(curScore > prevScore)
+					resultMap.put(title, s);
+			}
+		}	
+		
+		// results
+		for(String result : resultMap.values())
+			System.out.println(result);
+		
+		in.close();
+	}	
 }

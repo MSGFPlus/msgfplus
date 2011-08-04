@@ -13,29 +13,14 @@ import java.util.Map.Entry;
 
 public class PSMSet {
 
-	public static void main(String argv[]) throws Exception
-	{
-		File file = new File("/home/sangtaekim/Research/ToolDistribution/Test/inspect.out");
-		ArrayList<Pair<Integer,ArrayList<String>>> reqStrList = new ArrayList<Pair<Integer,ArrayList<String>>>();
-		ArrayList<String> charges = new ArrayList<String>();
-		charges.add("1");
-		charges.add("3");
-		ArrayList<String> peps = new ArrayList<String>();
-		peps.add("EE");
-		reqStrList.add(new Pair<Integer,ArrayList<String>>(2,peps));
-		reqStrList.add(new Pair<Integer,ArrayList<String>>(4,charges));
-		PSMSet psmSet = new PSMSet(file, "\t", true, 14, true, 1, 2, reqStrList);
-		psmSet.read();
-		psmSet.printPeptideScoreTable();
-	}
-
 	// required
 	File file;
 	String delimeter;
 	boolean hasHeader;
 	int scoreCol;
 	boolean isGreaterBetter;
-	int scanNumCol;
+	int specFileCol;
+	int specIndexCol;
 	int pepCol;
 	ArrayList<Pair<Integer,ArrayList<String>>> reqStrList;
 
@@ -46,7 +31,8 @@ public class PSMSet {
 
 	public PSMSet(File file, String delimeter, boolean hasHeader,
 			int scoreCol, boolean isGreaterBetter, 
-			int scanNumCol, 
+			int specFileCol,
+			int specIndexCol, 
 			int pepCol,
 			ArrayList<Pair<Integer,ArrayList<String>>> reqStrList
 	)
@@ -56,7 +42,8 @@ public class PSMSet {
 		this.hasHeader = hasHeader;
 		this.scoreCol = scoreCol;
 		this.isGreaterBetter = isGreaterBetter;
-		this.scanNumCol = scanNumCol;
+		this.specFileCol = specFileCol;
+		this.specIndexCol = specIndexCol;
 		this.pepCol = pepCol;
 		this.reqStrList = reqStrList;
 		dbCol = -1;
@@ -121,8 +108,7 @@ public class PSMSet {
 			}
 			
 			String s;
-			HashSet<String> scanNumSet = new HashSet<String>();
-//			String prevScanNum = "asdfasfdasdf";	// randomString
+			HashSet<String> specKeySet = new HashSet<String>();
 
 			while((s=in.readLine()) != null)
 			{
@@ -134,21 +120,14 @@ public class PSMSet {
 				if(scoreCol >= token.length || pepCol >= token.length)
 					continue;
 
-				// for debug
-//				int charge = Integer.parseInt(token[token.length-4]);
-//				if(charge < 4)
-//					continue;
-				
-				String scanNum = token[scanNumCol];
+				String specFile = token[specFileCol];
+				String specIndex = token[specIndexCol];
+				String specKey = specFile+":"+specIndex;
 
-//				if(scanNum.equalsIgnoreCase(prevScanNum))
-//					continue;
-//				else	// new scan
-//					prevScanNum = scanNum;
-				if(scanNumSet.contains(scanNum))
+				if(specKeySet.contains(specKey))
 					continue;
 				else
-					scanNumSet.add(scanNum);
+					specKeySet.add(specKey);
 
 				if(dbCol >= 0)
 				{
@@ -266,4 +245,20 @@ public class PSMSet {
 		pep = pep.toUpperCase();
 		return pep;
 	}
+	
+	public static void main(String argv[]) throws Exception
+	{
+		File file = new File("/home/sangtaekim/Research/ToolDistribution/Test/inspect.out");
+		ArrayList<Pair<Integer,ArrayList<String>>> reqStrList = new ArrayList<Pair<Integer,ArrayList<String>>>();
+		ArrayList<String> charges = new ArrayList<String>();
+		charges.add("1");
+		charges.add("3");
+		ArrayList<String> peps = new ArrayList<String>();
+		peps.add("EE");
+		reqStrList.add(new Pair<Integer,ArrayList<String>>(2,peps));
+		reqStrList.add(new Pair<Integer,ArrayList<String>>(4,charges));
+		PSMSet psmSet = new PSMSet(file, "\t", true, 14, true, 0, 1, 2, reqStrList);
+		psmSet.read();
+		psmSet.printPeptideScoreTable();
+	}	
 }

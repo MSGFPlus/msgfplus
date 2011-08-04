@@ -10,7 +10,7 @@ import parser.InsPecTParser;
 public class CountID {
 	public static void main(String argv[]) throws Exception
 	{
-		if(argv.length > 4)
+		if(argv.length > 4 || argv.length == 0)
 			printUsageAndExit();
 			
 		float threshold = 0.01f;
@@ -33,6 +33,7 @@ public class CountID {
 		File tempFile = File.createTempFile("MSGFDB", "tempResult");
 		tempFile.deleteOnExit();
 		
+		int specFileColumn = -1;
 		int specIndexColumn = -1;
 		int scanNumColumn = -1;
 		int annotationColumn = -1;
@@ -56,6 +57,8 @@ public class CountID {
 				fScoreColumn = i;
 			else if(label[i].equalsIgnoreCase(InsPecTParser.MQ_SCORE))
 				mqScoreColumn = i;
+			else if(label[i].equalsIgnoreCase(InsPecTParser.SPEC_FILE) || label[i].equalsIgnoreCase("#SpecFile"))
+				specFileColumn = i;
 			else if(label[i].equalsIgnoreCase(InsPecTParser.SPEC_INDEX))
 				specIndexColumn = i;
 			else if(label[i].equalsIgnoreCase(InsPecTParser.SCAN_NUM))
@@ -65,7 +68,7 @@ public class CountID {
 		
 		int scoreCol = -1;
 		String scoreName = null;
-		boolean isGreaterBetter;
+		boolean isGreaterBetter = false;
 		if(specProbColumn >= 0)
 		{
 			scoreCol = specProbColumn;
@@ -87,7 +90,17 @@ public class CountID {
 		else
 		{
 			System.out.println("No score!");
-			isGreaterBetter = true;
+			System.exit(-1);
+		}
+		
+		int specFileCol = -1;
+		if(specFileColumn >= 0)
+		{
+			specFileCol = specFileColumn;
+		}
+		else
+		{
+			System.out.println("No #SpectrumFile or #SpecFile!");
 			System.exit(-1);
 		}
 		
@@ -106,6 +119,7 @@ public class CountID {
 				true,
 				scoreCol, 
 				isGreaterBetter, 
+				specFileCol,
 				specIndexCol, 
 				pepCol,
 				null,

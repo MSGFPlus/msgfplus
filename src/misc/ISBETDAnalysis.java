@@ -33,8 +33,8 @@ public class ISBETDAnalysis {
 		System.out.println("\tProtein");
 		for(PSM psm : psmList)
 		{
-			if(psm.getPeptide().isModified())
-				continue;
+//			if(psm.getPeptide().isModified())
+//				continue;
 			if(!psm.getProtein().contains("DECOY"))
 			{
 				System.out.print(psm.getSpecFileName()+"\t"+psm.getScanNum()+"\t"+psm.getCharge()+"\t"+

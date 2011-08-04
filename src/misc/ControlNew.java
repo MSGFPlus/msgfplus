@@ -105,7 +105,7 @@ public class ControlNew {
 		PSMList<PSM> psmList = PepXMLParser.parse(pepProphetXML.getPath());
 		for(PSM psm : psmList)
 		{
-			if(psm.getPeptide() == null)
+			if(psm.getPeptideStr() == null)
 				continue;
 			boolean controlProtein = false;
 			for(String keyword : controlProteins)

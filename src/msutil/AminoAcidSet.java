@@ -1218,7 +1218,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	public static void main(String argv[])
 	{
 //		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(System.getProperty("user.home")+"/Research/Data/ABRF/StudyFiles/Mods.txt");
-		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile("/home/sangtaekim/Test/CCMS/3297b97db35241ba8547906b22377869/parameters/params.xml");
+		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile("/home/sangtaekim/Test/CCMS/88e6b5277fec4f59bcc4038910e428a6/parameters/params.xml");
 //		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile("/home/sangtaekim/Research/ToolDistribution/TempTest/params.xml");
 //		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
 		aaSet.printAASet();
