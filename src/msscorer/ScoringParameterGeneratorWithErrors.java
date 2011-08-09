@@ -24,7 +24,6 @@ import msutil.Pair;
 import msutil.Peak;
 import msutil.Peptide;
 import msutil.SpectraContainer;
-import msutil.SpectraIterator;
 import msutil.Spectrum;
 import msutil.IonType.PrefixIon;
 import parser.MgfSpectrumParser;
@@ -58,7 +57,8 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		boolean isText = false;
 		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
 		int numSpecsPerPeptide = 1;
-		int errorScalingFactor = 10;
+		int errorScalingFactor = 0;
+		boolean considerPhosLoss = false;
 		
 		ActivationMethod activationMethod = null;
 		InstrumentType instType = null;
@@ -172,9 +172,16 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 					enzyme = Enzyme.ArgC;
 				else if(argv[i+1].equalsIgnoreCase("7"))
 					enzyme = Enzyme.AspN;
+				else if(argv[i+1].equalsIgnoreCase("8"))
+					enzyme = Enzyme.ALP;
 				else
 					printUsageAndExit("Illegal enzyme: " + argv[i+1]);
 			}			
+			else if(argv[i].equalsIgnoreCase("-phos"))	// H3PO4 loss
+			{
+				if(argv[i+1].equalsIgnoreCase("1"))
+					considerPhosLoss = true;
+			}
 			else
 				printUsageAndExit("Illegal parameters!");
 		}
@@ -187,7 +194,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		if(instType == null)
 			printUsageAndExit("missing instrumentType!");
 		
-		generateParameters(specFile, activationMethod, instType, enzyme, numSpecsPerPeptide, errorScalingFactor, outputFile, aaSet, isText, false);
+		generateParameters(specFile, activationMethod, instType, enzyme, numSpecsPerPeptide, errorScalingFactor, considerPhosLoss, outputFile, aaSet, isText, false);
 	}
 	
 	public static void printUsageAndExit(String message)
@@ -198,10 +205,11 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 				"\t-o outputFileName (e.g. CID_Tryp.param)\n" +
 				"\t-m FragmentationMethodID (1: CID, 2: ETD, 3: HCD)\n" +
 				"\t-inst InstrumentID (0: Low-res LCQ/LTQ, 1: TOF , 2: High-res LTQ)\n" +
-				"\t-e EnzymeID (0: No enzyme, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N)\n" +
+				"\t-e EnzymeID (0: No enzyme, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N, 8: aLP)\n" +
+				"\t[-phos 0/1] (0: Don't consider H3PO4 loss (default), 1: Consider H3PO4 loss)\n" +
 				"\t[-fixMod 0/1/2] (0: NoCysteineProtection, 1: CarbamidomethyC (default), 2: CarboxymethylC)\n" +
 				"\t[-pep numPeptidesPerSpec]  (default: 1)\n" +
-				"\t[-err errorScalingFactor]  (default: 10)"
+				"\t[-err errorScalingFactor]  (default: 0)"
 		);
 		System.exit(0);
 	}
@@ -213,6 +221,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			Enzyme enzyme,
 			int numSpecsPerPeptide, 
 			int errorScalingFactor,
+			boolean considerPhosLoss,
 			File outputFile, 
 			AminoAcidSet aaSet, 
 			boolean isText, 
@@ -242,7 +251,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			for(Spectrum spec : specList)
 				specContOnePerPep.add(spec);
 		
-		ScoringParameterGeneratorWithErrors gen = new ScoringParameterGeneratorWithErrors(specContOnePerPep, activationMethod, instType, enzyme);
+		ScoringParameterGeneratorWithErrors gen = new ScoringParameterGeneratorWithErrors(specContOnePerPep, activationMethod, instType, enzyme, considerPhosLoss);
 		// set up the tolerance
 		gen.tolerance(new Tolerance(0.5f));
 		
@@ -293,10 +302,12 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 	
 	// Required
 	private SpectraContainer specContainer;
+	private final boolean considerPhosLoss;
 	
-	public ScoringParameterGeneratorWithErrors(SpectraContainer specContainer, ActivationMethod actMethod, InstrumentType instType, Enzyme enzyme)
+	public ScoringParameterGeneratorWithErrors(SpectraContainer specContainer, ActivationMethod actMethod, InstrumentType instType, Enzyme enzyme, boolean considerPhosLoss)
 	{
 		this.specContainer = specContainer;
+		this.considerPhosLoss = considerPhosLoss;
 		super.activationMethod = actMethod;
 		super.instType = instType;
 		super.enzyme = enzyme;
@@ -497,7 +508,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			ArrayList<FragmentOffsetFrequency> signalFragmentOffsetFrequencyList = new ArrayList<FragmentOffsetFrequency>();
 			
 			int seg = partition.getSegNum();
-			IonType[] allIonTypes = IonType.getAllKnownIonTypes(Math.min(charge, 4), true).toArray(new IonType[0]);
+			IonType[] allIonTypes = IonType.getAllKnownIonTypes(Math.min(charge, 4), true, considerPhosLoss).toArray(new IonType[0]);
 			IonProbability probGen = new IonProbability(
 					curPartContainer.iterator(), 
 					allIonTypes,

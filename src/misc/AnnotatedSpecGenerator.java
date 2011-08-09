@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 
+import msutil.Peak;
 import msutil.Peptide;
 import msutil.SpectraContainer;
 import msutil.SpectraMap;
@@ -27,6 +28,7 @@ public class AnnotatedSpecGenerator {
 		int specIndexCol = -1;
 		int specFileCol = -1;
 		int peptideCol = -1;
+		int chargeCol = -1;
 		int scoreCol = -1;
 		boolean isGreaterBetter = false;
 		float threshold;
@@ -85,6 +87,13 @@ public class AnnotatedSpecGenerator {
 				if(i+1 >= argv.length)
 					printUsageAndExit("Illegal parameter: " + argv[i]);
 				peptideCol = Integer.parseInt(argv[i+1]);
+				i += 2;
+			}
+     		else if(argv[i].equalsIgnoreCase("-c"))
+			{
+				if(i+1 >= argv.length)
+					printUsageAndExit("Illegal parameter: " + argv[i]);
+				chargeCol = Integer.parseInt(argv[i+1]);
 				i += 2;
 			}
      		else if(argv[i].equalsIgnoreCase("-s"))
@@ -148,10 +157,12 @@ public class AnnotatedSpecGenerator {
 			printUsageAndExit("-f specFileCol is missing");
 		if(peptideCol < 0)
 			printUsageAndExit("-p peptideCol is missing");
+		if(chargeCol < 0)
+			printUsageAndExit("-c chargeCol is missing");
 		if(scoreCol < 0)
 			printUsageAndExit("-s scoreCol 0/1 is missing");
 		
-		generateAnnotatedSpectra(resultFile, specDir, outputFile, specIndexCol, specFileCol, peptideCol, scoreCol, isGreaterBetter,
+		generateAnnotatedSpectra(resultFile, specDir, outputFile, specIndexCol, specFileCol, peptideCol, chargeCol, scoreCol, isGreaterBetter,
 				threshold, uniquePeptide, hasHeader);
 		
 	}
@@ -166,6 +177,7 @@ public class AnnotatedSpecGenerator {
 				"\t-f specFileCol\n" +
 				"\t-n specIndexCol\n" +
 				"\t-p peptideCol\n" +
+				"\t-c chargeCol\n" +
 				"\t-s scoreCol 0/1 (0: smaller is better, 1: larger is better)\n" +
 				"\t[-t threshold] \n" +
 				"\t[-u 0/1] (0: one spectrum per peptide, 1: no restriction (default))\n" +
@@ -175,7 +187,7 @@ public class AnnotatedSpecGenerator {
 		System.exit(-1);
 	}
 	
-	public static void generateAnnotatedSpectra(File resultFile, File specDir, File outputFile, int scanNumCol, int specFileCol, int pepCol,
+	public static void generateAnnotatedSpectra(File resultFile, File specDir, File outputFile, int specIndexCol, int specFileCol, int pepCol, int chargeCol,
 			int scoreCol, boolean isGreaterBetter, float threshold, boolean uniquePeptide, boolean hasHeader) throws Exception
 	{
 		String s;
@@ -190,12 +202,12 @@ public class AnnotatedSpecGenerator {
 		
 		BufferedLineReader in = new BufferedLineReader(resultFile.getPath());
 		if(hasHeader)
-			out.println(in.readLine());
+			in.readLine();
 		
 		while((s=in.readLine()) != null)
 		{
 			String[] token = s.split("\t");
-			if(token.length <= scanNumCol || token.length <= specFileCol || token.length <= pepCol || token.length <= scoreCol)
+			if(token.length <= specIndexCol || token.length <= specFileCol || token.length <= pepCol || token.length <= scoreCol)
 				continue;
 			String pep = token[pepCol];
 //			if(pep.matches("[A-Z]\\..+\\.[A-Z]"))
@@ -229,7 +241,6 @@ public class AnnotatedSpecGenerator {
 			itr = resultList.iterator();
 
 		HashMap<String,SpectrumAccessorBySpecIndex> specAccessorMap = new HashMap<String,SpectrumAccessorBySpecIndex>(); 
-		SpectraContainer container = new SpectraContainer();
 		while(itr.hasNext())
 		{
 			String str = itr.next();
@@ -256,19 +267,29 @@ public class AnnotatedSpecGenerator {
 //			if(pep.matches(".*\\.[A-Z]+\\..*"))
 			if(pep.matches(".\\..+\\.."))
 				pep = pep.substring(pep.indexOf('.')+1, pep.lastIndexOf('.'));
-			int scanNum = Integer.parseInt(token[scanNumCol]);
-			
-			Spectrum spec = specMap.getSpectrumBySpecIndex(scanNum);
+			int specIndex = Integer.parseInt(token[specIndexCol]);
+			int charge = Integer.parseInt(token[chargeCol]);
+			Spectrum spec = specMap.getSpectrumBySpecIndex(specIndex);
 			if(spec == null)
 			{
-				System.out.println(specFileName+":"+scanNum+" is not available!");
+				System.out.println(specFileName+":"+specIndex+" is not available!");
 				System.exit(-1);
 			}
-			Peptide peptide = new Peptide(pep);
-			spec.setAnnotation(peptide);
-			container.add(spec);
+			
+			out.println("BEGIN IONS");
+			out.println("TITLE=" + specFileName+":"+specIndex);
+			out.println("SEQ=" + pep);
+			float precursorMz = spec.getPrecursorPeak().getMz();
+			out.println("PEPMASS=" + precursorMz);
+			if(spec.getScanNum() > 0)
+			out.println("SCANS=" + spec.getScanNum());
+			out.println("CHARGE=" + charge+ (charge>0 ? "+" : ""));
+			for(Peak p : spec)
+				if(p.getIntensity() > 0)
+					out.println(p.getMz() + "\t" + p.getIntensity());
+			out.println("END IONS");
 		}
-		container.outputMgfFile(outputFile.getPath());
+		out.close();
 		System.out.println("Done");		
 	}
 	

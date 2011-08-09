@@ -332,7 +332,7 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 		
 		// process neighboring amino acid
 		ScoreDist finalDist;
-		if(enzyme != null)
+		if(enzyme != null && enzyme.getResidues() != null)
 		{
 			int neighboringAACleavageCredit = graph.getAASet().getNeighboringAACleavageCredit();
 			int neighboringAACleavagePenalty = graph.getAASet().getNeighboringAACleavagePenalty();

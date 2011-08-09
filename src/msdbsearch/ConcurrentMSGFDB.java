@@ -3,7 +3,6 @@ package msdbsearch;
 import msgf.MSGFDBResultGenerator;
 import msutil.AminoAcidSet;
 import msutil.Enzyme;
-import suffixarray.SuffixArraySequence;
 
 public class ConcurrentMSGFDB {
 	public static class PreProcessSpectra implements Runnable {

@@ -50,12 +50,13 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	private boolean containsModification;	// true if this contains any variable or terminal (fixed or variable) modification
 	private boolean containsNTermModification;	// true if this contains any (fixed or variable) modification specific to N-terminus
 	private boolean containsCTermModification;	// true if this contains any (fixed or variable) modification specific to N-terminus
+	private boolean containsPhosphorylation;	// true if this contains phosphorylation
 	
 	private HashSet<Character> modResidueSet = new HashSet<Character>();	// set of symbols used for residues
 	private char nextResidue;
 	
 	// for enzyme
-	private ArrayList<AminoAcid> enzymeAAList;
+//	private ArrayList<AminoAcid> enzymeAAList;
 	private int neighboringAACleavageCredit = 0;
 	private int neighboringAACleavagePenalty = 0;
 	private int peptideCleavageCredit = 0;
@@ -104,10 +105,10 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		return aaListMap.get(Location.Protein_N_Term);
 	}
 	
-	public ArrayList<AminoAcid> getEnzymeAAList()
-	{
-		return enzymeAAList;
-	}
+//	public ArrayList<AminoAcid> getEnzymeAAList()
+//	{
+//		return enzymeAAList;
+//	}
 	
 	/**
 	 * Returns the iterator of anywhere amino acids 
@@ -270,26 +271,15 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	public boolean containsModification()		{ return this.containsModification; }
 	public boolean containsNTermModification()	{ return this.containsNTermModification; }
 	public boolean containsCTermModification()	{ return this.containsCTermModification; }
+	public boolean containsPhosphorylation()	{ return this.containsPhosphorylation; }
 	
 	public char getMaxResidue()	{ return nextResidue; }
 	
 	public void registerEnzyme(Enzyme enzyme)
 	{
-		if(enzyme == null)
+		if(enzyme == null || enzyme.getResidues() == null || 
+				enzyme.getPeptideCleavageEfficiency() == 0 || enzyme.getNeighboringAACleavageEffiency() == 0)
 			return;
-		enzymeAAList = new ArrayList<AminoAcid>();
-		
-		ArrayList<AminoAcid> aaList;
-		if(enzyme.isCTerm())
-			aaList = this.getAAList(Location.C_Term);
-		else
-			aaList = this.getAAList(Location.N_Term);
-		
-		for(AminoAcid aa : aaList)
-		{
-			if(enzyme.isCleavable(aa))
-				enzymeAAList.add(aa);
-		}
 		
 		probCleavageSites = 0;
 		for(char residue : enzyme.getResidues())
@@ -303,9 +293,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			probCleavageSites += aa.getProbability();
 		}
 		
-		if(probCleavageSites == 0)
+		if(probCleavageSites == 0 || probCleavageSites == 1)
 		{
-			System.err.println("Probability of enzyme residues must be positive!");
+			System.err.println("Probability of enzyme residues must be in (0,1)!");
 			System.exit(-1);
 		}
 		
@@ -417,6 +407,8 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 				this.containsCTermModification = true;
 			if(location != Location.Anywhere || !mod.isFixedModification())
 				this.containsModification = true;
+			if(mod.getModification().getName().equalsIgnoreCase("phosphorylation"))
+				this.containsPhosphorylation = true;
 		}
 	}
 

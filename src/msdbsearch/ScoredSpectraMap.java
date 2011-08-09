@@ -23,6 +23,7 @@ import msutil.ActivationMethod;
 import msutil.Composition;
 import msutil.Enzyme;
 import msutil.InstrumentType;
+import msutil.Modification;
 import msutil.SpecKey;
 import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
@@ -121,16 +122,17 @@ public class ScoredSpectraMap {
 		ActivationMethod activationMethod = specDataType.getActivationMethod();
 		InstrumentType instType = specDataType.getInstrumentType();
 		Enzyme enzyme = specDataType.getEnzyme();
+		Modification mod = specDataType.getModification();
 		
 		if(activationMethod != null && activationMethod != ActivationMethod.FUSION)
-			scorer = NewScorerFactory.get(activationMethod, instType, enzyme);
+			scorer = NewScorerFactory.get(activationMethod, instType, enzyme, mod);
 		
 		for(SpecKey specKey : specKeyList.subList(fromIndex, toIndex))
 		{
 			int specIndex = specKey.getSpecIndex();
 			Spectrum spec = specMap.getSpectrumBySpecIndex(specIndex);
 			if(activationMethod == null || activationMethod == ActivationMethod.FUSION)
-				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme);
+				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, mod);
 			
 			int charge = specKey.getCharge();
 			spec.setCharge(charge);
@@ -151,6 +153,7 @@ public class ScoredSpectraMap {
 	{
 		InstrumentType instType = specDataType.getInstrumentType();
 		Enzyme enzyme = specDataType.getEnzyme();
+		Modification mod = specDataType.getModification();
 		
 		for(SpecKey specKey : specKeyList.subList(fromIndex, toIndex))
 		{
@@ -165,7 +168,7 @@ public class ScoredSpectraMap {
 			{
 				Spectrum spec = specMap.getSpectrumBySpecIndex(specIndex);
 				
-				NewRankScorer scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme);
+				NewRankScorer scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, mod);
 				int charge = specKey.getCharge();
 				spec.setCharge(charge);
 				NewScoredSpectrum<NominalMass> sSpec = scorer.getScoredSpectrum(spec);

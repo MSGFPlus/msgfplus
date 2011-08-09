@@ -123,11 +123,13 @@ public class TrainScoringParameters {
 				{
 					errorScalingFactor = 100;
 				}
+				
+				boolean considerPhosLoss = false;
 //				else if(id.contains("ETD"))
 //				{
 //					errorScalingFactor = 0;
 //				}
-				ScoringParameterGeneratorWithErrors.generateParameters(specFile, actMethod, instType, enzyme, numSpecsPerPeptide, errorScalingFactor, outputFile, aaSet, false, false);
+				ScoringParameterGeneratorWithErrors.generateParameters(specFile, actMethod, instType, enzyme, numSpecsPerPeptide, errorScalingFactor, considerPhosLoss, outputFile, aaSet, false, false);
 			}
 		}
 		System.out.println("Success!");

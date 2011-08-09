@@ -34,6 +34,7 @@ import msutil.AminoAcidSet;
 import msutil.Enzyme;
 import msutil.ActivationMethod;
 import msutil.InstrumentType;
+import msutil.Modification;
 import msutil.SpecFileFormat;
 import msutil.SpecKey;
 import msutil.SpectraIterator;
@@ -256,6 +257,8 @@ public class MSGFDB {
 					enzyme = Enzyme.ArgC;
 				else if(argv[i+1].equalsIgnoreCase("7"))
 					enzyme = Enzyme.AspN;
+				else if(argv[i+1].equalsIgnoreCase("8"))
+					enzyme = Enzyme.ALP;
 				else
 					printUsageAndExit("Illegal enzyme: " + argv[i+1]);
 			}
@@ -451,7 +454,7 @@ public class MSGFDB {
 		
 		aaSet.registerEnzyme(enzyme);
 		
-		runMSGFDB2(specFile, specFormat, databaseFile, leftParentMassTolerance, rightParentMassTolerance, numAllowedC13,
+		runMSGFDB(specFile, specFormat, databaseFile, leftParentMassTolerance, rightParentMassTolerance, numAllowedC13,
 	    		outputFile, enzyme, numAllowedNonEnzymaticTermini,
 	    		activationMethod, instType, aaSet, numMatchesPerSpec, startScanNum, endScanNum, useTDA, showFDR,
 	    		minPeptideLength, maxPeptideLength, minCharge, maxCharge, numThreads);
@@ -467,7 +470,7 @@ public class MSGFDB {
 	{
 		if(message != null)
 			System.out.println("Error: " + message + "\n");
-		System.out.println("MSGFDB v2 (07/28/2011)");
+		System.out.println("MSGFDB v2 (08/08/2011)");
 		System.out.print("Usage: java -Xmx2000M -jar MSGFDB.jar\n"
 				+ "\t-s SpectrumFile (*.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt)\n" //, *.mgf, *.pkl, *.ms2)\n"
 				+ "\t-d Database (*.fasta or *.fa)\n"
@@ -478,7 +481,7 @@ public class MSGFDB {
 				+ "\t[-tda 0/1] (0: don't search decoy database (default), 1: search decoy database to compute FDR)\n"
 				+ "\t[-m FragmentationMethodID] (0: as written in the spectrum or CID if no info (Default), 1: CID, 2: ETD, 3: HCD, 4: Merge spectra from the same precursor)\n"
 				+ "\t[-inst InstrumentID] (0: Low-res LCQ/LTQ (Default for CID and ETD), 1: TOF , 2: High-res LTQ (Default for HCD))\n"
-				+ "\t[-e EnzymeID] (0: No enzyme, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N)\n"
+				+ "\t[-e EnzymeID] (0: No enzyme, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N, 8: aLP)\n"
 				+ "\t[-c13 0/1/2] (Number of allowed C13, Default: 1)\n"
 				+ "\t[-nnet 0/1/2] (Number of allowed non-enzymatic termini, Default: 1)\n"
 				+ "\t[-mod ModificationFileName] (Modification file, Default: standard amino acids with fixed C+57)\n"
@@ -592,298 +595,11 @@ public class MSGFDB {
 			numThreads = 1;
 		System.out.println("Using " + numThreads + (numThreads == 1 ? " thread." : " threads."));
 		
-		SpecDataType specDataType = new SpecDataType(activationMethod, instType, enzyme);
-		int fromIndexGlobal = 0;
-		
-		String header = 
-			"#SpecFile\tSpecIndex\tScan#\t"
-			+"FragMethod\t"
-//			+(showTitle ? "Title\t" : "")
-			+"Precursor\tPMError("
-			+(rightParentMassTolerance.isTolerancePPM() ? "ppm" : "Da")
-			+")\tCharge\tPeptide\tProtein\tDeNovoScore\tMSGFScore\tSpecProb\tP-value";
-		MSGFDBResultGenerator gen = new MSGFDBResultGenerator(header);
-		
-		System.out.print("Suffix array loading...");
-		long time = System.currentTimeMillis();
-		SuffixArrayForMSGFDB sa = new SuffixArrayForMSGFDB(new SuffixArraySequence(databaseFile.getPath()), minPeptideLength, maxPeptideLength);
-    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
-		
-		while(true)
-		{
-			if(fromIndexGlobal >= specKeyList.size())
-				break;
-			int toIndexGlobal = Math.min(specKeyList.size(), fromIndexGlobal+numSpecScannedTogether);
-			System.out.println("Spectrum " + fromIndexGlobal + "-" + (toIndexGlobal-1) + " (total: " + specKeyList.size() + ")");
-
-			// spectrum preprocessing
-	    	System.out.print("Preprocessing spectra...");
-	    	time = System.currentTimeMillis();
-	    	ScoredSpectraMap specScanner = new ScoredSpectraMap(
-	    			specMap,
-	    			specKeyList.subList(fromIndexGlobal, toIndexGlobal),
-	    			leftParentMassTolerance,
-	    			rightParentMassTolerance,
-	    			numAllowedC13,
-	    			specDataType
-	    			);
-			specScanner.makePepMassSpecKeyMap();
-			
-			// Thread pool
-			ExecutorService executor = Executors.newFixedThreadPool(numThreads);
-			
-			// Partition specKeyList
-			int size = toIndexGlobal - fromIndexGlobal;
-			int subListSize = size/numThreads;
-			int residue = size % numThreads;
-			
-			int[] startIndex = new int[numThreads];
-			int[] endIndex = new int[numThreads];
-			
-			for(int i=0; i<numThreads; i++)
-			{
-				startIndex[i] = fromIndexGlobal + (i > 0 ? endIndex[i-1] : 0);
-				endIndex[i] = startIndex[i] + subListSize + (i < residue ? 1 : 0);
-//				System.out.println(startIndex[i]+"\t"+endIndex[i]+"\t"+specKeyList.get(startIndex[i])+"\t"+specKeyList.get(endIndex[i]-1));
-			}
-			
-			for(int i=0; i<numThreads; i++)
-				executor.execute(new ConcurrentMSGFDB.PreProcessSpectra(specScanner, startIndex[i], endIndex[i]));
-			
-			executor.shutdown();
-			while(!executor.isTerminated()) {}	// wait until all threads terminate
-			
-	    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
-	    	
-	    	// db search
-	    	time = System.currentTimeMillis(); 
-	    	DBScanner dbScanner = new DBScanner(
-	    			specScanner,
-	    			sa,
-	    			enzyme,
-	    			aaSet,
-	    			numMatchesPerSpec,
-	    			minPeptideLength,
-	    			maxPeptideLength
-	    			);
-			executor = Executors.newFixedThreadPool(numThreads);
-			int searchMode = 0;
-			if(enzyme == null)
-				searchMode = 1;	
-			else if(enzyme.isCTerm())
-			{
-				if(!aaSet.containsModification())
-					searchMode = 2;
-				else
-					searchMode = 0;
-			}
-			else
-				searchMode = 3;
-			
-			int dbSize = sa.getSize();
-			int dbSubListSize = dbSize/numThreads;
-			int dbResidue = dbSize % numThreads;
-			
-			int[] fromIndex = new int[numThreads];
-			int[] toIndex = new int[numThreads];
-			
-			for(int i=0; i<numThreads; i++)
-			{
-				fromIndex[i] = (i > 0 ? toIndex[i-1] : 0);
-				toIndex[i] = fromIndex[i] + dbSubListSize + (i < dbResidue ? 1 : 0);
-			}
-			
-			ConcurrentMSGFDB.RunDBSearch[] dbSearchExecutor = new ConcurrentMSGFDB.RunDBSearch[numThreads];
-			for(int i=0; i<numThreads; i++)
-			{
-				dbSearchExecutor[i] = new ConcurrentMSGFDB.RunDBSearch(dbScanner, numAllowedNonEnzymaticTermini, searchMode, fromIndex[i], toIndex[i]);
-				executor.execute(dbSearchExecutor[i]);
-			}
-
-			executor.shutdown();
-			while(!executor.isTerminated()) {}	// wait until all threads terminate
-			System.out.println("Database search... " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
-
-			time = System.currentTimeMillis();
-
-	    	// running MS-GF
-			System.out.print("Computing Spectral Probabilities and P-values...");
-	    	time = System.currentTimeMillis(); 
-			
-			// Concurrent running
-			executor = Executors.newFixedThreadPool(numThreads);
-			for(int i=0; i<numThreads; i++)
-				executor.execute(new ConcurrentMSGFDB.ComputeSpecProb(dbScanner, !useTDA, startIndex[i], endIndex[i]));
-
-			executor.shutdown();
-			while(!executor.isTerminated()) {}	// wait until all threads terminate
-			
-	    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
-	    	
-			System.out.print("Generating results...");
-	    	time = System.currentTimeMillis(); 
-	    	dbScanner.addDBSearchResults(gen, specFile.getName());
-	    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
-			fromIndexGlobal += numSpecScannedTogether;
-		}
-		
-		System.out.print("Computing EFDRs...");
-    	time = System.currentTimeMillis();
-		// Sort search results by spectral probabilities
-		Collections.sort(gen);
-    	if(!useTDA && numMatchesPerSpec == 1)
-    	{
-    		gen.computeEFDR();
-    	}
-    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
-    	
-		System.out.print("Writing results...");
-    	time = System.currentTimeMillis(); 
-    	if(!showFDR || !useTDA)
-    	{
-    		PrintStream out = null;
-    		if(outputFile == null)
-    			out = System.out;
-    		else
-    		{
-    			try {
-    				out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFile)));
-    			} catch (IOException e) {
-    				e.printStackTrace();
-    			}
-    		}
-    		gen.writeResults(out, showFDR && numMatchesPerSpec == 1);
-    		if(out != System.out)
-    			out.close();
-    	}
-    	else
-    	{
-    		try {
-				File tempFile;
-				if(outputFile != null)
-					tempFile = new File(outputFile.getPath()+".temp.tsv");
-				else
-				{
-					tempFile = File.createTempFile("MSGFDB", "tempResult");
-					tempFile.deleteOnExit();
-				}
-				PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(tempFile)));
-//				tempFile.deleteOnExit();
-				gen.writeResults(out, false);
-				out.flush();
-				out.close();
-				int specFileCol = 0;
-				int specIndexCol = 1;
-				int pepCol = 7;
-				int dbCol = 8;
-				int scoreCol = 11;
-				fdr.ComputeFDR.computeFDR(tempFile, null, scoreCol, false, "\t", 
-						specFileCol, specIndexCol, pepCol, null, true, true, 
-						true, dbCol, "REV_",
-						1, 1, outputFile);
-				
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-    	}
-    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
-		
-	}	
-    
-    public static void runMSGFDB2(
-    		File specFile, 
-    		SpecFileFormat specFormat, 
-    		File databaseFile, 
-    		Tolerance leftParentMassTolerance, 
-    		Tolerance rightParentMassTolerance, 
-    		int numAllowedC13,
-    		File outputFile, 
-    		Enzyme enzyme, 
-    		int numAllowedNonEnzymaticTermini,
-    		ActivationMethod activationMethod,  
-    		InstrumentType instType,
-    		AminoAcidSet aaSet, 
-    		int numMatchesPerSpec,
-    		int startScanNum,
-    		int endScanNum,
-    		boolean useTDA,
-    		boolean showFDR,
-    		int minPeptideLength,
-    		int maxPeptideLength,
-    		int minCharge,
-    		int maxCharge,
-    		int numThreads
-    		)
-	{
-    	
-    	Iterator<Spectrum> specItr = null;
-		SpectrumAccessorBySpecIndex specMap = null;
-		
-		if(specFormat == SpecFileFormat.MZXML)
-		{
-			specItr = new MzXMLSpectraIterator(specFile.getPath());
-			specMap = new MzXMLSpectraMap(specFile.getPath());
-		}
+		SpecDataType specDataType;
+		if(!aaSet.containsPhosphorylation())
+			specDataType = new SpecDataType(activationMethod, instType, enzyme);
 		else
-		{
-			SpectrumParser parser = null;
-			if(specFormat == SpecFileFormat.MGF)
-				parser = new MgfSpectrumParser();
-			else if(specFormat == SpecFileFormat.DTA_TXT)
-				parser = new PNNLSpectrumParser();
-			else if(specFormat == SpecFileFormat.MS2)
-				parser = new MS2SpectrumParser();
-			else if(specFormat == SpecFileFormat.PKL)
-				parser = new PklSpectrumParser();
-			
-			try {
-				specItr = new SpectraIterator(specFile.getPath(), parser);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-			specMap = new SpectraMap(specFile.getPath(), parser);
-		}
-		
-		if(specItr == null || specMap == null)
-		{
-			printUsageAndExit("Error while parsing spectrum file: " + specFile.getPath());
-		}
-		
-
-		if(enzyme == null)
-			numAllowedNonEnzymaticTermini = 2;
-		
-		// determine the number of spectra to be scanned together 
-		long maxMemory = Runtime.getRuntime().maxMemory();
-		int avgPeptideMass = 2000;
-		int numBytesPerMass = 8;
-		int numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
-		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specItr, minCharge, maxCharge, activationMethod);
-		
-		if(startScanNum >= 0)
-		{
-			specKeyList.clear();
-			for(int scanNum = startScanNum; scanNum<endScanNum; scanNum++)
-			{
-				Spectrum spec = specMap.getSpectrumBySpecIndex(scanNum);
-				if(spec == null)
-					continue;
-				if(spec.getCharge() == 0)
-				{
-					for(int c=minCharge; c<=maxCharge; c++)
-						specKeyList.add(new SpecKey(scanNum, c));
-				}
-				else
-					specKeyList.add(new SpecKey(scanNum, spec.getCharge()));
-			}
-		}
-		
-		numThreads = Math.min(numThreads, Math.round(Math.min(specKeyList.size(), numSpecScannedTogether)/1000f));
-		if(numThreads == 0)
-			numThreads = 1;
-		System.out.println("Using " + numThreads + (numThreads == 1 ? " thread." : " threads."));
-		
-		SpecDataType specDataType = new SpecDataType(activationMethod, instType, enzyme);
+			specDataType = new SpecDataType(activationMethod, instType, enzyme, Modification.get("Phosphorylation"));
 		int fromIndexGlobal = 0;
 		
 		String header = 
@@ -1018,4 +734,294 @@ public class MSGFDB {
     	}
     	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
 	}	    
+    
+//    public static void runMSGFDB2(
+//    		File specFile, 
+//    		SpecFileFormat specFormat, 
+//    		File databaseFile, 
+//    		Tolerance leftParentMassTolerance, 
+//    		Tolerance rightParentMassTolerance, 
+//    		int numAllowedC13,
+//    		File outputFile, 
+//    		Enzyme enzyme, 
+//    		int numAllowedNonEnzymaticTermini,
+//    		ActivationMethod activationMethod,  
+//    		InstrumentType instType,
+//    		AminoAcidSet aaSet, 
+//    		int numMatchesPerSpec,
+//    		int startScanNum,
+//    		int endScanNum,
+//    		boolean useTDA,
+//    		boolean showFDR,
+//    		int minPeptideLength,
+//    		int maxPeptideLength,
+//    		int minCharge,
+//    		int maxCharge,
+//    		int numThreads
+//    		)
+//	{
+//    	
+//    	Iterator<Spectrum> specItr = null;
+//		SpectrumAccessorBySpecIndex specMap = null;
+//		
+//		if(specFormat == SpecFileFormat.MZXML)
+//		{
+//			specItr = new MzXMLSpectraIterator(specFile.getPath());
+//			specMap = new MzXMLSpectraMap(specFile.getPath());
+//		}
+//		else
+//		{
+//			SpectrumParser parser = null;
+//			if(specFormat == SpecFileFormat.MGF)
+//				parser = new MgfSpectrumParser();
+//			else if(specFormat == SpecFileFormat.DTA_TXT)
+//				parser = new PNNLSpectrumParser();
+//			else if(specFormat == SpecFileFormat.MS2)
+//				parser = new MS2SpectrumParser();
+//			else if(specFormat == SpecFileFormat.PKL)
+//				parser = new PklSpectrumParser();
+//			
+//			try {
+//				specItr = new SpectraIterator(specFile.getPath(), parser);
+//			} catch (FileNotFoundException e) {
+//				e.printStackTrace();
+//			}
+//			specMap = new SpectraMap(specFile.getPath(), parser);
+//		}
+//		
+//		if(specItr == null || specMap == null)
+//		{
+//			printUsageAndExit("Error while parsing spectrum file: " + specFile.getPath());
+//		}
+//		
+//
+//		if(enzyme == null)
+//			numAllowedNonEnzymaticTermini = 2;
+//		
+//		// determine the number of spectra to be scanned together 
+//		long maxMemory = Runtime.getRuntime().maxMemory();
+//		int avgPeptideMass = 2000;
+//		int numBytesPerMass = 8;
+//		int numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
+//		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specItr, minCharge, maxCharge, activationMethod);
+//		
+//		if(startScanNum >= 0)
+//		{
+//			specKeyList.clear();
+//			for(int scanNum = startScanNum; scanNum<endScanNum; scanNum++)
+//			{
+//				Spectrum spec = specMap.getSpectrumBySpecIndex(scanNum);
+//				if(spec == null)
+//					continue;
+//				if(spec.getCharge() == 0)
+//				{
+//					for(int c=minCharge; c<=maxCharge; c++)
+//						specKeyList.add(new SpecKey(scanNum, c));
+//				}
+//				else
+//					specKeyList.add(new SpecKey(scanNum, spec.getCharge()));
+//			}
+//		}
+//		
+//		numThreads = Math.min(numThreads, Math.round(Math.min(specKeyList.size(), numSpecScannedTogether)/1000f));
+//		if(numThreads == 0)
+//			numThreads = 1;
+//		System.out.println("Using " + numThreads + (numThreads == 1 ? " thread." : " threads."));
+//		
+//		SpecDataType specDataType = new SpecDataType(activationMethod, instType, enzyme);
+//		int fromIndexGlobal = 0;
+//		
+//		String header = 
+//			"#SpecFile\tSpecIndex\tScan#\t"
+//			+"FragMethod\t"
+////			+(showTitle ? "Title\t" : "")
+//			+"Precursor\tPMError("
+//			+(rightParentMassTolerance.isTolerancePPM() ? "ppm" : "Da")
+//			+")\tCharge\tPeptide\tProtein\tDeNovoScore\tMSGFScore\tSpecProb\tP-value";
+//		MSGFDBResultGenerator gen = new MSGFDBResultGenerator(header);
+//		
+//		System.out.print("Suffix array loading...");
+//		long time = System.currentTimeMillis();
+//		SuffixArrayForMSGFDB sa = new SuffixArrayForMSGFDB(new SuffixArraySequence(databaseFile.getPath()), minPeptideLength, maxPeptideLength);
+//    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
+//		
+//		while(true)
+//		{
+//			if(fromIndexGlobal >= specKeyList.size())
+//				break;
+//			int toIndexGlobal = Math.min(specKeyList.size(), fromIndexGlobal+numSpecScannedTogether);
+//			System.out.println("Spectrum " + fromIndexGlobal + "-" + (toIndexGlobal-1) + " (total: " + specKeyList.size() + ")");
+//
+//			// spectrum preprocessing
+//	    	System.out.print("Preprocessing spectra...");
+//	    	time = System.currentTimeMillis();
+//	    	ScoredSpectraMap specScanner = new ScoredSpectraMap(
+//	    			specMap,
+//	    			specKeyList.subList(fromIndexGlobal, toIndexGlobal),
+//	    			leftParentMassTolerance,
+//	    			rightParentMassTolerance,
+//	    			numAllowedC13,
+//	    			specDataType
+//	    			);
+//			specScanner.makePepMassSpecKeyMap();
+//			
+//			// Thread pool
+//			ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+//			
+//			// Partition specKeyList
+//			int size = toIndexGlobal - fromIndexGlobal;
+//			int subListSize = size/numThreads;
+//			int residue = size % numThreads;
+//			
+//			int[] startIndex = new int[numThreads];
+//			int[] endIndex = new int[numThreads];
+//			
+//			for(int i=0; i<numThreads; i++)
+//			{
+//				startIndex[i] = fromIndexGlobal + (i > 0 ? endIndex[i-1] : 0);
+//				endIndex[i] = startIndex[i] + subListSize + (i < residue ? 1 : 0);
+////				System.out.println(startIndex[i]+"\t"+endIndex[i]+"\t"+specKeyList.get(startIndex[i])+"\t"+specKeyList.get(endIndex[i]-1));
+//			}
+//			
+//			for(int i=0; i<numThreads; i++)
+//				executor.execute(new ConcurrentMSGFDB.PreProcessSpectra(specScanner, startIndex[i], endIndex[i]));
+//			
+//			executor.shutdown();
+//			while(!executor.isTerminated()) {}	// wait until all threads terminate
+//			
+//	    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
+//	    	
+//	    	// db search
+//	    	time = System.currentTimeMillis(); 
+//	    	DBScanner dbScanner = new DBScanner(
+//	    			specScanner,
+//	    			sa,
+//	    			enzyme,
+//	    			aaSet,
+//	    			numMatchesPerSpec,
+//	    			minPeptideLength,
+//	    			maxPeptideLength
+//	    			);
+//			executor = Executors.newFixedThreadPool(numThreads);
+//			int searchMode = 0;
+//			if(enzyme == null)
+//				searchMode = 1;	
+//			else if(enzyme.isCTerm())
+//			{
+//				if(!aaSet.containsModification())
+//					searchMode = 2;
+//				else
+//					searchMode = 0;
+//			}
+//			else
+//				searchMode = 3;
+//			
+//			int dbSize = sa.getSize();
+//			int dbSubListSize = dbSize/numThreads;
+//			int dbResidue = dbSize % numThreads;
+//			
+//			int[] fromIndex = new int[numThreads];
+//			int[] toIndex = new int[numThreads];
+//			
+//			for(int i=0; i<numThreads; i++)
+//			{
+//				fromIndex[i] = (i > 0 ? toIndex[i-1] : 0);
+//				toIndex[i] = fromIndex[i] + dbSubListSize + (i < dbResidue ? 1 : 0);
+//			}
+//			
+//			ConcurrentMSGFDB.RunDBSearch[] dbSearchExecutor = new ConcurrentMSGFDB.RunDBSearch[numThreads];
+//			for(int i=0; i<numThreads; i++)
+//			{
+//				dbSearchExecutor[i] = new ConcurrentMSGFDB.RunDBSearch(dbScanner, numAllowedNonEnzymaticTermini, searchMode, fromIndex[i], toIndex[i]);
+//				executor.execute(dbSearchExecutor[i]);
+//			}
+//
+//			executor.shutdown();
+//			while(!executor.isTerminated()) {}	// wait until all threads terminate
+//			System.out.println("Database search... " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
+//
+//			time = System.currentTimeMillis();
+//
+//	    	// running MS-GF
+//			System.out.print("Computing Spectral Probabilities and P-values...");
+//	    	time = System.currentTimeMillis(); 
+//			
+//			// Concurrent running
+//			executor = Executors.newFixedThreadPool(numThreads);
+//			for(int i=0; i<numThreads; i++)
+//				executor.execute(new ConcurrentMSGFDB.ComputeSpecProb(dbScanner, !useTDA, startIndex[i], endIndex[i]));
+//
+//			executor.shutdown();
+//			while(!executor.isTerminated()) {}	// wait until all threads terminate
+//			
+//	    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
+//	    	
+//			System.out.print("Generating results...");
+//	    	time = System.currentTimeMillis(); 
+//	    	dbScanner.addDBSearchResults(gen, specFile.getName());
+//	    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
+//			fromIndexGlobal += numSpecScannedTogether;
+//		}
+//		
+//		System.out.print("Computing EFDRs...");
+//    	time = System.currentTimeMillis();
+//		// Sort search results by spectral probabilities
+//		Collections.sort(gen);
+//    	if(!useTDA && numMatchesPerSpec == 1)
+//    	{
+//    		gen.computeEFDR();
+//    	}
+//    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
+//    	
+//		System.out.print("Writing results...");
+//    	time = System.currentTimeMillis(); 
+//    	if(!showFDR || !useTDA)
+//    	{
+//    		PrintStream out = null;
+//    		if(outputFile == null)
+//    			out = System.out;
+//    		else
+//    		{
+//    			try {
+//    				out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFile)));
+//    			} catch (IOException e) {
+//    				e.printStackTrace();
+//    			}
+//    		}
+//    		gen.writeResults(out, showFDR && numMatchesPerSpec == 1);
+//    		if(out != System.out)
+//    			out.close();
+//    	}
+//    	else
+//    	{
+//    		try {
+//				File tempFile;
+//				if(outputFile != null)
+//					tempFile = new File(outputFile.getPath()+".temp.tsv");
+//				else
+//				{
+//					tempFile = File.createTempFile("MSGFDB", "tempResult");
+//					tempFile.deleteOnExit();
+//				}
+//				PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(tempFile)));
+////				tempFile.deleteOnExit();
+//				gen.writeResults(out, false);
+//				out.flush();
+//				out.close();
+//				int specFileCol = 0;
+//				int specIndexCol = 1;
+//				int pepCol = 7;
+//				int dbCol = 8;
+//				int scoreCol = 11;
+//				fdr.ComputeFDR.computeFDR(tempFile, null, scoreCol, false, "\t", 
+//						specFileCol, specIndexCol, pepCol, null, true, true, 
+//						true, dbCol, "REV_",
+//						1, 1, outputFile);
+//				
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//    	}
+//    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
+//	}	    
 }

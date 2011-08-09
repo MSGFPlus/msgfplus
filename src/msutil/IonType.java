@@ -183,12 +183,23 @@ public abstract class IonType {
 
     public static ArrayList<IonType> getAllKnownIonTypes(int maxCharge, boolean removeRedundancy)
     {
+    	return getAllKnownIonTypes(maxCharge, removeRedundancy, false);
+    }
+    
+    public static ArrayList<IonType> getAllKnownIonTypes(int maxCharge, boolean removeRedundancy, boolean addPhosphoNL)
+    {
         String[] base ={
                 "x","y","z","a","b","c", //"x2","y2","z2","a2","b2","c2",
             };
         String[] extension={
           "", "-H2O", "-H2O-H2O", "-NH3", "-NH3-NH3", "-NH3-H2O","+n", "+n2", "-H"
         	};
+        String[] phosphoExt;
+        if(addPhosphoNL)
+        	phosphoExt = new String[] {"", "-H3PO4"};
+        else
+        	phosphoExt = new String[] {""};
+        
         ArrayList<IonType> ionList = new ArrayList<IonType>();
         for(int charge=1; charge<=maxCharge; charge++)
         {
@@ -196,9 +207,12 @@ public abstract class IonType {
                 for (int j = 0; j < extension.length; j++) {
                 	if(i==5 && j == 3)// c-NH3
                 		continue;
-                	IonType ion = IonType.getIonType(base[i]+(charge > 1 ? charge : "")+extension[j]);
-                	assert(ion != null): base[i]+extension[j];
-                    ionList.add(ion);
+               		for(int k=0; k<phosphoExt.length; k++)
+                	{
+                    	IonType ion = IonType.getIonType(base[i]+(charge > 1 ? charge : "")+extension[j]+phosphoExt[k]);
+                    	assert(ion != null): base[i]+extension[j]+phosphoExt[k];
+                        ionList.add(ion);
+                	}
                 }
             }
         }
@@ -299,55 +313,11 @@ public abstract class IonType {
         compositionOffsetTable.put("n", (float)Composition.ISOTOPE);
         compositionOffsetTable.put("n2", (float)Composition.ISOTOPE2);
         compositionOffsetTable.put("H", (float)Composition.H);
+        compositionOffsetTable.put("H3PO4", (float)(Composition.H*3+Composition.P+Composition.O*4));
     }
     public static void main(String[] args) {
-    	AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
-    	Peptide pep = aaSet.getPeptide("EKVETELQ");
-    	
-    	for(float m : pep.getPRMMasses(true, IonType.B.getOffset()))
-    		System.out.println(m);
- 
-//    	Peptide pep;
-//    	
-//    	IonType.Y.getMz(pep.get(0).getMass())
-//    	for(IonType ion : IonType.getAllKnownIonTypes(1))
-//    		System.out.println(ion.getName()+"\t"+ion.getOffset());
-    	
-//    	IonType.getIonType("x3");
-//        // Printing a large list of ions
-//
-//        String[] base ={
-//            "x","y","z","a","b","c","x2","y2","z2","a2","b2","c2",
-//        };
-//        String[] extension={
-//          "", "-H2O", "-H2O-H2O", "-NH3", "-NH3-NH3", "-NH3-H2O","+H", "+H2"
-//        };
-//        ArrayList<IonType> ionList = new ArrayList<IonType>();
-//        for (int i = 0; i < base.length; i++) {
-//            for (int j = 0; j < extension.length; j++) {
-//                ionList.add(IonType.getIonType(base[i]+extension[j]));
-//            }
-//        }
-//
-//        Collections.sort(ionList, new Comparator<IonType>() {
-//            public int compare(IonType i1, IonType i2) {
-//                if (i1.getOffset()<i2.getOffset()) return -1;
-//                else if (i1.getOffset()>i2.getOffset()) return 1;
-//                return 0;
-//            }
-//        });
-//        System.out.println("Prefix Ions:");
-//        for (int i = 0; i < ionList.size(); i++) {
-//            IonType ion=ionList.get(i);
-//            if (ion instanceof IonType.PrefixIon)
-//                System.out.println(ion.getOffset()+"\t"+ion.getName());
-//        }
-//        System.out.println();
-//        System.out.println("Suffix Ions:");
-//        for (int i = 0; i < ionList.size(); i++) {
-//            IonType ion=ionList.get(i);
-//            if (ion instanceof IonType.SuffixIon)
-//                System.out.println(ion.getOffset()+"\t"+ion.getName());
-//        }
+    	ArrayList<IonType> allIons = IonType.getAllKnownIonTypes(3, true, true);
+    	for(IonType ion : allIons)
+    		System.out.println(ion.getName()+"\t"+ion.getOffset());
     }
 }

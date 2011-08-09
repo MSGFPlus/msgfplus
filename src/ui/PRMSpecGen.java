@@ -274,7 +274,7 @@ public class PRMSpecGen {
 		
 		NewRankScorer scorer = null;
 		if(activationMethod != null)
-			scorer = NewScorerFactory.get(activationMethod, instType, enzyme);
+			scorer = NewScorerFactory.get(activationMethod, instType, enzyme, null);
 
 		System.out.println("Total number of spectra: " + totalNumSpecs);
 		int numSpecs = 0;
@@ -301,7 +301,7 @@ public class PRMSpecGen {
 			}
 			
 			if(activationMethod == null || activationMethod == ActivationMethod.FUSION)
-				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme);
+				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, null);
 			
 			scorer.doNotUseError();
 			NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);

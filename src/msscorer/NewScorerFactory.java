@@ -7,16 +7,23 @@ import java.util.Hashtable;
 import msutil.ActivationMethod;
 import msutil.Enzyme;
 import msutil.InstrumentType;
+import msutil.Modification;
 
 public class NewScorerFactory {
 	private NewScorerFactory() {}
 	
 	public static class SpecDataType {
 		public SpecDataType(ActivationMethod method, InstrumentType instType, Enzyme enzyme) {
+			this(method, instType, enzyme, null);
+		}
+
+		public SpecDataType(ActivationMethod method, InstrumentType instType, Enzyme enzyme, Modification modification) {
 			this.method = method;
 			this.instType = instType;
 			this.enzyme = enzyme;
+			this.modification = modification;
 		}
+		
 		@Override
 		public boolean equals(Object obj) {
 			if(obj instanceof SpecDataType)
@@ -24,27 +31,36 @@ public class NewScorerFactory {
 				SpecDataType other = (SpecDataType)obj;
 				if(this.method == other.method &&
 					this.instType == other.instType &&
-					this.enzyme == other.enzyme)
+					this.enzyme == other.enzyme &&
+					this.modification == other.modification
+					)
 					return true;
 			}
 			return false;
 		}
+		
 		@Override
 		public int hashCode() {
-			return method.hashCode()*enzyme.hashCode();
+			return method.hashCode()*enzyme.hashCode()*instType.hashCode()*(modification == null ? 1 : modification.hashCode());
 		}
+		
 		@Override
 		public String toString() {
-			return method.getName()+"_"+instType.getName()+"_"+enzyme.getName();			
+			if(modification == null)
+				return method.getName()+"_"+instType.getName()+"_"+enzyme.getName();
+			else
+				return method.getName()+"_"+instType.getName()+"_"+enzyme.getName()+"_"+modification.getName();
 		}
 		
 		public ActivationMethod getActivationMethod()	{ return method; }
 		public InstrumentType getInstrumentType()		{ return instType; }
 		public Enzyme getEnzyme()						{ return enzyme; }
+		public Modification getModification()			{ return modification; }
 		
 		private ActivationMethod method;
 		private InstrumentType instType;
 		private Enzyme enzyme;
+		private Modification modification;
 	}
 	
 	private static Hashtable<SpecDataType, NewRankScorer> scorerTable = new Hashtable<SpecDataType, NewRankScorer>();
@@ -63,7 +79,24 @@ public class NewScorerFactory {
 			return get(method, InstrumentType.HIGH_RESOLUTION_LTQ, enzyme);
 	}
 	
-	public static NewRankScorer get(ActivationMethod method, InstrumentType instType, Enzyme enzyme)
+	public static NewRankScorer get(ActivationMethod method, InstrumentType instType, Enzyme enzyme, Modification mod)
+	{
+		SpecDataType condition = new SpecDataType(method, instType, enzyme, mod);
+		NewRankScorer scorer = scorerTable.get(condition);
+		if(scorer != null)
+			return scorer;
+		
+		InputStream is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+condition+".param");
+		if(is != null)
+		{
+			scorer = new NewRankScorer(new BufferedInputStream(is));
+			scorerTable.put(condition, scorer);
+			return scorer;
+		}
+		return get(method, instType, enzyme);
+	}
+
+	private static NewRankScorer get(ActivationMethod method, InstrumentType instType, Enzyme enzyme)
 	{
 		if(method != null && method == ActivationMethod.FUSION)
 			return null;
@@ -93,23 +126,6 @@ public class NewScorerFactory {
 				SpecDataType newCond = new SpecDataType(method, instType, alternativeEnzyme);
 				is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+newCond+".param");
 				
-//				if(is == null)	// param file still does not exist. Change method.
-//				{
-//					ActivationMethod alternativeMethod;
-//					if(method.isElectronBased())
-//						alternativeMethod = ActivationMethod.ETD;
-//					else
-//						alternativeMethod = ActivationMethod.CID;
-//					newCond = new SpecDataType(alternativeMethod, instType, enzyme);
-//					is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+newCond+".param");
-//					
-//					if(is == null)
-//					{
-//						newCond = new SpecDataType(alternativeMethod, instType, alternativeEnzyme);
-//						is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+newCond+".param");						
-//					}
-//				}
-				
 				if(is == null)	// if all the above failed, try to use CIDorETD-LowRes-Tryp, CIDorETD-LowRes-LysN, or CID-TOF-Tryp
 				{
 					if((method == ActivationMethod.HCD)
@@ -133,7 +149,7 @@ public class NewScorerFactory {
 			scorerTable.put(condition, scorer);
 		}
 		return scorer;
-	}
+	}	
 	
 	public static void main(String argv[])
 	{
