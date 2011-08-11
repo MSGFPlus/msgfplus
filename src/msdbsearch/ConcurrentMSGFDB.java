@@ -106,7 +106,7 @@ public class ConcurrentMSGFDB {
 			this.gen = gen;
 			
 			int searchMode = 0;
-			if(enzyme == null)
+			if(enzyme == null || enzyme.getResidues() == null)
 				searchMode = 1;	
 			else if(enzyme.isCTerm())
 			{
@@ -137,7 +137,7 @@ public class ConcurrentMSGFDB {
 			time = System.currentTimeMillis();
 			// DB search
 			if(searchMode == 1)
-				scanner.dbSearchNoEnzyme(true);	// currently not supported
+				scanner.dbSearchNoEnzyme(true);
 			else if(searchMode == 2)
 				scanner.dbSearchCTermEnzymeNoMod(numberOfAllowableNonEnzymaticTermini, true);
 			else if(searchMode == 3)

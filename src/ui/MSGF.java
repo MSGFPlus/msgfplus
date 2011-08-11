@@ -12,7 +12,6 @@ import msdbsearch.DBScanner;
 import msgf.GeneratingFunction;
 import msgf.GenericDeNovoGraph;
 import msgf.IntMassFactory;
-import msgf.ScoredSpectrum;
 import msgf.Tolerance;
 import msgf.IntMassFactory.IntMass;
 import msscorer.NewRankScorer;

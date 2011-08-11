@@ -163,12 +163,11 @@ public class CompactSuffixArray extends SuffixArray {
 				}
 			}
 
-			// compute text lcp
-			for(int )
 			// compute the leftMiddle and middleRight lcps
 			System.out.println("Computing the parameterized lcp arrays..");
 			out.write(neighboringLcps);	// Sangtae
-			out.flush(); out.close();
+			out.flush(); 
+			out.close();
 		}
 		catch(IOException e) {
 			e.printStackTrace();
