@@ -1,32 +1,37 @@
 package misc;
 
-import msgf.Tolerance;
-import msutil.AminoAcidSet;
+
+import msdbsearch.SuffixArrayForMSGFDB;
 import suffixarray.SuffixArray;
 import suffixarray.SuffixArraySequence;
 
 public class SuffixArrayTest {
 	public static void main(String argv[]) throws Exception
 	{
-		testSA();
+		if(argv.length != 1)
+		{
+			System.out.println("java SuffixArrayTest *.fasta");
+			System.exit(-1);
+		}
+		testSA(argv[0]);
 	}
 	
-	public static void testSA() throws Exception
+	public static void testSA(String fastaFile) throws Exception
 	{
-	    String fastaFile = System.getProperty("user.home")+"/Research/Data/IPI/IPI_human_3.79.fasta";
+//	    String fastaFile = System.getProperty("user.home")+"/Research/Data/IPI/IPI_human_3.79.fasta";
 //	    String fastaFile = System.getProperty("user.home")+"/Research/Data/IPI/IPI_human_3.79_shuffle.fasta";
 //	    String fastaFile = System.getProperty("user.home")+"/Research/Data/ISBControl/Mix_7/ORBITRAP/Database/18mix.fasta";
 //		String fastaFile = System.getProperty("user.home")+"/Research/Data/IPI/tiny.fasta";
 		
 	    long time = System.currentTimeMillis();
-	    SuffixArraySequence sequence = new SuffixArraySequence(fastaFile);
+	    CompactSuffixArraySequence sequence = new CompactSuffixArraySequence(fastaFile);
 	    System.out.println("-- Loading fasta file time: " + (System.currentTimeMillis() - time)/1000.0 + "s");
 	    
 	    time = System.currentTimeMillis();
-	    SuffixArray sa = new SuffixArray(sequence);
+	    SuffixArrayForMSGFDB sa = new SuffixArrayForMSGFDB(sequence);
 	    System.out.println("-- Loading SuffixArray file time: " + (System.currentTimeMillis() - time)/1000.0 + "s");
-
-	    time = System.currentTimeMillis();
+//
+//	    time = System.currentTimeMillis();
 	 
 //	    for(String m : sa.getAllMatchedStrings("abr"))
 //	    	System.out.println(m);
