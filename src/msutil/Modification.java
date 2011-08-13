@@ -65,6 +65,7 @@ public class Modification {
 		new Modification("PyrogluQ", Composition.getMass("H-3N-1")),
 		new Modification("Pyroglue", Composition.getMass("H-2O-1")),
 		new Modification("Carbamylation", new Composition(1,1,1,1,0)),
+		new Modification("Acetylation", new Composition(2,2,0,1,0)),
 	};
 	
 	private static Hashtable<String,Modification> modTable; 

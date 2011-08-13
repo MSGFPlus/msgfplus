@@ -1,6 +1,7 @@
 package misc;
 
 
+import msdbsearch.CompactFastaSequence;
 import msdbsearch.SuffixArrayForMSGFDB;
 import suffixarray.SuffixArray;
 import suffixarray.SuffixArraySequence;
@@ -24,12 +25,12 @@ public class SuffixArrayTest {
 //		String fastaFile = System.getProperty("user.home")+"/Research/Data/IPI/tiny.fasta";
 		
 	    long time = System.currentTimeMillis();
-	    CompactSuffixArraySequence sequence = new CompactSuffixArraySequence(fastaFile);
+	    CompactFastaSequence sequence = new CompactFastaSequence(fastaFile);
 	    System.out.println("-- Loading fasta file time: " + (System.currentTimeMillis() - time)/1000.0 + "s");
 	    
-	    time = System.currentTimeMillis();
-	    SuffixArrayForMSGFDB sa = new SuffixArrayForMSGFDB(sequence);
-	    System.out.println("-- Loading SuffixArray file time: " + (System.currentTimeMillis() - time)/1000.0 + "s");
+//	    time = System.currentTimeMillis();
+//	    SuffixArrayForMSGFDB sa = new SuffixArrayForMSGFDB(sequence);
+//	    System.out.println("-- Loading SuffixArray file time: " + (System.currentTimeMillis() - time)/1000.0 + "s");
 //
 //	    time = System.currentTimeMillis();
 	 

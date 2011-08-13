@@ -1,4 +1,4 @@
-package sequences;
+package msdbsearch;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -26,8 +26,8 @@ public class CompactFastaSequence implements Sequence {
 	// used for writing the encoded binary sequence.
 	private final String seqExtension;
 
-	// maps the terminator character position of this sequence to its annotation
-//	private TreeMap<Integer,String> annotations;
+	// records the starting position of each protein
+	private TreeSet<Long> boundaries;
 
 	// maps the header strings of the fasta entries to the position of the terminators
 //	private TreeMap<String,Integer> header2ends;
@@ -289,6 +289,11 @@ public class CompactFastaSequence implements Sequence {
 			this.size = Integer.parseInt(in.readLine());     
 			int id = Integer.parseInt(in.readLine());
 			this.alphabetString = in.readLine().trim();
+			this.boundaries = new TreeSet<Long>();
+			for(String line = in.readLine(); line != null; line = in.readLine()) {
+				String[] tokens = line.split(":", 2);
+				this.boundaries.add(Long.parseLong(tokens[0]));
+			}
 //			this.annotations = new TreeMap<Integer, String>();
 //			for(String line = in.readLine(); line != null; line = in.readLine()) {
 //				String[] tokens = line.split(":", 2);
@@ -523,17 +528,36 @@ public class CompactFastaSequence implements Sequence {
 
 	@Override
 	public String getAnnotation(long position) {
+//		Entry<Integer, String> entry = annotations.higherEntry((int)position);
+//		if(entry != null)
+//			return entry.getValue();
+//		else
+//			return null;
 		return null;
 	}
 
 	@Override
 	public long getStartPosition(long position) {
-		return 0;
+		Long startPos = boundaries.floor(position);
+		if(startPos==null)
+			return 0;
+		return startPos;
 	}
 
 	@Override
 	public String getMatchingEntry(long position) {
-		return null;
+//		Integer start = annotations.floorKey((int)position);	 // always "_" at start
+//		Integer end = annotations.higherKey((int)position);	   // exclusive
+//		if (start==null)    start = 0;
+//		if (end==null)      end = (int)this.getSize();
+//		while (!isValid(end-1)) end--;     // ensure that the last character is valid (exclusive)
+//		return this.getSubsequence(start+1, end);
+		Long start = boundaries.floor(position);
+		Long end = boundaries.higher(position);
+		if(start == null)	start = 0L;
+		if(end == null)	end = this.getSize();
+		while (!isValid(end-1)) end--;     // ensure that the last character is valid (exclusive)
+		return this.getSubsequence(start+1, end);
 	}
 
 	@Override

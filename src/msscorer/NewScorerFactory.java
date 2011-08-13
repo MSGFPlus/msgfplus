@@ -41,15 +41,15 @@ public class NewScorerFactory {
 		
 		@Override
 		public int hashCode() {
-			return method.hashCode()*enzyme.hashCode()*instType.hashCode()*(modification == null ? 1 : modification.hashCode());
+			return method.hashCode()*(enzyme == null ? 1 : enzyme.hashCode())*instType.hashCode()*(modification == null ? 1 : modification.hashCode());
 		}
 		
 		@Override
 		public String toString() {
 			if(modification == null)
-				return method.getName()+"_"+instType.getName()+"_"+enzyme.getName();
+				return method.getName()+"_"+instType.getName()+"_"+(enzyme == null ? "null" : enzyme.getName());
 			else
-				return method.getName()+"_"+instType.getName()+"_"+enzyme.getName()+"_"+modification.getName();
+				return method.getName()+"_"+instType.getName()+"_"+(enzyme == null ? "null" : enzyme.getName())+"_"+modification.getName();
 		}
 		
 		public ActivationMethod getActivationMethod()	{ return method; }

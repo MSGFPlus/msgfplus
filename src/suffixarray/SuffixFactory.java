@@ -1,5 +1,7 @@
 package suffixarray;
 
+import sequences.Sequence;
+
 
 
 /**
@@ -10,73 +12,76 @@ package suffixarray;
  *
  */
 public class SuffixFactory {
-  
-  
-  /**
-   * Class that represents a Suffix object.
-   * @author jung
-   *
-   */
-  public class Suffix extends ByteSequence {
-    
-    // the index of this suffix
-    private int index;
-    private int size;
-    
-    
-    /**
-     * Constructor.
-     * @param index the starting index of the suffix.
-     */
-    public Suffix(int index) {
-      this.index = index;
-      this.size = (int)sequence.getSize() - index;
-    }
-    
-    
-    public int getSize() {
-      return this.size;
-    }
-    
-    
-    public byte getByteAt(int index) {
-      return sequence.getByteAt(this.index+index);
-    }
-    
 
-    /**
-     * Getter method.
-     * @return the index of this suffix.
-     */
-    public int getIndex() {
-      return this.index;
-    }
-  }
-  
-  
-  // holds the sequences
-	private SuffixArraySequence sequence;
 
-	
+	/**
+	 * Class that represents a Suffix object.
+	 * @author jung
+	 *
+	 */
+	public class Suffix extends ByteSequence {
+
+		// the index of this suffix
+		private int index;
+		// modified by Sangtae to save memory
+		//    private int size;
+
+
+		/**
+		 * Constructor.
+		 * @param index the starting index of the suffix.
+		 */
+		public Suffix(int index) {
+			this.index = index;
+			//      this.size = (int)sequence.getSize() - index;
+		}
+
+
+		public int getSize() {
+			//      return this.size;
+			return (int)sequence.getSize() - index;
+		}
+
+
+		public byte getByteAt(int index) {
+			return sequence.getByteAt(this.index+index);
+		}
+
+
+		/**
+		 * Getter method.
+		 * @return the index of this suffix.
+		 */
+		public int getIndex() {
+			return this.index;
+		}
+	}
+
+
+	// modified by Sangtae
+	// holds the sequences
+	//	private SuffixArraySequence sequence;
+	private Sequence sequence;
+
 	/**
 	 * Constructor.
 	 * @param sequence the sequence object to create the suffixes from.
 	 */
-	public SuffixFactory(SuffixArraySequence sequence) {
+	public SuffixFactory(Sequence sequence) {
 		this.sequence = sequence;
 	}
-	
-	
+
+
 	/**
 	 * Factory method that creates a new suffix object from a sequence.
 	 * @param index the starting index of the suffix.
 	 * @return the suffix object
 	 */
 	public Suffix makeSuffix(int index) {
-	  return new Suffix(index);
+		return new Suffix(index);
 	}
-	
-	
+
+
 	/**
 	 * Get the longest common prefix count for 2 given suffixes. 
 	 * @param o1 one of the objects.
@@ -89,7 +94,7 @@ public class SuffixFactory {
 		return o1.getLCP(o2, offset);
 	}
 
-	
+
 	/**
 	 * Overloaded method where the offset is 0.
 	 * @param o1 one of the objects.
@@ -97,7 +102,7 @@ public class SuffixFactory {
 	 * @return refer to the documentation of the other method.
 	 */
 	public int getLCP(Suffix o1, Suffix o2) {
-	  return o1.getLCP(o2, 0);
+		return o1.getLCP(o2, 0);
 	}
-	
+
 }

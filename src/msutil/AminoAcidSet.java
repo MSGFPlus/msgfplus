@@ -780,6 +780,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		String pyrogluKey = "<parameter name=\"ptm.PYROGLUTAMATE_FORMATION\">on</parameter>";
 		String phosphoKey = "<parameter name=\"ptm.PHOSPHORYLATION\">on</parameter>";
 		String ntermCarbamyKey = "<parameter name=\"ptm.NTERM_CARBAMYLATION\">on</parameter>";
+		String ntermAcetylKey = "<parameter name=\"ptm.NTERM_ACETYLATION\">on</parameter>";
 		String ptmKey = "<parameter name=\"ptm.custom_PTM\">";
 		String closeKey = "</parameter>";
 		
@@ -926,7 +927,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			}
 			else if(s.startsWith(oxidationKey))	// predefined Oxidation
 			{
-				String residueStr = "MW";
+				String residueStr = "M";
 				Modification mod = Modification.get("Oxidation");
 				for(int i=0; i<residueStr.length(); i++)
 				{
@@ -972,6 +973,17 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			{
 				String residueStr = "*";
 				Modification mod = Modification.get("Carbamylation");
+				for(int i=0; i<residueStr.length(); i++)
+				{
+					char residue = residueStr.charAt(i);
+					Modification.Instance modIns = new Modification.Instance(mod, residue, Location.N_Term);
+					mods.add(modIns);
+				}				
+			}
+			else if(s.startsWith(ntermAcetylKey))	// predefined
+			{
+				String residueStr = "*";
+				Modification mod = Modification.get("Acetylation");
 				for(int i=0; i<residueStr.length(); i++)
 				{
 					char residue = residueStr.charAt(i);

@@ -967,7 +967,7 @@ public class SuffixArray {
             break;
           }
         }
-        if(isMatch)
+        if(isMatch), tokens[1]
           matches.put(startPos, matchedString+"\t"+getAnnotation(startPos));
         else
           break;
