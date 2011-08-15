@@ -2,6 +2,7 @@ package msscorer;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 import msutil.ActivationMethod;
@@ -81,6 +82,15 @@ public class NewScorerFactory {
 	
 	public static NewRankScorer get(ActivationMethod method, InstrumentType instType, Enzyme enzyme, Modification mod)
 	{
+		if(method == null)
+			method = ActivationMethod.CID;
+		if(enzyme == null)
+			enzyme = Enzyme.TRYPSIN;
+		if(instType == null)
+			instType = InstrumentType.LOW_RESOLUTION_LTQ;
+		if(method == ActivationMethod.HCD)
+			instType = InstrumentType.HIGH_RESOLUTION_LTQ;
+		
 		SpecDataType condition = new SpecDataType(method, instType, enzyme, mod);
 		NewRankScorer scorer = scorerTable.get(condition);
 		if(scorer != null)
@@ -100,15 +110,6 @@ public class NewScorerFactory {
 	{
 		if(method != null && method == ActivationMethod.FUSION)
 			return null;
-		
-		if(method == null)
-			method = ActivationMethod.CID;
-		if(enzyme == null)
-			enzyme = Enzyme.TRYPSIN;
-		if(instType == null)
-			instType = InstrumentType.LOW_RESOLUTION_LTQ;
-		if(method == ActivationMethod.HCD)
-			instType = InstrumentType.HIGH_RESOLUTION_LTQ;
 		
 		SpecDataType condition = new SpecDataType(method, instType, enzyme);
 		NewRankScorer scorer = scorerTable.get(condition);
@@ -165,7 +166,7 @@ public class NewScorerFactory {
 					System.out.print(method.getName()+" "+inst.getName()+" "+enzyme.getName()+" -> ");
 					if(scorer != null)
 					{
-						System.out.println(scorer.getActivationMethod().getName()+" "+scorer.getInstrumentType().getName()+" "+scorer.getEnzyme().getName());
+						System.out.println(scorer.getActivationMethod().getName()+" "+scorer.getInstrumentType().getName()+" "+scorer.getEnzyme().getName()+" "+scorer.hashCode());
 					}
 					else
 					{

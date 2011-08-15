@@ -132,8 +132,9 @@ public class ScoredSpectraMap {
 			int specIndex = specKey.getSpecIndex();
 			Spectrum spec = specMap.getSpectrumBySpecIndex(specIndex);
 			if(activationMethod == null || activationMethod == ActivationMethod.FUSION)
+			{
 				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, mod);
-			
+			}
 			int charge = specKey.getCharge();
 			spec.setCharge(charge);
 			NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
