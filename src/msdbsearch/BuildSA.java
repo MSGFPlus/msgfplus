@@ -43,6 +43,7 @@ public class BuildSA {
 		System.out.println("Error: " + message);
 		System.out.print("Usage: java -Xmx3500M BuildSA\n" +
 				"\t-d Database (*.fasta or *.fa)\n" +
+				"\t-o DirectoryName\n" +
 				"\t[-tda 0/1/2] (0: Target database only, 1: Concatenated target-decoy database only, 2: All (Default))\n");
 		System.exit(-1);
 	}

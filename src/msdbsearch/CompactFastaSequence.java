@@ -378,41 +378,9 @@ public class CompactFastaSequence implements Sequence {
 			this.size = size;
 			int id = in.readInt(); 
 
-			// Modified by Sangtae
-//			System.out.println("MaxMem: " + Runtime.getRuntime().maxMemory());
-//			System.out.println("FreeMem1: " + Runtime.getRuntime().freeMemory());
-//			System.out.println("TotalMem1: " + Runtime.getRuntime().totalMemory());
-			
-//			byte[] sequenceArr = new byte[size];
 			sequence = new byte[size];
-			
-//			System.out.println("FreeMem2: " + Runtime.getRuntime().freeMemory());
-//			System.out.println("TotalMem2: " + Runtime.getRuntime().totalMemory());
-			
 			in.read(sequence);
-			
-//			System.out.println("FreeMem3: " + Runtime.getRuntime().freeMemory());
-//			System.out.println("TotalMem3: " + Runtime.getRuntime().totalMemory());
 
-//			sequence = ByteBuffer.wrap(sequenceArr).asReadOnlyBuffer();
-			
-//			System.out.println("FreeMem4: " + Runtime.getRuntime().freeMemory());
-//			System.out.println("TotalMem4: " + Runtime.getRuntime().totalMemory());
-			
-//			this.original = fc.map(FileChannel.MapMode.READ_ONLY, 2*Integer.SIZE/Byte.SIZE + size, size);
-//			byte[] originalArr = new byte[size];
-//			System.out.println("FreeMem5: " + Runtime.getRuntime().freeMemory());
-//			System.out.println("TotalMem5: " + Runtime.getRuntime().totalMemory());
-//			in.read(originalArr);
-//			System.out.println("FreeMem6: " + Runtime.getRuntime().freeMemory());
-//			System.out.println("TotalMem6: " + Runtime.getRuntime().totalMemory());
-//			original = ByteBuffer.wrap(originalArr).asReadOnlyBuffer();
-//			System.out.println("FreeMem7: " + Runtime.getRuntime().freeMemory());
-//			System.out.println("TotalMem7: " + Runtime.getRuntime().totalMemory());
-
-			//this.original = new char[size];
-			//ByteBuffer originalChars = fc.map(FileChannel.MapMode.READ_ONLY, 2*Integer.SIZE/Byte.SIZE + size, size);
-			//for (int index=0; index<size; index++) this.original[index] = (char)originalChars.get(index);
 			in.close();
 			return id;
 		}
