@@ -22,11 +22,13 @@ import parser.PklSpectrumParser;
 import parser.SpectrumParser;
 import suffixarray.SuffixArraySequence;
 
+import msdbsearch.CompactFastaSequence;
+import msdbsearch.CompactSuffixArray;
 import msdbsearch.ConcurrentMSGFDB;
 import msdbsearch.DBScanner;
 import msdbsearch.ReverseDB;
 import msdbsearch.ScoredSpectraMap;
-import msdbsearch.SuffixArrayForMSGFDB;
+
 import msgf.MSGFDBResultGenerator;
 import msgf.Tolerance;
 import msscorer.NewScorerFactory.SpecDataType;
@@ -613,7 +615,8 @@ public class MSGFDB {
 		
 		System.out.print("Suffix array loading...");
 		long time = System.currentTimeMillis();
-		SuffixArrayForMSGFDB sa = new SuffixArrayForMSGFDB(new SuffixArraySequence(databaseFile.getPath()), minPeptideLength, maxPeptideLength);
+//		SuffixArrayForMSGFDB sa = new SuffixArrayForMSGFDB(new SuffixArraySequence(databaseFile.getPath()), minPeptideLength, maxPeptideLength);
+		CompactSuffixArray sa = new CompactSuffixArray(new CompactFastaSequence(databaseFile.getPath()), maxPeptideLength);
     	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
 		
 		while(true)

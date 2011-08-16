@@ -74,9 +74,10 @@ public class Chores {
 //		System.out.println(aaSet.getNeighboringAACleavageCredit()+" "+aaSet.getNeighboringAACleavagePenalty());
 //		System.out.println(aaSet.getPeptideCleavageCredit()+" "+aaSet.getPeptideCleavagePenalty());
 //		testSpecKey();
-		String pep = "-.asdf.AA";
-		System.out.println(pep.matches(".\\..+\\.."));
-		
+//		String pep = "-.asdf.AA";
+//		System.out.println(pep.matches(".\\..+\\.."));
+		String s = ">asdf asdfaaa";
+		System.out.println(s.substring(1).split("\\s+")[0]);
 	}
 
 	public static void testSpecKey() throws Exception

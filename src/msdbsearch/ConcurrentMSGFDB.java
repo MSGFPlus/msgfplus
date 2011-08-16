@@ -86,7 +86,7 @@ public class ConcurrentMSGFDB {
 		
 		public RunMSGFDB(
 				ScoredSpectraMap specScanner,
-				SuffixArrayForMSGFDB sa,
+				CompactSuffixArray sa,
 				Enzyme enzyme,
 				AminoAcidSet aaSet,
 				int numPeptidesPerSpec,

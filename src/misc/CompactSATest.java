@@ -1,7 +1,7 @@
 package misc;
 
-import suffixarray.SuffixArraySequence;
-import msdbsearch.SuffixArrayForMSGFDB;
+import msdbsearch.CompactFastaSequence;
+import msdbsearch.CompactSuffixArray;
 
 public class CompactSATest {
 	public static void main(String argv[]) throws Exception
@@ -20,7 +20,7 @@ public class CompactSATest {
 	public static void readTest(String fileName) throws Exception
 	{
 //		String fileName = "/home/sangtaekim/Research/Data/RNASeq/AminPark_tryptic_pep.revConcat.fasta";
-		SuffixArrayForMSGFDB sa = new SuffixArrayForMSGFDB(new SuffixArraySequence(fileName), 6, 30);
+		CompactSuffixArray sa = new CompactSuffixArray(new CompactFastaSequence(fileName), 30);
 		System.out.println("Read complete");
 	}
 }

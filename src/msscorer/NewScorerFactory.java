@@ -75,9 +75,9 @@ public class NewScorerFactory {
 	public static NewRankScorer get(ActivationMethod method, Enzyme enzyme)
 	{
 		if(method != ActivationMethod.HCD)
-			return get(method, InstrumentType.LOW_RESOLUTION_LTQ, enzyme);
+			return get(method, InstrumentType.LOW_RESOLUTION_LTQ, enzyme, null);
 		else
-			return get(method, InstrumentType.HIGH_RESOLUTION_LTQ, enzyme);
+			return get(method, InstrumentType.HIGH_RESOLUTION_LTQ, enzyme, null);
 	}
 	
 	public static NewRankScorer get(ActivationMethod method, InstrumentType instType, Enzyme enzyme, Modification mod)
@@ -162,7 +162,7 @@ public class NewScorerFactory {
 			{
 				for(Enzyme enzyme : Enzyme.getAllRegisteredEnzymes())
 				{
-					NewRankScorer scorer = NewScorerFactory.get(method, inst, enzyme);
+					NewRankScorer scorer = NewScorerFactory.get(method, inst, enzyme, null);
 					System.out.print(method.getName()+" "+inst.getName()+" "+enzyme.getName()+" -> ");
 					if(scorer != null)
 					{

@@ -1,17 +1,8 @@
 package msdbsearch;
 
 import java.io.*;
-import java.nio.*;
-import java.nio.channels.FileChannel;
 import java.util.*;
-
-import msgf.Tolerance;
-import msutil.AminoAcid;
-import msutil.AminoAcidSet;
-
 import sequences.Constants;
-import sequences.Sequence;
-import suffixarray.SuffixArraySequence;
 import suffixarray.SuffixFactory;
 
 /**
@@ -21,11 +12,10 @@ import suffixarray.SuffixFactory;
  */
 public class CompactSuffixArray {
 
-
-
 	/***** CONSTANTS *****/
 	// The default extension of a suffix array file.
-	protected static final String SUFFIX_EXTENSION = ".sarray";
+	protected static final String EXTENSION_INDICES = ".sarr";
+	protected static final String EXTENSION_NLCPS = ".snlcp";
 
 	// the size of the bucket for the suffix array creation
 	protected static final int BUCKET_SIZE = 5;
@@ -33,77 +23,141 @@ public class CompactSuffixArray {
 	// the size of an int primitive type in bytes
 	protected static final int INT_BYTE_SIZE = Integer.SIZE / Byte.SIZE;
 
-
 	/***** MEMBERS *****/
 	// the indices of the sorted suffixes
-	//	protected IntBuffer indices;
-	DataInputStream inIndices;
-
+//	DataInputStream indices;
+	private final File indexFile;
+	
+	// precomputed LCPs of neighboring suffixes
+//	DataInputStream neighboringLcps;
+	private final File nlcpFile;
+	
 	// the sequence representing all the suffixes
-	protected Sequence sequence;
+	private CompactFastaSequence sequence;
 
 	// the class that generates suffixes from the given adapter
-	protected SuffixFactory factory;
-
-	// precomputed LCPs of neighboring suffixes
-	protected ByteBuffer neighboringLcps;	// added by Sangtae
+	private SuffixFactory factory;
 
 	// the number of suffixes in this array
-	protected int size;
+	private int size;
 
-
-	/**
-	 * Constructor that creates a suffixArray file from the given sequence. The
-	 * name of the suffixArray will have the basePath of the sequence with the
-	 * suffix array extension attached to it.
-	 * @param sequence the sequence object to create the suffix array from.
-	 * @param suffixFile the path to the precomputed suffix array file. If the
-	 *        file does not exist, write it.
-	 */
-	public CompactSuffixArray(Sequence sequence, String suffixFile) {
-
-		this.sequence = sequence;
-		this.factory = new SuffixFactory(sequence);
-
-		// create the file if it doesn't exist.
-		if(!new File(suffixFile).exists()) {           
-			createSuffixArrayFile(sequence, suffixFile);
-		}
-
-		// load the file
-		int id = readSuffixArrayFile(suffixFile);
-
-		// check that the files are consistent
-		if(id != sequence.getId()) {
-			System.err.println(suffixFile + " was not created from the sequence.");
-			System.err.println("Please recreate the suffix array file.");
-			System.exit(-1);
-		}
-
-	}
-
-
+	// the number of distinct peptides
+	private final int maxPeptideLength;
+	private int[] numDisinctPeptides;
+	
 	/**
 	 * Constructor that attempts to read the suffix array from the provided file.
 	 * @param sequence the sequence object.
 	 */
-	public CompactSuffixArray(CompactFastaSequence sequence) {
+	public CompactSuffixArray(CompactFastaSequence sequence, int maxPeptideLength) {
 		// infer the suffix array file from the sequence.
-		this(sequence, sequence.getBaseFilepath() + SUFFIX_EXTENSION);
+		this.sequence = sequence;
+		this.factory = new SuffixFactory(sequence);
+		indexFile = new File(sequence.getBaseFilepath() + EXTENSION_INDICES);
+		nlcpFile = new File(sequence.getBaseFilepath() + EXTENSION_NLCPS);
+
+		// create the file if it doesn't exist.
+		if(!indexFile.exists() || !nlcpFile.exists()) {           
+			createSuffixArrayFiles(sequence, indexFile, nlcpFile);
+		}
+
+		// check the ids of indexFile and nlcpFile
+		int id = checkID();
+
+		// check that the files are consistent
+		if(id != sequence.getId()) {
+			System.err.println("Suffix array files are not consistent: " + indexFile + ", " + nlcpFile);
+			System.err.println("Please recreate the suffix array file.");
+			System.exit(-1);
+		}
+		
+		this.maxPeptideLength = maxPeptideLength;
+		computeNumDistinctPeptides();
 	}
 
+	public File getIndexFile()	{	return this.indexFile; }
+	public File getNeighboringLcpFile()	{	return this.nlcpFile; }
+	public CompactFastaSequence getSequence()	{ return sequence; }
+	
 	public int getSize()
 	{
 		return size;
 	}
 
+	public int getNumDistinctPeptides(int length)	
+	{
+		// no boundary check
+		return numDisinctPeptides[length];
+	}
+	
+	public String getAnnotation(long index)
+	{
+		return sequence.getAnnotation(index);
+	}	
+	
+	private void computeNumDistinctPeptides()
+	{
+		numDisinctPeptides = new int[maxPeptideLength+2];
+		try {
+			DataInputStream neighboringLcps = new DataInputStream(new BufferedInputStream(new FileInputStream(nlcpFile)));
+			int size = neighboringLcps.readInt();
+			neighboringLcps.readInt();	// skip id
+			
+			for(int i=0; i<size; i++)
+			{
+				byte lcp = neighboringLcps.readByte();
+				for(int l=lcp+1; l<numDisinctPeptides.length; l++)
+				{
+					numDisinctPeptides[l]++;
+				}
+			}
+			neighboringLcps.close();
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
+	}
+	
+	/**
+	 * Helper method that initializes the suffixArray object from the file.
+	 * Initializes indices, leftMiddleLcps, middleRightLcps and neighboringLcps.
+	 * @param suffixFile the suffix array file.
+	 * @return returns the id of this file for consistency check.
+	 */
+	private int checkID() {
+		//		System.out.println("SAForMSGFDB Reading " + suffixFile);
+		try {
+			DataInputStream indices = new DataInputStream(new BufferedInputStream(new FileInputStream(indexFile)));
+			// read the first integer which encodes for the size of the file
+			int sizeIndexFile = indices.readInt();
+			// the second integer is the id
+			int idIndexFile = indices.readInt();
 
+			DataInputStream neighboringLcps = new DataInputStream(new BufferedInputStream(new FileInputStream(nlcpFile)));
+			int sizeNLcp = neighboringLcps.readInt();
+			int idNLcp = neighboringLcps.readInt();
+			
+			indices.close();
+			neighboringLcps.close();
+			
+			if(sizeIndexFile == sizeNLcp && idIndexFile == idNLcp)
+				return idIndexFile;
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
+
+		return 0;
+	}		
+	
 	/**
 	 * Helper method that creates the suffixFile.
 	 * @param sequence the Adapter object that represents the database (text).
 	 * @param suffixFile the output file.
 	 */
-	protected void createSuffixArrayFile(Sequence sequence, String suffixFile) {
+	private void createSuffixArrayFiles(CompactFastaSequence sequence, File indexFile, File nlcpFile) {
 		System.out.println("Creating the suffix array indexed file... Size: " + sequence.getSize());
 
 		// helper local class
@@ -113,7 +167,6 @@ public class CompactSuffixArray {
 			private int[] items;
 			private int size;
 
-
 			/**
 			 * Constructor.
 			 */
@@ -122,27 +175,16 @@ public class CompactSuffixArray {
 				this.size = 0;
 			}
 
-
 			/**
 			 * Add item to the bucket.
 			 * @param item the item to add.
 			 */
 			public void add(int item) {
-
 				if(this.size >= items.length) {
-					// JAVA 1.5 code
-					int[] tempArray = new int[this.size+INCREMENT_SIZE];
-					for(int i = 0; i < size; i++)     tempArray[i] = this.items[i];
-					this.items = tempArray;
+					this.items = Arrays.copyOf(this.items, this.size+INCREMENT_SIZE);
 				}
-				/* JAVA 1.6 code
-          this.items = Arrays.copyOf(this.items, this.size+INCREMENT_SIZE);
-        }
-				 */
 				this.items[this.size++] = item;
-
 			} 
-
 
 			/**
 			 * Get a sorted version of this bucket.
@@ -158,7 +200,6 @@ public class CompactSuffixArray {
 			}
 		}
 
-
 		// the size of the alphabet to make the hashes
 		int hashBase = sequence.getAlphabetSize();
 		if(hashBase > 30)
@@ -170,10 +211,7 @@ public class CompactSuffixArray {
 		// this number is to efficiently calculate the next hash
 		int denominator = 1;
 		for(int i=0; i < BUCKET_SIZE-1; i++)
-		{
 			denominator *= hashBase;
-		}
-
 
 		// the number of buckets  required to encode for all hashes
 		int numBuckets = denominator*hashBase;
@@ -188,11 +226,11 @@ public class CompactSuffixArray {
 		Bucket[] bucketSuffixes = new Bucket[numBuckets];
 
 		// main loop for putting suffixes into the buckets
-		for(int i=BUCKET_SIZE-1, j=0, limit = (int)sequence.getSize(); j < limit; i++, j++) {
-
+		for(int i=BUCKET_SIZE-1, j=0; j < (int)sequence.getSize(); i++, j++) {
 			// print progress
 			if(j % 1000001 == 0)  System.out.printf("Suffix creation: %.2f%% complete.\n", j*100.0/sequence.getSize());
 
+//			System.out.println(j);
 			// quick wait to derive the next hash, since we are reading the sequence in order 
 			byte b = Constants.TERMINATOR;
 			if (i<sequence.getSize()) b = sequence.getByteAt(i);
@@ -206,12 +244,14 @@ public class CompactSuffixArray {
 		}
 
 		try {
-			DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(suffixFile)));
-			out.writeInt((int)sequence.getSize());
-			out.writeInt(sequence.getId());      
+			DataOutputStream indexOut = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(indexFile)));
+			DataOutputStream nLcpOut = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(nlcpFile)));
+			indexOut.writeInt((int)sequence.getSize());
+			indexOut.writeInt(sequence.getId());      
+			nLcpOut.writeInt((int)sequence.getSize());
+			nLcpOut.writeInt(sequence.getId());
 			SuffixFactory.Suffix prevBucketSuffix = null;
-			byte[] neighboringLcps = new byte[(int)sequence.getSize()];         // the computed neighboring lcps
-			int order = 0;
+//			byte[] neighboringLcps = new byte[(int)sequence.getSize()];         // the computed neighboring lcps
 			for(int i=0; i < bucketSuffixes.length; i++) {
 
 				// print out progress
@@ -227,30 +267,33 @@ public class CompactSuffixArray {
 						lcp = first.getLCP(prevBucketSuffix);
 					}
 					// write information to file
-					out.writeInt(first.getIndex());
-					neighboringLcps[order++] = lcp; 
+					indexOut.writeInt(first.getIndex());
+//					neighboringLcps[order++] = lcp;
+					nLcpOut.writeByte(lcp);
 					SuffixFactory.Suffix prevSuffix = first;
 
 					for(int j = 1; j < sortedSuffixes.length; j++) {
 						SuffixFactory.Suffix thisSuffix = sortedSuffixes[j];
 						//store the information
-						out.writeInt(thisSuffix.getIndex());
-						neighboringLcps[order++] = thisSuffix.getLCP(prevSuffix, BUCKET_SIZE);
+						indexOut.writeInt(thisSuffix.getIndex());
+//						neighboringLcps[order++] = thisSuffix.getLCP(prevSuffix, BUCKET_SIZE);
+						nLcpOut.writeByte(thisSuffix.getLCP(prevSuffix, BUCKET_SIZE));
 						prevSuffix = thisSuffix;
 					}
 					prevBucketSuffix = sortedSuffixes[0];
+					bucketSuffixes[i] = null;	// deallocate the memory
 				}
 			}
 
-			// compute the leftMiddle and middleRight lcps
-			byte[] rLcps = new byte[(int)sequence.getSize()];
-			byte[] lLcps = new byte[(int)sequence.getSize()];
-			System.out.println("Computing the parameterized lcp arrays..");
-			initializeLcps(neighboringLcps, lLcps, rLcps, 0, (int)(sequence.getSize()-1));
-			out.write(lLcps);
-			out.write(rLcps);
-			out.write(neighboringLcps);	// Sangtae
-			out.flush(); out.close();
+			bucketSuffixes = null;
+			
+			indexOut.flush();
+			indexOut.close();
+			
+			nLcpOut.flush();
+			nLcpOut.close();
+			
+			// Do not compute Llcps and Rlcps
 		}
 		catch(IOException e) {
 			e.printStackTrace();
@@ -258,568 +301,19 @@ public class CompactSuffixArray {
 		}
 		return;
 	}
-
-
-	/**
-	 * Helper method that initializes the suffixArray object from the file.
-	 * Initializes indices, leftMiddleLcps, middleRightLcps and neighboringLcps.
-	 * @param suffixFile the suffix array file.
-	 * @return returns the id of this file for consistency check.
-	 */
-	protected int readSuffixArrayFile(String suffixFile) {
-		//		System.out.println("SAForMSGFDB Reading " + suffixFile);
-		try {
-			// read the first integer which encodes for the size of the file
-			= new DataInputStream(new BufferedInputStream(new FileInputStream(suffixFile)));
-			size = in.readInt();
-			// the second integer is the id
-			int id = in.readInt();
-
-			int[] indexArr = new int[size];
-			for(int i=0; i<indexArr.length; i++)
-				indexArr[i] = in.readInt();
-			indices = IntBuffer.wrap(indexArr).asReadOnlyBuffer();
-
-			int sizeOfLcps = size;
-			// skip leftMiddleLcps and middleRightLcps
-			long totalBytesSkipped = 0;
-			while(totalBytesSkipped < 2*sizeOfLcps)
-			{
-				long bytesSkipped = in.skip(2*sizeOfLcps-totalBytesSkipped);
-				if(bytesSkipped == 0)
-				{
-					System.out.println("Error while reading suffix array: " + totalBytesSkipped + "!=" +2*sizeOfLcps);
-					System.exit(-1);
-				}
-				totalBytesSkipped += bytesSkipped;
-			}
-			if(totalBytesSkipped != 2*sizeOfLcps)
-			{
-				System.out.println("Error while reading suffix array: " + totalBytesSkipped + "!=" +2*sizeOfLcps);
-				System.exit(-1);
-			}
-			// read neighboringLcps
-			byte[] neighboringLcpArr = new byte[sizeOfLcps];
-			in.read(neighboringLcpArr);
-			neighboringLcps = ByteBuffer.wrap(neighboringLcpArr).asReadOnlyBuffer();
-			in.close();
-
-			return id;
-		}
-		catch(IOException e) {
-			e.printStackTrace();
-			System.exit(-1);
-		}
-
-		return 0;
-	}		
 
 	@Override
 	public String toString() {
 		String retVal = "Size of the suffix array: " + this.size + "\n";
-		int rank = 0;
-		while(indices.hasRemaining()) {
-			int index = indices.get();
-			int lcp = this.neighboringLcps.get(rank);
-			retVal += rank + "\t" + index + "\t" + lcp + "\t" + sequence.toString(factory.makeSuffix(index).getSequence()) + "\n";
-			rank++;
-		}
-		indices.rewind();        // reset marks after iteration
-		neighboringLcps.rewind();
+//		int rank = 0;
+//		while(indices.hasRemaining()) {
+//			int index = indices.get();
+//			int lcp = this.neighboringLcps.get(rank);
+//			retVal += rank + "\t" + index + "\t" + lcp + "\t" + sequence.toString(factory.makeSuffix(index).getSequence()) + "\n";
+//			rank++;
+//		}
+//		indices.rewind();        // reset marks after iteration
+//		neighboringLcps.rewind();
 		return retVal;
 	}
-
-
-	/**
-	 * This method translates the suffix array search index into a position of 
-	 * the Adapter (sequence).
-	 * @param index
-	 */
-	public int getPosition(int index) {
-		if(index >= 0 && index < this.size)     return this.indices.get(index);
-		return index;
-	}
-
-
-	/**
-	 * Alternative to search the suffix array in which a MatchSet is return with
-	 * all the starting positions in the sequence represented by this SuffixArray.
-	 * @param pattern the ByteSequence to look for. The ByteSequence can be easily
-	 *        translated from the Adapter sequence.
-	 * @return a MatchSet object containing the match positions.
-	 */
-	public MatchSet findAll(ByteSequence pattern) {
-		int matchIndex = search(pattern);
-		MatchSet ms = new MatchSet();
-
-		if(matchIndex >= 0) {
-			for(int i = matchIndex; i < this.size; i++) {
-				int start = getPosition(i);
-				int numMatches = this.sequence.getLCP(pattern, start);
-				if(numMatches == pattern.getSize())
-					ms.add(start, start+pattern.getSize());
-				else
-					break;
-			}
-		}
-		return ms;
-	}
-
-	/**
-	 * Find all matches in the sequence represented by this SuffixArray and return their string representations.
-	 * @author sangtaekim
-	 * @param pattern the query string
-	 * @return a list of matched strings.
-	 */
-	public ArrayList<String> getAllMatchedStrings(String pattern)
-	{
-		MatchSet matchSet = findAll(pattern);
-		ArrayList<String> matches = new ArrayList<String>();
-		for(int i=0; i<matchSet.getSize(); i++)
-		{
-			int start = matchSet.getStart(i);
-			int end = matchSet.getEnd(i);
-			matches.add(sequence.toChar(sequence.getByteAt(start-1))+"."+sequence.getSubsequence(start, end)+"."+sequence.toChar(sequence.getByteAt(end)));
-		}
-		return matches;
-	}
-
-	/**
-	 * Find all matches in the sequence represented by this SuffixArray and return their string representations.
-	 * @author sangtaekim
-	 * @param pattern the query string
-	 * @param lengthFlankingPep the length of flanking strings attached to the pattern
-	 * @return a list of matched strings.
-	 */
-	public ArrayList<String> getAllMatchedStrings(String pattern, int lengthFlankingStr)
-	{
-		MatchSet matchSet = findAll(pattern);
-		ArrayList<String> matches = new ArrayList<String>();
-		for(int i=0; i<matchSet.getSize(); i++)
-		{
-			int start = matchSet.getStart(i);
-			int end = matchSet.getEnd(i);
-			String leftStr = sequence.getSubsequence(Math.max(0, start-lengthFlankingStr), start);
-			String rightStr = sequence.getSubsequence(end+1, Math.min(end+1+lengthFlankingStr, sequence.getSize()));
-			matches.add(leftStr+"."+sequence.getSubsequence(start, end)+"."+rightStr);
-		}
-		return matches;
-	}
-
-	/**
-	 * Find all matches in the sequence represented by this SuffixArray and return annotations of all matched proteins.
-	 * @param pattern the query string.
-	 * @return a set of protein annotations.
-	 */
-	public ArrayList<String> getAllMatchingAnnotations(String pattern)
-	{
-		ArrayList<String> annotationSet = new ArrayList<String>();
-		MatchSet matchSet = findAll(pattern);
-		for(int i=0; i<matchSet.getSize(); i++)
-			annotationSet.add(sequence.getAnnotation(matchSet.getStart(i)));
-
-		return annotationSet;
-	}
-
-	/**
-	 * Find the annotation of the corresponding index.
-	 * @param pattern the query string.
-	 * @return the annotation of the corresponding index.
-	 */
-	public String getAnnotation(int index)
-	{
-		return sequence.getAnnotation(index);
-	}
-
-	public ArrayList<String> getAllMatchingEntries(String pattern)
-	{
-		ArrayList<String> chunkSet = new ArrayList<String>();
-		MatchSet matchSet = findAll(pattern);
-		for(int i=0; i<matchSet.getSize(); i++)
-			chunkSet.add(sequence.getMatchingEntry(matchSet.getStart(i)));
-
-		return chunkSet;
-	}
-
-	/**
-	 * 
-	 * @param pattern
-	 * @return
-	 */
-	public MatchSet findAll(String pattern) {
-		return findAll(sequence.toBytes(pattern));
-	}
-
-
-	/**
-	 * Alternative method of searching that takes input as a string.
-	 * @param pattern the pattern in String form.
-	 * @return the index returned is the relative position in this suffix array. To
-	 * get the index in the Adapter sequence, call getPosition.
-	 */
-	public int search(String pattern) {
-		return search(sequence.toBytes(pattern));
-	}
-
-	/**
-	 * <p>The generalized search method for this suffixArray. This search routine
-	 * does a binary search on the suffixArray and returns the starting index
-	 * of the pattern. A positive number indicates a successful match, while a
-	 * negative return value means no match.</p>
-	 * <p>It is very easy to decode the match indices. The return value is
-	 * guaranteed to be the left-most (smallest) match in the suffix array. 
-	 * Therefore, to retrieve all the matches, one only needs to walk to the right
-	 * until the sorted suffixes do not match the query.</p>
-	 * <p>For negative values, it represents the insertion point of the pattern
-	 * into the suffix array shifted by 1. For example, if the return value is m,
-	 * then pattern should be inserted at -m-1 and all elements at -m-1, including
-	 * -m-1 shifted to the right by 1 position. In other words element at -m-1 is
-	 * the first element that is lexographically greater that pattern.</p>
-	 * <p>This implementation takes O(P+logN) per execution, where P is the length
-	 * of the pattern and N is the size of the suffix array (Manber & Myers method).</p> 
-	 * @param pattern the query to search for in the suffix array.
-	 * @return the index returned is the relative position in this suffix array. To
-	 * get the index in the Adapter sequence, call getPosition.
-	 */
-	public int search(ByteSequence pattern) {
-
-		// check that the pattern is within the left boundary
-		int leftResult = pattern.compareTo(factory.makeSuffix(indices.get(0)));
-		if(Math.abs(leftResult)-1 == pattern.getSize())
-			return 0;              // exact leftmost match of the first element
-		if(leftResult < 0)       
-			return -1;             // insertion point is at position 0
-
-		// check that the pattern is within the right boundary
-		int rightResult = factory.makeSuffix(indices.get(this.size-1)).compareTo(pattern); 
-		if(rightResult < 0)      
-			return -this.size;     // insertion point is at the end of the array
-
-		// initialize the longest common prefixes values
-		int queryLeftLcp = pattern.getLCP(factory.makeSuffix(indices.get(0)));
-		int queryRightLcp = pattern.getLCP(factory.makeSuffix(indices.get(this.size-1)));
-
-		// debug code
-		// System.out.println(queryLeftLcp + "\t" + queryRightLcp);
-
-		// indices for the binary search
-		int leftIndex = 0;
-		int rightIndex = (int)sequence.getSize()-1;
-
-		// loop invariant: element at leftIndex < pattern <= element at rightIndex
-		while(rightIndex-leftIndex > 1) {
-
-			int middleIndex = (leftIndex+rightIndex)/2;
-			if(queryLeftLcp >= queryRightLcp) {
-				byte leftMiddleLcp = this.leftMiddleLcps.get(middleIndex);
-				if(leftMiddleLcp > queryLeftLcp) {       // and queryMiddle == queryLeft
-					leftIndex = middleIndex;
-					// queryLeft = queryMiddle, already true
-				}
-				else if(queryLeftLcp > leftMiddleLcp) {  // and queryMiddle == leftMiddle
-					// we can conclude that query < middle because queryMiddle < queryLeft
-					queryRightLcp = leftMiddleLcp;
-					rightIndex = middleIndex;
-				}
-				else {     // queryLeft == leftMiddle == queryMiddle 
-					int middleResult = Math.min(pattern.compareTo(factory.makeSuffix(indices.get(middleIndex)), queryLeftLcp), Byte.MAX_VALUE);
-					if(middleResult <= 0) {      // pattern <= middle
-						queryRightLcp = middleResult == 0 ? pattern.getSize() : -middleResult-1;
-						rightIndex = middleIndex;
-					}
-					else {                       // middle < pattern
-						queryLeftLcp = middleResult-1;
-						leftIndex = middleIndex;
-					}
-				}
-			}
-			else {       // queryRight > queryLeft
-				int middleRightLcp = this.middleRightLcps.get(middleIndex);
-				if(middleRightLcp > queryRightLcp) {           // and queryMiddle == queryRight
-					rightIndex = middleIndex;
-					// queryRight = queryMiddle, already true
-				}
-				else if(queryRightLcp > middleRightLcp) {      // and queryMiddle == middleRight
-					queryLeftLcp = middleRightLcp;
-					leftIndex = middleIndex;
-				}
-				else {     // middleRight == queryRight == queryMiddle
-					int middleResult = Math.min(pattern.compareTo(factory.makeSuffix(indices.get(middleIndex)), queryRightLcp), Byte.MAX_VALUE);
-					if(middleResult <= 0) {      // pattern <= middle
-						queryRightLcp = middleResult == 0 ? pattern.getSize() : -middleResult-1;
-						rightIndex = middleIndex;
-					}
-					else {                       // middle < pattern
-						queryLeftLcp = middleResult-1;
-						leftIndex = middleIndex;
-					}
-				}
-			}
-		}
-
-		// evaluate the base cases, found!
-		if(queryRightLcp == pattern.getSize())   return rightIndex;
-
-		// not found
-		return -rightIndex-1;
-	}
-
-
-	// To-do (sangtae): search suffix array using partial matches
-	// public MatchSet search(MatchSet partialMatch, byte b)
-
-	/**
-	 * Treat the parameter as the source of input. One line per query.
-	 * @param in the queries. One input per line. IMPLEMENT!!!
-	 */
-	public void searchWithFile(BufferedReader in) {
-		return;
-	}
-
-	public void printAllPeptides(AminoAcidSet aaSet, int minLength, int maxLength)
-	{
-		//		  ArrayList<Pair<Float,Integer>> pepList = new ArrayList<Pair<Float,Integer>>();
-
-		double[] aaMass = new double[128];
-		for(int i=0; i<aaMass.length; i++)
-			aaMass[i] = -1;
-		for(AminoAcid aa : aaSet)
-			aaMass[aa.getResidue()] = aa.getAccurateMass();
-		double[] prm = new double[maxLength];
-		int rank = 0;
-		int i = Integer.MAX_VALUE;
-		while(indices.hasRemaining()) {
-			int index = indices.get();
-			int lcp = this.neighboringLcps.get(rank);
-			rank++;
-			//			  System.out.println(sequence.getSubsequence(index, index+10)+":"+index+":"+lcp);
-			if(lcp > i)
-				continue;
-			for(i=lcp; i<maxLength; i++)
-			{
-				char residue = sequence.getCharAt(index+i);
-				double m = aaMass[residue];
-				if(m <= 0)
-				{
-					break;
-				}
-				if(i != 0)
-					prm[i] = prm[i-1] + m;
-				else
-					prm[i] = m;
-				if(i+1 >= minLength && i+1 <= maxLength)
-					//					  ;
-					//					  pepList.add(new Pair<Float,Integer>((float)prm[i], index));
-					System.out.println(index+"\t"+(float)prm[i]+"\t"+sequence.getSubsequence(index, index+i+1));
-			}
-		}
-
-		//		  Collections.sort(pepList, new Pair.PairComparator<Float,Integer>());
-		//		  System.out.println("Sorted");
-		indices.rewind();
-		neighboringLcps.rewind();
-	}
-
-
-	public int getNumCandidatePeptides(AminoAcidSet aaSet, float peptideMass, Tolerance tolerance)
-	{
-		double[] aaMass = new double[128];
-		for(int i=0; i<aaMass.length; i++)
-			aaMass[i] = -1;
-		for(AminoAcid aa : aaSet)
-			aaMass[aa.getResidue()] = aa.getAccurateMass();
-		int maxLength = 50;
-		float tolDa = tolerance.getToleranceAsDa(peptideMass);
-		double[] prm = new double[maxLength];
-		int numCandidatePeptides = 0;
-		int rank = 0;
-		int matchLength = Integer.MAX_VALUE;
-		while(indices.hasRemaining()) {
-			int index = indices.get();
-			int lcp = this.neighboringLcps.get(rank);
-			//			  System.out.println(sequence.getSubsequence(index, index+10)+":"+index+":"+lcp);
-			rank++;
-			if(lcp >= matchLength)
-			{
-				numCandidatePeptides++;
-				continue;
-			}
-			for(int i=lcp; i<maxLength; i++)
-			{
-				char residue = sequence.getCharAt(index+i);
-				double m = aaMass[residue];
-				if(m <= 0)
-				{
-					matchLength = Integer.MAX_VALUE;
-					break;
-				}
-				//				  if(sequence.getSubsequence(index, index+10).contains("_"))
-				//					  System.out.println("Debug");
-				if(i != 0)
-					prm[i] = prm[i-1] + m;
-				else
-					prm[i] = m;
-				if(prm[i] <= peptideMass - tolDa)
-					continue;
-				else if(prm[i] < peptideMass + tolDa)
-				{
-					matchLength = i;
-					numCandidatePeptides++;
-					break;
-				}
-				else
-				{
-					matchLength = Integer.MAX_VALUE;
-					break;
-				}
-			}
-		}
-
-		indices.rewind();
-		neighboringLcps.rewind();
-		return numCandidatePeptides;
-	}		
-
-	/***** METHODS NOT PORTED *****
-	 *  
-  public boolean canThrowOut(String seq) {
-    return search(seq) < 0;
-  }
-
-
-  public String searchForString(String pattern)
-  {
-    int index = search(pattern);
-    if(index < 0)
-      return null;
-    else
-    {
-      int startPos = pos[index];
-      return getMatchedString(startPos, pattern.length());
-    }
-  }
-
-  public String[] searchForAllStringWithAnnotation(String pattern)
-  {
-    int index = search(pattern);
-    if(index < 0)
-      return null;
-    else
-    {
-      TreeMap<Integer,String> matches = new TreeMap<Integer,String>();
-      int startPos = pos[index];
-      int minPos = startPos;
-      int maxPos = startPos;
-      String match = getMatchedString(startPos, pattern.length());
-      String peptide = match.substring(match.indexOf('.')+1,match.lastIndexOf('.'));
-      matches.put(startPos, match+"\t"+getAnnotation(startPos));
-
-      for(int i=index-1; i>=0; i--)
-      {
-        startPos = pos[i];
-        String matchedString = getMatchedString(startPos, pattern.length());
-        String matchedPeptide = matchedString.substring(matchedString.indexOf('.')+1, matchedString.lastIndexOf('.'));
-        boolean isMatch = true;
-        for(int l=pattern.length()-1; l>=0; l--)
-        {
-          if(HashIndex.getAAIndex(matchedPeptide.charAt(l)) != HashIndex.getAAIndex(pattern.charAt(l)))
-          {
-            isMatch = false;
-            break;
-          }
-        }
-        if(isMatch)
-        {
-          matches.put(startPos, matchedString+"\t"+getAnnotation(startPos));
-        }
-        else
-          break;
-      }
-      for(int i=index+1; i+pattern.length()<alphabet.length; i++)
-      {
-        startPos = pos[i];
-        String matchedString = getMatchedString(startPos, pattern.length());
-        String matchedPeptide = matchedString.substring(matchedString.indexOf('.')+1, matchedString.lastIndexOf('.'));
-        boolean isMatch = true;
-        for(int l=pattern.length()-1; l>=0; l--)
-        {
-          if(HashIndex.getAAIndex(matchedPeptide.charAt(l)) != HashIndex.getAAIndex(pattern.charAt(l)))
-          {
-            isMatch = false;
-            break;
-          }
-        }
-        if(isMatch)
-          matches.put(startPos, matchedString+"\t"+getAnnotation(startPos));
-        else
-          break;
-      }
-      ArrayList<String> results = new ArrayList<String>();
-      Iterator<Map.Entry<Integer, String>> itr = matches.entrySet().iterator();
-      while(itr.hasNext())
-        results.add(itr.next().getValue());
-      return results.toArray(new String[0]);
-    }
-  }
-
-  public String searchForStringWithAnnotation(String pattern)
-  {
-    int index = search(pattern);
-    if(index < 0)
-      return null;
-    else
-    {
-      int startPos = pos[index];
-
-      return getMatchedString(startPos, pattern.length())+"\t"+getAnnotation(startPos);
-    }
-  }
-
-  public String getAnnotationByIndex(int index, int length)
-  {
-    int startPos = pos[index];
-    return getMatchedString(startPos, length);
-  }
-
-  public String getMatchedString(int startPos, int length)
-  {
-    StringBuffer str = new StringBuffer();
-    if(startPos > 0)
-    {
-      if(origSeq[startPos-1] >= 0)
-        str.append(HashIndex.getAAFromIndex20(origSeq[startPos-1]));
-    }
-    str.append(".");
-    for(int i=startPos; i<startPos+length; i++)
-      str.append((HashIndex.getAAFromIndex20(origSeq[i])));
-    str.append(".");
-    if(startPos+length < origSeq.length)
-    {
-      if(origSeq[startPos+length] >= 0)
-        str.append(HashIndex.getAAFromIndex20(origSeq[startPos+length]));
-    }
-    return str.toString();
-  }
-
-  public String getAnnotation(int startPos)
-  {
-    String annotation = annotations.floorEntry(startPos).getValue();
-    return annotation;
-  }
-
-	public static void indexFastaFile(String fileName)
-	{
-		String name = fileName.substring(0, fileName.lastIndexOf('.'));
-		serializeFasta(fileName, name+".serial", name+".annotation");
-		generateSuffixArray(name+".serial", name+".sarr", name+".lcp");
-	}
-
-	public static void indexTextFile(String fileName)
-	{
-		String name = fileName.substring(0, fileName.lastIndexOf('.'));
-		serializeSequences(fileName, name+".serial");
-		generateSuffixArray(name+".serial", name+".sarr", name+".lcp");
-	}
-	 */
-
 }
