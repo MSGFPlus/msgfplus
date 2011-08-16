@@ -14,8 +14,8 @@ public class CompactSuffixArray {
 
 	/***** CONSTANTS *****/
 	// The default extension of a suffix array file.
-	protected static final String EXTENSION_INDICES = ".sarr";
-	protected static final String EXTENSION_NLCPS = ".snlcp";
+	protected static final String EXTENSION_INDICES = ".csarr";
+	protected static final String EXTENSION_NLCPS = ".cnlcp";
 
 	// the size of the bucket for the suffix array creation
 	protected static final int BUCKET_SIZE = 5;
@@ -42,16 +42,17 @@ public class CompactSuffixArray {
 	private int size;
 
 	// the number of distinct peptides
-	private final int maxPeptideLength;
+	private int maxPeptideLength;
 	private int[] numDisinctPeptides;
 	
 	/**
 	 * Constructor that attempts to read the suffix array from the provided file.
 	 * @param sequence the sequence object.
 	 */
-	public CompactSuffixArray(CompactFastaSequence sequence, int maxPeptideLength) {
+	public CompactSuffixArray(CompactFastaSequence sequence) {
 		// infer the suffix array file from the sequence.
 		this.sequence = sequence;
+		this.size = (int)sequence.getSize();
 		this.factory = new SuffixFactory(sequence);
 		indexFile = new File(sequence.getBaseFilepath() + EXTENSION_INDICES);
 		nlcpFile = new File(sequence.getBaseFilepath() + EXTENSION_NLCPS);
@@ -70,7 +71,14 @@ public class CompactSuffixArray {
 			System.err.println("Please recreate the suffix array file.");
 			System.exit(-1);
 		}
-		
+	}
+	
+	/**
+	 * Constructor that attempts to read the suffix array from the provided file.
+	 * @param sequence the sequence object.
+	 */
+	public CompactSuffixArray(CompactFastaSequence sequence, int maxPeptideLength) {
+		this(sequence);
 		this.maxPeptideLength = maxPeptideLength;
 		computeNumDistinctPeptides();
 	}

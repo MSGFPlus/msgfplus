@@ -20,8 +20,8 @@ import sequences.Sequence;
  */
 public class CompactFastaSequence implements Sequence {
 
-	public static final String SEQ_FILE_EXTENSION = ".seq";
-	public static final String ANNOTATION_FILE_EXTENSION = ".sanno";
+	public static final String SEQ_FILE_EXTENSION = ".cseq";
+	public static final String ANNOTATION_FILE_EXTENSION = ".canno";
 	
 	//this is the file in which the sequence was generated
 	private String baseFilepath;

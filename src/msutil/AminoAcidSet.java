@@ -646,7 +646,11 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		while((s=in.readLine()) != null)
 		{
 			lineNum++;
-			if(s.startsWith("#") || s.trim().length() == 0)
+			String[] tokenArr = s.split("#");
+			if(tokenArr.length == 0)
+				continue;
+			s = tokenArr[0].trim();
+			if(s.length() == 0)
 				continue;
 			else if(s.startsWith("NumMods="))
 			{

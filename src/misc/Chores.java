@@ -76,8 +76,18 @@ public class Chores {
 //		testSpecKey();
 //		String pep = "-.asdf.AA";
 //		System.out.println(pep.matches(".\\..+\\.."));
-		String s = ">asdf asdfaaa";
-		System.out.println(s.substring(1).split("\\s+")[0]);
+	
+		String s = "C2H3NO,*,opt,N-term,Carbamidomethylation     # Variable Carbamidomethyl N-term, +57.0214628";
+		s = " #asdfasdf";
+		String[] tokenArr = s.split("#");
+		if(tokenArr.length != 0)
+		{
+			s = tokenArr[0].trim();
+			System.out.println(s);
+			System.out.println(s.length());
+		}
+		else
+			System.out.println("size 0");
 	}
 
 	public static void testSpecKey() throws Exception
