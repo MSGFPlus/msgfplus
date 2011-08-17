@@ -3,12 +3,14 @@ package msdbsearch;
 import java.io.File;
 
 public class BuildSA {
+	
 	public static void main(String argv[])
 	{
 		if(argv.length < 2 || argv.length % 2 != 0)
 			printUsageAndExit("The number of parameters must be even.");
 		
 		File dbPath = null;
+		File outputDir = null;
 		int mode = 2;
 		for(int i=0; i<argv.length; i+=2)
 		{
@@ -18,7 +20,11 @@ public class BuildSA {
 			{
 				dbPath = new File(argv[i+1]);
 				if(!dbPath.exists())
-					printUsageAndExit(argv[0] + " doesn't exist.");
+					printUsageAndExit(argv[i+1] + " doesn't exist.");
+			}
+			else if(argv[i].equalsIgnoreCase("-o"))
+			{
+				outputDir = new File(argv[i+1]);
 			}
 			else if(argv[i].equalsIgnoreCase("-tda"))
 			{
@@ -35,20 +41,25 @@ public class BuildSA {
 		if(dbPath == null)
 			printUsageAndExit("Database must be specified!");
 		
-		buildSA(dbPath, mode);
+		if(outputDir == null)
+		{
+			outputDir = dbPath.getAbsoluteFile().getParentFile();
+		}
+		
+		buildSA(dbPath, outputDir, mode);
 	}
 	
 	public static void printUsageAndExit(String message)
 	{
 		System.out.println("Error: " + message);
 		System.out.print("Usage: java -Xmx3500M BuildSA\n" +
-				"\t-d Database (*.fasta or *.fa)\n" +
-				"\t-o DirectoryName\n" +
+				"\t-d DatabaseFile (*.fasta or *.fa)\n" +
+				"\t-o OutputDir\n" +
 				"\t[-tda 0/1/2] (0: Target database only, 1: Concatenated target-decoy database only, 2: All (Default))\n");
 		System.exit(-1);
 	}
 	
-	public static void buildSA(File path, int mode)
+	public static void buildSA(File path, File outputDir, int mode)
 	{
 		if(path.isDirectory())
 		{
@@ -56,27 +67,37 @@ public class BuildSA {
 			{
 				if(!f.getName().endsWith(".fasta") && !f.getName().endsWith(".fa"))
 					continue;
-				buildSAFiles(f, mode);		
+				buildSAFiles(f, outputDir, mode);		
 			}
 		}
 		else
 		{
 			if(path.getName().endsWith(".fasta") || path.getName().endsWith(".fa"))
 			{
-				buildSAFiles(path, mode);
+				buildSAFiles(path, outputDir, mode);
 			}
 		}
 		System.out.println("Done");
 	}
 	
-	public static void buildSAFiles(File databaseFile, int mode)
+	public static void buildSAFiles(File databaseFile, File outputDir, int mode)
 	{
+		if(!outputDir.exists())
+			outputDir.mkdir();
+		
 		String dbFileName = databaseFile.getName(); 
+		
+		File targetDBFile = new File(outputDir.getPath()+File.separator+dbFileName);
+		if(!targetDBFile.exists())
+		{
+			System.out.println("Creating " + targetDBFile.getName() + ".");
+			ReverseDB.copyDB(databaseFile.getPath(), targetDBFile.getPath());
+		}
 		
 		if(mode == 1 || mode == 2)
 		{
 			String concatDBFileName = dbFileName.substring(0, dbFileName.lastIndexOf('.'))+".revConcat.fasta";
-			File concatTargetDecoyDBFile = new File(databaseFile.getAbsoluteFile().getParent()+File.separator+concatDBFileName);
+			File concatTargetDecoyDBFile = new File(outputDir.getPath()+File.separator+concatDBFileName);
 			if(!concatTargetDecoyDBFile.exists())
 			{
 				System.out.println("Creating " + concatDBFileName + ".");
@@ -86,7 +107,7 @@ public class BuildSA {
 					System.exit(-1);
 				}
 			}
-			System.out.println("Building suffix array: " + databaseFile.getPath());
+			System.out.println("Building suffix array: " + concatTargetDecoyDBFile.getPath());
 			CompactFastaSequence tdaSequence = new CompactFastaSequence(concatTargetDecoyDBFile.getPath());
 			new CompactSuffixArray(tdaSequence);
 		}
@@ -94,7 +115,7 @@ public class BuildSA {
 		if(mode == 0 || mode == 2)
 		{
 			System.out.println("Building suffix array: " + databaseFile.getPath());
-			CompactFastaSequence sequence = new CompactFastaSequence(databaseFile.getPath());
+			CompactFastaSequence sequence = new CompactFastaSequence(targetDBFile.getPath());
 			new CompactSuffixArray(sequence);
 		}
 	}

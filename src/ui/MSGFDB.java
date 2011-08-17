@@ -20,7 +20,6 @@ import parser.MzXMLSpectraMap;
 import parser.PNNLSpectrumParser;
 import parser.PklSpectrumParser;
 import parser.SpectrumParser;
-import suffixarray.SuffixArraySequence;
 
 import msdbsearch.CompactFastaSequence;
 import msdbsearch.CompactSuffixArray;
@@ -45,7 +44,8 @@ import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
-	public static final String MSGFDB_VERSION = "";
+	public static final String VERSION = "6264";
+	public static final String RELEASE_DATE = "08/16/2011";
 	public static void main(String argv[])
 	{
 		long time = System.currentTimeMillis();
@@ -472,7 +472,7 @@ public class MSGFDB {
 	{
 		if(message != null)
 			System.out.println("Error: " + message + "\n");
-		System.out.println("MSGFDB v2 (08/16/2011)");
+		System.out.println("MSGFDB v"+ VERSION + "(" + RELEASE_DATE + ")");
 		System.out.print("Usage: java -Xmx2000M -jar MSGFDB.jar\n"
 				+ "\t-s SpectrumFile (*.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt)\n" //, *.mgf, *.pkl, *.ms2)\n"
 				+ "\t-d Database (*.fasta or *.fa)\n"
@@ -529,7 +529,7 @@ public class MSGFDB {
     		int numThreads
     		)
 	{
-    	
+		System.out.println("MSGFDB v"+ VERSION + "(" + RELEASE_DATE + ")");
     	Iterator<Spectrum> specItr = null;
 		SpectrumAccessorBySpecIndex specMap = null;
 		

@@ -106,4 +106,35 @@ public class ReverseDB {
 		
 		return true;
 	}
+	
+	public static boolean copyDB(String inFileName, String outFileName)
+	{
+		BufferedReader in = null;
+		PrintStream out = null;
+		try {
+			out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outFileName)));
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		}
+		
+		String s;
+		try {
+			in = new BufferedReader(new FileReader(inFileName));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		try {
+			while((s = in.readLine()) != null)
+			{
+				out.println(s);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		out.flush();
+		out.close();
+		
+		return true;
+	}	
 }

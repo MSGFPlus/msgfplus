@@ -246,8 +246,8 @@ public class DBScanner {
 					}
 				}
 				
-	//			if(verbose && rank % 1000000 == 0)
-	//				System.out.println("DBSearch: " + rank/(float)size*100 + "%");
+//				if(verbose && rank % 1000000 == 0)
+//					System.out.println("DBSearch: " + rank/(float)size*100 + "%");
 				
 				for(i=lcp > 1 ? lcp : 1; i<maxPeptideLength+1 && index+i<size; i++)	// ith character of a peptide
 				{

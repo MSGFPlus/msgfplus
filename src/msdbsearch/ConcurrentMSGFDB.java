@@ -130,12 +130,13 @@ public class ConcurrentMSGFDB {
 			long time = System.currentTimeMillis();
 			if(specScanner.getPepMassSpecKeyMap().size() == 0)
 				specScanner.makePepMassSpecKeyMap();
-			specScanner.preProcessSpectra();
 			System.out.print(threadName+": Preprocessing spectra... ");
-			System.out.format("%.3f sec\n", (float)((System.currentTimeMillis()-time)/1000));
+			specScanner.preProcessSpectra();
+			System.out.format("Elapsed time: %.2f sec\n", (float)((System.currentTimeMillis()-time)/1000));
 			
 			time = System.currentTimeMillis();
 			// DB search
+			System.out.print(threadName+": Database search... ");
 			if(searchMode == 1)
 				scanner.dbSearchNoEnzyme(true);
 			else if(searchMode == 2)
@@ -144,18 +145,17 @@ public class ConcurrentMSGFDB {
 				scanner.dbSearchNTermEnzyme(numberOfAllowableNonEnzymaticTermini, true);
 			else
 				scanner.dbSearchCTermEnzyme(numberOfAllowableNonEnzymaticTermini, true);
-			System.out.print(threadName+": Database search... ");
-			System.out.format("%.3f sec\n", (float)((System.currentTimeMillis()-time)/1000));
+			System.out.format("%.2f sec\n", (float)((System.currentTimeMillis()-time)/1000));
 			
 			time = System.currentTimeMillis();
 			scanner.computeSpecProb(storeScoreDist);
 			System.out.print(threadName+": Computing spectral probabilities... ");
-			System.out.format("%.3f sec\n", (float)((System.currentTimeMillis()-time)/1000));
+			System.out.format("%.2f sec\n", (float)((System.currentTimeMillis()-time)/1000));
 			
 			time = System.currentTimeMillis();
 			scanner.addDBSearchResults(gen, specFileName);
 			System.out.print(threadName+": Generating results... ");
-			System.out.format("%.3f sec\n", (float)((System.currentTimeMillis()-time)/1000));
+			System.out.format("%.2f sec\n", (float)((System.currentTimeMillis()-time)/1000));
 		}
 	}	
 }
