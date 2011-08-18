@@ -17,6 +17,7 @@ import msgf.NominalMass;
 import msgf.NominalMassFactory;
 import msgf.ScoredSpectrum;
 import msgf.Tolerance;
+import msscorer.IonProbability;
 import msscorer.NewRankScorer;
 import msscorer.NewScoredSpectrum;
 import msscorer.NewScorerFactory;
@@ -31,6 +32,7 @@ import msutil.Enzyme;
 import msutil.IonType;
 import msutil.Peak;
 import msutil.Peptide;
+import msutil.SpectraContainer;
 import msutil.SpectraIterator;
 import msutil.Spectrum;
 import msutil.WindowFilter;
@@ -63,6 +65,52 @@ public class Zubarev {
 //		testTagging();
 //		filtrationPowerNominalMass();
 //		filtrationPowerComposition(10);
+		deconvolutionTest();
+
+	}
+
+	public static void deconvolutionTest() throws Exception
+	{
+		for(int charge=2; charge<=4; charge++)
+		{
+			System.out.println("Charge: " + charge);
+			System.out.println("Before deconvolution");
+			deconvolutionTest(charge, false);
+			System.out.println("After deconvolution");
+			deconvolutionTest(charge, true);
+			System.out.println();
+		}
+	}
+	
+	public static void deconvolutionTest(int charge, boolean applyDeconvolution) throws Exception
+	{
+		String specFileName = System.getProperty("user.home")+"/Research/Data/Heck_DDDT/AnnotatedSpectra/HCD_HighRes_Tryp.mgf";
+//		specFileName = System.getProperty("user.home")+"/Research/Data/Zubarev/AnnotatedSpectra/Zubarev_HCD_Annotated.mgf";
+		SpectraContainer container = new SpectraContainer();
+
+		SpectraIterator itr = new SpectraIterator(specFileName, new MgfSpectrumParser());
+		
+		IonType[] ionTypes = {IonType.B, IonType.Y, IonType.A, IonType.getIonType("b2"), IonType.getIonType("y2")};
+		float toleranceBetweenIsotopes = 0.02f;
+		
+		while(itr.hasNext())
+		{
+			Spectrum spec = itr.next();
+			if(spec.getCharge() != charge)
+				continue;
+			if(applyDeconvolution)
+				container.add(spec.getDeconvolutedSpectrum(toleranceBetweenIsotopes));
+			else
+				container.add(spec);
+		}
+		
+		IonProbability probGen = new IonProbability(container.iterator(), ionTypes, new Tolerance(30, true));
+		float[] prob = probGen.getIonProb();
+		int i=0;
+		for(IonType ion : ionTypes)
+		{
+			System.out.println(ion.getName()+"\t"+prob[i++]);
+		}
 	}
 
 	public static void filtrationPowerComposition(float tolerancePPM) throws Exception

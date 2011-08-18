@@ -44,8 +44,10 @@ import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
-	public static final String VERSION = "6264";
-	public static final String RELEASE_DATE = "08/16/2011";
+	public static final String VERSION = "6267";
+	public static final String RELEASE_DATE = "08/17/2011";
+	
+	public static final String DECOY_DB_EXTENSION = "_RevConcat.fasta";
 	public static void main(String argv[])
 	{
 		long time = System.currentTimeMillis();
@@ -438,7 +440,7 @@ public class MSGFDB {
 		if(useTDA)
 		{
 			String dbFileName = databaseFile.getName();
-			String concatDBFileName = dbFileName.substring(0, dbFileName.lastIndexOf('.'))+".revConcat.fasta";
+			String concatDBFileName = dbFileName.substring(0, dbFileName.lastIndexOf('.'))+DECOY_DB_EXTENSION;
 			File concatTargetDecoyDBFile = new File(databaseFile.getAbsoluteFile().getParent()+File.separator+concatDBFileName);
 			if(!concatTargetDecoyDBFile.exists())
 			{

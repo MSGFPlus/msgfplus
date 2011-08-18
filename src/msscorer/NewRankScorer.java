@@ -24,7 +24,6 @@ import java.util.Map.Entry;
 import msgf.Histogram;
 import msgf.Tolerance;
 import msutil.ActivationMethod;
-import msutil.AminoAcidSet;
 import msutil.Enzyme;
 import msutil.InstrumentType;
 import msutil.IonType;

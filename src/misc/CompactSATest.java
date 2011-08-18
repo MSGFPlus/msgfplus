@@ -19,7 +19,7 @@ public class CompactSATest {
 	
 	public static void readTest(String fileName) throws Exception
 	{
-//		String fileName = "/home/sangtaekim/Research/Data/RNASeq/AminPark_tryptic_pep.revConcat.fasta";
+//		String fileName = "/home/sangtaekim/Research/Data/RNASeq/AminPark_tryptic_pep"+DECOY_DB_EXTENSION;
 		CompactSuffixArray sa = new CompactSuffixArray(new CompactFastaSequence(fileName), 30);
 		System.out.println("Read complete");
 	}

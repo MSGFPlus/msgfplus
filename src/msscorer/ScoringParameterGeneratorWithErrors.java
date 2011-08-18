@@ -59,6 +59,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		int numSpecsPerPeptide = 1;
 		int errorScalingFactor = 0;
 		boolean considerPhosLoss = false;
+//		boolean applyDeconvolution = false;
 		
 		ActivationMethod activationMethod = null;
 		InstrumentType instType = null;
@@ -181,7 +182,20 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			{
 				if(argv[i+1].equalsIgnoreCase("1"))
 					considerPhosLoss = true;
+				else if(argv[i+1].equalsIgnoreCase("0"))
+					considerPhosLoss = false;
+				else
+					printUsageAndExit("Illegal -phos parameter: " + argv[i+1]);
 			}
+//			else if(argv[i].equalsIgnoreCase("-deconv"))	// H3PO4 loss
+//			{
+//				if(argv[i+1].equalsIgnoreCase("1"))
+//					applyDeconvolution = true;
+//				else if(argv[i+1].equalsIgnoreCase("0"))
+//					applyDeconvolution = false;
+//				else
+//					printUsageAndExit("Illegal -deconv parameter: " + argv[i+1]);
+//			}
 			else
 				printUsageAndExit("Illegal parameters!");
 		}
@@ -194,7 +208,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		if(instType == null)
 			printUsageAndExit("missing instrumentType!");
 		
-		generateParameters(specFile, activationMethod, instType, enzyme, numSpecsPerPeptide, errorScalingFactor, considerPhosLoss, outputFile, aaSet, isText, false);
+		generateParameters(specFile, activationMethod, instType, enzyme, numSpecsPerPeptide, errorScalingFactor, considerPhosLoss, /* applyDeconvolution,*/ outputFile, aaSet, isText, false);
 	}
 	
 	public static void printUsageAndExit(String message)
@@ -207,6 +221,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 				"\t-inst InstrumentID (0: Low-res LCQ/LTQ, 1: TOF , 2: High-res LTQ)\n" +
 				"\t-e EnzymeID (0: No enzyme, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N, 8: aLP)\n" +
 				"\t[-phos 0/1] (0: Don't consider H3PO4 loss (default), 1: Consider H3PO4 loss)\n" +
+//				"\t[-deconv 0/1] (0: Don't apply deconvolution (Default), 1: Apply deconvolution/deisotping)" +
 				"\t[-fixMod 0/1/2] (0: NoCysteineProtection, 1: CarbamidomethyC (default), 2: CarboxymethylC)\n" +
 				"\t[-pep numPeptidesPerSpec]  (default: 1)\n" +
 				"\t[-err errorScalingFactor]  (default: 0)"
@@ -222,6 +237,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			int numSpecsPerPeptide, 
 			int errorScalingFactor,
 			boolean considerPhosLoss,
+//			boolean applyDeconvolution,
 			File outputFile, 
 			AminoAcidSet aaSet, 
 			boolean isText, 

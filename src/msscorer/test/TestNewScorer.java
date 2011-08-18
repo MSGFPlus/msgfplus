@@ -5,6 +5,8 @@ import java.util.HashSet;
 import parser.*;
 import msgf.Tolerance;
 import msscorer.IonProbability;
+import msscorer.NewRankScorer;
+import msscorer.NewScorerFactory;
 import msutil.*;
 
 public class TestNewScorer {
@@ -13,7 +15,15 @@ public class TestNewScorer {
 //		compareNewAndOldScorer();
 //		rescoreMSGFResult(new File("/home/sangtaekim/Research/Data/ISBETD/MSGFDB0312"), new File("/home/sangtaekim/Research/Data/ISBETD/MSGFDBRescored"));
 //		mgfReadTest();
-		ionSelectionTest();
+//		ionSelectionTest();
+		testReading();
+	}
+
+	public static void testReading() throws Exception
+	{
+		NewRankScorer scorer = NewScorerFactory.get(ActivationMethod.CID, InstrumentType.HIGH_RESOLUTION_LTQ, Enzyme.TRYPSIN, null);
+		System.out.println(scorer.getActivationMethod().getName()+"_"+scorer.getInstrumentType().getName()+"_"+scorer.getEnzyme().getName());
+		System.out.println(scorer.supportEdgeScores());
 	}
 	
 	public static void ionSelectionTest() throws Exception

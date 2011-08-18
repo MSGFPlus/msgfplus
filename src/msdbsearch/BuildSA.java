@@ -2,6 +2,8 @@ package msdbsearch;
 
 import java.io.File;
 
+import ui.MSGFDB;
+
 public class BuildSA {
 	
 	public static void main(String argv[])
@@ -96,7 +98,7 @@ public class BuildSA {
 		
 		if(mode == 1 || mode == 2)
 		{
-			String concatDBFileName = dbFileName.substring(0, dbFileName.lastIndexOf('.'))+".revConcat.fasta";
+			String concatDBFileName = dbFileName.substring(0, dbFileName.lastIndexOf('.')) + MSGFDB.DECOY_DB_EXTENSION;
 			File concatTargetDecoyDBFile = new File(outputDir.getPath()+File.separator+concatDBFileName);
 			if(!concatTargetDecoyDBFile.exists())
 			{

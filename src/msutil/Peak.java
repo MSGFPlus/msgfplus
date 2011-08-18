@@ -125,10 +125,10 @@ public class Peak implements Comparable<Peak> {
   
   /**
    * Sets the mass of this peak to the given float.
-   * @param mass the mass to set this peak to.
+   * @param mz the mass to set this peak to.
    */
-  public void setMz(float mass) {
-    this.mz = mass;
+  public void setMz(float mz) {
+    this.mz = mz;
   }
   
   
