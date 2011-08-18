@@ -43,11 +43,6 @@ public class BuildSA {
 		if(dbPath == null)
 			printUsageAndExit("Database must be specified!");
 		
-		if(outputDir == null)
-		{
-			outputDir = dbPath.getAbsoluteFile().getParentFile();
-		}
-		
 		buildSA(dbPath, outputDir, mode);
 	}
 	
@@ -61,11 +56,11 @@ public class BuildSA {
 		System.exit(-1);
 	}
 	
-	public static void buildSA(File path, File outputDir, int mode)
+	public static void buildSA(File dbPath, File outputDir, int mode)
 	{
-		if(path.isDirectory())
+		if(dbPath.isDirectory())
 		{
-			for(File f : path.listFiles())
+			for(File f : dbPath.listFiles())
 			{
 				if(!f.getName().endsWith(".fasta") && !f.getName().endsWith(".fa"))
 					continue;
@@ -74,9 +69,9 @@ public class BuildSA {
 		}
 		else
 		{
-			if(path.getName().endsWith(".fasta") || path.getName().endsWith(".fa"))
+			if(dbPath.getName().endsWith(".fasta") || dbPath.getName().endsWith(".fa"))
 			{
-				buildSAFiles(path, outputDir, mode);
+				buildSAFiles(dbPath, outputDir, mode);
 			}
 		}
 		System.out.println("Done");
@@ -84,17 +79,15 @@ public class BuildSA {
 	
 	public static void buildSAFiles(File databaseFile, File outputDir, int mode)
 	{
+		if(outputDir == null)
+		{
+			outputDir = databaseFile.getAbsoluteFile().getParentFile();
+		}
+		
 		if(!outputDir.exists())
 			outputDir.mkdir();
 		
 		String dbFileName = databaseFile.getName(); 
-		
-		File targetDBFile = new File(outputDir.getPath()+File.separator+dbFileName);
-		if(!targetDBFile.exists())
-		{
-			System.out.println("Creating " + targetDBFile.getName() + ".");
-			ReverseDB.copyDB(databaseFile.getPath(), targetDBFile.getPath());
-		}
 		
 		if(mode == 1 || mode == 2)
 		{
@@ -116,6 +109,12 @@ public class BuildSA {
 		
 		if(mode == 0 || mode == 2)
 		{
+			File targetDBFile = new File(outputDir.getPath()+File.separator+dbFileName);
+			if(!targetDBFile.exists())
+			{
+				System.out.println("Creating " + targetDBFile.getName() + ".");
+				ReverseDB.copyDB(databaseFile.getPath(), targetDBFile.getPath());
+			}
 			System.out.println("Building suffix array: " + databaseFile.getPath());
 			CompactFastaSequence sequence = new CompactFastaSequence(targetDBFile.getPath());
 			new CompactSuffixArray(sequence);

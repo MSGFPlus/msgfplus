@@ -47,7 +47,7 @@ public class MSGFDB {
 	public static final String VERSION = "6267";
 	public static final String RELEASE_DATE = "08/17/2011";
 	
-	public static final String DECOY_DB_EXTENSION = "_RevConcat.fasta";
+	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static void main(String argv[])
 	{
 		long time = System.currentTimeMillis();
@@ -57,6 +57,7 @@ public class MSGFDB {
 		File 	specFile = null;
 		SpecFileFormat specFormat = null;
 		File 	databaseFile 	= null;
+		File 	dbIndexDir 	= null;
 		File	paramFile		= null;
 		File	outputFile = null;
 //		Tolerance parentMassTolerance = null;
@@ -137,6 +138,18 @@ public class MSGFDB {
 				if(!dbExt.equalsIgnoreCase("fasta") && !dbExt.equalsIgnoreCase("fa"))
 				{
 					printUsageAndExit("Database file must ends with .fa or .fasta!: " + argv[i+1]);
+				}
+			}
+			else if(argv[i].equalsIgnoreCase("-dd"))
+			{
+				dbIndexDir = new File(argv[i+1]);
+				if(!dbIndexDir.exists())
+				{
+					printUsageAndExit(argv[i+1]+" doesn't exist.");
+				}
+				if(!dbIndexDir.isDirectory())
+				{
+					printUsageAndExit(argv[i+1]+" is not a directory.");
 				}
 			}
 			else if(argv[i].equalsIgnoreCase("-param"))
@@ -430,13 +443,12 @@ public class MSGFDB {
 		if(activationMethod == ActivationMethod.HCD)
 			instType = InstrumentType.HIGH_RESOLUTION_LTQ;
 		
-//		if(activationMethod == ActivationMethod.FUSION && specFormat != SpecFileFormat.MZXML)
-//		{
-//			printUsageAndExit("-m 4 parameter requires mzXML spectrum file!");
-//		}
 		if(rightParentMassTolerance.getToleranceAsDa(1000) >= 0.5f)
 			numAllowedC13 = 0;
 		
+		if(dbIndexDir != null)
+			databaseFile = new File(dbIndexDir.getPath()+File.separator+databaseFile.getName());
+
 		if(useTDA)
 		{
 			String dbFileName = databaseFile.getName();
@@ -447,7 +459,7 @@ public class MSGFDB {
 				System.out.println("Creating " + concatDBFileName + ".");
 				if(ReverseDB.reverseDB(databaseFile.getPath(), concatTargetDecoyDBFile.getPath(), true) == false)
 				{
-					printUsageAndExit("Cannot create decoy database file!");
+					printUsageAndExit("Cannot create a decoy database file!");
 				}
 			}
 			databaseFile = concatTargetDecoyDBFile;
