@@ -211,10 +211,10 @@ public class ComputeFDR {
 	public static void printUsageAndExit(String message)
 	{
 		System.err.println(message);
-		System.out.print("usage: java -jar ComputeFDR 08/03/2011\n" +
+		System.out.print("Usage: java -cp MSGFDB.jar fdr.ComputeFDR\n" +
 				"\t -f resuleFileName protCol decoyPrefix or -f targetFileName decoyFileName\n" +
-				"\t -i specFileCol (SpecFile comlun number)\n" +
-				"\t -n specIndexCol (specIndex comlun number)\n" +
+				"\t -i specFileCol (SpecFile column number)\n" +
+				"\t -n specIndexCol (specIndex column number)\n" +
 				"\t -p pepCol (peptide column number)\n" +
 				"\t -s scoreCol 0/1 (0: smaller better, 1: greater better)\n" +
 				"\t [-o outputFileName (default: stdout)]\n" +

@@ -899,8 +899,11 @@ public class DBScanner {
 	{
 		List<SpecKey> specKeyList = specScanner.getSpecKeyList().subList(fromIndex, toIndex);
 		
+		int numSpecs = toIndex-fromIndex;
+		int numProcessedSpecs = 0;
 		for(SpecKey specKey : specKeyList)
 		{
+			numProcessedSpecs++;
 			PriorityQueue<DatabaseMatch> matchQueue = specKeyDBMatchMap.get(specKey);
 			if(matchQueue == null)
 				continue;
@@ -910,8 +913,6 @@ public class DBScanner {
 			boolean useProtNTerm = false;
 			boolean useProtCTerm = false;
 			int minScore = Integer.MAX_VALUE;
-//			int minMatchedNominalMass = Integer.MAX_VALUE;
-//			int maxMatchedNominalMass = Integer.MIN_VALUE;
 			for(DatabaseMatch m : matchQueue)
 			{
 				if(m.isProteinNTerm())
@@ -920,15 +921,10 @@ public class DBScanner {
 					useProtCTerm = true;
 				if(m.getScore() < minScore)
 					minScore = m.getScore();
-//				if(m.getNominalPeptideMass() < minMatchedNominalMass)
-//					minMatchedNominalMass = m.getNominalPeptideMass();
-//				if(m.getNominalPeptideMass() > maxMatchedNominalMass)
-//					maxMatchedNominalMass = m.getNominalPeptideMass();
 			}
 			
 			GeneratingFunctionGroup<NominalMass> gf = new GeneratingFunctionGroup<NominalMass>();
 			SimpleDBSearchScorer<NominalMass> scoredSpec = specScanner.getSpecKeyScorerMap().get(specKey);
-//			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
 			float peptideMass = scoredSpec.getPrecursorPeak().getMass() - (float)Composition.H2O;
 			int nominalPeptideMass = NominalMass.toNominalMass(peptideMass);
 			float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
@@ -940,11 +936,6 @@ public class DBScanner {
 			if(tolDaRight < 0.5f)
 				minPeptideMassIndex -= specScanner.getNumAllowedC13();
 
-//			if(maxPeptideMassIndex < maxMatchedNominalMass)
-//				maxPeptideMassIndex = maxMatchedNominalMass;
-//			if(minPeptideMassIndex > minMatchedNominalMass)
-//				minPeptideMassIndex = minMatchedNominalMass;
-			
 			for(int peptideMassIndex = minPeptideMassIndex; peptideMassIndex<=maxPeptideMassIndex; peptideMassIndex++)
 			{
 				DeNovoGraph<NominalMass> graph = new FlexAminoAcidGraph(
