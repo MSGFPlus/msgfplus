@@ -44,8 +44,8 @@ import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
-	public static final String VERSION = "6267";
-	public static final String RELEASE_DATE = "08/17/2011";
+	public static final String VERSION = "6274";
+	public static final String RELEASE_DATE = "08/18/2011";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static void main(String argv[])
@@ -446,8 +446,21 @@ public class MSGFDB {
 		if(rightParentMassTolerance.getToleranceAsDa(1000) >= 0.5f)
 			numAllowedC13 = 0;
 		
+		System.out.println("MS-GFDB v"+ VERSION + " (" + RELEASE_DATE + ")");
+		
 		if(dbIndexDir != null)
-			databaseFile = new File(dbIndexDir.getPath()+File.separator+databaseFile.getName());
+		{
+			File newDBFile = new File(dbIndexDir.getPath()+File.separator+databaseFile.getName());
+			if(!useTDA)
+			{
+				if(!newDBFile.exists())
+				{
+					System.out.println("Creating " + newDBFile.getPath() + ".");
+					ReverseDB.copyDB(databaseFile.getPath(), newDBFile.getPath());
+				}
+			}
+			databaseFile = newDBFile;
+		}
 
 		if(useTDA)
 		{
@@ -456,7 +469,7 @@ public class MSGFDB {
 			File concatTargetDecoyDBFile = new File(databaseFile.getAbsoluteFile().getParent()+File.separator+concatDBFileName);
 			if(!concatTargetDecoyDBFile.exists())
 			{
-				System.out.println("Creating " + concatDBFileName + ".");
+				System.out.println("Creating " + concatTargetDecoyDBFile.getPath() + ".");
 				if(ReverseDB.reverseDB(databaseFile.getPath(), concatTargetDecoyDBFile.getPath(), true) == false)
 				{
 					printUsageAndExit("Cannot create a decoy database file!");
@@ -474,7 +487,7 @@ public class MSGFDB {
 	    		outputFile, enzyme, numAllowedNonEnzymaticTermini,
 	    		activationMethod, instType, aaSet, numMatchesPerSpec, startScanNum, endScanNum, useTDA, showFDR,
 	    		minPeptideLength, maxPeptideLength, minCharge, maxCharge, numThreads);
-		System.out.format("Time: %.3f sec\n", (System.currentTimeMillis()-time)/(float)1000);
+		System.out.format("MS-GFDB complete (elapsed time: %.2f sec)\n", (System.currentTimeMillis()-time)/(float)1000);
 	}
 	
 	public static void printUsageAndExit()
@@ -486,7 +499,7 @@ public class MSGFDB {
 	{
 		if(message != null)
 			System.out.println("Error: " + message + "\n");
-		System.out.println("MSGFDB v"+ VERSION + "(" + RELEASE_DATE + ")");
+		System.out.println("MSGFDB v"+ VERSION + " (" + RELEASE_DATE + ")");
 		System.out.print("Usage: java -Xmx2000M -jar MSGFDB.jar\n"
 				+ "\t-s SpectrumFile (*.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt)\n" //, *.mgf, *.pkl, *.ms2)\n"
 				+ "\t-d Database (*.fasta or *.fa)\n"
@@ -543,7 +556,10 @@ public class MSGFDB {
     		int numThreads
     		)
 	{
-		System.out.println("MSGFDB v"+ VERSION + "(" + RELEASE_DATE + ")");
+		long time = System.currentTimeMillis();
+    	
+		System.out.println("Reading spectra started");
+		
     	Iterator<Spectrum> specItr = null;
 		SpectrumAccessorBySpecIndex specMap = null;
 		
@@ -606,6 +622,9 @@ public class MSGFDB {
 			}
 		}
 		
+		System.out.print("Read spectra finished ");
+		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
+		
 		numThreads = Math.min(numThreads, Math.round(Math.min(specKeyList.size(), numSpecScannedTogether)/1000f));
 		if(numThreads == 0)
 			numThreads = 1;
@@ -628,7 +647,7 @@ public class MSGFDB {
 		MSGFDBResultGenerator gen = new MSGFDBResultGenerator(header);
 		
 		System.out.print("Suffix array loading...");
-		long time = System.currentTimeMillis();
+		time = System.currentTimeMillis();
 //		SuffixArrayForMSGFDB sa = new SuffixArrayForMSGFDB(new SuffixArraySequence(databaseFile.getPath()), minPeptideLength, maxPeptideLength);
 		CompactSuffixArray sa = new CompactSuffixArray(new CompactFastaSequence(databaseFile.getPath()), maxPeptideLength);
     	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
@@ -690,17 +709,16 @@ public class MSGFDB {
 			fromIndexGlobal += numSpecScannedTogether;
 		}
 		
-		System.out.print("Computing EFDRs...");
     	time = System.currentTimeMillis();
 		// Sort search results by spectral probabilities
 		Collections.sort(gen);
     	if(showFDR && !useTDA && numMatchesPerSpec == 1)
     	{
+    		System.out.print("Computing EFDRs...");
     		gen.computeEFDR();
+        	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
     	}
-    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
     	
-		System.out.print("Writing results...");
     	time = System.currentTimeMillis(); 
     	if(!showFDR || !useTDA)
     	{

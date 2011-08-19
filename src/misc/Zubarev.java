@@ -15,13 +15,11 @@ import msgf.Histogram;
 import msgf.IntMassFactory;
 import msgf.NominalMass;
 import msgf.NominalMassFactory;
-import msgf.ScoredSpectrum;
 import msgf.Tolerance;
 import msscorer.IonProbability;
 import msscorer.NewRankScorer;
 import msscorer.NewScoredSpectrum;
 import msscorer.NewScorerFactory;
-import msscorer.PrecursorOffsetFrequency;
 import msutil.ActivationMethod;
 import msutil.AminoAcid;
 import msutil.AminoAcidSet;
@@ -66,7 +64,6 @@ public class Zubarev {
 //		filtrationPowerNominalMass();
 //		filtrationPowerComposition(10);
 		deconvolutionTest();
-
 	}
 
 	public static void deconvolutionTest() throws Exception

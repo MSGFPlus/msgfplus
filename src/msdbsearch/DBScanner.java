@@ -56,6 +56,8 @@ public class DBScanner {
 	private Map<SpecKey,PriorityQueue<DatabaseMatch>> specKeyDBMatchMap;
 	private Map<Integer,PriorityQueue<DatabaseMatch>> specIndexDBMatchMap;
 
+	// For output
+	private String threadName = "";
 	public DBScanner(
 			ScoredSpectraMap specScanner,
 			CompactSuffixArray sa,
@@ -107,6 +109,12 @@ public class DBScanner {
 			this.minPeptideLength = minPeptideLength;
 		else
 			minPeptideLength = 1;
+		return this;
+	}
+	
+	public DBScanner setThreadName(String threadName)
+	{
+		this.threadName = threadName;
 		return this;
 	}
 	
@@ -164,7 +172,6 @@ public class DBScanner {
 		dbSearchNoEnzyme(0, size, verbose);
 	}
 	
-	
 	// duplicated for speeding-up the search
 	public void dbSearchCTermEnzymeNoMod(
 			int numberOfAllowableNonEnzymaticTermini, 
@@ -206,11 +213,19 @@ public class DBScanner {
 			boolean isProteinNTerm = true;
 			int nTermAAScore = neighboringAACleavageCredit;
 			int nNET = 0;	// number of non-enzymatic termini
-			for(int bufferIndex=fromIndex; bufferIndex<toIndex; bufferIndex++)
+			int numIndices = toIndex-fromIndex;
+			for(int bufferIndex=0; bufferIndex<numIndices; bufferIndex++)
 			{
+				// Print out the progress
+				if(verbose && bufferIndex % 1000000 == 0)
+				{
+					System.out.print(threadName + ": Database search progress... "); 
+					System.out.format("%.1f%% complete\n", bufferIndex/(float)numIndices*100);
+				}
+				
 				int index = indices.readInt();
 				int lcp = nlcps.readByte();
-				if(bufferIndex == fromIndex)
+				if(bufferIndex == 0)
 					lcp = 0;
 				if(lcp > i)		// skip redundant peptide
 					continue;
@@ -245,9 +260,6 @@ public class DBScanner {
 							nNET = 0;
 					}
 				}
-				
-//				if(verbose && rank % 1000000 == 0)
-//					System.out.println("DBSearch: " + rank/(float)size*100 + "%");
 				
 				for(i=lcp > 1 ? lcp : 1; i<maxPeptideLength+1 && index+i<size; i++)	// ith character of a peptide
 				{
@@ -356,12 +368,13 @@ public class DBScanner {
 			int nTermAAScore = neighboringAACleavageCredit;
 			boolean isExtensionAtTheSameIndex;
 			int nNET = 0;	// number of non-enzymatic termini
-			for(int bufferIndex=fromIndex; bufferIndex<toIndex; bufferIndex++) 
+			int numIndices = toIndex-fromIndex;
+			for(int bufferIndex=0; bufferIndex<numIndices; bufferIndex++)
 			{
 				isExtensionAtTheSameIndex = false;
 				int index = indices.readInt();
 				int lcp = nlcps.readByte();
-				if(bufferIndex == fromIndex)
+				if(bufferIndex == 0)
 					lcp = 0;
 				
 				if(lcp > i)		// skip redundant peptide
@@ -540,11 +553,13 @@ public class DBScanner {
 			
 			boolean isExtensionAtTheSameIndex;
 			boolean isProteinNTerm = true;
-			for(int bufferIndex=fromIndex; bufferIndex<toIndex; bufferIndex++)
+			
+			int numIndices = toIndex-fromIndex;
+			for(int bufferIndex=0; bufferIndex<numIndices; bufferIndex++)
 			{
 				int index = indices.readInt();
 				int lcp = nlcps.readByte();
-				if(bufferIndex == fromIndex)
+				if(bufferIndex == 0)
 					lcp = 0;
 	
 				if(lcp > i)		// skip redundant peptide
@@ -710,11 +725,12 @@ public class DBScanner {
 			int peptideCleavageScore = 0;	// N-term residue, when i=0
 			
 			int nNET = 0;	// number of non-enzymatic termini
-			for(int bufferIndex=fromIndex; bufferIndex<toIndex; bufferIndex++)
+			int numIndices = toIndex-fromIndex;
+			for(int bufferIndex=0; bufferIndex<numIndices; bufferIndex++)
 			{
 				int index = indices.readInt();
 				int lcp = nlcps.readByte();
-				if(bufferIndex == fromIndex)
+				if(bufferIndex == 0)
 					lcp = 0;
 				isExtensionAtTheSameIndex = false;
 	

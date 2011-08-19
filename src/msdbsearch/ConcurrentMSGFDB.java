@@ -130,13 +130,15 @@ public class ConcurrentMSGFDB {
 			long time = System.currentTimeMillis();
 			if(specScanner.getPepMassSpecKeyMap().size() == 0)
 				specScanner.makePepMassSpecKeyMap();
-			System.out.print(threadName+": Preprocessing spectra... ");
+			System.out.println(threadName+": Preprocessing spectra started");
 			specScanner.preProcessSpectra();
-			System.out.format("Elapsed time: %.2f sec\n", (float)((System.currentTimeMillis()-time)/1000));
+			System.out.print(threadName+": Preprocessing spectra finished ");
+			System.out.format("(elapsed time: %.2f sec)\n", (float)((System.currentTimeMillis()-time)/1000));
 			
 			time = System.currentTimeMillis();
 			// DB search
-			System.out.print(threadName+": Database search... ");
+			System.out.println(threadName+": Database search started");
+			scanner.setThreadName(threadName);
 			if(searchMode == 1)
 				scanner.dbSearchNoEnzyme(true);
 			else if(searchMode == 2)
@@ -145,17 +147,19 @@ public class ConcurrentMSGFDB {
 				scanner.dbSearchNTermEnzyme(numberOfAllowableNonEnzymaticTermini, true);
 			else
 				scanner.dbSearchCTermEnzyme(numberOfAllowableNonEnzymaticTermini, true);
-			System.out.format("%.2f sec\n", (float)((System.currentTimeMillis()-time)/1000));
+			System.out.print(threadName+": Database search finished ");
+			System.out.format("(elapsed time: %.2f sec)\n", (float)((System.currentTimeMillis()-time)/1000));
 			
 			time = System.currentTimeMillis();
+			System.out.println(threadName+": Computing spectral probabilities started");
 			scanner.computeSpecProb(storeScoreDist);
-			System.out.print(threadName+": Computing spectral probabilities... ");
-			System.out.format("%.2f sec\n", (float)((System.currentTimeMillis()-time)/1000));
+			System.out.print(threadName+": Computing spectral probabilities finished ");
+			System.out.format("(elapsed time: %.2f sec)\n", (float)((System.currentTimeMillis()-time)/1000));
 			
-			time = System.currentTimeMillis();
+//			time = System.currentTimeMillis();
 			scanner.addDBSearchResults(gen, specFileName);
-			System.out.print(threadName+": Generating results... ");
-			System.out.format("%.2f sec\n", (float)((System.currentTimeMillis()-time)/1000));
+//			System.out.print(threadName+": Generating results... ");
+//			System.out.format("%.2f sec\n", (float)((System.currentTimeMillis()-time)/1000));
 		}
 	}	
 }
