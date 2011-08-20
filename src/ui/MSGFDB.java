@@ -20,6 +20,7 @@ import parser.MzXMLSpectraMap;
 import parser.PNNLSpectrumParser;
 import parser.PklSpectrumParser;
 import parser.SpectrumParser;
+import ui.ParameterParser.Parameters;
 
 import msdbsearch.CompactFastaSequence;
 import msdbsearch.CompactSuffixArray;
@@ -44,8 +45,8 @@ import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
-	public static final String VERSION = "6274";
-	public static final String RELEASE_DATE = "08/18/2011";
+	public static final String VERSION = "6275";
+	public static final String RELEASE_DATE = "08/19/2011";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static void main(String argv[])
@@ -57,8 +58,11 @@ public class MSGFDB {
 		File 	specFile = null;
 		SpecFileFormat specFormat = null;
 		File 	databaseFile 	= null;
+		
+		File	paramFile	= null;
+		
+		// 
 		File 	dbIndexDir 	= null;
-		File	paramFile		= null;
 		File	outputFile = null;
 //		Tolerance parentMassTolerance = null;
 		Tolerance leftParentMassTolerance = null;
@@ -422,6 +426,11 @@ public class MSGFDB {
 		if(databaseFile == null)
 			printUsageAndExit("Database is not specified.");
 		
+		if(paramFile != null)
+		{
+			Parameters parms = ParameterParser.parse(paramFile.getPath());
+		}
+		
 		if(leftParentMassTolerance == null || rightParentMassTolerance == null)
 			printUsageAndExit("Parent mass tolerance is not specified.");
 
@@ -448,46 +457,11 @@ public class MSGFDB {
 		
 		System.out.println("MS-GFDB v"+ VERSION + " (" + RELEASE_DATE + ")");
 		
-		if(dbIndexDir != null)
-		{
-			File newDBFile = new File(dbIndexDir.getPath()+File.separator+databaseFile.getName());
-			if(!useTDA)
-			{
-				if(!newDBFile.exists())
-				{
-					System.out.println("Creating " + newDBFile.getPath() + ".");
-					ReverseDB.copyDB(databaseFile.getPath(), newDBFile.getPath());
-				}
-			}
-			databaseFile = newDBFile;
-		}
-
-		if(useTDA)
-		{
-			String dbFileName = databaseFile.getName();
-			String concatDBFileName = dbFileName.substring(0, dbFileName.lastIndexOf('.'))+DECOY_DB_EXTENSION;
-			File concatTargetDecoyDBFile = new File(databaseFile.getAbsoluteFile().getParent()+File.separator+concatDBFileName);
-			if(!concatTargetDecoyDBFile.exists())
-			{
-				System.out.println("Creating " + concatTargetDecoyDBFile.getPath() + ".");
-				if(ReverseDB.reverseDB(databaseFile.getPath(), concatTargetDecoyDBFile.getPath(), true) == false)
-				{
-					printUsageAndExit("Cannot create a decoy database file!");
-				}
-			}
-			databaseFile = concatTargetDecoyDBFile;
-		}
-		
-		if(!useUniformAAProb)
-			DBScanner.setAminoAcidProbabilities(databaseFile.getPath(), aaSet);
-		
-		aaSet.registerEnzyme(enzyme);
-		
 		runMSGFDB(specFile, specFormat, databaseFile, leftParentMassTolerance, rightParentMassTolerance, numAllowedC13,
 	    		outputFile, enzyme, numAllowedNonEnzymaticTermini,
 	    		activationMethod, instType, aaSet, numMatchesPerSpec, startScanNum, endScanNum, useTDA, showFDR,
-	    		minPeptideLength, maxPeptideLength, minCharge, maxCharge, numThreads);
-		System.out.format("MS-GFDB complete (elapsed time: %.2f sec)\n", (System.currentTimeMillis()-time)/(float)1000);
+	    		minPeptideLength, maxPeptideLength, minCharge, maxCharge, numThreads, useUniformAAProb, dbIndexDir);
+		System.out.format("MS-GFDB complete (total elapsed time: %.2f sec)\n", (System.currentTimeMillis()-time)/(float)1000);
 	}
 	
 	public static void printUsageAndExit()
@@ -553,13 +527,54 @@ public class MSGFDB {
     		int maxPeptideLength,
     		int minCharge,
     		int maxCharge,
-    		int numThreads
+    		int numThreads,
+    		boolean useUniformAAProb,
+    		File dbIndexDir
     		)
 	{
 		long time = System.currentTimeMillis();
     	
-		System.out.println("Reading spectra started");
+		System.out.println("Loading database files...");
+		if(dbIndexDir != null)
+		{
+			File newDBFile = new File(dbIndexDir.getPath()+File.separator+databaseFile.getName());
+			if(!useTDA)
+			{
+				if(!newDBFile.exists())
+				{
+					System.out.println("Creating " + newDBFile.getPath() + ".");
+					ReverseDB.copyDB(databaseFile.getPath(), newDBFile.getPath());
+				}
+			}
+			databaseFile = newDBFile;
+		}
+		if(useTDA)
+		{
+			String dbFileName = databaseFile.getName();
+			String concatDBFileName = dbFileName.substring(0, dbFileName.lastIndexOf('.'))+DECOY_DB_EXTENSION;
+			File concatTargetDecoyDBFile = new File(databaseFile.getAbsoluteFile().getParent()+File.separator+concatDBFileName);
+			if(!concatTargetDecoyDBFile.exists())
+			{
+				System.out.println("Creating " + concatTargetDecoyDBFile.getPath() + ".");
+				if(ReverseDB.reverseDB(databaseFile.getPath(), concatTargetDecoyDBFile.getPath(), true) == false)
+				{
+					printUsageAndExit("Cannot create a decoy database file!");
+				}
+			}
+			databaseFile = concatTargetDecoyDBFile;
+		}
 		
+		if(!useUniformAAProb)
+			DBScanner.setAminoAcidProbabilities(databaseFile.getPath(), aaSet);
+		
+		aaSet.registerEnzyme(enzyme);
+		
+		CompactSuffixArray sa = new CompactSuffixArray(new CompactFastaSequence(databaseFile.getPath()), maxPeptideLength);
+		System.out.print("Loading database finished ");
+		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
+		
+		
+		System.out.println("Reading spectra...");
     	Iterator<Spectrum> specItr = null;
 		SpectrumAccessorBySpecIndex specMap = null;
 		
@@ -646,12 +661,6 @@ public class MSGFDB {
 			+")\tCharge\tPeptide\tProtein\tDeNovoScore\tMSGFScore\tSpecProb\tP-value";
 		MSGFDBResultGenerator gen = new MSGFDBResultGenerator(header);
 		
-		System.out.print("Suffix array loading...");
-		time = System.currentTimeMillis();
-//		SuffixArrayForMSGFDB sa = new SuffixArrayForMSGFDB(new SuffixArraySequence(databaseFile.getPath()), minPeptideLength, maxPeptideLength);
-		CompactSuffixArray sa = new CompactSuffixArray(new CompactFastaSequence(databaseFile.getPath()), maxPeptideLength);
-    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
-		
 		while(true)
 		{
 			if(fromIndexGlobal >= specKeyList.size())
@@ -714,13 +723,12 @@ public class MSGFDB {
 		Collections.sort(gen);
     	if(showFDR && !useTDA && numMatchesPerSpec == 1)
     	{
-    		System.out.print("Computing EFDRs...");
+    		System.out.println("Computing EFDRs...");
     		gen.computeEFDR();
-        	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
+    		System.out.print("Computing EFDRs finished");
+    		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
     	}
-    	
-    	time = System.currentTimeMillis(); 
-    	if(!showFDR || !useTDA)
+    	else if(!showFDR || !useTDA)
     	{
     		PrintStream out = null;
     		if(outputFile == null)
@@ -739,6 +747,7 @@ public class MSGFDB {
     	}
     	else
     	{
+    		System.out.println("Computing FDRs...");
     		try {
 				File tempFile;
 				if(outputFile != null)
@@ -766,8 +775,10 @@ public class MSGFDB {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+    		System.out.print("Computing EFDRs finished");
+    		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
     	}
-    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
+//    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
 	}	    
     
 //    public static void runMSGFDB2(

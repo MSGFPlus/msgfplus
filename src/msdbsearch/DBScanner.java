@@ -217,7 +217,7 @@ public class DBScanner {
 			for(int bufferIndex=0; bufferIndex<numIndices; bufferIndex++)
 			{
 				// Print out the progress
-				if(verbose && bufferIndex % 1000000 == 0)
+				if(verbose && bufferIndex % 2000000 == 0)
 				{
 					System.out.print(threadName + ": Database search progress... "); 
 					System.out.format("%.1f%% complete\n", bufferIndex/(float)numIndices*100);
@@ -904,6 +904,12 @@ public class DBScanner {
 		for(SpecKey specKey : specKeyList)
 		{
 			numProcessedSpecs++;
+			if(numProcessedSpecs % 1000 == 0)
+			{
+				System.out.print(threadName + ": Database search progress... "); 
+				System.out.format("%.1f%% complete\n", numProcessedSpecs/(float)numSpecs*100);
+			}
+			
 			PriorityQueue<DatabaseMatch> matchQueue = specKeyDBMatchMap.get(specKey);
 			if(matchQueue == null)
 				continue;

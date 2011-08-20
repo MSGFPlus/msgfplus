@@ -236,7 +236,7 @@ public class CompactSuffixArray {
 		// main loop for putting suffixes into the buckets
 		for(int i=BUCKET_SIZE-1, j=0; j < (int)sequence.getSize(); i++, j++) {
 			// print progress
-			if(j % 1000001 == 0)  System.out.printf("Suffix creation: %.2f%% complete.\n", j*100.0/sequence.getSize());
+			if(j % 10000001 == 0)  System.out.printf("Suffix creation: %.2f%% complete.\n", j*100.0/sequence.getSize());
 
 //			System.out.println(j);
 			// quick wait to derive the next hash, since we are reading the sequence in order 
@@ -263,7 +263,7 @@ public class CompactSuffixArray {
 			for(int i=0; i < bucketSuffixes.length; i++) {
 
 				// print out progress
-				if(i % 100000 == 99999)   System.out.printf("Sorting %.2f%% complete.\n", i*100.0/bucketSuffixes.length);
+				if(i % 1000000 == 999999)   System.out.printf("Sorting %.2f%% complete.\n", i*100.0/bucketSuffixes.length);
 
 				if(bucketSuffixes[i] != null) {
 

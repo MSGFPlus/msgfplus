@@ -130,14 +130,14 @@ public class ConcurrentMSGFDB {
 			long time = System.currentTimeMillis();
 			if(specScanner.getPepMassSpecKeyMap().size() == 0)
 				specScanner.makePepMassSpecKeyMap();
-			System.out.println(threadName+": Preprocessing spectra started");
+			System.out.println(threadName+": Preprocessing spectra...");
 			specScanner.preProcessSpectra();
 			System.out.print(threadName+": Preprocessing spectra finished ");
 			System.out.format("(elapsed time: %.2f sec)\n", (float)((System.currentTimeMillis()-time)/1000));
 			
 			time = System.currentTimeMillis();
 			// DB search
-			System.out.println(threadName+": Database search started");
+			System.out.println(threadName+": Database search...");
 			scanner.setThreadName(threadName);
 			if(searchMode == 1)
 				scanner.dbSearchNoEnzyme(true);
@@ -151,7 +151,7 @@ public class ConcurrentMSGFDB {
 			System.out.format("(elapsed time: %.2f sec)\n", (float)((System.currentTimeMillis()-time)/1000));
 			
 			time = System.currentTimeMillis();
-			System.out.println(threadName+": Computing spectral probabilities started");
+			System.out.println(threadName+": Computing spectral probabilities...");
 			scanner.computeSpecProb(storeScoreDist);
 			System.out.print(threadName+": Computing spectral probabilities finished ");
 			System.out.format("(elapsed time: %.2f sec)\n", (float)((System.currentTimeMillis()-time)/1000));
