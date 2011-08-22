@@ -371,6 +371,12 @@ public class DBScanner {
 			int numIndices = toIndex-fromIndex;
 			for(int bufferIndex=0; bufferIndex<numIndices; bufferIndex++)
 			{
+				// Print out the progress
+				if(verbose && bufferIndex % 2000000 == 0)
+				{
+					System.out.print(threadName + ": Database search progress... "); 
+					System.out.format("%.1f%% complete\n", bufferIndex/(float)numIndices*100);
+				}
 				isExtensionAtTheSameIndex = false;
 				int index = indices.readInt();
 				int lcp = nlcps.readByte();
@@ -557,6 +563,12 @@ public class DBScanner {
 			int numIndices = toIndex-fromIndex;
 			for(int bufferIndex=0; bufferIndex<numIndices; bufferIndex++)
 			{
+				// Print out the progress
+				if(verbose && bufferIndex % 2000000 == 0)
+				{
+					System.out.print(threadName + ": Database search progress... "); 
+					System.out.format("%.1f%% complete\n", bufferIndex/(float)numIndices*100);
+				}
 				int index = indices.readInt();
 				int lcp = nlcps.readByte();
 				if(bufferIndex == 0)
@@ -728,6 +740,12 @@ public class DBScanner {
 			int numIndices = toIndex-fromIndex;
 			for(int bufferIndex=0; bufferIndex<numIndices; bufferIndex++)
 			{
+				// Print out the progress
+				if(verbose && bufferIndex % 2000000 == 0)
+				{
+					System.out.print(threadName + ": Database search progress... "); 
+					System.out.format("%.1f%% complete\n", bufferIndex/(float)numIndices*100);
+				}
 				int index = indices.readInt();
 				int lcp = nlcps.readByte();
 				if(bufferIndex == 0)
@@ -906,7 +924,7 @@ public class DBScanner {
 			numProcessedSpecs++;
 			if(numProcessedSpecs % 1000 == 0)
 			{
-				System.out.print(threadName + ": Database search progress... "); 
+				System.out.print(threadName + ": Computing spectral probabilities... "); 
 				System.out.format("%.1f%% complete\n", numProcessedSpecs/(float)numSpecs*100);
 			}
 			
@@ -983,7 +1001,7 @@ public class DBScanner {
 		}
 	}
 	
-	public synchronized void addDBSearchResults(MSGFDBResultGenerator gen, String specFileName)
+	public synchronized void addDBSearchResults(MSGFDBResultGenerator gen, String specFileName, boolean replicateMergedResults)
 	{
 		Iterator<Entry<SpecKey, PriorityQueue<DatabaseMatch>>> itr = specKeyDBMatchMap.entrySet().iterator();
 		while(itr.hasNext())
@@ -1085,25 +1103,58 @@ public class DBScanner {
 					pValueStr = String.valueOf(pValue);
 				else
 					pValueStr = String.valueOf((float)pValue);
-				String actMethodStr = scorer.getActivationMethodName();
-				
-				String resultStr =
-					specFileName+"\t"
-					+specIndex+"\t"
-					+scorer.getScanNum()+"\t"
-					+actMethodStr+"\t" 
-					+scorer.getPrecursorPeak().getMz()+"\t"
-					+pmError+"\t"
-					+match.getCharge()+"\t"
-					+annotationStr+"\t"
-					+protein+"\t"
-//					+proteinPos+"\t"
-					+match.getDeNovoScore()+"\t"
-					+score+"\t"
-					+specProbStr+"\t"
-					+pValueStr;
-				MSGFDBResultGenerator.DBMatch dbMatch = new MSGFDBResultGenerator.DBMatch(specProb, numPeptides, resultStr, match.getScoreDist());		
-				gen.add(dbMatch);				
+
+				if(!replicateMergedResults)
+				{
+					StringBuffer actMethodStrBuf = new StringBuffer();
+					StringBuffer scanNumStrBuf = new StringBuffer();
+					actMethodStrBuf.append(scorer.getActivationMethodArr()[0]);
+					scanNumStrBuf.append(scorer.getScanNumArr()[0]);
+					for(int j=1; j<scorer.getActivationMethodArr().length; j++)
+					{
+						actMethodStrBuf.append("/"+scorer.getActivationMethodArr()[j]);
+						scanNumStrBuf.append("/"+scorer.getScanNumArr()[j]);
+					}
+					
+					String resultStr =
+						specFileName+"\t"
+						+specIndex+"\t"
+						+scanNumStrBuf.toString()+"\t"
+						+actMethodStrBuf.toString()+"\t" 
+						+scorer.getPrecursorPeak().getMz()+"\t"
+						+pmError+"\t"
+						+match.getCharge()+"\t"
+						+annotationStr+"\t"
+						+protein+"\t"
+						+match.getDeNovoScore()+"\t"
+						+score+"\t"
+						+specProbStr+"\t"
+						+pValueStr;
+					MSGFDBResultGenerator.DBMatch dbMatch = new MSGFDBResultGenerator.DBMatch(specProb, numPeptides, resultStr, match.getScoreDist());		
+					gen.add(dbMatch);				
+				}
+				else
+				{
+					for(int j=0; j<scorer.getActivationMethodArr().length; j++)
+					{
+						String resultStr =
+							specFileName+"\t"
+							+specIndex+"\t"
+							+scorer.getScanNumArr()[j]+"\t"
+							+scorer.getActivationMethodArr()[j]+"\t" 
+							+scorer.getPrecursorPeak().getMz()+"\t"
+							+pmError+"\t"
+							+match.getCharge()+"\t"
+							+annotationStr+"\t"
+							+protein+"\t"
+							+match.getDeNovoScore()+"\t"
+							+score+"\t"
+							+specProbStr+"\t"
+							+pValueStr;
+						MSGFDBResultGenerator.DBMatch dbMatch = new MSGFDBResultGenerator.DBMatch(specProb, numPeptides, resultStr, match.getScoreDist());		
+						gen.add(dbMatch);				
+					}
+				}
 			}
 		}
 	}

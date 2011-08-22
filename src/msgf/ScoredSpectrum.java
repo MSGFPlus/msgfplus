@@ -1,5 +1,6 @@
 package msgf;
 
+import msutil.ActivationMethod;
 import msutil.Matter;
 import msutil.Peak;
 
@@ -9,6 +10,8 @@ public interface ScoredSpectrum<T extends Matter> {
 	public int getEdgeScore(T curNode, T prevNode, float edgeMass);
 	public boolean getMainIonDirection();	// true: prefix, false: suffix
 	public Peak getPrecursorPeak();
-	public String getActivationMethodName();
-	public int getScanNum();
+//	public String getActivationMethodName();
+//	public int getScanNum();
+	public ActivationMethod[] getActivationMethodArr();
+	public int[] getScanNumArr();
 }

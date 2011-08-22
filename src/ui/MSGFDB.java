@@ -45,8 +45,8 @@ import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
-	public static final String VERSION = "6283";
-	public static final String RELEASE_DATE = "08/19/2011";
+	public static final String VERSION = "6284";
+	public static final String RELEASE_DATE = "08/22/2011";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static void main(String argv[])
@@ -77,6 +77,7 @@ public class MSGFDB {
 //		boolean showTitle = false;
 		boolean useTDA = false;
 		boolean showFDR = true;
+		boolean replicateMergedResults = false;
 		boolean useUniformAAProb = false;
 		int minPeptideLength = 6;
 		int maxPeptideLength = 40;
@@ -415,6 +416,17 @@ public class MSGFDB {
 					printUsageAndExit("Illigal -showFDR parameter: " + argv[i+1]);
 				}
 			}
+			else if(argv[i].equalsIgnoreCase("-replicate"))
+			{
+				if(argv[i+1].equalsIgnoreCase("1"))
+					replicateMergedResults = true;
+				else if(argv[i+1].equalsIgnoreCase("0"))
+					replicateMergedResults = false;
+				else
+				{
+					printUsageAndExit("Illigal -replicate parameter: " + argv[i+1]);
+				}
+			}
 			else
 			{
 				printUsageAndExit("Invalid option: " + argv[i]);
@@ -460,7 +472,7 @@ public class MSGFDB {
 		runMSGFDB(specFile, specFormat, databaseFile, leftParentMassTolerance, rightParentMassTolerance, numAllowedC13,
 	    		outputFile, enzyme, numAllowedNonEnzymaticTermini,
 	    		activationMethod, instType, aaSet, numMatchesPerSpec, startScanNum, endScanNum, useTDA, showFDR,
-	    		minPeptideLength, maxPeptideLength, minCharge, maxCharge, numThreads, useUniformAAProb, dbIndexDir);
+	    		minPeptideLength, maxPeptideLength, minCharge, maxCharge, numThreads, useUniformAAProb, dbIndexDir, replicateMergedResults);
 		System.out.format("MS-GFDB complete (total elapsed time: %.2f sec)\n", (System.currentTimeMillis()-time)/(float)1000);
 	}
 	
@@ -529,7 +541,8 @@ public class MSGFDB {
     		int maxCharge,
     		int numThreads,
     		boolean useUniformAAProb,
-    		File dbIndexDir
+    		File dbIndexDir,
+    		boolean replicateMergedResults
     		)
 	{
 		long time = System.currentTimeMillis();
@@ -707,7 +720,8 @@ public class MSGFDB {
 							numAllowedNonEnzymaticTermini, 
 							!useTDA,
 							gen, 
-							specFile.getName()
+							specFile.getName(),
+							replicateMergedResults
 							);
 				executor.execute(msgfdbExecutor);
 			}

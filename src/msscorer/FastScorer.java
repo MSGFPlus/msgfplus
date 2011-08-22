@@ -3,6 +3,7 @@ package msscorer;
 import msgf.FlexAminoAcidGraph;
 import msgf.NominalMass;
 import msgf.ScoredSpectrum;
+import msutil.ActivationMethod;
 import msutil.Composition;
 import msutil.Peak;
 
@@ -13,8 +14,8 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 	protected float[] suffixScore = null;
 	private boolean mainIonDirection;
 	protected Peak precursor;
-	protected String activationMethodName;
-	private int scanNum;
+	protected ActivationMethod[] activationMethodArr;
+	private int[] scanNumArr;
 	
 	public FastScorer(ScoredSpectrum<NominalMass> scoredSpec, int peptideMass)
 	{
@@ -31,15 +32,15 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 		mainIonDirection = scoredSpec.getMainIonDirection();
 		
 		this.precursor = scoredSpec.getPrecursorPeak();
-		this.activationMethodName = scoredSpec.getActivationMethodName();
-		this.scanNum = scoredSpec.getScanNum();
+		this.activationMethodArr = scoredSpec.getActivationMethodArr();
+		this.scanNumArr = scoredSpec.getScanNumArr();
 	}
 
 	@Override
 	public Peak getPrecursorPeak()	{ return precursor; }
 	
 	@Override
-	public String getActivationMethodName()	{ return activationMethodName; }
+	public ActivationMethod[] getActivationMethodArr()	{ return activationMethodArr; }
 	
 	public float getParentMass()	{ return precursor.getMass(); }
 	public float getPeptideMass()	{ return precursor.getMass()-(float)(Composition.H2O); }
@@ -91,8 +92,8 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 	}
 
 	@Override
-	public int getScanNum() {
-		return scanNum;
+	public int[] getScanNumArr() {
+		return scanNumArr;
 	}
 	
 }

@@ -265,6 +265,11 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 			if(ignore[i])
 				continue;
 			Peak p = this.get(i);
+//			if(p.getMz() < 300)
+//			{
+//				deconvSpec.add(p);
+//				continue;
+//			}
 			for(int ionCharge=2; ionCharge<charge && ionCharge<4; ionCharge++)
 			{
 				boolean isDeconvoluted = false;

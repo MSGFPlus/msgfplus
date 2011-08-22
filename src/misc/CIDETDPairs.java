@@ -19,7 +19,6 @@ import msgf.AminoAcidGraph;
 import msgf.GeneratingFunction;
 import msgf.ProfileGF;
 import msgf.ScoredSpectrum;
-import msgf.ScoredSpectrumSumPairs;
 import msgf.Tolerance;
 import msscorer.NewScorerFactory;
 import msutil.ActivationMethod;

@@ -18,7 +18,7 @@ import msgf.Profile;
 import msgf.ProfileGF;
 import msgf.ProfilePeak;
 import msgf.ScoredSpectrum;
-import msgf.ScoredSpectrumSumPairs;
+import msgf.ScoredSpectrumSum;
 import msscorer.NewRankScorer;
 import msscorer.NewScorerFactory;
 import msutil.ActivationMethod;
@@ -346,7 +346,10 @@ public class MSProfile {
 				if(paired)
 				{
 					scanNumStr = ""+(spec.getScanNum()-1)+"-"+spec.getScanNum();
-					scoredSpec = new ScoredSpectrumSumPairs<NominalMass>(cachedScoredSpec, curScoredSpec);
+					ArrayList<ScoredSpectrum<NominalMass>> scoredSpecList = new ArrayList<ScoredSpectrum<NominalMass>>();
+					scoredSpecList.add(cachedScoredSpec);
+					scoredSpecList.add(curScoredSpec);
+					scoredSpec = new ScoredSpectrumSum<NominalMass>(scoredSpecList);
 					methodStr = prevMethod.getName()+"/"+spec.getActivationMethod().getName();
 				}
 				else

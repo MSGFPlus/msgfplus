@@ -83,6 +83,7 @@ public class ConcurrentMSGFDB {
 		private final boolean storeScoreDist;
 		private final String specFileName;
 		private final MSGFDBResultGenerator gen;
+		private final boolean replicateMergedResults;
 		
 		public RunMSGFDB(
 				ScoredSpectraMap specScanner,
@@ -95,7 +96,8 @@ public class ConcurrentMSGFDB {
 				int numberOfAllowableNonEnzymaticTermini, 
 				boolean storeScoreDist,
 				MSGFDBResultGenerator gen, 
-				String specFileName
+				String specFileName,
+				boolean replicateMergedResults
 				)
 		{
 			this.specScanner = specScanner;
@@ -104,6 +106,7 @@ public class ConcurrentMSGFDB {
 			this.storeScoreDist = storeScoreDist;
 			this.specFileName = specFileName;
 			this.gen = gen;
+			this.replicateMergedResults = replicateMergedResults;
 			
 			int searchMode = 0;
 			if(enzyme == null || enzyme.getResidues() == null)
@@ -157,7 +160,7 @@ public class ConcurrentMSGFDB {
 			System.out.format("(elapsed time: %.2f sec)\n", (float)((System.currentTimeMillis()-time)/1000));
 			
 //			time = System.currentTimeMillis();
-			scanner.addDBSearchResults(gen, specFileName);
+			scanner.addDBSearchResults(gen, specFileName, replicateMergedResults);
 //			System.out.print(threadName+": Generating results... ");
 //			System.out.format("%.2f sec\n", (float)((System.currentTimeMillis()-time)/1000));
 		}

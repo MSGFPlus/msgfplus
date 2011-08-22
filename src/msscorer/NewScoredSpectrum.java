@@ -2,6 +2,7 @@ package msscorer;
 
 import msgf.ScoredSpectrum;
 import msgf.Tolerance;
+import msutil.ActivationMethod;
 import msutil.IonType;
 import msutil.Matter;
 import msutil.Pair;
@@ -17,8 +18,8 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 	private final int charge;
 	private final float parentMass;
 	private final Peak precursor;
-	private final int scanNum;
-	private String activationMethodName;
+	private final int[] scanNumArr;
+	private ActivationMethod[] activationMethodArr;
 	private IonType mainIon;
 	private Partition partition;	// partition of the last segment
 	private float probPeak;
@@ -32,8 +33,10 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 		this.parentMass = spec.getParentMass();
 		this.mme = scorer.mme;
 		this.precursor = (Peak)(spec.getPrecursorPeak().clone());
-		this.activationMethodName = scorer.getActivationMethod().getName();
-		this.scanNum = spec.getScanNum();
+		this.activationMethodArr = new ActivationMethod[1];
+		activationMethodArr[0] = scorer.getActivationMethod();
+		this.scanNumArr = new int[1];
+		scanNumArr[0] = spec.getScanNum();
 		
 		int numSegments = scorer.getNumSegments();
 		ionTypes = new IonType[numSegments][];
@@ -58,7 +61,7 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 	public Peak getPrecursorPeak()	{ return precursor; }
 	
 	@Override
-	public String getActivationMethodName()	{ return activationMethodName; }
+	public ActivationMethod[] getActivationMethodArr()	{ return this.activationMethodArr; }
 	
 	@Override
 	public int getNodeScore(T prm, T srm) 
@@ -227,7 +230,7 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 	}
 
 	@Override
-	public int getScanNum() {
-		return scanNum;
+	public int[] getScanNumArr() {
+		return scanNumArr;
 	}
 }

@@ -2,33 +2,29 @@ package msgf;
 
 import java.util.List;
 
+import msutil.ActivationMethod;
 import msutil.Matter;
 import msutil.Peak;
 
 public class ScoredSpectrumSum<T extends Matter> implements ScoredSpectrum<T> {
 
 	private List<ScoredSpectrum<T>> scoredSpecList;
-	private final String activationMethodName;
 	private Peak precursor;
-	private int scanNum;
+	private ActivationMethod[] activationMethodArr;
+	private int[] scanNumArr;
 	
 	public ScoredSpectrumSum(List<ScoredSpectrum<T>> scoredSpecList)
 	{
 		this.scoredSpecList = scoredSpecList;
-		StringBuffer buf = null;
+		scanNumArr = new int[scoredSpecList.size()];
+		activationMethodArr = new ActivationMethod[scoredSpecList.size()];
+
+		int i=0;
 		for(ScoredSpectrum<T> scoredSpec : scoredSpecList)
 		{
-			if(buf != null)
-				buf.append("/"+scoredSpec.getActivationMethodName());
-			else
-			{
-				buf = new StringBuffer();
-				buf.append(scoredSpec.getActivationMethodName());
-				precursor = scoredSpec.getPrecursorPeak().clone();
-				scanNum = scoredSpec.getScanNum(); 
-			}
+			scanNumArr[i] = scoredSpec.getScanNumArr()[0];
+			activationMethodArr[i] = scoredSpec.getActivationMethodArr()[0];
 		}
-		activationMethodName = buf.toString();
 	}
 	
 	@Override
@@ -54,11 +50,6 @@ public class ScoredSpectrumSum<T extends Matter> implements ScoredSpectrum<T> {
 	}
 
 	@Override
-	public String getActivationMethodName() {
-		return activationMethodName;
-	}
-
-	@Override
 	public Peak getPrecursorPeak() {
 		return precursor;
 	}
@@ -72,7 +63,12 @@ public class ScoredSpectrumSum<T extends Matter> implements ScoredSpectrum<T> {
 	}
 
 	@Override
-	public int getScanNum() {
-		return scanNum;
+	public ActivationMethod[] getActivationMethodArr() {
+		return this.activationMethodArr;
+	}
+
+	@Override
+	public int[] getScanNumArr() {
+		return this.scanNumArr;
 	}
 }
