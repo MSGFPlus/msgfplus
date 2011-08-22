@@ -23,14 +23,14 @@ public class MzXMLSpectraIterator implements Iterator<Spectrum> {
 	 * @param fileName
 	 */
 	public MzXMLSpectraIterator(String fileName) {
-		this(fileName, 2, 2);
+		this(fileName, 2, Integer.MAX_VALUE);
 	}
 
 	/**
 	 * Constructor taking the file name and mslevel selectors
 	 * @param fileName the path to the mzXML file.
 	 * @param minMSLevel spectra with msLevel less than this will be ignored.
-	 * @param maxMSLevel spectra with msLevel greater than this will be ignored.
+	 * @param maxMSLevel spectra with msLevel equal or greater than this will be ignored.
 	 */
 	public MzXMLSpectraIterator(String fileName, int minMSLevel, int maxMSLevel) {
 		map = new MzXMLSpectraMap(fileName).msLevel(minMSLevel, maxMSLevel);

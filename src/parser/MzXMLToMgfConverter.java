@@ -132,7 +132,7 @@ public class MzXMLToMgfConverter {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		MzXMLSpectraIterator itr = new MzXMLSpectraIterator(mzXMLFile.getPath(), minMSLevel, maxMSLevel);
+		MzXMLSpectraIterator itr = new MzXMLSpectraIterator(mzXMLFile.getPath(), minMSLevel, maxMSLevel+1);
 		while(itr.hasNext())
 		{
 			Spectrum spec = itr.next();

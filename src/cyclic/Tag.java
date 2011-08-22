@@ -32,7 +32,7 @@ public class Tag {
     String home = System.getProperty("user.home");
     
     file = "/Data/Cyclic/spectra/TOF/tyrB1.mzXML";
-    MzXMLSpectraIterator it = new MzXMLSpectraIterator(home + file, 1, 5);
+    MzXMLSpectraIterator it = new MzXMLSpectraIterator(home + file, 1, 6);
    
     CircularSequence sequence = CircularSequence.tyrB1;
     float tolerance = 0.1f;
