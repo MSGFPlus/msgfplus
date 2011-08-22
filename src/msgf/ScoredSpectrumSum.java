@@ -9,9 +9,9 @@ import msutil.Peak;
 public class ScoredSpectrumSum<T extends Matter> implements ScoredSpectrum<T> {
 
 	private List<ScoredSpectrum<T>> scoredSpecList;
-	private Peak precursor;
-	private ActivationMethod[] activationMethodArr;
-	private int[] scanNumArr;
+	private final Peak precursor;
+	private final ActivationMethod[] activationMethodArr;
+	private final int[] scanNumArr;
 	
 	public ScoredSpectrumSum(List<ScoredSpectrum<T>> scoredSpecList)
 	{
@@ -20,10 +20,12 @@ public class ScoredSpectrumSum<T extends Matter> implements ScoredSpectrum<T> {
 		activationMethodArr = new ActivationMethod[scoredSpecList.size()];
 
 		int i=0;
+		precursor = scoredSpecList.get(0).getPrecursorPeak();
 		for(ScoredSpectrum<T> scoredSpec : scoredSpecList)
 		{
 			scanNumArr[i] = scoredSpec.getScanNumArr()[0];
 			activationMethodArr[i] = scoredSpec.getActivationMethodArr()[0];
+			i++;
 		}
 	}
 	
@@ -45,7 +47,7 @@ public class ScoredSpectrumSum<T extends Matter> implements ScoredSpectrum<T> {
 
 	@Override
 	public boolean getMainIonDirection() {
-		assert(false): "Not supported!";
+//		assert(false): "Not supported!";
 		return false;
 	}
 

@@ -45,7 +45,7 @@ import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
-	public static final String VERSION = "6284";
+	public static final String VERSION = "6298";
 	public static final String RELEASE_DATE = "08/22/2011";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
@@ -83,8 +83,8 @@ public class MSGFDB {
 		int maxPeptideLength = 40;
 		int minCharge = 2;
 		int maxCharge = 3;
-		int startScanNum = -1;
-		int endScanNum = -1;
+		int startSpecIndex = 0;
+		int endSpecIndex = Integer.MAX_VALUE;
 		int numThreads = Runtime.getRuntime().availableProcessors();
 		
 		AminoAcidSet aaSet = null;
@@ -318,11 +318,11 @@ public class MSGFDB {
 					printUsageAndExit("Illigal scanNum: " + argv[i+1]);
 				}
 				try {
-					startScanNum = Integer.parseInt(token[0]);
+					startSpecIndex = Integer.parseInt(token[0]);
 					if(token.length == 2)
-						endScanNum = Integer.parseInt(token[1]);
+						endSpecIndex = Integer.parseInt(token[1]);
 					else
-						endScanNum = startScanNum+1;
+						endSpecIndex = startSpecIndex+1;
 				} catch (NumberFormatException e)
 				{
 					printUsageAndExit("Illigal scanNum: " + argv[i+1]);
@@ -471,7 +471,7 @@ public class MSGFDB {
 		
 		runMSGFDB(specFile, specFormat, databaseFile, leftParentMassTolerance, rightParentMassTolerance, numAllowedC13,
 	    		outputFile, enzyme, numAllowedNonEnzymaticTermini,
-	    		activationMethod, instType, aaSet, numMatchesPerSpec, startScanNum, endScanNum, useTDA, showFDR,
+	    		activationMethod, instType, aaSet, numMatchesPerSpec, startSpecIndex, endSpecIndex, useTDA, showFDR,
 	    		minPeptideLength, maxPeptideLength, minCharge, maxCharge, numThreads, useUniformAAProb, dbIndexDir, replicateMergedResults);
 		System.out.format("MS-GFDB complete (total elapsed time: %.2f sec)\n", (System.currentTimeMillis()-time)/(float)1000);
 	}
@@ -531,8 +531,8 @@ public class MSGFDB {
     		InstrumentType instType,
     		AminoAcidSet aaSet, 
     		int numMatchesPerSpec,
-    		int startScanNum,
-    		int endScanNum,
+    		int startSpecIndex,
+    		int endSpecIndex,
     		boolean useTDA,
     		boolean showFDR,
     		int minPeptideLength,
@@ -630,25 +630,7 @@ public class MSGFDB {
 		int avgPeptideMass = 2000;
 		int numBytesPerMass = 8;
 		int numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
-		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specItr, minCharge, maxCharge, activationMethod);
-		
-		if(startScanNum >= 0)
-		{
-			specKeyList.clear();
-			for(int scanNum = startScanNum; scanNum<endScanNum; scanNum++)
-			{
-				Spectrum spec = specMap.getSpectrumBySpecIndex(scanNum);
-				if(spec == null)
-					continue;
-				if(spec.getCharge() == 0)
-				{
-					for(int c=minCharge; c<=maxCharge; c++)
-						specKeyList.add(new SpecKey(scanNum, c));
-				}
-				else
-					specKeyList.add(new SpecKey(scanNum, spec.getCharge()));
-			}
-		}
+		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specItr, startSpecIndex, endSpecIndex, minCharge, maxCharge, activationMethod);
 		
 		System.out.print("Read spectra finished ");
 		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);

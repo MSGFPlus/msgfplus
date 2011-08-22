@@ -1061,16 +1061,21 @@ public class DBScanner {
 				
 				int index = match.getIndex();
 				int length = match.getLength();
+				int charge = match.getCharge();
 				
 				String peptideStr = match.getPepSeq();
 				if(peptideStr == null)
 					peptideStr = sa.getSequence().getSubsequence(index+1, index+length-1);
-//				if(peptideStr.contains("X"))
-//					System.out.println("Debug");
 				Peptide pep = aaSet.getPeptide(peptideStr);
 				String annotationStr = sa.getSequence().getCharAt(index)+"."+pep+"."+sa.getSequence().getCharAt(index+length-1);
-				SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(new SpecKey(specIndex, match.getCharge()));
-//				float expMass = scorer.getParentMass();
+				SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(new SpecKey(specIndex, charge));
+				ArrayList<Integer> specIndexList = specScanner.getSpecKey(specIndex, charge).getSpecIndexList();
+				if(specIndexList == null)
+				{
+					specIndexList = new ArrayList<Integer>();
+					specIndexList.add(specIndex);
+				}
+				
 				float expMass = scorer.getPrecursorPeak().getMass();
 				float theoMass = pep.getParentMass();
 				float pmError = Float.MAX_VALUE;
@@ -1106,19 +1111,22 @@ public class DBScanner {
 
 				if(!replicateMergedResults)
 				{
-					StringBuffer actMethodStrBuf = new StringBuffer();
+					StringBuffer specIndexStrBuf = new StringBuffer();
 					StringBuffer scanNumStrBuf = new StringBuffer();
+					StringBuffer actMethodStrBuf = new StringBuffer();
+					specIndexStrBuf.append(specIndexList.get(0));
 					actMethodStrBuf.append(scorer.getActivationMethodArr()[0]);
 					scanNumStrBuf.append(scorer.getScanNumArr()[0]);
 					for(int j=1; j<scorer.getActivationMethodArr().length; j++)
 					{
-						actMethodStrBuf.append("/"+scorer.getActivationMethodArr()[j]);
+						specIndexStrBuf.append("/"+specIndexList.get(j));
 						scanNumStrBuf.append("/"+scorer.getScanNumArr()[j]);
+						actMethodStrBuf.append("/"+scorer.getActivationMethodArr()[j]);
 					}
 					
 					String resultStr =
 						specFileName+"\t"
-						+specIndex+"\t"
+						+specIndexStrBuf.toString()+"\t"
 						+scanNumStrBuf.toString()+"\t"
 						+actMethodStrBuf.toString()+"\t" 
 						+scorer.getPrecursorPeak().getMz()+"\t"
@@ -1139,7 +1147,7 @@ public class DBScanner {
 					{
 						String resultStr =
 							specFileName+"\t"
-							+specIndex+"\t"
+							+specIndexList.get(j)+"\t"
 							+scorer.getScanNumArr()[j]+"\t"
 							+scorer.getActivationMethodArr()[j]+"\t" 
 							+scorer.getPrecursorPeak().getMz()+"\t"

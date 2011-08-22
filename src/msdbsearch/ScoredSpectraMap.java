@@ -24,6 +24,7 @@ import msutil.Composition;
 import msutil.Enzyme;
 import msutil.InstrumentType;
 import msutil.Modification;
+import msutil.Pair;
 import msutil.SpecKey;
 import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
@@ -38,6 +39,7 @@ public class ScoredSpectraMap {
 	
 	private SortedMap<Double,SpecKey> pepMassSpecKeyMap;
 	private Map<SpecKey,SimpleDBSearchScorer<NominalMass>> specKeyScorerMap;
+	private Map<Pair<Integer,Integer>, SpecKey> specIndexChargeToSpecKeyMap;
 
 	public ScoredSpectraMap(
 			SpectrumAccessorBySpecIndex specMap,
@@ -57,6 +59,7 @@ public class ScoredSpectraMap {
 		
 		pepMassSpecKeyMap = Collections.synchronizedSortedMap((new TreeMap<Double,SpecKey>()));
 		specKeyScorerMap = Collections.synchronizedMap(new HashMap<SpecKey,SimpleDBSearchScorer<NominalMass>>());
+		specIndexChargeToSpecKeyMap = Collections.synchronizedMap(new HashMap<Pair<Integer,Integer>,SpecKey>());
 	}
 	
 	public SortedMap<Double,SpecKey> getPepMassSpecKeyMap()		{ return pepMassSpecKeyMap; }
@@ -65,6 +68,11 @@ public class ScoredSpectraMap {
 	public Tolerance getRightParentMassTolerance()				{ return rightParentMassTolerance; }
 	public int getNumAllowedC13()								{ return numAllowedC13; }
 	public List<SpecKey> getSpecKeyList()	{ return specKeyList; }
+	
+	public SpecKey getSpecKey(int specIndex, int charge)
+	{
+		return specIndexChargeToSpecKeyMap.get(new Pair<Integer,Integer>(specIndex, charge));
+	}
 	
 	public ScoredSpectraMap makePepMassSpecKeyMap()
 	{
@@ -98,7 +106,8 @@ public class ScoredSpectraMap {
 						mass2Key = Math.nextUp(mass2Key);
 					pepMassSpecKeyMap.put(mass2Key, specKey);
 				}
-			}					
+			}			
+			specIndexChargeToSpecKeyMap.put(new Pair<Integer,Integer>(specKey.getSpecIndex(), specKey.getCharge()), specKey);
 		}
 		return this;
 	}

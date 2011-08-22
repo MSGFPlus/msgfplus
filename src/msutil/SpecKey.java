@@ -53,10 +53,10 @@ public class SpecKey extends Pair<Integer, Integer> {
 		return specIndexList;
 	}
 	
-	public static ArrayList<SpecKey> getSpecKeyList(Iterator<Spectrum> itr, int minCharge, int maxCharge, ActivationMethod activationMethod)
+	public static ArrayList<SpecKey> getSpecKeyList(Iterator<Spectrum> itr, int startSpecIndex, int endSpecIndex, int minCharge, int maxCharge, ActivationMethod activationMethod)
 	{
 		if(activationMethod == ActivationMethod.FUSION)
-			return getFusedSpecKeyList(itr, minCharge, maxCharge);
+			return getFusedSpecKeyList(itr, startSpecIndex, endSpecIndex, minCharge, maxCharge);
 		
 		ArrayList<SpecKey> specKeyList = new ArrayList<SpecKey>();
 		
@@ -64,6 +64,12 @@ public class SpecKey extends Pair<Integer, Integer> {
 		{
 			Spectrum spec = itr.next();
 			int specIndex = spec.getSpecIndex();
+			
+			if(specIndex < startSpecIndex)
+				continue;
+			if(specIndex >= endSpecIndex)
+				continue;
+			
 			int charge = spec.getCharge();
 			
 			if(activationMethod != null && spec.getActivationMethod() != null && spec.getActivationMethod() != activationMethod)
@@ -87,7 +93,7 @@ public class SpecKey extends Pair<Integer, Integer> {
 		return specKeyList;
 	}
 	
-	public static ArrayList<SpecKey> getFusedSpecKeyList(Iterator<Spectrum> itr, int minCharge, int maxCharge)
+	public static ArrayList<SpecKey> getFusedSpecKeyList(Iterator<Spectrum> itr, int startSpecIndex, int endSpecIndex, int minCharge, int maxCharge)
 	{
 		HashMap<Peak, ArrayList<Integer>> precursorSpecIndexMap = new HashMap<Peak, ArrayList<Integer>>();
 		
@@ -95,6 +101,8 @@ public class SpecKey extends Pair<Integer, Integer> {
 		{
 			Spectrum spec = itr.next();
 			int specIndex = spec.getSpecIndex();
+			if(specIndex < startSpecIndex || specIndex >= endSpecIndex)
+				continue;
 			Peak precursor = spec.getPrecursorPeak();
 			if(spec.getActivationMethod() == null)
 			{
@@ -157,7 +165,7 @@ public class SpecKey extends Pair<Integer, Integer> {
 		String fileName = "/home/sangtaekim/Research/Data/HeckRevision/CIDETDPairs/mzXML/090121_NM_Trypsin_20.mzXML";
 		int minCharge = 2, maxCharge = 3;
 		MzXMLSpectraIterator itr = new MzXMLSpectraIterator(fileName);
-		ArrayList<SpecKey> list = SpecKey.getFusedSpecKeyList(itr, minCharge, maxCharge);
+		ArrayList<SpecKey> list = SpecKey.getFusedSpecKeyList(itr, 0, Integer.MAX_VALUE, minCharge, maxCharge);
 		for(SpecKey specKey : list)
 		{
 			if(specKey.getSpecIndexList() == null || specKey.getSpecIndexList().size() != 2)
