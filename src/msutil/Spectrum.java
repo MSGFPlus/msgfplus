@@ -270,19 +270,36 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 //				deconvSpec.add(p);
 //				continue;
 //			}
+			float pMz = p.getMz();
 			for(int ionCharge=2; ionCharge<charge && ionCharge<4; ionCharge++)
 			{
 				boolean isDeconvoluted = false;
 				for(int j=i+1; j<this.size(); j++)
 				{
 					Peak p2 = this.get(j);
-					float diff = p2.getMz()-p.getMz()-(float)Composition.ISOTOPE/ionCharge;
+					float diff = p2.getMz()-pMz-(float)Composition.ISOTOPE/ionCharge;
 					if(diff > -toleranceBetweenIsotopes && diff < toleranceBetweenIsotopes)
 					{
 						ignore[j] = true;
 						p.setMz(ionCharge*p.getMz()-(ionCharge-1)*(float)Composition.PROTON);
 						isDeconvoluted = true;
-						p2.setMz(ionCharge*p.getMz()-(ionCharge-1)*(float)Composition.PROTON);
+						float p2Mz = p2.getMz();
+						for(int k=j+1; k<this.size(); k++)
+						{
+							Peak p3 = this.get(k);
+							float diff2 = p3.getMz()-p2Mz-(float)(Composition.C14-Composition.C13)/ionCharge;
+							if(diff2 > -toleranceBetweenIsotopes && diff2 < toleranceBetweenIsotopes)
+							{
+								ignore[k] = true;
+								p3.setMz(ionCharge*p3.getMz()-(ionCharge-1)*(float)Composition.PROTON);
+								deconvSpec.add(p3);
+								break;
+							}
+							else if(diff2 > toleranceBetweenIsotopes)
+								break;
+						}
+						p2.setMz(ionCharge*p2.getMz()-(ionCharge-1)*(float)Composition.PROTON);
+						deconvSpec.add(p2);
 						break;
 					}
 					else if(diff > toleranceBetweenIsotopes)

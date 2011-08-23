@@ -14,6 +14,7 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 	private Spectrum spec;
 	private NewRankScorer scorer;
 	private Tolerance mme;
+	
 	private IonType[][] ionTypes;	// segmentNum, ionType
 	private final int charge;
 	private final float parentMass;
@@ -26,7 +27,6 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 	
 	public NewScoredSpectrum(Spectrum spec, NewRankScorer scorer)
 	{
-		this.spec = spec;
 		this.scorer = scorer;
 		
 		this.charge = spec.getCharge();
@@ -48,13 +48,17 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 			spec.filterPrecursorPeaks(mme, off.getReducedCharge(), off.getOffset());
 		spec.setRanksOfPeaks();
 		
+		// deconvolute spectra
+		if(scorer.applyDeconvolution())
+			spec = spec.getDeconvolutedSpectrum(scorer.deconvolutionErrorTolerance());
+		
 		// for edge scoring
 		partition = scorer.getPartition(spec.getCharge(), spec.getParentMass(), scorer.getNumSegments()-1);
 		mainIon = scorer.getMainIonType(partition);
 		
 		float approxNumBins = spec.getPeptideMass()/(scorer.getMME().getValue()*2);
 		probPeak = spec.size()/approxNumBins;
-		spec.getParentMass();
+		this.spec = spec;
 	}
 	
 	@Override

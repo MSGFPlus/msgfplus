@@ -284,6 +284,6 @@ public class Enzyme {
 		register("GluC", GluC);
 		register("ArgC", ArgC);
 		register("AspN", AspN);
-		register("aLP", AspN);
+		register("aLP", ALP);
 	}
 }

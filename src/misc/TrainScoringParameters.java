@@ -1,13 +1,18 @@
 package misc;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Calendar;
 
+import msscorer.NewRankScorer;
 import msscorer.ScoringParameterGeneratorWithErrors;
 import msutil.ActivationMethod;
 import msutil.AminoAcidSet;
 import msutil.Enzyme;
 import msutil.InstrumentType;
+import msutil.Modification;
 
 public class TrainScoringParameters {
 	
@@ -19,6 +24,7 @@ public class TrainScoringParameters {
 	{
 //		backup();
 		createParamFiles();
+		testParamFiles();
 	}
 	
 	public static void backup() throws Exception
@@ -90,7 +96,7 @@ public class TrainScoringParameters {
 			{
 				String id = specFileName.substring(0, specFileName.lastIndexOf('.'));
 				String[] token = id.split("_");
-				if(token.length != 3)
+				if(token.length != 3 && token.length != 4)
 				{
 					System.err.println("Wrong file name: " + specFile.getName());
 					System.exit(-1);
@@ -98,10 +104,16 @@ public class TrainScoringParameters {
 				String actMethodStr = token[0];
 				String instTypeStr = token[1];
 				String enzymeStr = token[2];
+				String modStr = null;
+				if(token.length == 4)
+					modStr = token[3];
 				
 				ActivationMethod actMethod = ActivationMethod.get(actMethodStr);
 				InstrumentType instType = InstrumentType.get(instTypeStr);
 				Enzyme enzyme = Enzyme.getEnzymeByName(enzymeStr);
+				Modification mod = null;
+				if(modStr != null)
+					mod = Modification.get(modStr);
 				
 				if(actMethod == null || instType == null || enzyme == null)
 				{
@@ -114,24 +126,46 @@ public class TrainScoringParameters {
 				System.out.println("Generating " + outputFile.getPath());
 				int numSpecsPerPeptide = 1;
 				int errorScalingFactor = 0;
-				if(id.contains("HCD"))
+				boolean deconvoluteSpectra = false;
+				if(instType == InstrumentType.HIGH_RESOLUTION_LTQ)
 				{
 					numSpecsPerPeptide = 3;
 					errorScalingFactor = 100;
+					deconvoluteSpectra = true;
 				}
-				else if(id.contains("TOF"))
+				else if(instType == InstrumentType.TOF)
 				{
 					errorScalingFactor = 100;
+					deconvoluteSpectra = true;
 				}
 				
 				boolean considerPhosLoss = false;
-//				else if(id.contains("ETD"))
-//				{
-//					errorScalingFactor = 0;
-//				}
-				ScoringParameterGeneratorWithErrors.generateParameters(specFile, actMethod, instType, enzyme, numSpecsPerPeptide, errorScalingFactor, considerPhosLoss, outputFile, aaSet, false, false);
+				if(mod == Modification.get("Phosphorylation"))
+				{
+					numSpecsPerPeptide = 3;
+					considerPhosLoss = true;
+				}
+				if(enzyme == Enzyme.ALP)
+					numSpecsPerPeptide = 3;
+				
+				ScoringParameterGeneratorWithErrors.generateParameters(specFile, actMethod, instType, enzyme, numSpecsPerPeptide, errorScalingFactor, considerPhosLoss, deconvoluteSpectra, outputFile, aaSet, false, false);
 			}
 		}
-		System.out.println("Success!");
+		System.out.println("Successfully generated parameters!");
+	}
+	
+	public static void testParamFiles() throws Exception
+	{
+		for(File f : new File(PARAM_DIR).listFiles())
+		{
+			if(f.getName().endsWith(".param"))
+			{
+				System.out.println("Reading " + f.getName());
+				InputStream is = new BufferedInputStream(new FileInputStream(f));
+				NewRankScorer scorer = new NewRankScorer(new BufferedInputStream(is));
+				System.out.println(scorer.getActivationMethod().getName()+"_"+scorer.getInstrumentType().getName()+"_"+scorer.getEnzyme().getName());
+			}
+		}
+		System.out.println("Read Success");
 	}
 }

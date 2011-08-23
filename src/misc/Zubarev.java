@@ -87,7 +87,7 @@ public class Zubarev {
 
 		SpectraIterator itr = new SpectraIterator(specFileName, new MgfSpectrumParser());
 		
-		IonType[] ionTypes = {IonType.B, IonType.Y, IonType.A, IonType.getIonType("b2"), IonType.getIonType("y2")};
+		IonType[] ionTypes = {IonType.B, IonType.getIonType("b+n"), IonType.Y, IonType.getIonType("y+n"), IonType.A, IonType.getIonType("b2"), IonType.getIonType("y2"), IonType.getIonType("b3"), IonType.getIonType("y3")};
 		float toleranceBetweenIsotopes = 0.02f;
 		
 		while(itr.hasNext())

@@ -81,21 +81,6 @@ public class Chores {
 		System.out.println(IonType.getIonType("y2+n").getMass(100));
 	}
 
-	public static void testSpecKey() throws Exception
-	{
-		String fileName = "/home/sangtaekim/Research/Data/CIDETDPairs/mzXML/090121_NM_Trypsin_20.mzXML";
-		fileName = "/home/sangtaekim/Test/Jesse/SPombe_T.mzXML";
-		int minCharge = 2, maxCharge = 2;
-		MzXMLSpectraIterator itr = new MzXMLSpectraIterator(fileName);
-		ArrayList<SpecKey> list = SpecKey.getFusedSpecKeyList(itr, minCharge, maxCharge);
-		for(SpecKey specKey : list)
-		{
-			if(specKey.getSpecIndexList() == null || specKey.getSpecIndexList().size() != 2)
-				System.out.println(specKey.getSpecKeyString()+"\t"+specKey.getSpecIndexList());
-		}
-		System.out.println("Size: " + list.size());
-	}
-	
 	public static void printMaxScanNum() throws Exception
 	{
 		String mzXMLFileName = "/home/sangtaekim/Test/CCMS/3297b97db35241ba8547906b22377869/spectrum/00000.mzXML";

@@ -48,6 +48,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
     private static final int[] smoothingRanks = {3, 5, 10, 20, 50, Integer.MAX_VALUE}; //Ranks around which smoothing occurs
     private static final int[] smoothingWindowSize = {0, 1, 2, 3, 4, 5}; //Smoothing windows for each smoothing rank
 	
+    private static final float DECONVOLUTION_MASS_TOLERANCE = 0.02f;
 	protected static final int MAX_CHARGE = 20;
  	
 	public static void main(String argv[])
@@ -59,7 +60,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		int numSpecsPerPeptide = 1;
 		int errorScalingFactor = 0;
 		boolean considerPhosLoss = false;
-//		boolean applyDeconvolution = false;
+		boolean applyDeconvolution = false;
 		
 		ActivationMethod activationMethod = null;
 		InstrumentType instType = null;
@@ -187,15 +188,15 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 				else
 					printUsageAndExit("Illegal -phos parameter: " + argv[i+1]);
 			}
-//			else if(argv[i].equalsIgnoreCase("-deconv"))	// H3PO4 loss
-//			{
-//				if(argv[i+1].equalsIgnoreCase("1"))
-//					applyDeconvolution = true;
-//				else if(argv[i+1].equalsIgnoreCase("0"))
-//					applyDeconvolution = false;
-//				else
-//					printUsageAndExit("Illegal -deconv parameter: " + argv[i+1]);
-//			}
+			else if(argv[i].equalsIgnoreCase("-deconv"))	// H3PO4 loss
+			{
+				if(argv[i+1].equalsIgnoreCase("1"))
+					applyDeconvolution = true;
+				else if(argv[i+1].equalsIgnoreCase("0"))
+					applyDeconvolution = false;
+				else
+					printUsageAndExit("Illegal -deconv parameter: " + argv[i+1]);
+			}
 			else
 				printUsageAndExit("Illegal parameters!");
 		}
@@ -208,7 +209,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		if(instType == null)
 			printUsageAndExit("missing instrumentType!");
 		
-		generateParameters(specFile, activationMethod, instType, enzyme, numSpecsPerPeptide, errorScalingFactor, considerPhosLoss, /* applyDeconvolution,*/ outputFile, aaSet, isText, false);
+		generateParameters(specFile, activationMethod, instType, enzyme, numSpecsPerPeptide, errorScalingFactor, considerPhosLoss, applyDeconvolution, outputFile, aaSet, isText, false);
 	}
 	
 	public static void printUsageAndExit(String message)
@@ -221,7 +222,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 				"\t-inst InstrumentID (0: Low-res LCQ/LTQ, 1: TOF , 2: High-res LTQ)\n" +
 				"\t-e EnzymeID (0: No enzyme, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N, 8: aLP)\n" +
 				"\t[-phos 0/1] (0: Don't consider H3PO4 loss (default), 1: Consider H3PO4 loss)\n" +
-//				"\t[-deconv 0/1] (0: Don't apply deconvolution (Default), 1: Apply deconvolution/deisotping)" +
+				"\t[-deconv 0/1] (0: Don't apply deconvolution (Default), 1: Apply deconvolution/deisotping)" +
 				"\t[-fixMod 0/1/2] (0: NoCysteineProtection, 1: CarbamidomethyC (default), 2: CarboxymethylC)\n" +
 				"\t[-pep numPeptidesPerSpec]  (default: 1)\n" +
 				"\t[-err errorScalingFactor]  (default: 0)"
@@ -237,7 +238,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			int numSpecsPerPeptide, 
 			int errorScalingFactor,
 			boolean considerPhosLoss,
-//			boolean applyDeconvolution,
+			boolean applyDeconvolution,
 			File outputFile, 
 			AminoAcidSet aaSet, 
 			boolean isText, 
@@ -247,9 +248,10 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		
 		// multiple spectra with the same peptide -> one spec per peptide
 		HashMap<String,ArrayList<Spectrum>> pepSpecMap = new HashMap<String,ArrayList<Spectrum>>();
-		SpectraContainer specContOnePerPep = new SpectraContainer();
 		for(Spectrum spec : container)
 		{
+			if(spec.getAnnotationStr() == null)
+				continue;
 			String pep = spec.getAnnotationStr()+":"+spec.getCharge();
 			if(pep != null && pep.length() > 0)
 			{
@@ -263,11 +265,17 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 					specList.add(spec);
 			}
 		}
-		for(ArrayList<Spectrum> specList : pepSpecMap.values())
-			for(Spectrum spec : specList)
-				specContOnePerPep.add(spec);
 		
-		ScoringParameterGeneratorWithErrors gen = new ScoringParameterGeneratorWithErrors(specContOnePerPep, activationMethod, instType, enzyme, considerPhosLoss);
+		SpectraContainer specContOnePerPep = new SpectraContainer();
+		for(ArrayList<Spectrum> specList : pepSpecMap.values())
+		{
+			for(Spectrum spec : specList)
+			{
+				specContOnePerPep.add(spec);
+			}
+		}
+		
+		ScoringParameterGeneratorWithErrors gen = new ScoringParameterGeneratorWithErrors(specContOnePerPep, activationMethod, instType, enzyme, considerPhosLoss, applyDeconvolution);
 		// set up the tolerance
 		gen.tolerance(new Tolerance(0.5f));
 		
@@ -286,6 +294,13 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		if(verbose)
 			System.out.println("Filtering Done.");
 		
+		if(applyDeconvolution)
+		{
+			gen.deconvoluteSpectra();
+			if(verbose)
+				System.out.println("Deconvolution Done.");
+		}
+			
 		// Step 4: compute offset frequency function of fragment peaks and determine ion types to be considered for scoring
 		gen.selectIonTypes();
 		if(verbose)
@@ -320,13 +335,15 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 	private SpectraContainer specContainer;
 	private final boolean considerPhosLoss;
 	
-	public ScoringParameterGeneratorWithErrors(SpectraContainer specContainer, ActivationMethod actMethod, InstrumentType instType, Enzyme enzyme, boolean considerPhosLoss)
+	public ScoringParameterGeneratorWithErrors(SpectraContainer specContainer, ActivationMethod actMethod, InstrumentType instType, Enzyme enzyme, boolean considerPhosLoss, boolean applyDeconvolution)
 	{
 		this.specContainer = specContainer;
 		this.considerPhosLoss = considerPhosLoss;
 		super.activationMethod = actMethod;
 		super.instType = instType;
 		super.enzyme = enzyme;
+		super.applyDeconvolution = applyDeconvolution;
+		super.deconvolutionErrorTolerance = DECONVOLUTION_MASS_TOLERANCE;
 	}
 	
 	public void partition(int numSegments)
@@ -473,6 +490,16 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			for(PrecursorOffsetFrequency off : this.getPrecursorOFF(spec.getCharge()))
 				spec.filterPrecursorPeaks(mme, off.getReducedCharge(), off.getOffset());
 		}
+	}
+
+	private void deconvoluteSpectra()
+	{
+		SpectraContainer newSpecContainer = new SpectraContainer();
+		for(Spectrum spec : specContainer)
+		{
+			newSpecContainer.add(spec.getDeconvolutedSpectrum(DECONVOLUTION_MASS_TOLERANCE));
+		}
+		specContainer = newSpecContainer;
 	}
 	
 	private Pair<Float,Float> getParentMassRange(Partition partition)

@@ -52,7 +52,11 @@ public class NewRankScorer implements NewAdditiveScorer {
 	protected Hashtable<Partition,Hashtable<IonType,Float[]>> rankDistTable = null;
 	
 	protected Tolerance mme = new Tolerance(0.5f);
-
+	
+	// Deconvolution
+	protected boolean applyDeconvolution = false;
+	protected float deconvolutionErrorTolerance = 0;
+	
 	protected int numPrecurOFF = 0;
 	protected int maxRank = 0;
 	
@@ -110,6 +114,16 @@ public class NewRankScorer implements NewAdditiveScorer {
 	{
 		this.mme = mme;
 		return this;
+	}
+	
+	public boolean applyDeconvolution()
+	{
+		return this.applyDeconvolution;
+	}
+	
+	public float deconvolutionErrorTolerance()
+	{
+		return this.deconvolutionErrorTolerance;
 	}
 	
 	public NewRankScorer doNotUseError()	{ this.errorScalingFactor = 0; return this;}
@@ -243,6 +257,12 @@ public class NewRankScorer implements NewAdditiveScorer {
 			boolean isTolerancePPM = in.readBoolean();
 			float mmeVal = in.readFloat();
 			mme = new Tolerance(mmeVal, isTolerancePPM);
+			
+			// Apply deconvolution
+			boolean applyDeconvolution = in.readBoolean();
+			float deconvolutionErrorTolerance = in.readFloat();
+			this.applyDeconvolution = applyDeconvolution;
+			this.deconvolutionErrorTolerance = deconvolutionErrorTolerance;
 			
 			// Charge histogram
 			if(verbose)
@@ -641,6 +661,10 @@ public class NewRankScorer implements NewAdditiveScorer {
 			out.writeBoolean(mme.isTolerancePPM());
 			out.writeFloat(mme.getValue());
 			
+			// Apply deconvolution
+			out.writeBoolean(applyDeconvolution);
+			out.writeFloat(deconvolutionErrorTolerance);
+			
 			// Charge histogram
 			out.writeInt((chargeHist.maxKey()-chargeHist.minKey()+1));	// size
 			for(int charge=chargeHist.minKey(); charge<=chargeHist.maxKey(); charge++)
@@ -777,6 +801,11 @@ public class NewRankScorer implements NewAdditiveScorer {
 		
 		// Write mme
 		out.println("#Maximum mass error: " + mme.toString());
+		
+		// Write whether to apply deconvolution
+		out.println("Apply deconvolution: " + applyDeconvolution);
+		out.println("Deconvolution error tolerance: " + deconvolutionErrorTolerance);
+		
 		// Charge histogram
 		out.println("#ChargeHistogram\t"+(chargeHist.maxKey()-chargeHist.minKey()+1));
 		for(int charge=chargeHist.minKey(); charge<=chargeHist.maxKey(); charge++)
