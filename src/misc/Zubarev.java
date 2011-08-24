@@ -81,13 +81,14 @@ public class Zubarev {
 	
 	public static void deconvolutionTest(int charge, boolean applyDeconvolution) throws Exception
 	{
-		String specFileName = System.getProperty("user.home")+"/Research/Data/Heck_DDDT/AnnotatedSpectra/HCD_HighRes_Tryp.mgf";
+		String specFileName = System.getProperty("user.home")+"/Research/Data/Heck_DDDT/AnnotatedSpectra/ETD_HighRes_Tryp.mgf";
 //		specFileName = System.getProperty("user.home")+"/Research/Data/Zubarev/AnnotatedSpectra/Zubarev_HCD_Annotated.mgf";
 		SpectraContainer container = new SpectraContainer();
 
 		SpectraIterator itr = new SpectraIterator(specFileName, new MgfSpectrumParser());
 		
-		IonType[] ionTypes = {IonType.B, IonType.getIonType("b+n"), IonType.Y, IonType.getIonType("y+n"), IonType.A, IonType.getIonType("b2"), IonType.getIonType("y2"), IonType.getIonType("b3"), IonType.getIonType("y3")};
+//		IonType[] ionTypes = {IonType.B, IonType.getIonType("b+n"), IonType.Y, IonType.getIonType("y+n"), IonType.A, IonType.getIonType("b2"), IonType.getIonType("y2"), IonType.getIonType("b3"), IonType.getIonType("y3")};
+		IonType[] ionTypes = IonType.getAllKnownIonTypes(3, true, false).toArray(new IonType[0]);
 		float toleranceBetweenIsotopes = 0.02f;
 		
 		while(itr.hasNext())
@@ -106,7 +107,9 @@ public class Zubarev {
 		int i=0;
 		for(IonType ion : ionTypes)
 		{
-			System.out.println(ion.getName()+"\t"+prob[i++]);
+			if(prob[i] > 0.05)
+				System.out.println(ion.getName()+"\t"+prob[i]);
+			i++;
 		}
 	}
 
