@@ -68,7 +68,7 @@ public class Zubarev {
 
 	public static void deconvolutionTest() throws Exception
 	{
-		for(int charge=2; charge<=4; charge++)
+		for(int charge=3; charge<=3; charge++)
 		{
 			System.out.println("Charge: " + charge);
 			System.out.println("Before deconvolution");
@@ -81,7 +81,7 @@ public class Zubarev {
 	
 	public static void deconvolutionTest(int charge, boolean applyDeconvolution) throws Exception
 	{
-		String specFileName = System.getProperty("user.home")+"/Research/Data/Heck_DDDT/AnnotatedSpectra/ETD_HighRes_Tryp.mgf";
+		String specFileName = System.getProperty("user.home")+"/Research/Data/Heck_DDDT/AnnotatedSpectra/HCD_HighRes_Tryp.mgf";
 //		specFileName = System.getProperty("user.home")+"/Research/Data/Zubarev/AnnotatedSpectra/Zubarev_HCD_Annotated.mgf";
 		SpectraContainer container = new SpectraContainer();
 
