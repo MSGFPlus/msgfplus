@@ -33,7 +33,7 @@ public class MergeTargetDecoyFiles {
 		
 		int specProbCol = -1;
 		int specFileCol = -1;
-		int scanNumCol = -1;
+		int specIndexCol = -1;
 		String headerStr = in.readLine();	// header
 		String[] header = headerStr.split("\t");
 		for(int i=0; i<header.length; i++)
@@ -42,16 +42,16 @@ public class MergeTargetDecoyFiles {
 				specProbCol = i;
 			else if(header[i].contains("SpecFile") || header[i].contains("SpectrumFile"))
 				specFileCol = i;
-			else if(header[i].contains("Scan"))
-				scanNumCol = i;
+			else if(header[i].contains("SpecIndex"))
+				specIndexCol = i;
 		}
 		
 		while((s=in.readLine()) != null)
 		{
 			String[] token = s.split("\t");
-			if(token.length < specFileCol || token.length < specProbCol || token.length < scanNumCol)
+			if(token.length < specFileCol || token.length < specProbCol || token.length < specIndexCol)
 				continue;
-			String key = token[specFileCol]+":"+token[scanNumCol];
+			String key = token[specFileCol]+":"+token[specIndexCol];
 			if(targetMap.get(key) == null)
 				targetMap.put(key, s);
 		}
@@ -63,14 +63,14 @@ public class MergeTargetDecoyFiles {
 		while((s=in.readLine()) != null)
 		{
 			String[] token = s.split("\t");
-			if(token.length < specFileCol || token.length < specProbCol || token.length < scanNumCol)
+			if(token.length < specFileCol || token.length < specProbCol || token.length < specIndexCol)
 				continue;
-			int scanNum = Integer.parseInt(token[scanNumCol]);
+			int scanNum = Integer.parseInt(token[specIndexCol]);
 			if(scanNum == prevScanNum)
 				continue;
 			else
 				prevScanNum = scanNum;
-			String key = token[specFileCol]+":"+token[scanNumCol];
+			String key = token[specFileCol]+":"+token[specIndexCol];
 			
 			String targetResult = targetMap.get(key);
 			String decoyResult = s;

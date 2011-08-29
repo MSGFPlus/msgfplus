@@ -31,11 +31,7 @@ public class AnnotatedSpecGenerator {
 		int chargeCol = -1;
 		int scoreCol = -1;
 		boolean isGreaterBetter = false;
-		float threshold;
-		if(isGreaterBetter)
-			threshold = Float.MIN_VALUE;
-		else
-			threshold = Float.MAX_VALUE;
+		float threshold = Float.MAX_VALUE;
 		boolean uniquePeptide = false;
 		boolean hasHeader = true;
 //		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
@@ -162,6 +158,14 @@ public class AnnotatedSpecGenerator {
 		if(scoreCol < 0)
 			printUsageAndExit("-s scoreCol 0/1 is missing");
 		
+		if(threshold == Float.MAX_VALUE)
+		{
+			if(isGreaterBetter)
+				threshold = Float.MIN_VALUE;
+			else
+				threshold = Float.MAX_VALUE;
+		}
+		
 		generateAnnotatedSpectra(resultFile, specDir, outputFile, specIndexCol, specFileCol, peptideCol, chargeCol, scoreCol, isGreaterBetter,
 				threshold, uniquePeptide, hasHeader);
 		
@@ -246,7 +250,17 @@ public class AnnotatedSpecGenerator {
 			String str = itr.next();
 			String[] token = str.split("\t");
 			
+			String pep = token[pepCol];
+//			if(pep.matches(".*\\.[A-Z]+\\..*"))
+			if(pep.matches(".\\..+\\.."))
+				pep = pep.substring(pep.indexOf('.')+1, pep.lastIndexOf('.'));
+//			if(!pep.contains("79.966"))
+//				continue;
+//			if(!pep.contains("phos"))
+//				continue;
+			
 			String specFileName = token[specFileCol];
+			specFileName = new File(specFileName).getName();
 			SpectrumAccessorBySpecIndex specMap = specAccessorMap.get(specFileName);
 			if(specMap == null)
 			{
@@ -263,10 +277,6 @@ public class AnnotatedSpecGenerator {
 				specAccessorMap.put(specFileName, specMap);
 			}
 			
-			String pep = token[pepCol];
-//			if(pep.matches(".*\\.[A-Z]+\\..*"))
-			if(pep.matches(".\\..+\\.."))
-				pep = pep.substring(pep.indexOf('.')+1, pep.lastIndexOf('.'));
 			int specIndex = Integer.parseInt(token[specIndexCol]);
 			int charge = Integer.parseInt(token[chargeCol]);
 			Spectrum spec = specMap.getSpectrumBySpecIndex(specIndex);
@@ -277,7 +287,7 @@ public class AnnotatedSpecGenerator {
 			}
 			
 			out.println("BEGIN IONS");
-			out.println("TITLE=" + specFileName+":"+specIndex);
+			out.println("TITLE=" + specFileName+":"+specIndex+" MSLevel="+spec.getMSLevel());
 			out.println("SEQ=" + pep);
 			float precursorMz = spec.getPrecursorPeak().getMz();
 			out.println("PEPMASS=" + precursorMz);
