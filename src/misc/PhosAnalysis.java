@@ -5,19 +5,92 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import parser.BufferedLineReader;
 import parser.InsPecTPSM;
 import parser.InsPecTParser;
+import parser.MgfSpectrumParser;
 import parser.MzXMLSpectraMap;
 
+import msgf.Histogram;
 import msutil.AminoAcidSet;
 import msutil.Peptide;
+import msutil.SpectraMap;
 import msutil.Spectrum;
+import msutil.SpectrumAccessorBySpecIndex;
 
 public class PhosAnalysis {
 	public static void main(String argv[]) throws Exception
 	{
-		makeAnnotatedMgf();
+//		makeAnnotatedMgf();
+		compareMSGFDBAndInsPecT();
+	}
+
+	public static void compareMSGFDBAndInsPecT() throws Exception
+	{
+		String inspectResultFile = "/home/sangtaekim/Test/JunePhospho/Inspect/finalResult/dee75f91bf354b62aed3fc3436645826";
+		String msgfdbResultFile = "/home/sangtaekim/Test/JunePhospho/MSGFDB/finalResult/5ab63ac652d840f58ab9e598cf796975";
+		countIDByMSLevel(inspectResultFile);
+		countIDByMSLevel(msgfdbResultFile);
+	}
+	
+	public static void countIDByMSLevel(String fileName) throws Exception
+	{
+		System.out.println(fileName);
+		File specDir = new File("/home/sangtaekim/Test/JunePhospho/Inspect/spectrum");
+		int specFileCol = -1;
+		int specIndexCol = -1;
+		int idCol = -1;
+		
+		BufferedLineReader in = new BufferedLineReader(fileName);
+		String header = in.readLine();
+		String[] field = header.split("\t");
+		
+		Histogram<String> hist = new Histogram<String>();
+		for(int i=0; i<field.length; i++)
+		{
+			if(field[i].equals("#SpecFile") || field[i].equals("#SpectrumFile"))
+				specFileCol = i;
+			else if(field[i].equals("SpecIndex") || field[i].equals("Scan#"))
+				specIndexCol = i;
+			else if(field[i].equals("Peptide") || field[i].equals("Annotation"))
+				idCol = i;
+		}
+		
+		HashMap<String,SpectrumAccessorBySpecIndex> specAccessorMap = new HashMap<String,SpectrumAccessorBySpecIndex>(); 
+		String s;
+		while((s=in.readLine()) != null)
+		{
+			String[] token = s.split("\t");
+			if(token.length <= specFileCol || token.length <= specIndexCol || token.length <= idCol)
+				continue;
+			String specFileName = token[specFileCol];
+			specFileName = new File(specFileName).getName();
+			int specIndex = Integer.parseInt(token[specIndexCol]);
+			String annotation = token[idCol];
+			if(!annotation.contains("phos") && !annotation.contains("79.9"))
+				continue;
+			
+			SpectrumAccessorBySpecIndex specMap = specAccessorMap.get(specFileName);
+			if(specMap == null)
+			{
+				String ext = specFileName.substring(specFileName.lastIndexOf('.'));
+				if(ext.equalsIgnoreCase(".mzXML"))
+					specMap = new MzXMLSpectraMap(specDir.getPath()+File.separator+specFileName);
+				else if(ext.equalsIgnoreCase(".mgf"))
+					specMap = new SpectraMap(specDir.getPath()+File.separator+specFileName, new MgfSpectrumParser());
+				else
+				{
+					System.out.println("Unrecognized spectrum format: " + specFileName);
+					System.exit(-1);
+				}
+				specAccessorMap.put(specFileName, specMap);
+			}
+			Spectrum spec = specMap.getSpectrumBySpecIndex(specIndex);
+			hist.add(specFileName);
+		}
+		hist.printSorted();
 	}
 	
 	public static void makeAnnotatedMgf() throws Exception

@@ -34,23 +34,15 @@ import parser.MgfSpectrumParser;
  *
  */
 public class ScoringParameterGeneratorTopDown extends NewRankScorer {
-	private static final float MIN_PRECURSOR_OFFSET = -300f;	// for precursors
-	private static final float MAX_PRECURSOR_OFFSET = 30f;
-	private static final int MIN_NUM_SPECTRA_PER_PARTITION = 400;	// 400
-	private static final int MIN_NUM_SPECTRA_FOR_PRECURSOR_OFF = 150;
-	
-	private static final float MIN_PRECURSOR_OFFSET_PROBABILITY = 0.15f;	// 0.15
-	private static final float MIN_ION_OFFSET_PROBABILITY = 0.15f;	// 0.15, for ion types
+	private static final float MIN_PRECURSOR_OFFSET_PROBABILITY = 0.01f;	
+	private static final float MIN_ION_OFFSET_PROBABILITY = 0.01f;
 	
 	private static final int MAX_RANK = 150;
-	private static final int NUM_SEGMENTS_PER_SPECTRUM = 2;	// 2
+	private static final int NUM_SEGMENTS_PER_SPECTRUM = 1;	
 	
     private static final int[] smoothingRanks = {3, 5, 10, 20, 50, Integer.MAX_VALUE}; //Ranks around which smoothing occurs
     private static final int[] smoothingWindowSize = {0, 1, 2, 3, 4, 5}; //Smoothing windows for each smoothing rank
 	
-    private static final float DECONVOLUTION_MASS_TOLERANCE = 0.02f;
-	protected static final int MAX_CHARGE = 20;
- 	
 	public static void main(String argv[])
 	{
 		File specFile = null;
@@ -215,14 +207,13 @@ public class ScoringParameterGeneratorTopDown extends NewRankScorer {
 	public static void printUsageAndExit(String message)
 	{
 		System.err.println(message);
-		System.out.println("usage: java -Xmx2000M -cp MSGF.jar msscorer.ScoringParameterGenerator\n" +
+		System.out.println("usage: java -Xmx2000M -cp MSGF.jar msscorer.ScoringParameterGeneratorTopDown\n" +
 				"\t-i annotatedMgfFileName (*.mgf)\n" +
 				"\t-o outputFileName (e.g. CID_Tryp.param)\n" +
 				"\t-m FragmentationMethodID (1: CID, 2: ETD, 3: HCD)\n" +
 				"\t-inst InstrumentID (0: Low-res LCQ/LTQ, 1: TOF , 2: High-res LTQ)\n" +
 				"\t-e EnzymeID (0: No enzyme, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N, 8: aLP)\n" +
 				"\t[-phos 0/1] (0: Don't consider H3PO4 loss (default), 1: Consider H3PO4 loss)\n" +
-				"\t[-deconv 0/1] (0: Don't apply deconvolution (Default), 1: Apply deconvolution/deisotping)" +
 				"\t[-fixMod 0/1/2] (0: NoCysteineProtection, 1: CarbamidomethyC (default), 2: CarboxymethylC)\n" +
 				"\t[-pep numPeptidesPerSpec]  (default: 1)\n" +
 				"\t[-err errorScalingFactor]  (default: 0)"
@@ -294,13 +285,6 @@ public class ScoringParameterGeneratorTopDown extends NewRankScorer {
 		if(verbose)
 			System.out.println("Filtering Done.");
 		
-		if(applyDeconvolution)
-		{
-			gen.deconvoluteSpectra();
-			if(verbose)
-				System.out.println("Deconvolution Done.");
-		}
-			
 		// Step 4: compute offset frequency function of fragment peaks and determine ion types to be considered for scoring
 		gen.selectIonTypes();
 		if(verbose)
@@ -343,7 +327,7 @@ public class ScoringParameterGeneratorTopDown extends NewRankScorer {
 		super.instType = instType;
 		super.enzyme = enzyme;
 		super.applyDeconvolution = applyDeconvolution;
-		super.deconvolutionErrorTolerance = DECONVOLUTION_MASS_TOLERANCE;
+		super.deconvolutionErrorTolerance = 0f;
 	}
 	
 	public void partition(int numSegments)
@@ -352,65 +336,17 @@ public class ScoringParameterGeneratorTopDown extends NewRankScorer {
 		chargeHist = new Histogram<Integer>();
 		partitionSet = new TreeSet<Partition>();
 		
-		Hashtable<Integer,ArrayList<Float>> parentMassMap = new Hashtable<Integer,ArrayList<Float>>();
 		for(Spectrum spec : specContainer)
 		{
+			if(spec.getAnnotation() == null)
+				continue;
 			int charge = spec.getCharge();
 			if(charge <= 0)
 				continue;
 			chargeHist.add(charge);
-			if(spec.getAnnotation() != null)
-			{
-				ArrayList<Float> precursorList = parentMassMap.get(charge);
-				if(precursorList == null)
-				{
-					precursorList = new ArrayList<Float>();
-					parentMassMap.put(charge, precursorList);
-				}
-				precursorList.add(spec.getParentMass());
-			}
 		}
 		
-		for(int c=chargeHist.minKey(); c<=chargeHist.maxKey(); c++)
-		{
-			ArrayList<Float> parentMassList = parentMassMap.get(c);
-			if(parentMassList == null)
-				continue;
-			
-			int numSpec = parentMassList.size();
-			if(numSpec < Math.round(MIN_NUM_SPECTRA_PER_PARTITION*0.9f))	// to few spectra
-				continue;
-			
-			Collections.sort(parentMassList);
-			int bestSetSize = 0;
-			int smallestRemainder = MIN_NUM_SPECTRA_PER_PARTITION;
-			for(int i=Math.round(MIN_NUM_SPECTRA_PER_PARTITION*0.9f); i<=Math.round(MIN_NUM_SPECTRA_PER_PARTITION*1.1f); i++)
-			{
-				int remainder = numSpec % i;
-				if(i-remainder < remainder)
-					remainder = i-remainder;
-				if(remainder < smallestRemainder || (remainder==smallestRemainder && Math.abs(MIN_NUM_SPECTRA_PER_PARTITION-i) < Math.abs(MIN_NUM_SPECTRA_PER_PARTITION-bestSetSize)))
-				{
-					bestSetSize = i;
-					smallestRemainder = remainder;
-				}
-			}
-			int num=0;
-			for(int i=0; i==0 || i<Math.round(numSpec/(float)bestSetSize); i++)
-			{
-				if(num != 0)
-				{
-					for(int seg=0; seg<numSegments; seg++)
-						partitionSet.add(new Partition(c, parentMassList.get(num), seg));
-				}
-				else
-				{
-					for(int seg=0; seg<numSegments; seg++)
-						partitionSet.add(new Partition(c, 0f, seg));
-				}
-				num += bestSetSize;
-			}
-		}
+		partitionSet.add(new Partition(0, 0, 0));
 	}	
 	
 	private void precursorOFF(float minProbThreshold)
@@ -422,63 +358,6 @@ public class ScoringParameterGeneratorTopDown extends NewRankScorer {
 		}
 		precursorOFFMap = new TreeMap<Integer,ArrayList<PrecursorOffsetFrequency>>();
 		numPrecurOFF = 0;
-		
-		for(int charge=chargeHist.minKey(); charge<=chargeHist.maxKey(); charge++)
-		{
-			if(chargeHist.get(charge) < MIN_NUM_SPECTRA_FOR_PRECURSOR_OFF)
-				continue;
-			ArrayList<PrecursorOffsetFrequency> precursorOffsetList = new ArrayList<PrecursorOffsetFrequency>();
-			int numSpecs = 0;
-			Hashtable<Integer, Histogram<Integer>> histList = new Hashtable<Integer, Histogram<Integer>>();
-			for(int c=charge; c>=2; c--)
-				histList.put(c, new Histogram<Integer>());
-			
-	 		for(Spectrum spec : specContainer)
-			{
-				if(spec.getAnnotation() == null)
-					continue;
-				if(spec.getCharge() != charge)
-					continue;
-				numSpecs++;
-				spec = filter.apply(spec);
-				float precursorNeutralMass = spec.getParentMass();
-				for(int c=charge; c>=2; c--)
-				{
-					float precursorMz = (precursorNeutralMass+c*(float)Composition.H)/c;
-					ArrayList<Peak> peakList = spec.getPeakListByMassRange(
-							precursorMz+MIN_PRECURSOR_OFFSET/(float)c-mme.getToleranceAsDa(precursorMz+MIN_PRECURSOR_OFFSET/(float)c)/2, 
-							precursorMz+MAX_PRECURSOR_OFFSET/(float)c+mme.getToleranceAsDa(precursorMz+MAX_PRECURSOR_OFFSET/(float)c)/2);
-
-					int prevMassIndexDiff = Integer.MIN_VALUE;
-					for(Peak p : peakList)
-					{
-						float peakMass = p.getMz();
-						int massIndexDiff = NominalMass.toNominalMass(peakMass - precursorMz);
-						if(massIndexDiff > prevMassIndexDiff)
-						{
-							histList.get(c).add(massIndexDiff);
-							prevMassIndexDiff = massIndexDiff;
-						}
-					}
-				}
-			}
-	 		
-			for(int c=charge; c>=2; c--)
-			{
-				ArrayList<Integer> keyList = new ArrayList<Integer>(histList.get(c).keySet());
-				Collections.sort(keyList);
-				for(Integer key : keyList)
-				{
-					float prob = (histList.get(c).get(key))/(float)numSpecs;
-					if(prob > minProbThreshold)
-					{
-						precursorOffsetList.add(new PrecursorOffsetFrequency((charge-c), NominalMass.getMassFromNominalMass(key), prob));
-					}
-				}
-			}
-			precursorOFFMap.put(charge, precursorOffsetList);
-			numPrecurOFF += precursorOffsetList.size();
-		}
 	}
 	
 	private void filterPrecursorPeaks()
@@ -492,16 +371,6 @@ public class ScoringParameterGeneratorTopDown extends NewRankScorer {
 		}
 	}
 
-	private void deconvoluteSpectra()
-	{
-		SpectraContainer newSpecContainer = new SpectraContainer();
-		for(Spectrum spec : specContainer)
-		{
-			newSpecContainer.add(spec.getDeconvolutedSpectrum(DECONVOLUTION_MASS_TOLERANCE));
-		}
-		specContainer = newSpecContainer;
-	}
-	
 	private Pair<Float,Float> getParentMassRange(Partition partition)
 	{
 		float minParentMass = partition.getParentMass();
@@ -536,11 +405,6 @@ public class ScoringParameterGeneratorTopDown extends NewRankScorer {
 			SpectraContainer curPartContainer = new SpectraContainer();
 			for(Spectrum spec : specContainer)
 			{
-				if(spec.getAnnotation() == null)
-					continue;
-				if(spec.getCharge() != charge)
-					continue;
-				
 				float curParentMass = spec.getParentMass();
 				if(curParentMass < parentMassRange.getFirst() || curParentMass >= parentMassRange.getSecond())
 					continue;
@@ -551,7 +415,7 @@ public class ScoringParameterGeneratorTopDown extends NewRankScorer {
 			ArrayList<FragmentOffsetFrequency> signalFragmentOffsetFrequencyList = new ArrayList<FragmentOffsetFrequency>();
 			
 			int seg = partition.getSegNum();
-			IonType[] allIonTypes = IonType.getAllKnownIonTypes(Math.min(charge, 4), true, considerPhosLoss).toArray(new IonType[0]);
+			IonType[] allIonTypes = IonType.getAllKnownIonTypes(1, true, considerPhosLoss).toArray(new IonType[0]);
 			IonProbability probGen = new IonProbability(
 					curPartContainer.iterator(), 
 					allIonTypes,
@@ -627,10 +491,6 @@ public class ScoringParameterGeneratorTopDown extends NewRankScorer {
 			for(Spectrum spec : specContainer)
 			{
 				int numExplainedPeaks = 0;
-				if(spec.getAnnotation() == null)
-					continue;
-				if(spec.getCharge() != charge)
-					continue;
 				float curParentMass = spec.getParentMass();
 				if(curParentMass < parentMassRange.getFirst() || curParentMass >= parentMassRange.getSecond())
 					continue;
