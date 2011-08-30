@@ -189,7 +189,10 @@ public class CompactSuffixArray {
 			 */
 			public void add(int item) {
 				if(this.size >= items.length) {
-					this.items = Arrays.copyOf(this.items, this.size+INCREMENT_SIZE);
+//					this.items = Arrays.copyOf(this.items, this.size+INCREMENT_SIZE);
+					this.items = Arrays.copyOf(this.items, this.size*2);
+//					if(this.size > 100)
+//						System.out.println(item+":"+this.size);
 				}
 				this.items[this.size++] = item;
 			} 
@@ -210,6 +213,7 @@ public class CompactSuffixArray {
 
 		// the size of the alphabet to make the hashes
 		int hashBase = sequence.getAlphabetSize();
+		System.out.println("AlphabetSize: " + sequence.getAlphabetSize());
 		if(hashBase > 30)
 		{
 			System.err.println("Suffix array construction failure: alphabet size is too large: " + sequence.getAlphabetSize());
@@ -251,6 +255,8 @@ public class CompactSuffixArray {
 			bucketSuffixes[currentHash].add(j);
 		}
 
+		System.gc();
+		
 		try {
 			DataOutputStream indexOut = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(indexFile)));
 			DataOutputStream nLcpOut = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(nlcpFile)));
@@ -263,7 +269,7 @@ public class CompactSuffixArray {
 			for(int i=0; i < bucketSuffixes.length; i++) {
 
 				// print out progress
-				if(i % 1000000 == 999999)   System.out.printf("Sorting %.2f%% complete.\n", i*100.0/bucketSuffixes.length);
+				if(i % 1000000 == 0)   System.out.printf("Sorting %.2f%% complete.\n", i*100.0/bucketSuffixes.length);
 
 				if(bucketSuffixes[i] != null) {
 
