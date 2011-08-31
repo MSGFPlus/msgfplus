@@ -60,6 +60,7 @@ public class PhosAnalysis {
 		
 		HashMap<String,SpectrumAccessorBySpecIndex> specAccessorMap = new HashMap<String,SpectrumAccessorBySpecIndex>(); 
 		String s;
+		int numID = 0;
 		while((s=in.readLine()) != null)
 		{
 			String[] token = s.split("\t");
@@ -89,7 +90,9 @@ public class PhosAnalysis {
 			}
 			Spectrum spec = specMap.getSpectrumBySpecIndex(specIndex);
 			hist.add(specFileName);
+			numID++;
 		}
+		System.out.println("NumID: " + numID);
 		hist.printSorted();
 	}
 	
