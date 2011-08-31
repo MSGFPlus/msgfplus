@@ -171,7 +171,7 @@ public class CompactSuffixArray {
 		// helper local class
 		class Bucket {
 			// how much to increment once we reach the maximum occupancy for a bucket
-			private static final int INCREMENT_SIZE = 10;
+//			private static final int INCREMENT_SIZE = 10;
 			private int[] items;
 			private int size;
 

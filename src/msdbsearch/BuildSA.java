@@ -77,6 +77,7 @@ public class BuildSA {
 		System.out.println("Done");
 	}
 	
+	// mode => 0: target only, 1: target-decoy only, 2: both 
 	public static void buildSAFiles(File databaseFile, File outputDir, int mode)
 	{
 		if(outputDir == null)
