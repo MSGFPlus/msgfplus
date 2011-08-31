@@ -266,6 +266,9 @@ public class CompactSuffixArray {
 			nLcpOut.writeInt(sequence.getId());
 			SuffixFactory.Suffix prevBucketSuffix = null;
 //			byte[] neighboringLcps = new byte[(int)sequence.getSize()];         // the computed neighboring lcps
+			
+			long numMaxLcps = 0;
+			long numSmallLcps = 0;
 			for(int i=0; i < bucketSuffixes.length; i++) {
 
 				// print out progress
@@ -291,7 +294,23 @@ public class CompactSuffixArray {
 						//store the information
 						indexOut.writeInt(thisSuffix.getIndex());
 //						neighboringLcps[order++] = thisSuffix.getLCP(prevSuffix, BUCKET_SIZE);
-						nLcpOut.writeByte(thisSuffix.getLCP(prevSuffix, BUCKET_SIZE));
+						lcp = thisSuffix.getLCP(prevSuffix, BUCKET_SIZE);
+						nLcpOut.writeByte(lcp);
+						if(lcp == Byte.MAX_VALUE)
+							numMaxLcps++;
+						else
+							numSmallLcps++;
+						if(numMaxLcps > 1000 && numMaxLcps > numSmallLcps)
+						{
+							System.err.println("Error while generating suffix array (too many redundant proteins): " + indexFile.getName());
+							System.err.println("If the database contains forward and reverse proteins, run MS-GFDB (or BuildSA) again with \"-tda 0\"");
+							System.err.println("Deleting " + indexFile.getName() + " and " + nlcpFile.getName());
+							indexOut.close();
+							nLcpOut.close();
+							indexFile.delete();
+							nlcpFile.delete();
+							System.exit(-1);
+						}
 						prevSuffix = thisSuffix;
 					}
 					prevBucketSuffix = sortedSuffixes[0];
