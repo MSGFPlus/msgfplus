@@ -90,6 +90,7 @@ public class BuildSA {
 		
 		String dbFileName = databaseFile.getName(); 
 		
+		// decoy
 		if(mode == 1 || mode == 2)
 		{
 			String concatDBFileName = dbFileName.substring(0, dbFileName.lastIndexOf('.')) + MSGFDB.DECOY_DB_EXTENSION;
@@ -105,6 +106,15 @@ public class BuildSA {
 			}
 			System.out.println("Building suffix array: " + concatTargetDecoyDBFile.getPath());
 			CompactFastaSequence tdaSequence = new CompactFastaSequence(concatTargetDecoyDBFile.getPath());
+			int numUniqueProteins = tdaSequence.getNumUniqueProteins();
+			int numProteins = tdaSequence.getNumProteins();
+			float ratioUniqueProteins = numUniqueProteins/(float)numProteins;
+			if(ratioUniqueProteins < 0.5f)
+			{
+				System.err.println("Error while indexing: " + concatTargetDecoyDBFile.getName() + " (too many redundant proteins)");
+				System.err.println("If the database contains forward and reverse proteins, run MS-GFDB (or BuildSA) again with \"-tda 0\"");
+				System.exit(-1);
+			}
 			new CompactSuffixArray(tdaSequence);
 		}
 		

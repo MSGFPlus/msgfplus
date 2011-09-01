@@ -1,7 +1,6 @@
 package msdbsearch;
 
 import java.io.*;
-import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -26,12 +25,9 @@ public class CompactFastaSequence implements Sequence {
 	//this is the file in which the sequence was generated
 	private String baseFilepath;
 
-	// maps the terminator character position of this sequence to its annotation
 	private TreeMap<Integer,String> annotations;
 
-
 	// the contents of the sequence concatenated into a long string
-//	private ByteBuffer sequence;
 	private byte[] sequence;
 
 	// the number of characters in the buffer
@@ -390,4 +386,67 @@ public class CompactFastaSequence implements Sequence {
 		}
 		return 0;
 	}
+	
+	public int getNumProteins()
+	{
+		return annotations.keySet().size();
+	}
+	
+	public int getNumUniqueProteins()
+	{
+		ArrayList<Integer> proteinLastIndexList = new ArrayList<Integer>(annotations.keySet());
+		HashMap<Integer,ArrayList<Integer>> lengthProtIndexMap = new HashMap<Integer,ArrayList<Integer>>();
+		int fromIndex = 0;
+		for(int i=0; i<proteinLastIndexList.size(); i++)
+		{
+			int toIndex = proteinLastIndexList.get(i);
+			int length = toIndex-fromIndex;
+			ArrayList<Integer> list = lengthProtIndexMap.get(length);
+			if(list == null)
+			{
+				list = new ArrayList<Integer>();
+				lengthProtIndexMap.put(length, list);
+			}
+			list.add(i);
+			fromIndex = toIndex;
+		}
+		
+		int numUniqueProteins = 0;
+		for(int length : lengthProtIndexMap.keySet())
+		{
+			ArrayList<Integer> protIndexList = lengthProtIndexMap.get(length);
+			boolean[] isRedundant = new boolean[protIndexList.size()];
+			for(int i=0; i<protIndexList.size(); i++)
+			{
+				if(isRedundant[i])
+					continue;
+				int toIndex1 = proteinLastIndexList.get(protIndexList.get(i));
+				for(int j=i+1; j<protIndexList.size(); j++)
+				{
+					if(isRedundant[j])
+						continue;
+					int toIndex2 = proteinLastIndexList.get(protIndexList.get(j));
+					boolean isIdentical = true;
+					for(int l=0; l<length; l++)
+					{
+						if(sequence[toIndex1-1-l] != sequence[toIndex2-1-l])
+						{
+							isIdentical = false;
+							break;
+						}
+					}
+					if(isIdentical)
+					{
+						isRedundant[i] = isRedundant[j] = true;
+//						System.out.println(annotations.get(toIndex1) + " = " + annotations.get(toIndex2));
+						break;
+					}
+				}
+				if(!isRedundant[i])
+					numUniqueProteins++;
+			}
+		}
+		return numUniqueProteins;
+	}
+	
 }

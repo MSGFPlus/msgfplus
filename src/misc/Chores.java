@@ -76,9 +76,7 @@ public class Chores {
 //		testSpecKey();
 //		String pep = "-.asdf.AA";
 //		System.out.println(pep.matches(".\\..+\\.."));
-
-		System.out.println(IonType.getIonType("y2+n").toString());
-		System.out.println(IonType.getIonType("y2+n").getMass(100));
+		System.out.println((byte)200);
 	}
 
 	public static void printMaxScanNum() throws Exception
