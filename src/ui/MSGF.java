@@ -443,10 +443,10 @@ public class MSGF {
 					false
 					);
 			
-			GeneratingFunction<NominalMass> gf = new GeneratingFunction<NominalMass>(graph).enzyme(enzyme).doNotBacktrack().doNotCalcNumber();			
+			int msgfScore = graph.getScore(psm.getAnnotation());
+			GeneratingFunction<NominalMass> gf = new GeneratingFunction<NominalMass>(graph).enzyme(enzyme).doNotBacktrack().doNotCalcNumber();
+			gf.setUpScoreThreshold(msgfScore);
 			gf.computeGeneratingFunction();
-			
-			int msgfScore = gf.getScore(psm.getAnnotation());
 			double specProb = gf.getSpectralProbability(msgfScore);
 			assert(specProb > 0): psm.getInsPecTString()+"\t"+"SpecProb is zero!";
 			String output = psm.getInsPecTString()+"\t"+specProb;
