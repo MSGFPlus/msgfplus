@@ -198,7 +198,8 @@ public class InsPecTParser {
 				lastDotPos = annotationStr.length();
 			}
 			String pepStr = annotationStr.substring(firstDotPos+1, lastDotPos);
-			Peptide peptide = baseAASet.getPeptide(pepStr);
+//			Peptide peptide = baseAASet.getPeptide(pepStr);
+			Peptide peptide = new Peptide(pepStr, baseAASet);
 				
 			
 			InsPecTPSM psm = new InsPecTPSM();

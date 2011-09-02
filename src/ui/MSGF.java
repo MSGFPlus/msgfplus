@@ -9,9 +9,13 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import msdbsearch.DBScanner;
+import msgf.DeNovoGraph;
+import msgf.FlexAminoAcidGraph;
 import msgf.GeneratingFunction;
 import msgf.GenericDeNovoGraph;
 import msgf.IntMassFactory;
+import msgf.NominalMass;
+import msgf.NominalMassFactory;
 import msgf.Tolerance;
 import msgf.IntMassFactory.IntMass;
 import msscorer.NewRankScorer;
@@ -36,6 +40,9 @@ import parser.PSMList;
 import parser.PklSpectrumParser;
 
 public class MSGF {
+	public static final String VERSION = "6363";
+	public static final String RELEASE_DATE = "08/31/2011";
+	
 	public static void main(String argv[])
 	{
 		if(argv.length < 2 || argv.length % 2 != 0)
@@ -237,7 +244,7 @@ public class MSGF {
 	{
 		if(message != null)
 			System.err.println(message);
-		System.out.println("\nMSGFv2 v20101217");
+		System.out.println("MSGF v"+ VERSION + " (" + RELEASE_DATE + ")");
 		System.out.println("usage: java -Xmx2000M -jar MSGF.jar \n" +
 				"\t-i ResultFile\n" // or -mascot mascotResult (*.dat) or -list idListFile\n"				 
 				+ "\t-d SpecDir\n"// or -mgf annotatedMgfFile\n"
@@ -262,6 +269,8 @@ public class MSGF {
 			Enzyme enzyme, ActivationMethod activationMethod, 
 			boolean onePerSpec, int program, float specProbThreshold, File paramFile, boolean addMSGFColumn)
 	{
+		System.out.println("MS-GF v"+ VERSION + " (" + RELEASE_DATE + ")");
+		long time = System.currentTimeMillis();
 		PrintStream out = null;
 		if(outputFileName == null)
 			out = System.out;
@@ -286,9 +295,6 @@ public class MSGF {
 
 		float rescalingFactor = Constants.INTEGER_MASS_SCALER;;
 		Tolerance pmTolerance = new Tolerance(0.1f);
-		
-		IntMassFactory factory = new IntMassFactory(aaSet, enzyme, Constants.MAX_PEPTIDE_LENGTH, rescalingFactor, true);
-		int gfTableCapacity = factory.getMassIndex(factory.getAASet().getHeaviestAA().getMass());
 		
 		InsPecTParser parser = new InsPecTParser(aaSet);
 		parser.parse(resultFile.getPath());
@@ -327,6 +333,8 @@ public class MSGF {
 		
 		for(InsPecTPSM psm : psmList)
 		{
+			if(psm.getScanNum() != 2401)
+				continue;
 			if(psm.getPeptide() == null)
 			{
 				out.print(psm.getInsPecTString()+"\t"+"N/A: unrecognizable annotation");
@@ -435,13 +443,18 @@ public class MSGF {
 				continue;
 			}
 			
-//			if(!psm.getAnnotation().toString().equalsIgnoreCase("R.IANLNKR.Y"))
-//				continue;
-			NewScoredSpectrum<IntMass> scoredSpec = scorer.getScoredSpectrum(spec);
-			GenericDeNovoGraph<IntMass> graph = new GenericDeNovoGraph<IntMass>(factory, (psm.getPeptide().getNominalMass()+18)/Constants.INTEGER_MASS_SCALER, pmTolerance, enzyme, scoredSpec);
+			NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
+//			GenericDeNovoGraph<NominalMass> graph = new GenericDeNovoGraph<NominalMass>(factory, (psm.getPeptide().getNominalMass()+18)/Constants.INTEGER_MASS_SCALER, pmTolerance, enzyme, scoredSpec);
+			DeNovoGraph<NominalMass> graph = new FlexAminoAcidGraph(
+					psm.getAASet(), 
+					psm.getPeptide().getNominalMass(),
+					enzyme,
+					scoredSpec,
+					false,
+					false
+					);
 			
-			GeneratingFunction<IntMass> gf = new GeneratingFunction<IntMass>(graph).enzyme(enzyme).doNotBacktrack().doNotCalcNumber().gfTableCapacity(gfTableCapacity);
-			
+			GeneratingFunction<NominalMass> gf = new GeneratingFunction<NominalMass>(graph).enzyme(enzyme).doNotBacktrack().doNotCalcNumber();			
 			gf.computeGeneratingFunction();
 			
 			double specProb = gf.getSpectralProbability(psm.getAnnotation());
@@ -476,6 +489,8 @@ public class MSGF {
 		
 		out.flush();
 		out.close();	
+		
+		System.out.format("MS-GF complete (total elapsed time: %.2f sec)\n", (System.currentTimeMillis()-time)/(float)1000);
 	}
 	
 	public static void runMSGFCompGraph(File resultFile, File specDir, File outputFileName, AminoAcidSet aaSet, float nTermFixedMod, float cTermFixedMod,
@@ -701,6 +716,6 @@ public class MSGF {
 		}
 		
 		out.flush();
-		out.close();	
+		out.close();
 	}	
 }
