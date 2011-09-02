@@ -107,9 +107,9 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
 					edgeScore += aaSet.getPeptideCleavageCredit();
 				else
 					edgeScore += aaSet.getPeptideCleavagePenalty();
-				score += nodeScore + edgeScore;
 				prevNode = curNode;
 			}
+			score += nodeScore + edgeScore;
 		}
 		if(direction == true)
 			nominalMass += pep.get(pep.size()-1).getNominalMass();
@@ -125,7 +125,7 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
 	@Override
 	public int getScore(Annotation annotation) {
 		int score = getScore(annotation.getPeptide());
-		if(score > Integer.MIN_VALUE && enzyme != null)
+		if(enzyme != null)
 		{
 			AminoAcid neighboringAA;
 			if(enzyme.isCTerm())

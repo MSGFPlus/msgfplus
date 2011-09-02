@@ -327,7 +327,7 @@ public class PRMSpecGen {
 				if(peakDerivedMass == null)
 					out.format("%d", m);
 				else
-					out.format("%.3f", peakDerivedMass);
+					out.format("%f", peakDerivedMass);
 				out.format("\t%.3f\n",score);
 			}
 			out.println("END IONS");

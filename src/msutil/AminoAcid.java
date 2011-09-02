@@ -50,7 +50,7 @@ public class AminoAcid extends Matter {
 	}
 	
 	/**
-	 * Builder. Set isModified=true and returns this object.
+	 * Builder. Set probability and returns this object.
 	 * @return this object.
 	 */
 	public AminoAcid setProbability(float probability)		{ this.probability = probability; return this; }

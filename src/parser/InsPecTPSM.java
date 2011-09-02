@@ -1,17 +1,20 @@
 package parser;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import msutil.AminoAcid;
 import msutil.AminoAcidSet;
 import msutil.Annotation;
+import msutil.Modification;
+import msutil.ModifiedAminoAcid;
+import msutil.Peptide;
 
 public class InsPecTPSM extends PSM {
 	private String insPecTString;
 	private long specFilePos;
 	private AminoAcid precedingAA;
 	private AminoAcid succeedingAA;
-	private AminoAcidSet aaSet;
 	private ArrayList<Integer> scanNumList;
 	
 	public AminoAcid getPrecedingAA()	{ return precedingAA; }
@@ -23,13 +26,31 @@ public class InsPecTPSM extends PSM {
 	
 	public String getInsPecTString()	{ return insPecTString; }
 	public long getSpecFilePos()	{ return specFilePos; }
-	public AminoAcidSet getAASet()	{ return aaSet; }
 	public ArrayList<Integer> getScanNumList() { return scanNumList; }
 	
 	public void setPrecedingAA(AminoAcid precedingAA)	{ this.precedingAA = precedingAA; }
 	public void setSucceedingAA(AminoAcid succeedingAA)	{ this.succeedingAA = succeedingAA; }
-	public void setAASet(AminoAcidSet aaSet)	{ this.aaSet = aaSet; }
 	public void setSpecFilePos(long specFilePos) { this.specFilePos = specFilePos; }
 	public void setInsPecTString(String insPecTString) { this.insPecTString = insPecTString; }
 	public void setScanNumList(ArrayList<Integer> scanNumList) { this.scanNumList = scanNumList; }
+	public AminoAcidSet getAASet(AminoAcidSet baseAASet)	
+	{ 
+		Peptide peptide = getPeptide();
+		if(peptide != null && peptide.isModified())	
+		{
+			ArrayList<Modification.Instance> mods = new ArrayList<Modification.Instance>();
+			for(AminoAcid aa : peptide)
+			{
+				if(aa.isModified())	// modified residue
+				{
+					ModifiedAminoAcid modAA = (ModifiedAminoAcid)aa;
+					mods.add(new Modification.Instance(modAA.getModification(), modAA.getUnmodResidue()));
+				}
+			}
+			return AminoAcidSet.getAminoAcidSet(baseAASet, mods);
+		}
+		else 
+			return baseAASet;
+	}
+
 }

@@ -1196,6 +1196,18 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		return aaSet;
 	}
 
+	public static AminoAcidSet getAminoAcidSet(AminoAcidSet baseAASet, ArrayList<Modification.Instance> mods)
+	{
+		AminoAcidSet aaSet = new AminoAcidSet();
+		for(AminoAcid aa : baseAASet)
+			aaSet.addAminoAcid(aa);
+		
+		aaSet.applyModifications(mods);
+		aaSet.finalizeSet();
+		
+		return aaSet;
+	}
+	
 	// returns a new residue for modified amino acid
 	private char getModifiedResidue(char unmodResidue)
 	{

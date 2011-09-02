@@ -91,7 +91,7 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
 				{
 					assert(sequence.charAt(index+3) == 'o');
 					assert(sequence.charAt(index+4) == 's');
-					mod = 80f;
+					mod = 79.966331f;
 					index += 4;
 				}
 				else if(index+4 < seqLen && sign>='a' && sign<='z' && (Character.toUpperCase(sign) == c) && (sequence.charAt(index+2) == '-'))	// mutation or phosphorylation
@@ -118,10 +118,15 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
 				if(FAIL_WHEN_PEPTIDE_IS_MODIFIED) throw new NotImplementedException();
 				isModified=true; // Now peptide is modified
 				char residue = Character.toLowerCase(aa.getResidue());	// TODO: 2 ptms, same residue
-				int intMass = Math.round(mod);
-				String name = aa.getName()+(intMass>0 ? "+" : "")+intMass;
-				float mass = aa.getMass()+mod;
-				this.add(AminoAcid.getCustomAminoAcid(residue, name, mass));
+				String name = aa.getName()+(mod>0 ? "+" : "")+mod;
+				float mass = mod;
+				Modification modification = Modification.get(name);
+				if(modification == null)
+				{
+					modification = Modification.register(name, mass);
+				}
+				AminoAcid modAA = new ModifiedAminoAcid(aa, modification, residue);
+				this.add(modAA);
 				//                this.add(AminoAcid.getCustomAminoAcid('&', aa.getMass()+mod));
 			}
 		}

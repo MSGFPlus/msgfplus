@@ -8,6 +8,7 @@ import java.util.HashSet;
 
 import msutil.AminoAcid;
 import msutil.AminoAcidSet;
+import msutil.Modification;
 import msutil.Peptide;
 
 public class InsPecTParser {
@@ -198,9 +199,9 @@ public class InsPecTParser {
 				lastDotPos = annotationStr.length();
 			}
 			String pepStr = annotationStr.substring(firstDotPos+1, lastDotPos);
-//			Peptide peptide = baseAASet.getPeptide(pepStr);
 			Peptide peptide = new Peptide(pepStr, baseAASet);
-				
+			if(peptide.isInvalid())
+				peptide = null;
 			
 			InsPecTPSM psm = new InsPecTPSM();
 			psm.specIndex(specIndex).scanNum(scanNum).peptide(peptide).protein(proteinStr).charge(charge).probScore(fdr).rawScore(mqScore);
@@ -220,26 +221,6 @@ public class InsPecTParser {
 			psm.setPrecedingAA(preAA);
 			psm.setSucceedingAA(nextAA);
 			psm.setScanNumList(scanNumList);
-			
-//			AminoAcidSet unmodAASet = baseAASet.getUnmodifiedAminoAcidSet();
-			//TODO: revise this
-			AminoAcidSet unmodAASet = baseAASet;
-			HashSet<AminoAcid> modifiedAASet = new HashSet<AminoAcid>();
-			if(peptide != null && peptide.isModified())	// TODO: to be modified
-			{
-				for(AminoAcid aa : peptide)
-				{
-					if(aa.isModified())	// modified residue
-						modifiedAASet.add(aa);
-				}
-				//TODO: revise this
-//				AminoAcidSet newAASet = unmodAASet.getAminoAcidSet(modifiedAASet);
-				AminoAcidSet newAASet = baseAASet;
-				psm.setAASet(newAASet);
-			}
-			else 
-				psm.setAASet(unmodAASet);
-			
 			psm.specFileName(specFileName);
 			psm.setSpecFilePos(specFilePos);
 			psmList.add(psm);

@@ -40,8 +40,8 @@ import parser.PSMList;
 import parser.PklSpectrumParser;
 
 public class MSGF {
-	public static final String VERSION = "6363";
-	public static final String RELEASE_DATE = "08/31/2011";
+	public static final String VERSION = "6366";
+	public static final String RELEASE_DATE = "09/01/2011";
 	
 	public static void main(String argv[])
 	{
@@ -250,11 +250,9 @@ public class MSGF {
 				+ "\t-d SpecDir\n"// or -mgf annotatedMgfFile\n"
 				+ "\t[-o OutputFileName] (Default: stdout)\n"
 				+ "\t[-db DatabaseFileName] (for computing AA probabilities, if not specified, 1/20 is used for all AAs)\n"
-				+ "\t[-m FragmentationMethod 0/1] (0: CID (default), 1: ETD, 2: HCD)\n"
+				+ "\t[-m FragmentationMethod 0/1/2] (0: CID (default), 1: ETD, 2: HCD)\n"
 				+ "\t[-e Enzyme 0/1/2/3/4/5/6/7] (0: No enzyme, 1: Trypsin (default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N)\n"
-				+ "\t[-fixMod 0/1/2] (0: NoCysteineProtection, 1: CarbamidomethyC (default), 2: CarboxymethylC)\n"
-//				+ "\t[-nFixedMod NTermFixedModMass] (Default: 0)\n"
-//				+ "\t[-cFixedMod CTermFixedModMass] (Default: 0)\n"
+				+ "\t[-fixMod 0/1/2] (0: NoCysteineProtection, 1: Carbamidomethyl-C (default), 2: Carboxymethyl-C)\n"
 				+ "\t[-aaSet AASetFileName (default: standard amino acids)]\n"
 				+ "\t[-x 0/1] (0: all (default), 1: OnePerSpec)\n"
 				+ "\t[-p SpecProbThreshold] (Default: 1)\n"
@@ -293,9 +291,6 @@ public class MSGF {
 			scorer = NewScorerFactory.get(activationMethod, enzyme);
 		}
 
-		float rescalingFactor = Constants.INTEGER_MASS_SCALER;;
-		Tolerance pmTolerance = new Tolerance(0.1f);
-		
 		InsPecTParser parser = new InsPecTParser(aaSet);
 		parser.parse(resultFile.getPath());
 		
@@ -333,8 +328,8 @@ public class MSGF {
 		
 		for(InsPecTPSM psm : psmList)
 		{
-			if(psm.getScanNum() != 2401)
-				continue;
+//			if(psm.getScanNum() != 3674 || !psm.getInsPecTString().contains("K.SBNRSIT*FRGK.V"))
+//				continue;
 			if(psm.getPeptide() == null)
 			{
 				out.print(psm.getInsPecTString()+"\t"+"N/A: unrecognizable annotation");
@@ -445,8 +440,10 @@ public class MSGF {
 			
 			NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
 //			GenericDeNovoGraph<NominalMass> graph = new GenericDeNovoGraph<NominalMass>(factory, (psm.getPeptide().getNominalMass()+18)/Constants.INTEGER_MASS_SCALER, pmTolerance, enzyme, scoredSpec);
+			AminoAcidSet modAASet = psm.getAASet(aaSet);
+			modAASet.registerEnzyme(enzyme);
 			DeNovoGraph<NominalMass> graph = new FlexAminoAcidGraph(
-					psm.getAASet(), 
+					modAASet, 
 					psm.getPeptide().getNominalMass(),
 					enzyme,
 					scoredSpec,
@@ -457,8 +454,8 @@ public class MSGF {
 			GeneratingFunction<NominalMass> gf = new GeneratingFunction<NominalMass>(graph).enzyme(enzyme).doNotBacktrack().doNotCalcNumber();			
 			gf.computeGeneratingFunction();
 			
-			double specProb = gf.getSpectralProbability(psm.getAnnotation());
 			int msgfScore = gf.getScore(psm.getAnnotation());
+			double specProb = gf.getSpectralProbability(msgfScore);
 			assert(specProb > 0): psm.getInsPecTString()+"\t"+"SpecProb is zero!";
 			String output = psm.getInsPecTString()+"\t"+specProb;
 			if(addMSGFColumn)
@@ -493,229 +490,229 @@ public class MSGF {
 		System.out.format("MS-GF complete (total elapsed time: %.2f sec)\n", (System.currentTimeMillis()-time)/(float)1000);
 	}
 	
-	public static void runMSGFCompGraph(File resultFile, File specDir, File outputFileName, AminoAcidSet aaSet, float nTermFixedMod, float cTermFixedMod,
-			Enzyme enzyme, ActivationMethod activationMethod, 
-			boolean onePerSpec, int program, float specProbThreshold, File paramFile, boolean addMSGFColumn)
-	{
-		PrintStream out = null;
-		if(outputFileName == null)
-			out = System.out;
-		else
-		{
-			try {
-				out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFileName)));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		int maxLength = 20;
-		
-		Tolerance pmTolerance = new Tolerance(30, true);
-		CompositionFactory factory = new CompositionFactory(aaSet, enzyme, maxLength+2);
-		System.out.println("Composition Graph is built!");
-		
-		InsPecTParser parser = new InsPecTParser(aaSet);
-		parser.parse(resultFile.getPath());
-		
-		String header = parser.getHeader();
-		if(header != null)
-		{
-			out.print(header+"\tSpecProb");
-			if(addMSGFColumn)
-				out.print("\tMSGFScore");
-			out.println();
-		}
-		
-		NewRankScorer customScorer = null;
-		if(paramFile != null)
-			customScorer = new NewRankScorer(paramFile.getPath());
-			
-		ArrayList<String> keyList = null;
-		Hashtable<String, Double> minSpecProb = null;
-		Hashtable<String, String> bestOut = null;
-		if(onePerSpec)
-		{
-			minSpecProb = new Hashtable<String, Double>();
-			bestOut = new Hashtable<String, String>();
-			keyList = new ArrayList<String>();
-		}
-		
-		PSMList<InsPecTPSM> psmList = parser.getPSMList(); 
-		if(psmList == null)
-		{
-			out.println("The result file is empty!");
-			out.close();
-			return;
-		}
-//		Collections.sort(psmList, new PSM.PSMSpecFileAndScanNumComparator());
-		SpectrumAccessorBySpecIndex specAccessor = null;
-		String prevFileName = "";
-		int prevScanNum = -1;
-		Spectrum spec = null;
-		
-		
-		for(InsPecTPSM psm : psmList)
-		{
-			if(psm.getPeptide() == null)
-			{
-				out.print(psm.getInsPecTString()+"\t"+"N/A: unrecognizable annotation");
-				if(addMSGFColumn)
-					out.print("\t");
-				out.println();
-				continue;
-			}
-			String fileName = psm.getSpecFileName();
-			if(fileName.equalsIgnoreCase(prevFileName) && specAccessor != null)	// same spec file name
-			{
-				assert(specAccessor != null);
-				if(psm.getScanNum() == prevScanNum)	// same spectrum
-					assert(spec != null);
-				else	// different spectrum
-				{
-					spec = specAccessor.getSpectrumBySpecIndex(prevScanNum = psm.getScanNum());
-					prevScanNum = psm.getScanNum();
-					if(onePerSpec)
-						keyList.add(psm.getSpecFileName()+":"+psm.getScanNum());
-				}
-			}
-			else	// different spec file name
-			{
-				prevFileName = fileName;
-				String filePrefix = fileName.substring(0, fileName.lastIndexOf('.'));
-				String ext = fileName.substring(fileName.lastIndexOf('.'));
-				String specFilePath = specDir.getPath()+File.separatorChar+fileName;
-				if(ext.equalsIgnoreCase(".mzxml"))	// mzXML
-				{
-					File specFile = new File(specFilePath);
-					if(!specFile.exists())
-					{
-						for(File f : specDir.listFiles())
-						{
-							if(f.getName().startsWith(filePrefix))
-							{
-								if(f.getName().substring(f.getName().lastIndexOf('.')).equalsIgnoreCase(".mzxml"))
-									specFile = f;
-							}
-						}
-						if(!specFile.exists())
-						{
-							out.print(psm.getInsPecTString()+"\t"+"N/A: spectrum file is missing");
-							if(addMSGFColumn)
-								out.print("\t");
-							out.println();
-							continue;
-						}
-					}
-					specAccessor = new MzXMLSpectraMap(specFile.getPath());
-				}
-				else if(ext.equalsIgnoreCase(".mgf"))
-				{
-					specAccessor = new SpectraMap(specFilePath, new MgfSpectrumParser());
-				}
-				else if(ext.equalsIgnoreCase(".pkl"))
-				{
-					specAccessor = new SpectraMap(specFilePath, new PklSpectrumParser());
-				}
-				else if(ext.equalsIgnoreCase(".ms2"))
-				{			
-					specAccessor = new SpectraMap(specFilePath, new MS2SpectrumParser());
-				}
-				else
-				{
-					out.print(psm.getInsPecTString()+"\t"+"N/A: unrecognizable spec format");
-					if(addMSGFColumn)
-						out.print("\t");
-					out.println();
-					continue;
-				}
-				spec = specAccessor.getSpectrumBySpecIndex(prevScanNum = psm.getScanNum());
-				if(onePerSpec)
-					keyList.add(psm.getSpecFileName()+":"+psm.getScanNum());
-			}
-			
-			if(spec == null)
-			{
-				out.print(psm.getInsPecTString()+"\t"+"N/A: unrecognizable spec format");
-				if(addMSGFColumn)
-					out.print("\t");
-				out.println();
-				continue;
-			}
-			
-			if(psm.getPeptide() == null || psm.getPeptide().contains(null))
-			{
-				out.print(psm.getInsPecTString()+"\t"+"N/A: unrecognizable identification: " + psm.getPeptideStr());
-				if(addMSGFColumn)
-					out.print("\t");
-				out.println();
-				continue;
-			}
-			
-			spec.getPrecursorPeak().setCharge(psm.getCharge());
-			
-			float expPM = spec.getParentMass();
-			float calcPM = psm.getPeptide().getParentMass() + nTermFixedMod + cTermFixedMod;
-			if(Math.abs(expPM - calcPM) > 10)
-			{
-				out.print(psm.getInsPecTString()+"\t"+"N/A: precursor mass != peptide mass (" + expPM + " vs " + calcPM + ")");
-				if(addMSGFColumn)
-					out.print("\t");
-				out.println();
-				continue;
-			}
-			
-			if(psm.getPeptide().size() > maxLength)
-			{
-				out.print(psm.getInsPecTString()+"\t"+"N/A: peptide is too long for the composition graph");
-				if(addMSGFColumn)
-					out.print("\t");
-				out.println();
-				continue;
-			}
-			
-			
-			NewRankScorer scorer;
-			if(customScorer != null)
-				scorer = customScorer;
-			else
-				scorer = NewScorerFactory.get(activationMethod, enzyme);
-			NewScoredSpectrum<Composition> scoredSpec = scorer.getScoredSpectrum(spec);
-			GenericDeNovoGraph<Composition> graph = new GenericDeNovoGraph<Composition>(factory, spec.getParentMass(), pmTolerance, enzyme, scoredSpec);
-			GeneratingFunction<Composition> gf = new GeneratingFunction<Composition>(graph).enzyme(enzyme).doNotBacktrack().doNotCalcNumber();
-			
-			gf.computeGeneratingFunction();
-			
-			double specProb = gf.getSpectralProbability(psm.getAnnotation());
-			int msgfScore = gf.getScore(psm.getAnnotation());
-			
-			String output = psm.getInsPecTString()+"\t"+specProb;
-			if(addMSGFColumn)
-				output += "\t"+msgfScore;
-			if(specProb <= specProbThreshold)
-			{
-				if(!onePerSpec)
-					out.println(output);
-				else
-				{
-					String specKey = psm.getSpecFileName()+":"+psm.getScanNum();
-					Double prevBest = minSpecProb.get(specKey);
-					if(prevBest == null || specProb < prevBest)
-					{
-						minSpecProb.put(specKey, specProb);
-						bestOut.put(specKey, output);
-					}
-				}
-			}
-		}
-		
-		if(onePerSpec)
-		{
-			for(String key : keyList)
-				out.println(bestOut.get(key));
-		}
-		
-		out.flush();
-		out.close();
-	}	
+//	public static void runMSGFCompGraph(File resultFile, File specDir, File outputFileName, AminoAcidSet aaSet, float nTermFixedMod, float cTermFixedMod,
+//			Enzyme enzyme, ActivationMethod activationMethod, 
+//			boolean onePerSpec, int program, float specProbThreshold, File paramFile, boolean addMSGFColumn)
+//	{
+//		PrintStream out = null;
+//		if(outputFileName == null)
+//			out = System.out;
+//		else
+//		{
+//			try {
+//				out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFileName)));
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		
+//		int maxLength = 20;
+//		
+//		Tolerance pmTolerance = new Tolerance(30, true);
+//		CompositionFactory factory = new CompositionFactory(aaSet, enzyme, maxLength+2);
+//		System.out.println("Composition Graph is built!");
+//		
+//		InsPecTParser parser = new InsPecTParser(aaSet);
+//		parser.parse(resultFile.getPath());
+//		
+//		String header = parser.getHeader();
+//		if(header != null)
+//		{
+//			out.print(header+"\tSpecProb");
+//			if(addMSGFColumn)
+//				out.print("\tMSGFScore");
+//			out.println();
+//		}
+//		
+//		NewRankScorer customScorer = null;
+//		if(paramFile != null)
+//			customScorer = new NewRankScorer(paramFile.getPath());
+//			
+//		ArrayList<String> keyList = null;
+//		Hashtable<String, Double> minSpecProb = null;
+//		Hashtable<String, String> bestOut = null;
+//		if(onePerSpec)
+//		{
+//			minSpecProb = new Hashtable<String, Double>();
+//			bestOut = new Hashtable<String, String>();
+//			keyList = new ArrayList<String>();
+//		}
+//		
+//		PSMList<InsPecTPSM> psmList = parser.getPSMList(); 
+//		if(psmList == null)
+//		{
+//			out.println("The result file is empty!");
+//			out.close();
+//			return;
+//		}
+////		Collections.sort(psmList, new PSM.PSMSpecFileAndScanNumComparator());
+//		SpectrumAccessorBySpecIndex specAccessor = null;
+//		String prevFileName = "";
+//		int prevScanNum = -1;
+//		Spectrum spec = null;
+//		
+//		
+//		for(InsPecTPSM psm : psmList)
+//		{
+//			if(psm.getPeptide() == null)
+//			{
+//				out.print(psm.getInsPecTString()+"\t"+"N/A: unrecognizable annotation");
+//				if(addMSGFColumn)
+//					out.print("\t");
+//				out.println();
+//				continue;
+//			}
+//			String fileName = psm.getSpecFileName();
+//			if(fileName.equalsIgnoreCase(prevFileName) && specAccessor != null)	// same spec file name
+//			{
+//				assert(specAccessor != null);
+//				if(psm.getScanNum() == prevScanNum)	// same spectrum
+//					assert(spec != null);
+//				else	// different spectrum
+//				{
+//					spec = specAccessor.getSpectrumBySpecIndex(prevScanNum = psm.getScanNum());
+//					prevScanNum = psm.getScanNum();
+//					if(onePerSpec)
+//						keyList.add(psm.getSpecFileName()+":"+psm.getScanNum());
+//				}
+//			}
+//			else	// different spec file name
+//			{
+//				prevFileName = fileName;
+//				String filePrefix = fileName.substring(0, fileName.lastIndexOf('.'));
+//				String ext = fileName.substring(fileName.lastIndexOf('.'));
+//				String specFilePath = specDir.getPath()+File.separatorChar+fileName;
+//				if(ext.equalsIgnoreCase(".mzxml"))	// mzXML
+//				{
+//					File specFile = new File(specFilePath);
+//					if(!specFile.exists())
+//					{
+//						for(File f : specDir.listFiles())
+//						{
+//							if(f.getName().startsWith(filePrefix))
+//							{
+//								if(f.getName().substring(f.getName().lastIndexOf('.')).equalsIgnoreCase(".mzxml"))
+//									specFile = f;
+//							}
+//						}
+//						if(!specFile.exists())
+//						{
+//							out.print(psm.getInsPecTString()+"\t"+"N/A: spectrum file is missing");
+//							if(addMSGFColumn)
+//								out.print("\t");
+//							out.println();
+//							continue;
+//						}
+//					}
+//					specAccessor = new MzXMLSpectraMap(specFile.getPath());
+//				}
+//				else if(ext.equalsIgnoreCase(".mgf"))
+//				{
+//					specAccessor = new SpectraMap(specFilePath, new MgfSpectrumParser());
+//				}
+//				else if(ext.equalsIgnoreCase(".pkl"))
+//				{
+//					specAccessor = new SpectraMap(specFilePath, new PklSpectrumParser());
+//				}
+//				else if(ext.equalsIgnoreCase(".ms2"))
+//				{			
+//					specAccessor = new SpectraMap(specFilePath, new MS2SpectrumParser());
+//				}
+//				else
+//				{
+//					out.print(psm.getInsPecTString()+"\t"+"N/A: unrecognizable spec format");
+//					if(addMSGFColumn)
+//						out.print("\t");
+//					out.println();
+//					continue;
+//				}
+//				spec = specAccessor.getSpectrumBySpecIndex(prevScanNum = psm.getScanNum());
+//				if(onePerSpec)
+//					keyList.add(psm.getSpecFileName()+":"+psm.getScanNum());
+//			}
+//			
+//			if(spec == null)
+//			{
+//				out.print(psm.getInsPecTString()+"\t"+"N/A: unrecognizable spec format");
+//				if(addMSGFColumn)
+//					out.print("\t");
+//				out.println();
+//				continue;
+//			}
+//			
+//			if(psm.getPeptide() == null || psm.getPeptide().contains(null))
+//			{
+//				out.print(psm.getInsPecTString()+"\t"+"N/A: unrecognizable identification: " + psm.getPeptideStr());
+//				if(addMSGFColumn)
+//					out.print("\t");
+//				out.println();
+//				continue;
+//			}
+//			
+//			spec.getPrecursorPeak().setCharge(psm.getCharge());
+//			
+//			float expPM = spec.getParentMass();
+//			float calcPM = psm.getPeptide().getParentMass() + nTermFixedMod + cTermFixedMod;
+//			if(Math.abs(expPM - calcPM) > 10)
+//			{
+//				out.print(psm.getInsPecTString()+"\t"+"N/A: precursor mass != peptide mass (" + expPM + " vs " + calcPM + ")");
+//				if(addMSGFColumn)
+//					out.print("\t");
+//				out.println();
+//				continue;
+//			}
+//			
+//			if(psm.getPeptide().size() > maxLength)
+//			{
+//				out.print(psm.getInsPecTString()+"\t"+"N/A: peptide is too long for the composition graph");
+//				if(addMSGFColumn)
+//					out.print("\t");
+//				out.println();
+//				continue;
+//			}
+//			
+//			
+//			NewRankScorer scorer;
+//			if(customScorer != null)
+//				scorer = customScorer;
+//			else
+//				scorer = NewScorerFactory.get(activationMethod, enzyme);
+//			NewScoredSpectrum<Composition> scoredSpec = scorer.getScoredSpectrum(spec);
+//			GenericDeNovoGraph<Composition> graph = new GenericDeNovoGraph<Composition>(factory, spec.getParentMass(), pmTolerance, enzyme, scoredSpec);
+//			GeneratingFunction<Composition> gf = new GeneratingFunction<Composition>(graph).enzyme(enzyme).doNotBacktrack().doNotCalcNumber();
+//			
+//			gf.computeGeneratingFunction();
+//			
+//			double specProb = gf.getSpectralProbability(psm.getAnnotation());
+//			int msgfScore = gf.getScore(psm.getAnnotation());
+//			
+//			String output = psm.getInsPecTString()+"\t"+specProb;
+//			if(addMSGFColumn)
+//				output += "\t"+msgfScore;
+//			if(specProb <= specProbThreshold)
+//			{
+//				if(!onePerSpec)
+//					out.println(output);
+//				else
+//				{
+//					String specKey = psm.getSpecFileName()+":"+psm.getScanNum();
+//					Double prevBest = minSpecProb.get(specKey);
+//					if(prevBest == null || specProb < prevBest)
+//					{
+//						minSpecProb.put(specKey, specProb);
+//						bestOut.put(specKey, output);
+//					}
+//				}
+//			}
+//		}
+//		
+//		if(onePerSpec)
+//		{
+//			for(String key : keyList)
+//				out.println(bestOut.get(key));
+//		}
+//		
+//		out.flush();
+//		out.close();
+//	}	
 }
