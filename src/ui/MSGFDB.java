@@ -45,8 +45,8 @@ import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
-	public static final String VERSION = "6379";
-	public static final String RELEASE_DATE = "09/01/2011";
+	public static final String VERSION = "6392";
+	public static final String RELEASE_DATE = "09/05/2011";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static void main(String argv[])
@@ -728,12 +728,29 @@ public class MSGFDB {
     	time = System.currentTimeMillis();
 		// Sort search results by spectral probabilities
 		Collections.sort(gen);
+
+		// Write results
+		
     	if(showFDR && !useTDA && numMatchesPerSpec == 1)
     	{
+    		PrintStream out = null;
+    		if(outputFile == null)
+    			out = System.out;
+    		else
+    		{
+    			try {
+    				out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFile)));
+    			} catch (IOException e) {
+    				e.printStackTrace();
+    			}
+    		}
     		System.out.println("Computing EFDRs...");
     		gen.computeEFDR();
     		System.out.print("Computing EFDRs finished");
     		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
+    		gen.writeResults(out, true);
+    		if(out != System.out)
+    			out.close();
     	}
     	else if(!showFDR || !useTDA)
     	{
@@ -748,7 +765,7 @@ public class MSGFDB {
     				e.printStackTrace();
     			}
     		}
-    		gen.writeResults(out, showFDR && numMatchesPerSpec == 1);
+    		gen.writeResults(out, false);
     		if(out != System.out)
     			out.close();
     	}
@@ -785,7 +802,6 @@ public class MSGFDB {
     		System.out.print("Computing EFDRs finished");
     		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
     	}
-//    	System.out.println(" " + (System.currentTimeMillis()-time)/(float)1000 + " sec");
 	}	    
     
 //    public static void runMSGFDB2(
