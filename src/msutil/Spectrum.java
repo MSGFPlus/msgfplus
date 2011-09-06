@@ -24,8 +24,8 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	private Peak precursor = null;
 
 	// optional members
-	private int startScanNum = 0;
-	private int endScanNum = 0;
+	private int startScanNum = -1;
+	private int endScanNum = -1;
 	private int specIndex = -1;	// 
 	private String title = null;
 	private Peptide annotation = null;
