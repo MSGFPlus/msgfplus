@@ -580,14 +580,17 @@ public class MSGFDB {
 		aaSet.registerEnzyme(enzyme);
 		
 		CompactFastaSequence fastaSequence = new CompactFastaSequence(databaseFile.getPath());
-		int numUniqueProteins = fastaSequence.getNumUniqueProteins();
-		int numProteins = fastaSequence.getNumProteins();
-		float ratioUniqueProteins = numUniqueProteins/(float)numProteins;
-		if(ratioUniqueProteins < 0.5f)
+		if(useTDA)
 		{
-			System.err.println("Error while indexing: " + databaseFile.getName() + " (too many redundant proteins)");
-			System.err.println("If the database contains forward and reverse proteins, run MS-GFDB (or BuildSA) again with \"-tda 0\"");
-			System.exit(-1);
+			int numUniqueProteins = fastaSequence.getNumUniqueProteins();
+			int numProteins = fastaSequence.getNumProteins();
+			float ratioUniqueProteins = numUniqueProteins/(float)numProteins;
+			if(ratioUniqueProteins < 0.5f)
+			{
+				System.err.println("Error while indexing: " + databaseFile.getName() + " (too many redundant proteins)");
+				System.err.println("If the database contains forward and reverse proteins, run MS-GFDB (or BuildSA) again with \"-tda 0\"");
+				System.exit(-1);
+			}
 		}
 		
 		CompactSuffixArray sa = new CompactSuffixArray(fastaSequence, maxPeptideLength);
