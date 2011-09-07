@@ -58,10 +58,7 @@ public class MSGFDB {
 		File 	specFile = null;
 		SpecFileFormat specFormat = null;
 		File 	databaseFile 	= null;
-		
 		File	paramFile	= null;
-		
-		// 
 		File 	dbIndexDir 	= null;
 		File	outputFile = null;
 //		Tolerance parentMassTolerance = null;

@@ -148,12 +148,7 @@ public class TrainScoringParameters {
 				if(enzyme == Enzyme.ALP)
 					numSpecsPerPeptide = 3;
 				
-				if(actMethod == ActivationMethod.HCD)
-				{
-					deconvoluteSpectra = true;
-					errorScalingFactor = 0;
-					ScoringParameterGeneratorWithErrors.generateParameters(specFile, actMethod, instType, enzyme, numSpecsPerPeptide, errorScalingFactor, considerPhosLoss, deconvoluteSpectra, outputFile, aaSet, false, false);
-				}
+				ScoringParameterGeneratorWithErrors.generateParameters(specFile, actMethod, instType, enzyme, numSpecsPerPeptide, errorScalingFactor, considerPhosLoss, deconvoluteSpectra, outputFile, aaSet, false, false);
 			}
 		}
 		System.out.println("Successfully generated parameters!");

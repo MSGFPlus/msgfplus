@@ -17,7 +17,6 @@ import parser.SpectrumParser;
 import sequences.Constants;
 
 import msgf.NominalMass;
-import msgf.Tolerance;
 
 import msscorer.NewRankScorer;
 import msscorer.NewScoredSpectrum;
@@ -207,7 +206,7 @@ public class PRMSpecGen {
 	{
 		if(message != null)
 			System.out.println("Error: " + message + "\n");
-		System.out.println("PRMSpecGen (07/10/2011)");
+		System.out.println("PRMSpecGen v"+ MSGFDB.VERSION + " (" + MSGFDB.RELEASE_DATE + ")");
 		System.out.print("Usage: java -Xmx500M -cp MSGFDB.jar ui.PRMSpecGen\n"
 				+ "\t-s SpectrumFile (*.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt)\n" //, *.mgf, *.pkl, *.ms2)\n"
 //				+ "\t-f FragMassTolerance (fragment mass tolerance in ppm or Da. The value must be less than 0.5Da or 100ppm. E.g. 0.5Da or 30ppm)\n"
@@ -281,6 +280,8 @@ public class PRMSpecGen {
 		while(specItr.hasNext())
 		{
 			Spectrum spec = specItr.next();
+			if(!spec.getTitle().contains("Scan Number: 1214"))
+				continue;
 			numSpecs++;
 			if(numSpecs % 1000 == 0)
 			{
@@ -352,7 +353,7 @@ public class PRMSpecGen {
 				if(peakDerivedMass == null)
 					out.format("%d", m);
 				else
-					out.format("%.3f", peakDerivedMass);
+					out.format("%f", peakDerivedMass);
 				out.format("\t%.3f\n",score);
 			}
 			out.println("END IONS");

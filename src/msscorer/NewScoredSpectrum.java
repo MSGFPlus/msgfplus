@@ -217,7 +217,7 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 				if(p != null)	// peak exists
 				{
 					float score = scorer.getNodeScore(part, ion, p.getRank());
-					if(score > curBestScore)
+					if(ion.getCharge() == 1 && score > curBestScore)
 					{
 						nodeMass = ion.getMass(p.getMz());
 						curBestScore = score;

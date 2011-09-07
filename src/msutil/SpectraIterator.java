@@ -15,7 +15,6 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
 	private boolean hasNext;
 	protected Spectrum currentSpectrum;
 	LineReader lineReader;
-//	private boolean hasScanNum;
 	private int specIndex;		// this will be used when spectra don't have scan numbers
 	
 	/**
