@@ -320,7 +320,7 @@ public class MSGF {
 		
 		for(InsPecTPSM psm : psmList)
 		{
-//			if(psm.getScanNum() != 3674 || !psm.getInsPecTString().contains("K.SBNRSIT*FRGK.V"))
+//			if(psm.getScanNum() != 4215 || !psm.getPeptideStr().equals("KHQLSQQENIQTY"))
 //				continue;
 			if(psm.getPeptide() == null)
 			{

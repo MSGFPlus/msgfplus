@@ -101,15 +101,22 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
 			NominalMass curNode = new NominalMass(nominalMass);
 			int nodeScore = getNodeScore(curNode);
 			int edgeScore = scoredSpec.getEdgeScore(curNode, prevNode, aa.getMass());
-			if(prevNode == source && enzyme != null)
+			if(prevNode == source && direction == false && enzyme != null)
 			{
 				if(enzyme.isCleavable(aa))
 					edgeScore += aaSet.getPeptideCleavageCredit();
 				else
 					edgeScore += aaSet.getPeptideCleavagePenalty();
-				prevNode = curNode;
 			}
+			prevNode = curNode;
 			score += nodeScore + edgeScore;
+		}
+		if(direction == true && enzyme != null)
+		{
+			if(enzyme.isCleavable(pep.get(pep.size()-1)))
+				score += aaSet.getPeptideCleavageCredit();
+			else
+				score += aaSet.getPeptideCleavagePenalty();
 		}
 		if(direction == true)
 			nominalMass += pep.get(pep.size()-1).getNominalMass();

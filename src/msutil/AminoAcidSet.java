@@ -831,6 +831,10 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 					Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere).fixedModification();
 					mods.add(modIns);
 				}
+				else if(value.equals("None"))
+				{
+					// do nothing
+				}
 				else
 				{
 					System.err.println(fileName + ": Illegal Cycteine protecting group at line " + lineNum + ": " + s);
@@ -1238,7 +1242,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	public static void main(String argv[])
 	{
 //		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(System.getProperty("user.home")+"/Research/Data/ABRF/StudyFiles/Mods.txt");
-		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile("/home/sangtaekim/Test/CCMS/88e6b5277fec4f59bcc4038910e428a6/parameters/params.xml");
+		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile("/home/sangtaekim/Test/Jocelyne/params.xml");
 //		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile("/home/sangtaekim/Research/ToolDistribution/TempTest/params.xml");
 //		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
 		aaSet.printAASet();
