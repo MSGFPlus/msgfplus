@@ -426,7 +426,7 @@ public class MSGFDB {
 			}
 			else
 			{
-				printUsageAndExit("Invalid option: " + argv[i]);
+				printUsageAndExit("Invalid parameter: " + argv[i]);
 			}
 		}
 		

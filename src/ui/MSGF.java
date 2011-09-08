@@ -32,8 +32,8 @@ import parser.PSMList;
 import parser.PklSpectrumParser;
 
 public class MSGF {
-	public static final String VERSION = "6393";
-	public static final String RELEASE_DATE = "09/02/2011";
+	public static final String VERSION = "6432";
+	public static final String RELEASE_DATE = "09/08/2011";
 	
 	public static void main(String argv[])
 	{

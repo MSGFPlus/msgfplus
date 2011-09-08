@@ -1,6 +1,7 @@
 package misc;
 
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -21,24 +22,63 @@ public class ConvertToMgf {
 	public static void main(String argv[]) throws Exception
 	{
 		boolean writeActivationMethod = false;
-		if(argv.length != 2 && argv.length != 3)
-			printUsageAndExit("Wrong parameters!");
-		if(argv.length == 3 && argv[2].equalsIgnoreCase("1"))
-			writeActivationMethod = true;
-		convert(argv[0], argv[1], writeActivationMethod);
+		File source = null;
+		File target = null;
+		int specIndex = -1;
+		
+		for(int i=0; i<argv.length; i+=2)
+		{
+			if(!argv[i].startsWith("-") || i+1 >= argv.length)
+				printUsageAndExit("Illegal parameters");
+			else if(argv[i].equalsIgnoreCase("-s"))
+			{
+				source = new File(argv[i+1]);
+				if(!source.exists())
+					printUsageAndExit(argv[i+1] + " doesn't exist!");
+			}
+			else if(argv[i].equalsIgnoreCase("-t"))
+			{
+				target = new File(argv[i+1]);
+				if(!target.getName().endsWith(".mgf"))
+					printUsageAndExit(argv[i+1] + " should end with .mgf!");
+			}
+			else if(argv[i].equalsIgnoreCase("-m"))
+			{
+				if(argv[i+1].equals("0"))
+					writeActivationMethod = false;
+				else if(argv[i+1].equals("1"))
+					writeActivationMethod = true;
+			}
+			else if(argv[i].equalsIgnoreCase("-index"))
+			{
+				specIndex = Integer.parseInt(argv[i+1]);
+			}
+			else
+			{
+				printUsageAndExit("Invalid parameter: " + argv[i]);
+			}
+		}
+
+		if(source == null || target == null)
+			printUsageAndExit("Invalid parameters!");
+		convert(source, target, writeActivationMethod, specIndex);
 	}
 	
 	public static void printUsageAndExit(String message)
 	{
 		if(message != null)
 			System.out.println(message);
-		System.out.println("Usage: java misc.SpecFileConverter SourceFileName TargetFileName(*.mgf) [0/1] (0: don't write ActivationMethod, 1: write ActivationMethod) ");
+		System.out.println("Usage: java misc.SpecFileConverter\n" +
+				"\t-s SourceFileName\n" +
+				"\t-t TargetFileName (*.mgf)\n" +
+				"\t[-m 0/1] (0: don't write ActivationMethod (default), 1: write ActivationMethod)\n" +
+				"\t[-index specIndex] (only write the spectrum with the specified index)");
 		System.exit(-1);
 	}
 	
-	public static void convert(String source, String target, boolean writeActivationMethod) throws Exception
+	public static void convert(File source, File target, boolean writeActivationMethod, int specIndex) throws Exception
 	{
-		String specFileName = source;
+		String specFileName = source.getName();
 		SpecFileFormat sourceFileFormat = null;
 		int posDot = specFileName.lastIndexOf('.');
 		if(posDot >= 0)
@@ -61,10 +101,8 @@ public class ConvertToMgf {
 		}
 		
 		if(sourceFileFormat == null)
-			printUsageAndExit("Unsupported file format: " + source);
+			printUsageAndExit("Unsupported file format: " + source.getPath());
 		
-		if(!target.endsWith(".mgf"))
-			printUsageAndExit("Target file must end with .mgf: " + target);
 		PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(target)));
 		
     	Iterator<Spectrum> specItr = null;
@@ -86,7 +124,7 @@ public class ConvertToMgf {
 				parser = new PklSpectrumParser();
 			
 			try {
-				specItr = new SpectraIterator(specFileName, parser);
+				specItr = new SpectraIterator(source.getPath(), parser);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -96,6 +134,8 @@ public class ConvertToMgf {
 		while(specItr.hasNext())
 		{
 			Spectrum spec = specItr.next();
+			if(specIndex > 0 && spec.getSpecIndex() != specIndex)
+				continue;
 			spec.outputMgf(out, writeActivationMethod);
 			numSpecs++;
 		}

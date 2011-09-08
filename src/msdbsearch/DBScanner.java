@@ -596,8 +596,6 @@ public class DBScanner {
 				}
 				
 				isExtensionAtTheSameIndex = false;
-	//			if(verbose && rank % 1000000 == 0)
-	//				System.out.println("DBSearch: " + rank/(float)size*100 + "%");
 	
 				for(i=lcp; i<maxPeptideLength && index+i<size-1; i++)	// (i+1)th character of a peptide, length=i+1
 				{
@@ -678,14 +676,14 @@ public class DBScanner {
 								}
 								if(prevMatchQueue.size() < this.numPeptidesPerSpec)
 								{
-									prevMatchQueue.add(new DatabaseMatch(index-1, i+2, score, nominalPeptideMass).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
+									prevMatchQueue.add(new DatabaseMatch(index-1, i+3, score, nominalPeptideMass).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
 								}
 								else if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
 								{
 									if(score > prevMatchQueue.peek().getScore())
 									{
 										prevMatchQueue.poll();
-										prevMatchQueue.add(new DatabaseMatch(index-1, i+2, score, nominalPeptideMass).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
+										prevMatchQueue.add(new DatabaseMatch(index-1, i+3, score, nominalPeptideMass).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
 									}
 								}
 							}
