@@ -392,8 +392,9 @@ public class CompactFastaSequence implements Sequence {
 		return annotations.keySet().size();
 	}
 	
-	public int getNumUniqueProteins()
+	public float getRatioUniqueProteins()
 	{
+		int numProteins = 0;
 		ArrayList<Integer> proteinLastIndexList = new ArrayList<Integer>(annotations.keySet());
 		HashMap<Integer,ArrayList<Integer>> lengthProtIndexMap = new HashMap<Integer,ArrayList<Integer>>();
 		int fromIndex = 0;
@@ -415,6 +416,9 @@ public class CompactFastaSequence implements Sequence {
 		for(int length : lengthProtIndexMap.keySet())
 		{
 			ArrayList<Integer> protIndexList = lengthProtIndexMap.get(length);
+			if(protIndexList.size() > 500)
+				continue;
+			numProteins += protIndexList.size();
 			boolean[] isRedundant = new boolean[protIndexList.size()];
 			for(int i=0; i<protIndexList.size(); i++)
 			{
@@ -446,7 +450,7 @@ public class CompactFastaSequence implements Sequence {
 					numUniqueProteins++;
 			}
 		}
-		return numUniqueProteins;
+		return numUniqueProteins/(float)numProteins;
 	}
 	
 }

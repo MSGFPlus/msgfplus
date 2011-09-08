@@ -582,9 +582,7 @@ public class MSGFDB {
 		CompactFastaSequence fastaSequence = new CompactFastaSequence(databaseFile.getPath());
 		if(useTDA)
 		{
-			int numUniqueProteins = fastaSequence.getNumUniqueProteins();
-			int numProteins = fastaSequence.getNumProteins();
-			float ratioUniqueProteins = numUniqueProteins/(float)numProteins;
+			float ratioUniqueProteins = fastaSequence.getRatioUniqueProteins();
 			if(ratioUniqueProteins < 0.5f)
 			{
 				System.err.println("Error while indexing: " + databaseFile.getName() + " (too many redundant proteins)");

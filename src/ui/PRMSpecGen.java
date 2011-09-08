@@ -280,8 +280,6 @@ public class PRMSpecGen {
 		while(specItr.hasNext())
 		{
 			Spectrum spec = specItr.next();
-			if(!spec.getTitle().contains("Scan Number: 1214"))
-				continue;
 			numSpecs++;
 			if(numSpecs % 1000 == 0)
 			{
