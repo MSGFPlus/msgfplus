@@ -45,7 +45,7 @@ import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
-	public static final String VERSION = "6430";
+	public static final String VERSION = "6434";
 	public static final String RELEASE_DATE = "09/08/2011";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
@@ -69,6 +69,7 @@ public class MSGFDB {
 		int 	numMatchesPerSpec = 1;
 		Enzyme	enzyme = Enzyme.TRYPSIN;
 		ActivationMethod activationMethod = null;
+		
 		InstrumentType instType = InstrumentType.LOW_RESOLUTION_LTQ;
 		int numAllowedNonEnzymaticTermini = 1;
 //		boolean showTitle = false;
@@ -524,7 +525,7 @@ public class MSGFDB {
     		File outputFile, 
     		Enzyme enzyme, 
     		int numAllowedNonEnzymaticTermini,
-    		ActivationMethod activationMethod,  
+    		ActivationMethod activationMethod, 
     		InstrumentType instType,
     		AminoAcidSet aaSet, 
     		int numMatchesPerSpec,

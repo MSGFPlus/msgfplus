@@ -15,7 +15,16 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
 	private boolean hasNext;
 	protected Spectrum currentSpectrum;
 	LineReader lineReader;
-	private int specIndex;		// this will be used when spectra don't have scan numbers
+	private int specIndex;		
+	
+	public SpectraIterator(String fileName, SpectrumParser parser) throws FileNotFoundException
+	{
+		nextSpecFilePath=fileName;
+		lineReader = new BufferedLineReader(fileName);
+		this.parser = parser;
+		specIndex = 0;
+		parseFirstSpectrum();
+	}
 	
 	/**
 	 * Added by Louis
@@ -59,23 +68,6 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
 	        parseFirstSpectrum();
 	        return true;
 		}
-	}
-	
-	public SpectraIterator(String fileName, SpectrumParser parser) throws FileNotFoundException
-	{
-		nextSpecFilePath=fileName;
-		lineReader = new BufferedLineReader(fileName);
-		this.parser = parser;
-		specIndex = 0;
-		parseFirstSpectrum();
-	}
-	
-	public SpectraIterator(LineReader lineReader, SpectrumParser parser) throws FileNotFoundException
-	{
-		this.lineReader = lineReader;
-		this.parser = parser;
-		specIndex = 0;
-		parseFirstSpectrum();
 	}
 	
 	public boolean hasNext() 

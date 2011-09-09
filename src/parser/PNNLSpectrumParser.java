@@ -87,13 +87,6 @@ public class PNNLSpectrumParser implements SpectrumParser {
 		{
 			if(buf.startsWith("=="))
 			{
-//				int lastDotIndex = buf.lastIndexOf('.');
-//				int secondLastDotIndex = buf.lastIndexOf('.', lastDotIndex-1);
-//				int thirdLastDotIndex = buf.lastIndexOf('.', secondLastDotIndex-1);
-//				int fourthLastDotIndex = buf.lastIndexOf('.', thirdLastDotIndex-1);
-//				
-//				int scanNum = Integer.parseInt(buf.substring(fourthLastDotIndex+1, thirdLastDotIndex));
-				
 				specIndexMap.put(++specIndex, offset);
 			}
 			offset = lineReader.getPosition();
