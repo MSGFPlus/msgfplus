@@ -36,18 +36,6 @@ public class SpectraMap implements SpectrumAccessorBySpecIndex {
 		}
 	}
 	
-	public synchronized Spectrum getSpectrumByPos(long filePos)
-	{
-		if(filePos < 0 || filePos > lineReader.size())
-			return null;
-		else
-		{
-			lineReader.seek((int)filePos);
-			Spectrum spec = parser.readSpectrum(lineReader);
-			return spec;
-		}
-	}
-	
 	@Override
 	public synchronized ArrayList<Integer> getSpecIndexList()
 	{

@@ -17,6 +17,8 @@ import parser.MS2SpectrumParser;
 import parser.MgfSpectrumParser;
 import parser.MzXMLSpectraIterator;
 import parser.MzXMLSpectraMap;
+import parser.PNNLSpectraIterator;
+import parser.PNNLSpectraMap;
 import parser.PNNLSpectrumParser;
 import parser.PklSpectrumParser;
 import parser.SpectrumParser;
@@ -606,13 +608,20 @@ public class MSGFDB {
 			specItr = new MzXMLSpectraIterator(specFile.getPath());
 			specMap = new MzXMLSpectraMap(specFile.getPath());
 		}
+		else if(specFormat == SpecFileFormat.DTA_TXT)
+		{
+			try {
+				specItr = new PNNLSpectraIterator(specFile.getPath());
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+			specMap = new PNNLSpectraMap(specFile.getPath());
+		}
 		else
 		{
 			SpectrumParser parser = null;
 			if(specFormat == SpecFileFormat.MGF)
 				parser = new MgfSpectrumParser();
-			else if(specFormat == SpecFileFormat.DTA_TXT)
-				parser = new PNNLSpectrumParser();
 			else if(specFormat == SpecFileFormat.MS2)
 				parser = new MS2SpectrumParser();
 			else if(specFormat == SpecFileFormat.PKL)

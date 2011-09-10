@@ -1,8 +1,12 @@
 package parser;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 
+import msutil.ActivationMethod;
 import msutil.Composition;
 import msutil.Peak;
 import msutil.SpectraIterator;
@@ -11,6 +15,8 @@ import msutil.Spectrum;
 
 public class PNNLSpectrumParser implements SpectrumParser {
 
+	public static final String SCAN_TYPE_FILE_EXTENSION = "_ScanType.txt";
+	
 	public Spectrum readSpectrum(LineReader lineReader) 
 	{
 		Spectrum spec = null;
@@ -93,6 +99,54 @@ public class PNNLSpectrumParser implements SpectrumParser {
 		}
 		return specIndexMap;
 	}
+	
+	static HashMap<Integer,ActivationMethod> getScanTypeMap(String fileName)
+	{
+		File specFile = new File(fileName);
+		String scanTypeFileName = 
+				specFile.getAbsoluteFile().getParentFile().getPath() 
+				+ File.separator
+				+ specFile.getName().substring(0, specFile.getName().lastIndexOf('_'))
+				+ PNNLSpectrumParser.SCAN_TYPE_FILE_EXTENSION;
+		File scanTypeFile = new File(scanTypeFileName);
+		
+		if(!scanTypeFile.exists())
+			return null;
+		
+		HashMap<Integer,ActivationMethod> scanNumActMethodMap = new HashMap<Integer,ActivationMethod>();
+		BufferedLineReader in = null;
+		try {
+			in = new BufferedLineReader(scanTypeFile.getPath());
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		String s;
+		
+		in.readLine();	// header
+		
+		while((s=in.readLine()) != null)
+		{
+			String[] token = s.split("\t");
+			if(token.length < 2)
+				continue;
+			
+			int scanNum = Integer.parseInt(token[0]);
+			String scanType = token[1].toLowerCase();
+			
+			ActivationMethod method = null;
+			if(scanType.contains("cid"))
+				method = ActivationMethod.CID;
+			else if(scanType.contains("etd"))
+				method = ActivationMethod.ETD;
+			else if(scanType.contains("hcd"))
+				method = ActivationMethod.HCD;
+			
+			if(method != null)
+				scanNumActMethodMap.put(scanNum, method);
+		}
+		return scanNumActMethodMap;
+	}	
 	
 	public static void main(String argv[]) throws Exception
 	{

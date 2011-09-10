@@ -1,45 +1,47 @@
 package parser;
 
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Iterator;
 
 import msutil.ActivationMethod;
-import msutil.SpectraIterator;
+import msutil.SpectraMap;
 import msutil.Spectrum;
 
-public class PNNLSpectraIterator extends SpectraIterator {
+public class PNNLSpectraMap extends SpectraMap {
 
 	private HashMap<Integer,ActivationMethod> scanNumActMethodMap;
 	
-	public PNNLSpectraIterator(String fileName) throws FileNotFoundException 
+	public PNNLSpectraMap(String fileName) 
 	{
 		super(fileName, new PNNLSpectrumParser());
 		scanNumActMethodMap = PNNLSpectrumParser.getScanTypeMap(fileName);	
 	}
 
 	@Override
-	public Spectrum next() 
+	public synchronized Spectrum getSpectrumBySpecIndex(int specIndex)
 	{
 		if(scanNumActMethodMap == null)
-			return super.next();
-		
-		Spectrum spec = super.next();
-		ActivationMethod method = scanNumActMethodMap.get(spec.getScanNum());
-		if(method != null)
-			spec.setActivationMethod(method);
-		return spec;
+			return super.getSpectrumBySpecIndex(specIndex);
+		else
+		{
+			Spectrum spec = super.getSpectrumBySpecIndex(specIndex);
+			ActivationMethod method = scanNumActMethodMap.get(spec.getScanNum());
+			if(method != null)
+				spec.setActivationMethod(method);
+			return spec;
+		}
 	}
 	
 	public static void main(String argv[]) throws Exception
 	{
 		String fileName = System.getProperty("user.home")+"/Test/Matt/QC_Shew_11_03_200ng_4_23Aug11_Hawk_11-05-04p_dta.txt";
-		PNNLSpectraIterator itr = new PNNLSpectraIterator(fileName);
-		Iterator<Spectrum> specItr = itr.iterator();
-		while(specItr.hasNext())
+		PNNLSpectraMap map = new PNNLSpectraMap(fileName);
+		for(int specIndex : map.getSpecIndexList())
 		{
-			Spectrum spec = specItr.next();
+			Spectrum spec = map.getSpectrumBySpecIndex(specIndex);
 			System.out.println(spec.getScanNum()+"\t"+spec.getActivationMethod());
 		}
 	}
+	
+	
 }

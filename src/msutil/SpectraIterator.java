@@ -42,11 +42,43 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
         if (!nextFile()) throw new FileNotFoundException("No files found.");
 	}
 	
+	@Override
+	public boolean hasNext() 
+	{
+		return hasNext;
+	}
+
+	@Override
+	public Spectrum next() 
+	{
+		Spectrum curSpecCopy = currentSpectrum;
+		currentSpectrum = parser.readSpectrum(lineReader);
+		if(currentSpectrum == null) { // Means file has ended
+			if (filenames==null || !nextFile()) hasNext = false;
+		}
+		else
+		{
+			currentSpectrum.setSpecIndex(++specIndex);
+		}
+		return curSpecCopy;
+	}
+
+	@Override
+	public void remove() 
+	{
+		throw new UnsupportedOperationException("SpectraIterator.remove() not implemented");
+	}
+	
+	@Override
+	public Iterator<Spectrum> iterator() {
+		return this;
+	}
+	
 	/**
 	 * 
 	 * @return Filename of source file of next spectrum to be returned by next(). Returns null if last spectrum in last file was returned.
 	 */
-	public String getNextSpectrumFilePath() {
+	private String getNextSpectrumFilePath() {
 		return nextSpecFilePath;
 	}
 	
@@ -70,30 +102,6 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
 		}
 	}
 	
-	public boolean hasNext() 
-	{
-		return hasNext;
-	}
-
-	public Spectrum next() 
-	{
-		Spectrum curSpecCopy = currentSpectrum;
-		currentSpectrum = parser.readSpectrum(lineReader);
-		if(currentSpectrum == null) { // Means file has ended
-			if (filenames==null || !nextFile()) hasNext = false;
-		}
-		else
-		{
-			currentSpectrum.setSpecIndex(++specIndex);
-		}
-		return curSpecCopy;
-	}
-
-	public void remove() 
-	{
-		throw new UnsupportedOperationException("SpectraIterator.remove() not implemented");
-	}
-	
 	private void parseFirstSpectrum()
 	{
 		currentSpectrum = parser.readSpectrum(lineReader);
@@ -105,10 +113,5 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
 		}
 		else
 			hasNext = false;
-	}
-
-	@Override
-	public Iterator<Spectrum> iterator() {
-		return this;
 	}
 }
