@@ -19,7 +19,6 @@ import parser.MzXMLSpectraIterator;
 import parser.MzXMLSpectraMap;
 import parser.PNNLSpectraIterator;
 import parser.PNNLSpectraMap;
-import parser.PNNLSpectrumParser;
 import parser.PklSpectrumParser;
 import parser.SpectrumParser;
 import ui.ParameterParser.Parameters;
@@ -47,8 +46,8 @@ import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
-	public static final String VERSION = "6434";
-	public static final String RELEASE_DATE = "09/08/2011";
+	public static final String VERSION = "6439";
+	public static final String RELEASE_DATE = "09/10/2011";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static void main(String argv[])
@@ -807,7 +806,7 @@ public class MSGFDB {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-    		System.out.print("Computing EFDRs finished");
+    		System.out.print("Computing FDRs finished");
     		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
     	}
 	}	    
