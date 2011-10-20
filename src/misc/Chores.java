@@ -76,9 +76,42 @@ public class Chores {
 //		testSpecKey();
 //		String pep = "-.asdf.AA";
 //		System.out.println(pep.matches(".\\..+\\.."));
-		System.out.println((byte)200);
+//		System.out.println((byte)200);
+		simpleTest();
 	}
 
+	public static void simpleTest() throws Exception
+	{
+		int specSize = 728178;
+		int fromIndexGlobal = 0;
+		int numThreads = 8;
+		int numSpecScannedTogether = 116510;
+		
+		while(true)
+		{
+			if(fromIndexGlobal >= specSize)
+				break;
+			int toIndexGlobal = Math.min(specSize, fromIndexGlobal+numSpecScannedTogether);
+			System.out.println("=========== " + fromIndexGlobal + "," + toIndexGlobal + " =============");
+			int size = toIndexGlobal - fromIndexGlobal;
+			int subListSize = size/numThreads;
+			int residue = size % numThreads;
+			
+			int[] startIndex = new int[numThreads];
+			int[] endIndex = new int[numThreads];
+			
+			for(int i=0; i<numThreads; i++)
+			{
+				startIndex[i] =  i > 0 ? endIndex[i-1] : fromIndexGlobal;
+				endIndex[i] = startIndex[i] + subListSize + (i < residue ? 1 : 0);
+				
+				System.out.println(startIndex[i]+","+endIndex[i]);
+			}
+			fromIndexGlobal += numSpecScannedTogether;
+		}
+		
+	}
+	
 	public static void printMaxScanNum() throws Exception
 	{
 		String mzXMLFileName = "/home/sangtaekim/Test/CCMS/3297b97db35241ba8547906b22377869/spectrum/00000.mzXML";

@@ -21,7 +21,6 @@ import parser.PNNLSpectraIterator;
 import parser.PNNLSpectraMap;
 import parser.PklSpectrumParser;
 import parser.SpectrumParser;
-import ui.ParameterParser.Parameters;
 
 import msdbsearch.CompactFastaSequence;
 import msdbsearch.CompactSuffixArray;
@@ -47,7 +46,7 @@ import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
 	public static final String VERSION = "6439";
-	public static final String RELEASE_DATE = "09/10/2011";
+	public static final String RELEASE_DATE = "10/20/2011";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static void main(String argv[])
@@ -437,11 +436,6 @@ public class MSGFDB {
 		if(databaseFile == null)
 			printUsageAndExit("Database is not specified.");
 		
-		if(paramFile != null)
-		{
-			Parameters parms = ParameterParser.parse(paramFile.getPath());
-		}
-		
 		if(leftParentMassTolerance == null || rightParentMassTolerance == null)
 			printUsageAndExit("Parent mass tolerance is not specified.");
 
@@ -649,11 +643,12 @@ public class MSGFDB {
 		int numBytesPerMass = 8;
 		int numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
 		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specItr, startSpecIndex, endSpecIndex, minCharge, maxCharge, activationMethod);
+		int specSize = specKeyList.size();
 		
 		System.out.print("Read spectra finished ");
 		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
 		
-		numThreads = Math.min(numThreads, Math.round(Math.min(specKeyList.size(), numSpecScannedTogether)/1000f));
+		numThreads = Math.min(numThreads, Math.round(Math.min(specSize, numSpecScannedTogether)/1000f));
 		if(numThreads == 0)
 			numThreads = 1;
 		System.out.println("Using " + numThreads + (numThreads == 1 ? " thread." : " threads."));
@@ -676,10 +671,11 @@ public class MSGFDB {
 		
 		while(true)
 		{
-			if(fromIndexGlobal >= specKeyList.size())
+//			specSize = 728178;
+			if(fromIndexGlobal >= specSize)
 				break;
-			int toIndexGlobal = Math.min(specKeyList.size(), fromIndexGlobal+numSpecScannedTogether);
-			System.out.println("Spectrum " + fromIndexGlobal + "-" + (toIndexGlobal-1) + " (total: " + specKeyList.size() + ")");
+			int toIndexGlobal = Math.min(specSize, fromIndexGlobal+numSpecScannedTogether);
+			System.out.println("Spectrum " + fromIndexGlobal + "-" + (toIndexGlobal-1) + " (total: " + specSize + ")");
 			
 			// Thread pool
 			ExecutorService executor = Executors.newFixedThreadPool(numThreads);
@@ -694,7 +690,7 @@ public class MSGFDB {
 			
 			for(int i=0; i<numThreads; i++)
 			{
-				startIndex[i] = fromIndexGlobal + (i > 0 ? endIndex[i-1] : 0);
+				startIndex[i] =  i > 0 ? endIndex[i-1] : fromIndexGlobal;
 				endIndex[i] = startIndex[i] + subListSize + (i < residue ? 1 : 0);
 			}
 			

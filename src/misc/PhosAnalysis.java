@@ -31,9 +31,51 @@ public class PhosAnalysis {
 	{
 		String inspectResultFile = "/home/sangtaekim/Test/JunePhospho/Inspect/finalResult/dee75f91bf354b62aed3fc3436645826";
 		String msgfdbResultFile = "/home/sangtaekim/Test/JunePhospho/MSGFDB/finalResult/5ab63ac652d840f58ab9e598cf796975";
-		countIDByMSLevel(inspectResultFile);
-		countIDByMSLevel(msgfdbResultFile);
+		countIDByNumPhospho(inspectResultFile);
+		countIDByNumPhospho(msgfdbResultFile);
 	}
+
+	public static void countIDByNumPhospho(String fileName) throws Exception
+	{
+		System.out.println(fileName);
+		int idCol = -1;
+		
+		BufferedLineReader in = new BufferedLineReader(fileName);
+		String header = in.readLine();
+		String[] field = header.split("\t");
+		
+		Histogram<Integer> hist = new Histogram<Integer>();
+		for(int i=0; i<field.length; i++)
+		{
+			if(field[i].equals("Peptide") || field[i].equals("Annotation"))
+				idCol = i;
+		}
+		
+		String s;
+		int numID = 0;
+		while((s=in.readLine()) != null)
+		{
+			String[] token = s.split("\t");
+			if(token.length <= idCol)
+				continue;
+			String annotation = token[idCol];
+			if(!annotation.contains("phos") && !annotation.contains("79.9"))
+				continue;
+			
+			int numPhospho = 0;
+			for(int i=0; i<annotation.length(); i++)
+			{
+				String substr = annotation.substring(i);
+				if(substr.startsWith("phos") || substr.startsWith("+79.966"))
+					numPhospho++;
+			}
+			hist.add(numPhospho);
+			if(numPhospho > 0)
+				numID++;
+		}
+		System.out.println("NumID: " + numID);
+		hist.printSorted();
+	}	
 	
 	public static void countIDByMSLevel(String fileName) throws Exception
 	{

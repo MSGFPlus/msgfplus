@@ -64,7 +64,7 @@ public class MSDictionary {
 	// default parameters
 	public static void runMSDictionary(String paramFile, String outputFileName)
 	{
-		ParameterParser.Parameters params = ParameterParser.parse(paramFile);
+		ParameterParser.Parameters params = ParameterParser.parseFromFile(paramFile);
 
 		// Spectrum
 		String specFileName = params.getParameter("Spectrum");

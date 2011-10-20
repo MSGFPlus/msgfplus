@@ -44,7 +44,7 @@ public class ParameterParser {
 	 * @param fileName the name of the parameter file.
 	 * @return A table of parameters.
 	 */
-	public static Parameters parse(String fileName)
+	public static Parameters parseFromFile(String fileName)
 	{
 		Parameters params = new Parameters();
 		BufferedLineReader in = null;
@@ -63,6 +63,26 @@ public class ParameterParser {
 				continue;
 			else
 				params.put(token[0].trim(), token[1].trim());
+		}
+		return params;
+	}
+	
+	public static Parameters parseFromString(String paramString)
+	{
+		Parameters params = new Parameters();
+		String[] token = paramString.split("\\s+");
+		if(token.length % 2 != 0)
+		{
+			System.err.println("Number of parameters must be even!");
+			System.exit(-1);
+		}
+		for(int i=0; i<token.length; i+=2)
+		{
+			if(!token[i].startsWith("-") || i+1 >= token.length)
+			{
+				System.err.println("Number of parameters must be even!");
+			}
+			params.put(token[i].trim(), token[i+1].trim());
 		}
 		return params;
 	}
