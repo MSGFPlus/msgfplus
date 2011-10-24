@@ -24,9 +24,10 @@ public class Composition extends Matter
 	public static final double CO = C+O;
 	public static final double ISOTOPE = C13 - C;
 	public static final double ISOTOPE2 = C14 - C;
-	public static final double PROTON = 1.0072697;
+//	public static final double PROTON = 1.0072697;
+	public static final double PROTON = 1.007825035;
 	public static final double NEUTRON = 1.0086650;
-	public static final double OFFSET_Y = H*2+O+PROTON;
+	public static final double OFFSET_Y = H*3+O;
 	public static final double OFFSET_B = PROTON;
 
 	public static final Composition NIL = new Composition(0,0,0,0,0);

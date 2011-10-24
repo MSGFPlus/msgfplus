@@ -897,7 +897,7 @@ public class SuffixArray {
 		neighboringLcps.rewind();
 		return numCandidatePeptides;
 	}		
-
+	
 	/***** METHODS NOT PORTED *****
 	 *  
   public boolean canThrowOut(String seq) {

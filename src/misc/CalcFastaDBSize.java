@@ -19,17 +19,18 @@ public class CalcFastaDBSize {
 		String s;
 		int length = 0;
 		int numProteins = 0;
-		int[] numTrypticPeptides = new int[31];	// the number of tryptic peptides allowing no miscleavages
-		
+		int[] numTrypticPeptides = new int[11];	// the number of tryptic peptides allowing no miscleavages
 		int pepLen = 0;
-//		StringBuffer pep = new StringBuffer();
 		Histogram<Character> aaHist = new Histogram<Character>();
+//		StringBuffer pep = new StringBuffer();
+//		java.util.HashSet<String> pepSet = new java.util.HashSet<String>();
 		while((s=in.readLine()) != null)
 		{
 			if(s.startsWith(">"))
 			{
 				numProteins++;
 				pepLen = 0;
+//				pep = new StringBuffer();
 				continue;
 			}
 			else
@@ -48,6 +49,8 @@ public class CalcFastaDBSize {
 //							if(pep.length() == 5)
 //								System.out.println(pep);
 							numTrypticPeptides[++pepLen]++;
+//							if(pepLen == 10)
+//								pepSet.add(pep.toString());
 						}
 						pepLen = 0;
 //						pep = new StringBuffer();
@@ -71,6 +74,7 @@ public class CalcFastaDBSize {
 		System.out.println("Length\tNumber");
 		for(int i=5; i<numTrypticPeptides.length; i++)
 			System.out.println(i+"\t"+numTrypticPeptides[i]);
+		System.out.println("Distinct Peptides length 10: " + pepSet.size());
 		System.out.println("Amino Acid Composition:");
 		aaHist.printSorted();
 	}
