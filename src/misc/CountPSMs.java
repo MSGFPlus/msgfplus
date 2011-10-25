@@ -1,5 +1,7 @@
 package misc;
 
+import java.util.HashSet;
+
 import msgf.Histogram;
 import parser.BufferedLineReader;
 
@@ -50,6 +52,7 @@ public class CountPSMs {
 		int totalID = 0;
 		int numID = 0;
 		String s;
+		HashSet<String> pepSet = new HashSet<String>();
 		Histogram<Integer> nttHist = new Histogram<Integer>();
 		while((s=in.readLine()) != null)
 		{
@@ -77,6 +80,7 @@ public class CountPSMs {
 				if(last == 'K' || last == 'R')
 					ntt+=1;
 				nttHist.add(ntt);
+				pepSet.add(unmodStr.toString());
 			}
 			
 //			if(ntt == 0) {
@@ -87,6 +91,7 @@ public class CountPSMs {
 		
 		System.out.println("TotalPSM\t" + totalID);
 		System.out.println("NumID\t" + numID+"\t"+numID/(float)totalID);
+		System.out.println("NumPeptides\t" + pepSet.size());
 		System.out.println("Cleavage hist");
 		nttHist.printSortedRatio();
 	}

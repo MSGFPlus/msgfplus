@@ -41,6 +41,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 	
 	private static final float MIN_PRECURSOR_OFFSET_PROBABILITY = 0.15f;	// 0.15
 	private static final float MIN_ION_OFFSET_PROBABILITY = 0.15f;	// 0.15, for ion types
+	private static final float MIN_MAIN_ION_OFFSET_PROBABILITY = 0.05f;	// ion of probability below this number will be ignored 
 	
 	private static final int MAX_RANK = 150;
 	private static final int NUM_SEGMENTS_PER_SPECTRUM = 2;	// 2
@@ -57,7 +58,6 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		File outputFile = null;
 		boolean isText = false;
 		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
-		int numSpecsPerPeptide = 1;
 		int errorScalingFactor = 0;
 		boolean considerPhosLoss = false;
 		boolean applyDeconvolution = false;
@@ -107,10 +107,6 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 					aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarboxymethylatedCys();
 				else
 					printUsageAndExit("Illigal -fixMod parameter: " + argv[i+1]);
-			}
-			else if(argv[i].equalsIgnoreCase("-pep"))
-			{
-				numSpecsPerPeptide = Integer.parseInt(argv[i+1]);
 			}
 			else if(argv[i].equalsIgnoreCase("-err"))
 			{
@@ -209,7 +205,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		if(instType == null)
 			printUsageAndExit("missing instrumentType!");
 		
-		generateParameters(specFile, activationMethod, instType, enzyme, numSpecsPerPeptide, errorScalingFactor, considerPhosLoss, applyDeconvolution, outputFile, aaSet, isText, false);
+		generateParameters(specFile, activationMethod, instType, enzyme, errorScalingFactor, considerPhosLoss, applyDeconvolution, outputFile, aaSet, isText, false);
 	}
 	
 	public static void printUsageAndExit(String message)
@@ -224,7 +220,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 				"\t[-phos 0/1] (0: Don't consider H3PO4 loss (default), 1: Consider H3PO4 loss)\n" +
 				"\t[-deconv 0/1] (0: Don't apply deconvolution (Default), 1: Apply deconvolution/deisotping)" +
 				"\t[-fixMod 0/1/2] (0: NoCysteineProtection, 1: CarbamidomethyC (default), 2: CarboxymethylC)\n" +
-				"\t[-pep numPeptidesPerSpec]  (default: 1)\n" +
+//				"\t[-pep numPeptidesPerSpec]  (default: 1)\n" +
 				"\t[-err errorScalingFactor]  (default: 0)"
 		);
 		System.exit(0);
@@ -235,7 +231,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			ActivationMethod activationMethod,
 			InstrumentType instType,
 			Enzyme enzyme,
-			int numSpecsPerPeptide, 
+//			int numSpecsPerPeptide, 
 			int errorScalingFactor,
 			boolean considerPhosLoss,
 			boolean applyDeconvolution,
@@ -245,7 +241,16 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			boolean verbose)
 	{
 		SpectraContainer container = new SpectraContainer(specFile.getPath(), new MgfSpectrumParser().aaSet(aaSet));
+		HashSet<String> pepSet = new HashSet<String>();
+		for(Spectrum spec : container)
+			pepSet.add(spec.getAnnotationStr());
 		
+		int numSpecsPerPeptide;
+		if(pepSet.size() < 2000)
+			numSpecsPerPeptide = 3;
+		else
+			numSpecsPerPeptide = 1;
+		 
 		// multiple spectra with the same peptide -> one spec per peptide
 		HashMap<String,ArrayList<Spectrum>> pepSpecMap = new HashMap<String,ArrayList<Spectrum>>();
 		for(Spectrum spec : container)
@@ -574,13 +579,14 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 				float maxIonProb = Float.MIN_VALUE;
 				for(int i=0; i<allIonTypes.length; i++)
 				{
-					if(ionProb[i] > maxIonProb)
+					if(ionProb[i] > MIN_MAIN_ION_OFFSET_PROBABILITY && ionProb[i] > maxIonProb)
 					{
 						maxIndex = i;
 						maxIonProb = ionProb[i];
 					}
 				}
- 				signalFragmentOffsetFrequencyList.add(new FragmentOffsetFrequency(allIonTypes[maxIndex], maxIonProb));
+				if(maxIndex >= 0)
+					signalFragmentOffsetFrequencyList.add(new FragmentOffsetFrequency(allIonTypes[maxIndex], maxIonProb));
 	 		}
 	 		
 	 		Collections.sort(signalFragmentOffsetFrequencyList, Collections.reverseOrder());
@@ -604,6 +610,10 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		{
 			int charge = partition.getCharge();
 			IonType[] ionTypes = getIonTypes(partition);
+			if(ionTypes.length == 0)
+			{
+				continue;
+			}
 			Pair<Float,Float> parentMassRange = getParentMassRange(partition);
 			int seg = partition.getSegNum();
 			

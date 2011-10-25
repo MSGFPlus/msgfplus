@@ -124,16 +124,10 @@ public class TrainScoringParameters {
 				String paramFileName = id+".param";
 				File outputFile = new File(PARAM_DIR, paramFileName);
 				System.out.println("Generating " + outputFile.getPath());
-				int numSpecsPerPeptide = 1;
 				int errorScalingFactor = 0;
 				boolean deconvoluteSpectra = false;
-				if(instType == InstrumentType.HIGH_RESOLUTION_LTQ)
-				{
-					numSpecsPerPeptide = 3;
-					errorScalingFactor = 100;
-					deconvoluteSpectra = true;
-				}
-				else if(instType == InstrumentType.TOF)
+				
+				if(instType == InstrumentType.HIGH_RESOLUTION_LTQ || instType == InstrumentType.TOF)
 				{
 					errorScalingFactor = 100;
 					deconvoluteSpectra = true;
@@ -142,13 +136,11 @@ public class TrainScoringParameters {
 				boolean considerPhosLoss = false;
 				if(mod == Modification.get("Phosphorylation"))
 				{
-					numSpecsPerPeptide = 3;
 					considerPhosLoss = true;
 				}
-				if(enzyme == Enzyme.ALP)
-					numSpecsPerPeptide = 3;
 				
-				ScoringParameterGeneratorWithErrors.generateParameters(specFile, actMethod, instType, enzyme, numSpecsPerPeptide, errorScalingFactor, considerPhosLoss, deconvoluteSpectra, outputFile, aaSet, false, false);
+//				if(specFile.getName().contains("CID_LowRes_LysC"))
+				ScoringParameterGeneratorWithErrors.generateParameters(specFile, actMethod, instType, enzyme, errorScalingFactor, considerPhosLoss, deconvoluteSpectra, outputFile, aaSet, false, false);
 			}
 		}
 		System.out.println("Successfully generated parameters!");

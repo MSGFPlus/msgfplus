@@ -721,7 +721,12 @@ public class NewRankScorer implements NewAdditiveScorer {
 			out.writeInt(maxRank);
 			for(Partition partition : partitionSet)
 			{
+//				if(partition.getParentMass() > 4100 && partition.getCharge() == 5 && partition.getSegNum() == 1)
+//					System.out.println("Debug");
+				
 				Hashtable<IonType,Float[]> rankDistTable = getRankDistTable(partition);
+				if(rankDistTable == null)
+					continue;
 				ArrayList<IonType> ionTypeList = new ArrayList<IonType>();
 				for(IonType ion : getIonTypes(partition))
 					ionTypeList.add(ion);
