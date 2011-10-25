@@ -880,14 +880,14 @@ public class DBScanner {
 								}
 								if(prevMatchQueue.size() < this.numPeptidesPerSpec)
 								{
-									prevMatchQueue.add(new DatabaseMatch(index-1, i+2, score, nominalPeptideMass).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
+									prevMatchQueue.add(new DatabaseMatch(index-1, i+3, score, nominalPeptideMass).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
 								}
 								else if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
 								{
 									if(score > prevMatchQueue.peek().getScore())
 									{
 										prevMatchQueue.poll();
-										prevMatchQueue.add(new DatabaseMatch(index-1, i+2, score, nominalPeptideMass).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
+										prevMatchQueue.add(new DatabaseMatch(index-1, i+3, score, nominalPeptideMass).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
 									}
 								}
 							}

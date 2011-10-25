@@ -139,7 +139,7 @@ public class TrainScoringParameters {
 					considerPhosLoss = true;
 				}
 				
-				if(specFile.getName().contains("CID_LowRes_Tryp"))
+//				if(specFile.getName().contains("CID_LowRes_Tryp.mgf"))
 				ScoringParameterGeneratorWithErrors.generateParameters(specFile, actMethod, instType, enzyme, errorScalingFactor, considerPhosLoss, deconvoluteSpectra, outputFile, aaSet, false, false);
 			}
 		}
