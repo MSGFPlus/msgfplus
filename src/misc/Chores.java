@@ -20,11 +20,15 @@ import org.systemsbiology.jrap.stax.MSXMLSequentialParser;
 
 import msdbsearch.DBScanner;
 import msgf.MSGFDBResultGenerator;
+import msscorer.NewRankScorer;
+import msscorer.NewScorerFactory;
+import msutil.ActivationMethod;
 import msutil.AminoAcid;
 import msutil.AminoAcidSet;
 import msutil.Composition;
 import msutil.CompositionFactory;
 import msutil.Enzyme;
+import msutil.InstrumentType;
 import msutil.IonType;
 import msutil.Peptide;
 import msutil.SpecKey;
@@ -77,7 +81,7 @@ public class Chores {
 //		String pep = "-.asdf.AA";
 //		System.out.println(pep.matches(".\\..+\\.."));
 //		System.out.println((byte)200);
-		simpleTest();
+//		simpleTest();
 	}
 
 	public static void simpleTest() throws Exception

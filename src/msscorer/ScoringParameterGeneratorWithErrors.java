@@ -41,7 +41,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 	
 	private static final float MIN_PRECURSOR_OFFSET_PROBABILITY = 0.15f;	// 0.15
 	private static final float MIN_ION_OFFSET_PROBABILITY = 0.15f;	// 0.15, for ion types
-	private static final float MIN_MAIN_ION_OFFSET_PROBABILITY = 0.05f;	// ion of probability below this number will be ignored 
+	private static final float MIN_MAIN_ION_OFFSET_PROBABILITY = 0.01f;	// ion of probability below this number will be ignored 
 	
 	private static final int MAX_RANK = 150;
 	private static final int NUM_SEGMENTS_PER_SPECTRUM = 2;	// 2
@@ -610,10 +610,8 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		{
 			int charge = partition.getCharge();
 			IonType[] ionTypes = getIonTypes(partition);
-			if(ionTypes.length == 0)
-			{
+			if(ionTypes == null || ionTypes.length == 0)
 				continue;
-			}
 			Pair<Float,Float> parentMassRange = getParentMassRange(partition);
 			int seg = partition.getSegNum();
 			
@@ -919,13 +917,6 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			if(seg != super.getNumSegments()-1)
 				continue;
 
-			HashSet<IonType> ionTypes = new HashSet<IonType>();
-			for(int i=0; i<numSegments; i++)
-			{
-				for(IonType ion : this.getIonTypes(partition))
-					ionTypes.add(ion);
-			}
-			
 			IntHistogram errHist = new IntHistogram();
 			int numSpecs = 0;
 			for(Spectrum spec : specContainer)
@@ -940,23 +931,6 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 					continue;
 
 				Spectrum noiseSpec = (Spectrum)spec.clone();
-//				Peptide pep = spec.getAnnotation();
-//				float prm = 0, srm = 0;
-//				for(int i=0; i<pep.size()-1; i++)
-//				{
-//					prm += pep.get(i).getMass();
-//					srm += pep.get(pep.size()-1-i).getMass();
-//					for(IonType ion : ionTypes)
-//					{
-//						float theoMass;
-//						if(ion instanceof PrefixIon)
-//							theoMass = ion.getMz(prm);
-//						else
-//							theoMass = ion.getMz(srm);
-//						ArrayList<Peak> signalPeaks = noiseSpec.getPeakListByMass(theoMass, mme);
-//						noiseSpec.removeAll(signalPeaks);
-//					}
-//				}
 				
 				numSpecs++;
 
@@ -1004,13 +978,6 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 					noiseErrDistTable.put(part, noiseErrHist);
 				}
 			}
-
-//			if(partition.getCharge() == 2 && partition.getParentMass() > 1000 && partition.getParentMass() < 1110)
-//			{
-//				System.out.println(partition.getCharge()+"\t"+partition.getParentMass());
-//				for(int i=0; i<errorScalingFactor*2+1; i++)
-//					System.out.println((i-errorScalingFactor)+"\t"+errHist.get(i-errorScalingFactor)+"\t"+noiseErrHist[i]);
-//			}
 		}		
 	}
 	

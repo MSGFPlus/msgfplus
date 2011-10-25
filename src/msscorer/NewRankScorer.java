@@ -360,7 +360,11 @@ public class NewRankScorer implements NewAdditiveScorer {
 					System.out.println(partition.getCharge()+"\t"+partition.getSegNum()+"\t"+partition.getParentMass());
 				Hashtable<IonType,Float[]> table = new Hashtable<IonType,Float[]>();
 				ArrayList<IonType> ionTypeList = new ArrayList<IonType>();
-				for(IonType ion : getIonTypes(partition))
+				IonType[] ionTypes = getIonTypes(partition);
+				if(ionTypes == null || ionTypes.length == 0)
+					continue;
+				
+				for(IonType ion : ionTypes)
 					ionTypeList.add(ion);
 				ionTypeList.add(IonType.NOISE);
 				for(IonType ion : ionTypeList)
@@ -727,8 +731,11 @@ public class NewRankScorer implements NewAdditiveScorer {
 				Hashtable<IonType,Float[]> rankDistTable = getRankDistTable(partition);
 				if(rankDistTable == null)
 					continue;
+				IonType[] ionTypes = getIonTypes(partition);
+				if(ionTypes == null || ionTypes.length == 0)
+					continue;
 				ArrayList<IonType> ionTypeList = new ArrayList<IonType>();
-				for(IonType ion : getIonTypes(partition))
+				for(IonType ion : ionTypes)
 					ionTypeList.add(ion);
 				ionTypeList.add(IonType.NOISE);
 				for(IonType ion : ionTypeList)
@@ -847,8 +854,11 @@ public class NewRankScorer implements NewAdditiveScorer {
 		for(Partition partition : partitionSet)
 		{
 			Hashtable<IonType,Float[]> rankDistTable = getRankDistTable(partition);
+			IonType[] ionTypes = getIonTypes(partition);
+			if(ionTypes == null || ionTypes.length == 0)
+				continue;
 			ArrayList<IonType> ionTypeList = new ArrayList<IonType>();
-			for(IonType ion : getIonTypes(partition))
+			for(IonType ion : ionTypes)
 				ionTypeList.add(ion);
 			ionTypeList.add(IonType.NOISE);
 			out.println("Partition\t"+partition.getCharge()+"\t"+partition.getSegNum()+"\t"+partition.getParentMass()+"\t"+ionTypeList.size()+"\t"+maxRank);

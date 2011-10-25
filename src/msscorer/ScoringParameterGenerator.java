@@ -643,6 +643,8 @@ public class ScoringParameterGenerator extends NewRankScorer {
 		{
 			int charge = partition.getCharge();
 			IonType[] ionTypes = getIonTypes(partition);
+			if(ionTypes == null || ionTypes.length == 0)
+				continue;
 			Pair<Float,Float> parentMassRange = getParentMassRange(partition);
 			int seg = partition.getSegNum();
 			
