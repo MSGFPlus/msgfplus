@@ -334,7 +334,7 @@ public class DBScanner {
 	{
 		Map<SpecKey,PriorityQueue<DatabaseMatch>> curSpecKeyDBMatchMap = new HashMap<SpecKey,PriorityQueue<DatabaseMatch>>();
 		
-		CandidatePeptideGrid candidatePepGrid = new CandidatePeptideGrid(aaSet, maxPeptideLength);
+		CandidatePeptideGridConsideringMetCleavage candidatePepGrid = new CandidatePeptideGridConsideringMetCleavage(aaSet, maxPeptideLength);
 		
 		int i = Integer.MAX_VALUE;
 		
@@ -535,7 +535,7 @@ public class DBScanner {
 							for(SpecKey specKey : matchedSpecKeyList)
 							{
 								SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(specKey);
-								int score = cleavageScore + scorer.getScore(candidatePepGrid.getPRMGrid()[j], candidatePepGrid.getNominalPRMGrid()[j], 1, i+1, candidatePepGrid.getNumMods(j)); 
+								int score = cleavageScore + scorer.getScore(candidatePepGrid.getPRMGrid(j), candidatePepGrid.getNominalPRMGrid(j), 1, i+1, candidatePepGrid.getNumMods(j)); 
 								PriorityQueue<DatabaseMatch> prevMatchQueue = curSpecKeyDBMatchMap.get(specKey);
 								if(prevMatchQueue == null)
 								{

@@ -44,6 +44,7 @@ public class CandidatePeptideGrid {
 	private double[][] protCTermAAMass;
 	private char[][] protCTermAAResidue;
 	
+	// Protein N-term Met cleavage
 	private int length;
 	private int[] size;
 	
@@ -77,19 +78,14 @@ public class CandidatePeptideGrid {
 		length = 0;
 	}
 	
-	public boolean addResidue(char residue)
+	public int[] getNominalPRMGrid(int index)
 	{
-		return addResidue(length+1, residue);
+		return this.nominalPRM[index];
 	}
 	
-	public int[][] getNominalPRMGrid()
+	public double[] getPRMGrid(int index)
 	{
-		return this.nominalPRM;
-	}
-	
-	public double[][] getPRMGrid()
-	{
-		return this.prm;
+		return this.prm[index];
 	}
 	
 	public int size()
@@ -115,6 +111,24 @@ public class CandidatePeptideGrid {
 	public int getNumMods(int index)
 	{
 		return numMods[index][length];
+	}
+	
+//	public boolean addResidue(char residue)
+//	{
+//		return addResidue(length+1, residue);
+//	}
+	
+	// if residue is not a standard residue, return false
+	public boolean addResidue(int length, char residue)
+	{
+		double[] aaMassArr = aaMass[residue];
+		if(aaMassArr == null || length > maxPeptideLength)
+			return false;
+		
+		int[] aaNominalMassArr = aaNominalMass[residue];
+		char[] aaResidueArr = aaResidue[residue];
+		
+		return addResidue(aaMassArr, aaNominalMassArr, aaResidueArr, length);
 	}
 	
 	public boolean addProtNTermResidue(char residue)
@@ -161,19 +175,6 @@ public class CandidatePeptideGrid {
 		
 		int[] aaNominalMassArr = cTermAANominalMass[residue];
 		char[] aaResidueArr = cTermAAResidue[residue];
-		
-		return addResidue(aaMassArr, aaNominalMassArr, aaResidueArr, length);
-	}
-	
-	// if residue is not a standard residue, return false
-	public boolean addResidue(int length, char residue)
-	{
-		double[] aaMassArr = aaMass[residue];
-		if(aaMassArr == null || length > maxPeptideLength)
-			return false;
-		
-		int[] aaNominalMassArr = aaNominalMass[residue];
-		char[] aaResidueArr = aaResidue[residue];
 		
 		return addResidue(aaMassArr, aaNominalMassArr, aaResidueArr, length);
 	}
