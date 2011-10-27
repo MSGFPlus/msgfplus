@@ -63,7 +63,7 @@ public class CompactFastaSequence implements Sequence {
 	 *        predefined AminoAcid strings defined in this class or customized strings.
 	 * @param seqExtension the extension to use for the sequence file.
 	 */
-	public CompactFastaSequence(String filepath, String alphabet) {
+	private CompactFastaSequence(String filepath, String alphabet) {
 
 		String[] tokens = filepath.split("\\.");
 		String extension = tokens[tokens.length-1];
@@ -254,6 +254,7 @@ public class CompactFastaSequence implements Sequence {
 		this.alpha2byte = new HashMap<Character, Byte>();
 		this.byte2alpha = new HashMap<Byte, Character>();
 		this.byte2alpha.put(Constants.TERMINATOR, Constants.TERMINATOR_CHAR);
+		this.byte2alpha.put(Constants.INVALID_CHAR_CODE, Constants.INVALID_CHAR);
 		for(byte i = 0, value = 1; i < tokens.length; i++, value++) {
 			for(int j = 0; j < tokens[i].length(); j++) {
 				alpha2byte.put(tokens[i].charAt(j), value);
@@ -296,7 +297,7 @@ public class CompactFastaSequence implements Sequence {
 							seqOut.writeByte(encoded);
 						}
 						else {
-							seqOut.writeByte(Constants.TERMINATOR);
+							seqOut.writeByte(Constants.INVALID_CHAR_CODE);
 						}
 					}
 					offset += s.length();

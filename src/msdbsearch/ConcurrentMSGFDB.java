@@ -44,13 +44,13 @@ public class ConcurrentMSGFDB {
 		public void run() 
 		{
 			if(searchMode == 1)
-				scanner.dbSearchNoEnzyme(fromIndex, toIndex, true);	// currently not supported
+				scanner.dbSearch(2, fromIndex, toIndex, true);
 			else if(searchMode == 2)
 				scanner.dbSearchCTermEnzymeNoMod(numberOfAllowableNonEnzymaticTermini, fromIndex, toIndex, true);
 			else if(searchMode == 3)
-				scanner.dbSearchNTermEnzyme(numberOfAllowableNonEnzymaticTermini, fromIndex, toIndex, true);
+				scanner.dbSearch(numberOfAllowableNonEnzymaticTermini, fromIndex, toIndex, true);
 			else
-				scanner.dbSearchCTermEnzyme(numberOfAllowableNonEnzymaticTermini, fromIndex, toIndex, true);
+				scanner.dbSearch(numberOfAllowableNonEnzymaticTermini, fromIndex, toIndex, true);
 		}
 	}
 	

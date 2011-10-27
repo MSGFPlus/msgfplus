@@ -59,6 +59,11 @@ public class Constants {
   public static final char TERMINATOR_CHAR = '_';
   
   /**
+   * The byte representation of the invalid character.
+   */
+  public static final byte INVALID_CHAR_CODE = 63;
+  
+  /**
    * The character representation of the invalid character.
    */
   public static final char INVALID_CHAR = '?';
