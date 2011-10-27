@@ -144,17 +144,12 @@ public class CompactFastaSequence implements Sequence {
 		char[] seq = new char[(int)(end-start)];
 		for(long i=start; i<end; i++) {
 			seq[(int)(i-start)] = toChar(this.sequence[(int)i]);
-//			seq[(int)(i-start)] = toChar(this.sequence.get((int)i));
-//			seq[(int)(i-start)] = (char)this.original.get((int)i);
 		}
 		return new String(seq);
 	}
 
 	@Override
 	public char getCharAt(long position) {
-		//return toChar(getByteAt(position));
-		//return this.original[(int)position];
-//		return toChar(this.sequence.get((int)position));
 		return toChar(this.sequence[(int)position]);
 	}
 
@@ -213,7 +208,6 @@ public class CompactFastaSequence implements Sequence {
 	public long getStartPosition(long position) {
 		Integer startPos = annotations.floorKey((int)position);
 		if (startPos==null) {
-			//System.err.println("There is no start for position " + position);
 			return 0;
 		}
 		return startPos;
@@ -286,7 +280,9 @@ public class CompactFastaSequence implements Sequence {
 			
 			Integer offset = 0;
 			String annotation = null;
-			String s;              // 
+			String s;
+			
+			// write protein sequences 
 			while((s = in.readLine()) != null) {
 
 				// this is a regular fasta line
@@ -313,9 +309,11 @@ public class CompactFastaSequence implements Sequence {
 					annotation = s.substring(1).split("\\s+")[0];
 				}
 			}
+			
 			seqOut.writeByte(Constants.TERMINATOR);
 			offset++;
 			// the offset always points to the terminator of this sequence
+			
 			metaOut.println(offset+":"+annotation);
 			size = offset;
 			in.close();

@@ -45,8 +45,8 @@ import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
-	public static final String VERSION = "6696";
-	public static final String RELEASE_DATE = "10/25/2011";
+	public static final String VERSION = "6712";
+	public static final String RELEASE_DATE = "10/26/2011";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static void main(String argv[])
@@ -640,11 +640,6 @@ public class MSGFDB {
 		// determine the number of spectra to be scanned together 
 		long maxMemory = Runtime.getRuntime().maxMemory() - sa.getSize() - 1<<28;
 		
-//		if(maxMemory < 1<<12)
-//		{
-//			System.err.println("MS-GFDB requires more memory (currently available: " + Runtime.getRuntime().maxMemory()+")");
-//			System.exit(-1);
-//		}
 		int avgPeptideMass = 2000;
 		int numBytesPerMass = 12;
 		int numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
@@ -791,7 +786,6 @@ public class MSGFDB {
 					tempFile.deleteOnExit();
 				}
 				PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(tempFile)));
-//				tempFile.deleteOnExit();
 				gen.writeResults(out, false);
 				out.flush();
 				out.close();
