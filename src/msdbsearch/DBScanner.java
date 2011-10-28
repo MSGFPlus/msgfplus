@@ -178,7 +178,7 @@ public class DBScanner {
 		
 		CandidatePeptideGridConsideringMetCleavage candidatePepGrid = new CandidatePeptideGridConsideringMetCleavage(aaSet, maxPeptideLength);
 		
-		int i = Integer.MAX_VALUE;
+		int i = Integer.MAX_VALUE - 1000;
 		
 		boolean enzymaticSearch;
 		if(numberOfAllowableNonEnzymaticTermini == 2)
@@ -209,6 +209,7 @@ public class DBScanner {
 			int numIndices = toIndex-fromIndex;
 			for(int bufferIndex=0; bufferIndex<numIndices; bufferIndex++)
 			{
+				
 				// Print out the progress
 				if(verbose && bufferIndex % 2000000 == 0)
 				{
@@ -220,6 +221,9 @@ public class DBScanner {
 				int lcp = nlcps.readByte();
 				if(bufferIndex == 0)
 					lcp = 0;
+
+//				// For debugging
+//				System.out.println(sequence.getSubsequence(index, sequence.getSize()));
 				
 				// skip redundant peptides
 				if(lcp > i+1)		
