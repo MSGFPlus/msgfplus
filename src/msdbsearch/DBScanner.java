@@ -221,8 +221,12 @@ public class DBScanner {
 				if(bufferIndex == 0)
 					lcp = 0;
 				
-				if(lcp > i)		// skip redundant peptide
+				// skip redundant peptides
+				if(lcp > i+1)		
 					continue;
+				if(lcp == i+1 && (enzyme == null || enzyme.isCTerm()))
+					continue;
+						
 				else if(lcp == 0)	// preceding aa is changed
 				{
 					char precedingAA = sequence.getCharAt(index);
@@ -238,7 +242,7 @@ public class DBScanner {
 					}
 					else if(enzyme.isCTerm())
 					{
-						if(isProteinNTerm || enzyme.isCleavable(precedingAA))	// || precedingAA == Constants.INVALID_CHAR
+						if(isProteinNTerm || enzyme.isCleavable(precedingAA))// || precedingAA == Constants.INVALID_CHAR)
 						{
 							nTermCleavageScore = neighboringAACleavageCredit;
 							if(enzymaticSearch)
@@ -268,7 +272,7 @@ public class DBScanner {
 					{
 						if(enzyme != null && enzyme.isNTerm())
 						{
-							if(isProteinNTerm || enzyme.isCleavable(residue)) // || sequence.getCharAt(index) == Constants.INVALID_CHAR
+							if(isProteinNTerm || enzyme.isCleavable(residue))	// || sequence.getCharAt(index) == Constants.INVALID_CHAR)
 							{
 								nTermCleavageScore = peptideCleavageCredit;
 								if(enzymaticSearch)
@@ -338,7 +342,7 @@ public class DBScanner {
 						isProteinCTerm = (cTermNeighboringResidue == Constants.TERMINATOR_CHAR);						
 						if(enzyme.isCTerm())
 						{
-							if(isProteinCTerm || enzyme.isCleavable(residue))	// || cTermNeighboringResidue == Constants.INVALID_CHAR
+							if(isProteinCTerm || enzyme.isCleavable(residue)) // || cTermNeighboringResidue == Constants.INVALID_CHAR)
 								cTermCleavageScore = peptideCleavageCredit;
 							else
 							{
@@ -349,7 +353,7 @@ public class DBScanner {
 						}
 						else if(enzyme.isNTerm())
 						{
-							if(isProteinCTerm || enzyme.isCleavable(cTermNeighboringResidue))	// || cTermNeighboringResidue == Constants.INVALID_CHAR
+							if(isProteinCTerm || enzyme.isCleavable(cTermNeighboringResidue)) // || cTermNeighboringResidue == Constants.INVALID_CHAR)
 								cTermCleavageScore = neighboringAACleavageCredit;
 							else
 							{

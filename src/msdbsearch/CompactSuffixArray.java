@@ -292,19 +292,6 @@ public class CompactSuffixArray {
 						indexOut.writeInt(thisSuffix.getIndex());
 						lcp = thisSuffix.getLCP(prevSuffix, BUCKET_SIZE);
 						nLcpOut.writeByte(lcp);
-//						System.out.println(lcp);
-//						if(numMaxLcps > 1000 && numMaxLcps > numSmallLcps)
-//						{
-//							System.out.println(numMaxLcps + " " + numSmallLcps);
-//							System.err.println("Error while generating suffix array (too many redundant proteins): " + indexFile.getName());
-//							System.err.println("If the database contains forward and reverse proteins, run MS-GFDB (or BuildSA) again with \"-tda 0\"");
-//							System.err.println("Deleting " + indexFile.getName() + " and " + nlcpFile.getName());
-//							indexOut.close();
-//							nLcpOut.close();
-//							indexFile.delete();
-//							nlcpFile.delete();
-//							System.exit(-1);
-//						}
 						prevSuffix = thisSuffix;
 					}
 					prevBucketSuffix = sortedSuffixes[0];
