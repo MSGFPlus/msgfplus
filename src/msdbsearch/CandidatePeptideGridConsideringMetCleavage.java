@@ -79,8 +79,9 @@ public class CandidatePeptideGridConsideringMetCleavage extends CandidatePeptide
 	public int size()
 	{
 		if(!isProteinNTermWithHeadingMet)
-			super.size();
-		return super.size()+candidatePepGridMetCleaved.size();
+			return super.size();
+		else
+			return super.size()+candidatePepGridMetCleaved.size();
 	}
 	
 	public boolean isNTermMetCleaved(int index)

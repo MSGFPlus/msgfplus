@@ -372,6 +372,8 @@ public class DBScanner {
 					
 					for(int j=0; j<candidatePepGrid.size(); j++)
 					{
+//						if(j >= 128)
+//							System.out.println(j+" "+candidatePepGrid.size());
 						float peptideMass = candidatePepGrid.getPeptideMass(j);
 						int nominalPeptideMass = candidatePepGrid.getNominalPeptideMass(j);
 						float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
