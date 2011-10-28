@@ -224,7 +224,8 @@ public class DBScanner {
 
 //				// For debugging
 //				System.out.println(sequence.getSubsequence(index, sequence.getSize()));
-				
+//				if(index == 4749888)
+//					System.out.println("Debug");
 				// skip redundant peptides
 				if(lcp > i+1)		
 					continue;
@@ -268,7 +269,12 @@ public class DBScanner {
 					}
 				}	// end lcp=0
 				
-				for(i=lcp > 1 ? lcp : 1; i<maxPeptideLength+1 && index+i<size-1; i++)	// ith character of a peptide
+				if(lcp == 0)
+					i = 1;
+				else if(lcp < i+1)
+					i = lcp;
+					
+				for(; i<maxPeptideLength+1 && index+i<size-1; i++)	// ith character of a peptide
 				{
 					char residue = sequence.getCharAt(index+i);
 					boolean isProteinCTerm = false;
@@ -394,6 +400,8 @@ public class DBScanner {
 							for(SpecKey specKey : matchedSpecKeyList)
 							{
 								SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(specKey);
+//								if(sequence.getSubsequence(index, index+i+1).equalsIgnoreCase("_KSRARVKRRKRKLRRTRKKRWKARM_K"))
+//									System.out.println("Debug");
 								int score = cleavageScore + scorer.getScore(candidatePepGrid.getPRMGrid(j), candidatePepGrid.getNominalPRMGrid(j), 1, pepLength+1, candidatePepGrid.getNumMods(j)); 
 								PriorityQueue<DatabaseMatch> prevMatchQueue = curSpecKeyDBMatchMap.get(specKey);
 								if(prevMatchQueue == null)
