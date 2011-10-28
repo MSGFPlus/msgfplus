@@ -83,6 +83,15 @@ public class CandidatePeptideGridConsideringMetCleavage extends CandidatePeptide
 		return super.size()+candidatePepGridMetCleaved.size();
 	}
 	
+	public boolean isNTermMetCleaved(int index)
+	{
+		int sizeNormPep = super.size(); 
+		if(index < sizeNormPep)
+			return false;
+		else
+			return true;
+	}
+	
 	@Override
 	public int[] getNominalPRMGrid(int index)
 	{

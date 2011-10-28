@@ -46,7 +46,7 @@ public class ConcurrentMSGFDB {
 			if(searchMode == 1)
 				scanner.dbSearch(2, fromIndex, toIndex, true);
 			else if(searchMode == 2)
-				scanner.dbSearchCTermEnzymeNoMod(numberOfAllowableNonEnzymaticTermini, fromIndex, toIndex, true);
+				scanner.dbSearch(numberOfAllowableNonEnzymaticTermini, fromIndex, toIndex, true);
 			else if(searchMode == 3)
 				scanner.dbSearch(numberOfAllowableNonEnzymaticTermini, fromIndex, toIndex, true);
 			else

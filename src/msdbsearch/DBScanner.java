@@ -154,7 +154,7 @@ public class DBScanner {
 	
 	public void dbSearchCTermEnzymeNoMod(int numberOfAllowableNonEnzymaticTermini, boolean verbose)
 	{
-		dbSearchCTermEnzymeNoMod(numberOfAllowableNonEnzymaticTermini, 0, size, verbose);
+		dbSearch(numberOfAllowableNonEnzymaticTermini, 0, size, verbose);
 	}
 
 	public void dbSearchCTermEnzyme(int numberOfAllowableNonEnzymaticTermini, boolean verbose)
@@ -171,164 +171,6 @@ public class DBScanner {
 	{
 		dbSearch(2, 0, size, verbose);
 	}
-	
-	// duplicated for speeding-up the search
-	public void dbSearchCTermEnzymeNoMod(
-			int numberOfAllowableNonEnzymaticTermini, 
-			int fromIndex, 
-			int toIndex, 
-			boolean verbose)
-	{
-		try {
-			DataInputStream indices = new DataInputStream(new BufferedInputStream(new FileInputStream(sa.getIndexFile())));
-			indices.skip(CompactSuffixArray.INT_BYTE_SIZE*2+CompactSuffixArray.INT_BYTE_SIZE*fromIndex);	// skip size and id
-			
-			DataInputStream nlcps = new DataInputStream(new BufferedInputStream(new FileInputStream(sa.getNeighboringLcpFile())));
-			nlcps.skip(CompactSuffixArray.INT_BYTE_SIZE*2+fromIndex);
-			
-			CompactFastaSequence sequence = sa.getSequence();
-			
-			Map<SpecKey,PriorityQueue<DatabaseMatch>> curSpecKeyDBMatchMap = new HashMap<SpecKey,PriorityQueue<DatabaseMatch>>();
-			double[] prm = new double[maxPeptideLength+2];
-			prm[0] = 0;
-			int[] intPRM = new int[maxPeptideLength+2];
-			intPRM[0] = 0;
-			
-			int i = Integer.MAX_VALUE;
-			
-			boolean enzymaticSearch;
-			if(numberOfAllowableNonEnzymaticTermini == 2)
-				enzymaticSearch = false;
-			else
-				enzymaticSearch = true;
-			
-			int neighboringAACleavageCredit = aaSet.getNeighboringAACleavageCredit();
-			int neighboringAACleavagePenalty = aaSet.getNeighboringAACleavagePenalty();
-			int peptideCleavageCredit = aaSet.getPeptideCleavageCredit();
-			int peptideCleavagePenalty = aaSet.getPeptideCleavagePenalty();
-			
-			Tolerance leftPMTolerance = specScanner.getLeftParentMassTolerance();
-			Tolerance rightPMTolerance = specScanner.getRightParentMassTolerance();
-			
-			boolean isProteinNTerm = true;
-			int nTermAAScore = neighboringAACleavageCredit;
-			int nNET = 0;	// number of non-enzymatic termini
-			int numIndices = toIndex-fromIndex;
-			for(int bufferIndex=0; bufferIndex<numIndices; bufferIndex++)
-			{
-				// Print out the progress
-				if(verbose && bufferIndex % 2000000 == 0)
-				{
-					System.out.print(threadName + ": Database search progress... "); 
-					System.out.format("%.1f%% complete\n", bufferIndex/(float)numIndices*100);
-				}
-				
-				int index = indices.readInt();
-				int lcp = nlcps.readByte();
-				if(bufferIndex == 0)
-					lcp = 0;
-				if(lcp > i)		// skip redundant peptide
-					continue;
-				else if(lcp == 0)	// preceding aa is changed
-				{
-					char nAA = sequence.getCharAt(index);
-					if(nAA == Constants.TERMINATOR_CHAR)
-						isProteinNTerm = true;
-					else
-						isProteinNTerm = false;
-					if(isProteinNTerm || enzyme.isCleavable(nAA))
-						nTermAAScore = neighboringAACleavageCredit;
-					else
-						nTermAAScore = neighboringAACleavagePenalty;
-					if(enzymaticSearch)
-					{
-						if(!isProteinNTerm && !enzyme.isCleavable(nAA))
-						{
-							nNET = 1;
-							if(nNET > numberOfAllowableNonEnzymaticTermini)
-							{
-								i=0;
-								continue;
-							}
-						}
-						else
-							nNET = 0;
-					}
-				}
-				
-				for(i=lcp > 1 ? lcp : 1; i<maxPeptideLength+1 && index+i<size; i++)	// ith character of a peptide
-				{
-					char residue = sequence.getCharAt(index+i);
-					double m = aaMass[residue];
-					if(m <= 0)
-						break;
-					prm[i+1] = prm[i] + m;	// prm[i]: mass of peptide upto ith residue
-					intPRM[i+1] = intPRM[i] + intAAMass[residue];
-					boolean isProteinCTerm = index+i+1 == size || sequence.getCharAt(index+i+1) == Constants.TERMINATOR_CHAR;
-					
-					if(enzymaticSearch && !enzyme.isCleavable(residue))
-					{
-						if(!isProteinCTerm && nNET+1 > numberOfAllowableNonEnzymaticTermini)
-							continue;
-					}
-					if(i < minPeptideLength)
-						continue;
-					float peptideMass = (float)prm[i+1];
-					int nominalPeptideMass = intPRM[i+1];
-					float tolDaLeft = leftPMTolerance.getToleranceAsDa(peptideMass);
-					float tolDaRight = rightPMTolerance.getToleranceAsDa(peptideMass);
-					
-					double leftThr = (double)(peptideMass - tolDaRight);
-					double rightThr = (double)(peptideMass + tolDaLeft);
-					Collection<SpecKey> matchedSpecKeyList = specScanner.getPepMassSpecKeyMap().subMap(leftThr, rightThr).values();
-					if(matchedSpecKeyList.size() > 0)
-					{
-	//					String pepStr = sequence.getSubsequence(index+1, index+i+1);
-	//					if(pepStr.contains("X"))
-	//						System.out.println("*****************"+index);
-	//					if(index == 1)
-	//						System.out.println("Debug");
-						int peptideCleavageScore;
-						if(enzyme.isCleavable(sequence.getCharAt(index+i)))
-							peptideCleavageScore = peptideCleavageCredit;
-						else
-							peptideCleavageScore = peptideCleavagePenalty;
-						
-						for(SpecKey specKey : matchedSpecKeyList)
-						{
-							SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(specKey);
-							int score = nTermAAScore + scorer.getScore(prm, intPRM, 2, i+2, 0) + peptideCleavageScore;
-							PriorityQueue<DatabaseMatch> prevMatchQueue = curSpecKeyDBMatchMap.get(specKey);
-							if(prevMatchQueue == null)
-							{
-								prevMatchQueue = new PriorityQueue<DatabaseMatch>();
-								curSpecKeyDBMatchMap.put(specKey, prevMatchQueue);
-							}
-							if(prevMatchQueue.size() < this.numPeptidesPerSpec)
-							{
-								prevMatchQueue.add(new DatabaseMatch(index, i+2, score, nominalPeptideMass));
-							}
-							else if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
-							{
-								if(score > prevMatchQueue.peek().getScore())
-								{
-									prevMatchQueue.poll();
-									prevMatchQueue.add(new DatabaseMatch(index, i+2, score, nominalPeptideMass));
-								}
-							}
-						}
-					}
-				}
-			}
-			this.addDBMatches(curSpecKeyDBMatchMap);
-			indices.close();
-			nlcps.close();
-		}
-		catch(IOException e) {
-			e.printStackTrace();
-			System.exit(-1);
-		}
-	}  	
 
 	public void dbSearch(int numberOfAllowableNonEnzymaticTermini, int fromIndex, int toIndex, boolean verbose)
 	{
@@ -383,8 +225,8 @@ public class DBScanner {
 					continue;
 				else if(lcp == 0)	// preceding aa is changed
 				{
-					char nAA = sequence.getCharAt(index);
-					if(nAA == Constants.TERMINATOR_CHAR)
+					char precedingAA = sequence.getCharAt(index);
+					if(precedingAA == Constants.TERMINATOR_CHAR)
 						isProteinNTerm = true;
 					else
 						isProteinNTerm = false;
@@ -396,7 +238,7 @@ public class DBScanner {
 					}
 					else if(enzyme.isCTerm())
 					{
-						if(isProteinNTerm || enzyme.isCleavable(nAA))
+						if(isProteinNTerm || enzyme.isCleavable(precedingAA))	// || precedingAA == Constants.INVALID_CHAR
 						{
 							nTermCleavageScore = neighboringAACleavageCredit;
 							if(enzymaticSearch)
@@ -426,7 +268,7 @@ public class DBScanner {
 					{
 						if(enzyme != null && enzyme.isNTerm())
 						{
-							if(isProteinNTerm || enzyme.isCleavable(residue))
+							if(isProteinNTerm || enzyme.isCleavable(residue)) // || sequence.getCharAt(index) == Constants.INVALID_CHAR
 							{
 								nTermCleavageScore = peptideCleavageCredit;
 								if(enzymaticSearch)
@@ -496,7 +338,7 @@ public class DBScanner {
 						isProteinCTerm = (cTermNeighboringResidue == Constants.TERMINATOR_CHAR);						
 						if(enzyme.isCTerm())
 						{
-							if(isProteinCTerm || enzyme.isCleavable(residue))
+							if(isProteinCTerm || enzyme.isCleavable(residue))	// || cTermNeighboringResidue == Constants.INVALID_CHAR
 								cTermCleavageScore = peptideCleavageCredit;
 							else
 							{
@@ -507,7 +349,7 @@ public class DBScanner {
 						}
 						else if(enzyme.isNTerm())
 						{
-							if(isProteinCTerm || enzyme.isCleavable(cTermNeighboringResidue))
+							if(isProteinCTerm || enzyme.isCleavable(cTermNeighboringResidue))	// || cTermNeighboringResidue == Constants.INVALID_CHAR
 								cTermCleavageScore = neighboringAACleavageCredit;
 							else
 							{
@@ -532,10 +374,17 @@ public class DBScanner {
 						Collection<SpecKey> matchedSpecKeyList = specScanner.getPepMassSpecKeyMap().subMap(leftThr, rightThr).values();
 						if(matchedSpecKeyList.size() > 0)
 						{
+							boolean isNTermMetCleaved = candidatePepGrid.isNTermMetCleaved(j);
+							int pepLength;
+							if(!isNTermMetCleaved)
+								pepLength = i;
+							else
+								pepLength = i-1;
+							
 							for(SpecKey specKey : matchedSpecKeyList)
 							{
 								SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(specKey);
-								int score = cleavageScore + scorer.getScore(candidatePepGrid.getPRMGrid(j), candidatePepGrid.getNominalPRMGrid(j), 1, i+1, candidatePepGrid.getNumMods(j)); 
+								int score = cleavageScore + scorer.getScore(candidatePepGrid.getPRMGrid(j), candidatePepGrid.getNominalPRMGrid(j), 1, pepLength+1, candidatePepGrid.getNumMods(j)); 
 								PriorityQueue<DatabaseMatch> prevMatchQueue = curSpecKeyDBMatchMap.get(specKey);
 								if(prevMatchQueue == null)
 								{
@@ -544,14 +393,14 @@ public class DBScanner {
 								}
 								if(prevMatchQueue.size() < this.numPeptidesPerSpec)
 								{
-									prevMatchQueue.add(new DatabaseMatch(index, i+2, score, nominalPeptideMass).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
+									prevMatchQueue.add(new DatabaseMatch(index, i+2, score, nominalPeptideMass,candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
 								}
 								else if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
 								{
 									if(score > prevMatchQueue.peek().getScore())
 									{
 										prevMatchQueue.poll();
-										prevMatchQueue.add(new DatabaseMatch(index, i+2, score, nominalPeptideMass).pepSeq(candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
+										prevMatchQueue.add(new DatabaseMatch(index, i+2, score, nominalPeptideMass,candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
 									}
 								}
 							}

@@ -19,23 +19,17 @@ public class DatabaseMatch implements Comparable<DatabaseMatch> {
 	private int		charge;
 
 	private String pepSeq;
-	public DatabaseMatch(int index, int length, int score, int nominalPeptideMass) {
+	public DatabaseMatch(int index, int length, int score, int nominalPeptideMass, String pepSeq) {
 		super();
 		this.index = index;
 		this.length = (byte)length;
 		this.score = score;
 		this.nominalPeptideMass = nominalPeptideMass;
-		pepSeq = null;
+		this.pepSeq = pepSeq;
 		isProteinNTerm = false;
 		isProteinCTerm = false;
 	}
 	
-	public DatabaseMatch pepSeq(String pepSeq)
-	{
-		this.pepSeq = pepSeq;
-		return this;
-	}
-
 	public DatabaseMatch setProteinNTerm(boolean isProteinNTerm)
 	{
 		this.isProteinNTerm = isProteinNTerm;

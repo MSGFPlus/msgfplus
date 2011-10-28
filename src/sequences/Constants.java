@@ -66,7 +66,7 @@ public class Constants {
   /**
    * The character representation of the invalid character.
    */
-  public static final char INVALID_CHAR = '?';
+//  public static final char INVALID_CHAR = '?';
   
   /**
    * Minumum number of peaks per spectrum.

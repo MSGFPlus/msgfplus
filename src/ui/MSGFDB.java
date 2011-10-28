@@ -45,8 +45,8 @@ import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
-	public static final String VERSION = "6712";
-	public static final String RELEASE_DATE = "10/26/2011";
+	public static final String VERSION = "6714";
+	public static final String RELEASE_DATE = "10/27/2011";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static void main(String argv[])
@@ -646,7 +646,7 @@ public class MSGFDB {
 		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specItr, startSpecIndex, endSpecIndex, minCharge, maxCharge, activationMethod);
 		int specSize = specKeyList.size();
 		
-		System.out.print("Read spectra finished ");
+		System.out.print("Reading spectra finished ");
 		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
 		
 		numThreads = Math.min(numThreads, Math.round(Math.min(specSize, numSpecScannedTogether)/1000f));
