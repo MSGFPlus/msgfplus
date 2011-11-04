@@ -82,6 +82,8 @@ public class Chores {
 //		System.out.println(pep.matches(".\\..+\\.."));
 //		System.out.println((byte)200);
 //		simpleTest();
+//		System.out.println("1");
+		System.out.println(Double.MIN_VALUE);
 	}
 
 	public static void simpleTest() throws Exception

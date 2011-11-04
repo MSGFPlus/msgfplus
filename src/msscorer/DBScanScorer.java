@@ -1,6 +1,7 @@
 package msscorer;
 
 import msgf.NominalMass;
+import msgf.ScoredSpectrumSum;
 
 // Fast scorer for DB search, consider edges
 public class DBScanScorer extends FastScorer {
@@ -21,7 +22,7 @@ public class DBScanScorer extends FastScorer {
 		for(int i=0; i<nodeMass.length; i++)
 			nodeMass[i] = -1;
 		
-		isNodeMassPRM = scoredSpec.getMainIon().isPrefixIon();
+		isNodeMassPRM = scoredSpec.getMainIonDirection();
 		// assign node mass
 		nodeMass[0] = 0;
 		for(int nominalMass=1; nominalMass<nodeMass.length; nominalMass++)
@@ -33,6 +34,30 @@ public class DBScanScorer extends FastScorer {
 		probPeak = scoredSpec.getProbPeak();
 	}
 
+/* 	
+	public DBScanScorer(ScoredSpectrumSum<NominalMass> scoredSpec, int peptideMass) 
+	{
+		super(scoredSpec, peptideMass);
+		this.scorer = scoredSpec.getScorer();
+		
+		nodeMass = new float[peptideMass];
+		
+		for(int i=0; i<nodeMass.length; i++)
+			nodeMass[i] = -1;
+		
+		isNodeMassPRM = scoredSpec.getMainIonDirection();
+		// assign node mass
+		nodeMass[0] = 0;
+		for(int nominalMass=1; nominalMass<nodeMass.length; nominalMass++)
+		{
+			nodeMass[nominalMass] = scoredSpec.getNodeMass(new NominalMass(nominalMass));
+		}
+		
+		partition = scoredSpec.getPartition();
+		probPeak = scoredSpec.getProbPeak();
+	}
+*/
+	
 	// fromIndex: inclusive, toIndex: exclusive
 	@Override
 	public int getScore(double[] prefixMassArr, int[] nominalPrefixMassArr, int fromIndex, int toIndex, int numMods)

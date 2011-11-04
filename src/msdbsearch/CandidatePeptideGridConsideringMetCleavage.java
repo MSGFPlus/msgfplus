@@ -84,6 +84,7 @@ public class CandidatePeptideGridConsideringMetCleavage extends CandidatePeptide
 			return super.size()+candidatePepGridMetCleaved.size();
 	}
 	
+	@Override
 	public boolean isNTermMetCleaved(int index)
 	{
 		int sizeNormPep = super.size(); 

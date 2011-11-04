@@ -179,6 +179,8 @@ public class CandidatePeptideGrid {
 		return addResidue(aaMassArr, aaNominalMassArr, aaResidueArr, length);
 	}
 	
+	public boolean isNTermMetCleaved(int index)	{ return false; }
+	
 	private boolean addResidue(double[] aaMassArr, int[] aaNominalMassArr, char[] aaResidueArr, int length)
 	{
 		int parentSize = size[length-1];
