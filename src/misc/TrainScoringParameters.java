@@ -123,7 +123,6 @@ public class TrainScoringParameters {
 				
 				String paramFileName = id+".param";
 				File outputFile = new File(PARAM_DIR, paramFileName);
-				System.out.println("Generating " + outputFile.getPath());
 				int errorScalingFactor = 0;
 				boolean deconvoluteSpectra = false;
 				
@@ -139,8 +138,11 @@ public class TrainScoringParameters {
 					considerPhosLoss = true;
 				}
 				
-//				if(specFile.getName().contains("CID_LowRes_Tryp.mgf"))
-				ScoringParameterGeneratorWithErrors.generateParameters(specFile, actMethod, instType, enzyme, errorScalingFactor, considerPhosLoss, deconvoluteSpectra, outputFile, aaSet, false, false);
+				if(specFile.getName().contains("Peptidomics"))
+				{
+					System.out.println("Generating " + outputFile.getPath());
+					ScoringParameterGeneratorWithErrors.generateParameters(specFile, actMethod, instType, enzyme, errorScalingFactor, considerPhosLoss, deconvoluteSpectra, outputFile, aaSet, false, false);
+				}
 			}
 		}
 		System.out.println("Successfully generated parameters!");

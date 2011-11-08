@@ -1,44 +1,17 @@
 package misc;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.PrintStream;
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Random;
+import java.io.*;
+import java.math.*;
+import java.util.*;
 
-import org.systemsbiology.jrap.stax.MSXMLSequentialParser;
+import org.systemsbiology.jrap.stax.*;
 
-import msdbsearch.DBScanner;
-import msgf.MSGFDBResultGenerator;
-import msscorer.NewRankScorer;
-import msscorer.NewScorerFactory;
-import msutil.ActivationMethod;
-import msutil.AminoAcid;
-import msutil.AminoAcidSet;
-import msutil.Composition;
-import msutil.CompositionFactory;
-import msutil.Enzyme;
-import msutil.InstrumentType;
-import msutil.IonType;
-import msutil.Peptide;
-import msutil.SpecKey;
-import msutil.SpectraIterator;
+import msdbsearch.*;
+import msgf.*;
+import msscorer.*;
+import msutil.*;
 
-import parser.BufferedLineReader;
-import parser.BufferedRandomAccessLineReader;
-import parser.MgfSpectrumParser;
-import parser.MzXMLSpectraIterator;
-import parser.MzXMLSpectraMap;
+import parser.*;
 
 public class Chores {
 	public static void main(String argv[]) throws Exception

@@ -13,6 +13,7 @@ import msgf.ScoredSpectrum;
 import msgf.ScoredSpectrumSum;
 import msgf.Tolerance;
 import msscorer.DBScanScorer;
+import msscorer.DBScanScorerSum;
 import msscorer.FastScorer;
 import msscorer.NewRankScorer;
 import msscorer.NewScoredSpectrum;
@@ -195,7 +196,7 @@ public class ScoredSpectraMap {
 			float tolDaLeft = leftParentMassTolerance.getToleranceAsDa(peptideMass);
 			int maxNominalPeptideMass = NominalMass.toNominalMass(peptideMass) + Math.round(tolDaLeft-0.4999f) + 1;
 			if(supportEdgeScore)
-//				specKeyScorerMap.put(specKey, new DBScanScorer(scoredSpec, maxNominalPeptideMass));
+//				specKeyScorerMap.put(specKey, new DBScanScorerSum(scoredSpecList, maxNominalPeptideMass));
 				specKeyScorerMap.put(specKey, new FastScorer(scoredSpec, maxNominalPeptideMass));
 			else
 				specKeyScorerMap.put(specKey, new FastScorer(scoredSpec, maxNominalPeptideMass));

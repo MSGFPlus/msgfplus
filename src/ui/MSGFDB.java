@@ -45,8 +45,8 @@ import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
-	public static final String VERSION = "6742";
-	public static final String RELEASE_DATE = "10/28/2011";
+	public static final String VERSION = "6780";
+	public static final String RELEASE_DATE = "11/07/2011";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static void main(String argv[])
@@ -279,6 +279,8 @@ public class MSGFDB {
 					enzyme = Enzyme.AspN;
 				else if(argv[i+1].equalsIgnoreCase("8"))
 					enzyme = Enzyme.ALP;
+				else if(argv[i+1].equalsIgnoreCase("9"))
+					enzyme = Enzyme.Peptidomics;
 				else
 					printUsageAndExit("Illegal enzyme: " + argv[i+1]);
 			}
@@ -489,7 +491,7 @@ public class MSGFDB {
 				+ "\t[-tda 0/1] (0: don't search decoy database (default), 1: search decoy database to compute FDR)\n"
 				+ "\t[-m FragmentationMethodID] (0: as written in the spectrum or CID if no info (Default), 1: CID, 2: ETD, 3: HCD, 4: Merge spectra from the same precursor)\n"
 				+ "\t[-inst InstrumentID] (0: Low-res LCQ/LTQ (Default for CID and ETD), 1: TOF , 2: High-res LTQ (Default for HCD))\n"
-				+ "\t[-e EnzymeID] (0: No enzyme, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N, 8: alphaLP)\n"
+				+ "\t[-e EnzymeID] (0: No enzyme, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N, 8: alphaLP, 9: endogenous peptides)\n"
 				+ "\t[-c13 0/1/2] (Number of allowed C13, Default: 1)\n"
 				+ "\t[-nnet 0/1/2] (Number of allowed non-enzymatic termini, Default: 1)\n"
 				+ "\t[-mod ModificationFileName] (Modification file, Default: standard amino acids with fixed C+57)\n"

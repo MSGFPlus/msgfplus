@@ -229,6 +229,9 @@ public class Enzyme {
 	/** The Constant ALP */
 	public static final Enzyme ALP;
 	
+	/** Endogenous peptides */
+	public static final Enzyme Peptidomics;
+	
 	private static HashMap<String,Enzyme> registeredEnzyme;
 	
 	public static void register(String name, Enzyme enzyme)
@@ -275,8 +278,11 @@ public class Enzyme {
 		AspN = new Enzyme("AspN","D",true);
 		
 		ALP = new Enzyme("aLP", null, false);
+		
+		Peptidomics = new Enzyme("Peptidomics", null, false);
+		
 		registeredEnzyme = new HashMap<String,Enzyme>();
-
+		
 		register("Tryp", TRYPSIN);
 		register("CHYMOTRYPSIN", CHYMOTRYPSIN);
 		register("LysC", LysC);
@@ -285,5 +291,6 @@ public class Enzyme {
 		register("ArgC", ArgC);
 		register("AspN", AspN);
 		register("aLP", ALP);
+		register("Peptidomics", Peptidomics);
 	}
 }
