@@ -176,7 +176,11 @@ public class DBScanner {
 	{
 		Map<SpecKey,PriorityQueue<DatabaseMatch>> curSpecKeyDBMatchMap = new HashMap<SpecKey,PriorityQueue<DatabaseMatch>>();
 		
-		CandidatePeptideGrid candidatePepGrid = new CandidatePeptideGridConsideringMetCleavage(aaSet, maxPeptideLength);
+		CandidatePeptideGrid candidatePepGrid;
+		if(enzyme != null)
+			candidatePepGrid = new CandidatePeptideGridConsideringMetCleavage(aaSet, maxPeptideLength);
+		else
+			candidatePepGrid = new CandidatePeptideGrid(aaSet, maxPeptideLength);
 		
 		int i = Integer.MAX_VALUE - 1000;
 		

@@ -56,7 +56,8 @@ public class Chores {
 //		System.out.println((byte)200);
 //		simpleTest();
 //		System.out.println("1");
-		System.out.println(Double.MIN_VALUE);
+		System.out.println(Composition.getMass("H-2O-1"));
+		System.out.println(Composition.getMass("C2H2"));
 	}
 
 	public static void simpleTest() throws Exception
