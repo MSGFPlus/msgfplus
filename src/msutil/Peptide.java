@@ -368,6 +368,12 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
 	public String toString()
 	{
 		StringBuffer output = new StringBuffer();
+		if(hasNTermMod)
+		{
+			if(nTermModMass > 0)
+				output.append('+');
+			output.append(nTermModMass);
+		}
 		for (AminoAcid aa : this)
 		{
 			//TODO: what if aa is modified?
@@ -891,11 +897,12 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
   }
 	 */
 	public static void main(String[] a) {
-		Peptide p=new Peptide("Q+156AK+156CR+100");
+		Peptide p=new Peptide("+42M+16ACDEFR");
 		for(AminoAcid aa : p)
 			System.out.println(aa.getResidueStr()+" " + aa.getMass());
 		System.out.println(p.getMass());
 		System.out.println(p.hasNTermMod() + "\t" + p.getNTermModMass());
+		System.out.println(p.toString());
 	}
 
 }

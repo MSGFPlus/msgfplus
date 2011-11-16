@@ -202,6 +202,17 @@ public class MascotParser {
 									char nTermResidue = token2[1].charAt(0);
 									char cTermResidue = token2[2].charAt(0);
 									StringBuffer pepStr = new StringBuffer();
+									
+									// N-term modification
+									if(modVector.charAt(0) != '0')
+									{
+										char v = modVector.charAt(0);
+										int modIndex = v - '0' - 1;	// 0 based index
+										float modMass = mods[modIndex].mass;
+										if(modMass > 0)
+											pepStr.append("+");
+										pepStr.append(modMass);
+									}
 									for(int i=1; i<modVector.length()-1; i++)
 									{
 										char v = modVector.charAt(i);
@@ -215,6 +226,17 @@ public class MascotParser {
 											pepStr.append(modMass);
 										}
 									}
+									// C-term modification
+									if(modVector.charAt(modVector.length()-1) != '0')
+									{
+										char v = modVector.charAt(modVector.length()-1);
+										int modIndex = v - '0' - 1;	// 0 based index
+										float modMass = mods[modIndex].mass;
+										if(modMass > 0)
+											pepStr.append("+");
+										pepStr.append(modMass);
+									}
+									
 									Peptide pep = new Peptide(pepStr.toString());
 									if(!pep.isInvalid())
 									{
