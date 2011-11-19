@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedList;
 
+import msutil.Composition;
 import msutil.Modification;
 import msutil.Peptide;
 
@@ -139,10 +140,15 @@ public class MascotParser {
 						} while(s != null && !s.startsWith("charge="));
 						// charge=+n
 						int charge;
-						if(s.contains("=+"))	// charge=+n
-							charge = Integer.parseInt(s.substring(s.lastIndexOf('+')+1));
-						else	// charge=n+
-							charge = Integer.parseInt(s.substring(s.indexOf('=')+1, s.lastIndexOf('+')));
+						if(s.endsWith("Mr") || s.contains(","))
+							charge = 0;
+						else
+						{
+							if(s.contains("=+"))	// charge=+n
+								charge = Integer.parseInt(s.substring(s.lastIndexOf('+')+1));
+							else	// charge=n+
+								charge = Integer.parseInt(s.substring(s.indexOf('=')+1, s.lastIndexOf('+')));
+						}
 						queryChargeMap.put(queryNum, charge);
 					}
 					else
@@ -186,6 +192,7 @@ public class MascotParser {
 							// accession string:data for second protein,frame number,start,end,multiplicity
 							if(s.matches("q\\d+_p\\d+=.*"))
 							{
+//								float peptideMr = Float.parseFloat(token[2]);
 								int queryNum = Integer.parseInt(token[0].substring(token[0].indexOf('q')+1, token[0].indexOf('_')));
 //								int pepNum = Integer.parseInt(token[0].substring(token[0].lastIndexOf('p')+1));
 								String peptide = token[5];
