@@ -120,7 +120,11 @@ public class PSMSet {
 				if(scoreCol >= token.length || pepCol >= token.length)
 					continue;
 
-				String specFile = token[specFileCol];
+				String specFile;
+				if(specFileCol >= 0)
+					specFile = token[specFileCol];
+				else
+					specFile = "";
 				String specIndex = token[specIndexCol];
 				String specKey = specFile+":"+specIndex;
 

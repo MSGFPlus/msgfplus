@@ -23,7 +23,7 @@ public class CountPSMs {
 	{
 		BufferedLineReader in = new BufferedLineReader(fileName);
 		String header = in.readLine();
-		if(header == null || !header.startsWith("#"))
+		if(header == null || (!header.startsWith("#") && !header.startsWith("PSMId")))
 		{
 			System.out.println("Not a valid MSGFDB result file!");
 			System.exit(0);
@@ -33,7 +33,7 @@ public class CountPSMs {
 		int pepColNum = -1;
 		for(int i=0; i<headerToken.length; i++)
 		{
-			if(headerToken[i].equalsIgnoreCase("EFDR") || headerToken[i].equalsIgnoreCase("FDR"))
+			if(headerToken[i].equalsIgnoreCase("EFDR") || headerToken[i].equalsIgnoreCase("FDR") || headerToken[i].equalsIgnoreCase("q-value"))
 				eFDRColNum = i;
 			if(headerToken[i].equalsIgnoreCase("Peptide") || headerToken[i].equalsIgnoreCase("Annotation"))
 				pepColNum = i;
