@@ -7,6 +7,7 @@ import java.io.PrintStream;
 import msgf.Tolerance;
 
 public class RunMSGFDBOnGrid {
+	/*
 	public static void main(String argv[])
 	{
 		File dir = null;
@@ -166,4 +167,5 @@ public class RunMSGFDBOnGrid {
 			}			
 		}
 	}	
+	*/
 }
