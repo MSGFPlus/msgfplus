@@ -141,6 +141,8 @@ public class PNNLSpectrumParser implements SpectrumParser {
 				method = ActivationMethod.ETD;
 			else if(scanType.contains("hcd"))
 				method = ActivationMethod.HCD;
+			else if(scanType.contains("pqd"))
+				method = ActivationMethod.PQD;
 			
 			if(method != null)
 				scanNumActMethodMap.put(scanNum, method);

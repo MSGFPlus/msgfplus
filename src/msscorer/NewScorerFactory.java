@@ -82,7 +82,7 @@ public class NewScorerFactory {
 	
 	public static NewRankScorer get(ActivationMethod method, InstrumentType instType, Enzyme enzyme, Modification mod)
 	{
-		if(method == null)
+		if(method == null || method == ActivationMethod.PQD)
 			method = ActivationMethod.CID;
 		if(enzyme == null)
 			enzyme = Enzyme.TRYPSIN;

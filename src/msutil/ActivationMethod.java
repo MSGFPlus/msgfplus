@@ -23,6 +23,7 @@ public class ActivationMethod {
 	public static final ActivationMethod CID;
 	public static final ActivationMethod ETD;
 	public static final ActivationMethod HCD;
+	public static final ActivationMethod PQD;
 	public static final ActivationMethod FUSION;
 	
 	public static ActivationMethod get(String name)
@@ -73,12 +74,14 @@ public class ActivationMethod {
 		CID = new ActivationMethod("CID");
 		ETD = new ActivationMethod("ETD").electronBased();
 		HCD = new ActivationMethod("HCD");
+		PQD = new ActivationMethod("PQD");
 		FUSION = new ActivationMethod("FUSION");
 		
 		table = new Hashtable<String, ActivationMethod>();
 		table.put(CID.name, CID);
 		table.put(ETD.name, ETD);
 		table.put(HCD.name, HCD);
+		table.put(PQD.name, PQD);
 		table.put("ETD+SA", ETD);
 		table.put(FUSION.name, FUSION);
 	}
