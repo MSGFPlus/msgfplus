@@ -34,7 +34,11 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 		this.mme = scorer.mme;
 		this.precursor = (Peak)(spec.getPrecursorPeak().clone());
 		this.activationMethodArr = new ActivationMethod[1];
-		activationMethodArr[0] = scorer.getActivationMethod();
+//		activationMethodArr[0] = scorer.getActivationMethod();
+		if(spec.getActivationMethod() != null)
+			activationMethodArr[0] = spec.getActivationMethod();
+		else
+			activationMethodArr[0] = scorer.getActivationMethod();
 		this.scanNumArr = new int[1];
 		scanNumArr[0] = spec.getScanNum();
 		
