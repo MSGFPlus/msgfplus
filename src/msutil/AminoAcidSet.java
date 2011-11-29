@@ -462,6 +462,8 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 				{
 					char modResidue = this.getModifiedResidue(aa.getUnmodResidue());
 					ModifiedAminoAcid modAA = new ModifiedAminoAcid(aa, mod.getModification(), modResidue);
+					if(location == Location.N_Term || location == Location.Protein_N_Term)
+						modAA.setNTermNonSpecificMod();
 					newAAList.add(modAA);
 				}
 			}
@@ -478,27 +480,30 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	private void addVariableMods(HashMap<Modification.Location,ArrayList<Modification.Instance>> variableMods, Location location)
 	{
 		// residue-specific
-		ArrayList<AminoAcid> newAAList = new ArrayList<AminoAcid>();
 		for(Modification.Instance mod : variableMods.get(location))
 		{
 			char residue = mod.getResidue();
 			if(residue == '*')
 				continue;
-			for(AminoAcid targetAA : this.getAAList(location))
+			
+			for(Location loc : locMap.get(location))
 			{
-				if(targetAA.getResidue() == residue)
+				ArrayList<AminoAcid> newAAList = new ArrayList<AminoAcid>();
+				for(AminoAcid targetAA : this.getAAList(loc))
 				{
-					char modResidue = this.getModifiedResidue(targetAA.getUnmodResidue());
-					ModifiedAminoAcid modAA = new ModifiedAminoAcid(targetAA, mod.getModification(), modResidue);
-					newAAList.add(modAA);
+					if(targetAA.getUnmodResidue() == residue)
+					{
+						char modResidue = this.getModifiedResidue(targetAA.getUnmodResidue());
+						ModifiedAminoAcid modAA = new ModifiedAminoAcid(targetAA, mod.getModification(), modResidue);
+						newAAList.add(modAA);
+					}
 				}
+				for(AminoAcid newAA : newAAList)
+					aaListMap.get(loc).add(newAA);
 			}
 		}
-		for(AminoAcid newAA : newAAList)
-			this.addAminoAcid(newAA, location);
 		
 		// any residue
-		newAAList = new ArrayList<AminoAcid>();
 		for(Modification.Instance mod : variableMods.get(location))
 		{
 			char residue = mod.getResidue();
@@ -509,17 +514,21 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 				System.err.println("Invalid modification: " + mod);
 				System.exit(-1);
 			}
-			for(AminoAcid targetAA : this.getAAList(location))
+			for(Location loc : locMap.get(location))
 			{
-				char modResidue = this.getModifiedResidue(targetAA.getUnmodResidue());
-				ModifiedAminoAcid modAA = new ModifiedAminoAcid(targetAA, mod.getModification(), modResidue);
-				if(location == Location.N_Term || location == Location.Protein_N_Term)
-					modAA.setNTermNonSpecificMod();
-				newAAList.add(modAA);
+				ArrayList<AminoAcid> newAAList = new ArrayList<AminoAcid>();
+				for(AminoAcid targetAA : this.getAAList(loc))
+				{
+					char modResidue = this.getModifiedResidue(targetAA.getUnmodResidue());
+					ModifiedAminoAcid modAA = new ModifiedAminoAcid(targetAA, mod.getModification(), modResidue);
+					if(location == Location.N_Term || location == Location.Protein_N_Term)
+						modAA.setNTermNonSpecificMod();
+					newAAList.add(modAA);
+				}
+				for(AminoAcid newAA : newAAList)
+					aaListMap.get(loc).add(newAA);
 			}
 		}
-		for(AminoAcid newAA : newAAList)
-			this.addAminoAcid(newAA, location);
 	}
 	
 	private AminoAcidSet finalizeSet()
@@ -1241,10 +1250,8 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
 	public static void main(String argv[])
 	{
-		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile("/home/sangtaekim/Research/Data/ABRF/StudyFiles/Mods.txt");
-//		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(System.getProperty("user.home")+"/Test/MultEnzymes/Mods.txt");
-//		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile("/home/sangtaekim/Test/Jocelyne/params.xml");
-//		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile("/home/sangtaekim/Research/ToolDistribution/TempTest/params.xml");
+//		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile("/home/sangtaekim/Test/Matt/MSGFDB_Mods.txt");
+		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile("/home/sangtaekim/Test/Matt/MSGFDB_Mods.txt");
 //		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
 		aaSet.printAASet();
 //		for(AminoAcid aa : aaSet.getAminoAcids(Location.N_Term, 'E'))

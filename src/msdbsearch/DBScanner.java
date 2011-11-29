@@ -349,6 +349,9 @@ public class DBScanner {
 					if(i < minPeptideLength)
 						continue;
 					
+//					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("SRDTAIKT"))
+//						System.out.println("Debug");
+					
 					int cTermCleavageScore = 0;
 					if(enzyme != null)
 					{
@@ -356,7 +359,8 @@ public class DBScanner {
 						isProteinCTerm = (cTermNeighboringResidue == Constants.TERMINATOR_CHAR);						
 						if(enzyme.isCTerm())
 						{
-							if(isProteinCTerm || enzyme.isCleavable(residue)) // || cTermNeighboringResidue == Constants.INVALID_CHAR)
+//							if(isProteinCTerm || enzyme.isCleavable(residue)) // || cTermNeighboringResidue == Constants.INVALID_CHAR)
+							if(enzyme.isCleavable(residue)) // || cTermNeighboringResidue == Constants.INVALID_CHAR)	// changed by Sangtae to avoid SpecProb=0
 								cTermCleavageScore = peptideCleavageCredit;
 							else
 							{
@@ -382,8 +386,6 @@ public class DBScanner {
 					
 					for(int j=0; j<candidatePepGrid.size(); j++)
 					{
-//						if(j >= 128)
-//							System.out.println(j+" "+candidatePepGrid.size());
 						float peptideMass = candidatePepGrid.getPeptideMass(j);
 						int nominalPeptideMass = candidatePepGrid.getNominalPeptideMass(j);
 						float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
@@ -404,7 +406,7 @@ public class DBScanner {
 							for(SpecKey specKey : matchedSpecKeyList)
 							{
 								SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(specKey);
-//								if(sequence.getSubsequence(index, index+i+1).equalsIgnoreCase("_KSRARVKRRKRKLRRTRKKRWKARM_K"))
+//								if(sequence.getSubsequence(index, index+i+1).equalsIgnoreCase("SRDTAIKT"))
 //									System.out.println("Debug");
 								int score = cleavageScore + scorer.getScore(candidatePepGrid.getPRMGrid(j), candidatePepGrid.getNominalPRMGrid(j), 1, pepLength+1, candidatePepGrid.getNumMods(j)); 
 								PriorityQueue<DatabaseMatch> prevMatchQueue = curSpecKeyDBMatchMap.get(specKey);
