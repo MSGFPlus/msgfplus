@@ -74,7 +74,7 @@ public class CalcFastaDBSize {
 		System.out.println("Length\tNumber");
 		for(int i=5; i<numTrypticPeptides.length; i++)
 			System.out.println(i+"\t"+numTrypticPeptides[i]);
-		System.out.println("Distinct Peptides length 10: " + pepSet.size());
+//		System.out.println("Distinct Peptides length 10: " + pepSet.size());
 		System.out.println("Amino Acid Composition:");
 		aaHist.printSorted();
 	}
