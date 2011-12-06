@@ -2,6 +2,9 @@ package msdbsearch;
 
 import java.io.*;
 import java.util.*;
+
+import msutil.AminoAcid;
+import msutil.AminoAcidSet;
 import sequences.Constants;
 import suffixarray.SuffixFactory;
 
@@ -103,17 +106,31 @@ public class CompactSuffixArray {
 		return sequence.getAnnotation(index);
 	}	
 	
+	//TODO: this method has a bug
 	private void computeNumDistinctPeptides()
 	{
+		boolean[] isValidResidue = new boolean[128];
+		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSet();
+		for(AminoAcid aa : aaSet)
+			isValidResidue[aa.getResidue()] = true;
+
 		numDisinctPeptides = new int[maxPeptideLength+2];
 		try {
+			DataInputStream indices = new DataInputStream(new BufferedInputStream(new FileInputStream(getIndexFile())));
+			indices.skip(CompactSuffixArray.INT_BYTE_SIZE*2);	// skip size and id
+			
 			DataInputStream neighboringLcps = new DataInputStream(new BufferedInputStream(new FileInputStream(nlcpFile)));
 			int size = neighboringLcps.readInt();
 			neighboringLcps.readInt();	// skip id
 			
 			for(int i=0; i<size; i++)
 			{
+				int index = indices.readInt();
 				byte lcp = neighboringLcps.readByte();
+				int idx = sequence.getCharAt(index); 
+				if(isValidResidue[idx] == false)
+					continue;
+
 				for(int l=lcp+1; l<numDisinctPeptides.length; l++)
 				{
 					numDisinctPeptides[l]++;
@@ -330,4 +347,98 @@ public class CompactSuffixArray {
 //		neighboringLcps.rewind();
 		return retVal;
 	}
+	
+	public void measureNominalMassError(AminoAcidSet aaSet) throws Exception
+	{
+		//		  ArrayList<Pair<Float,Integer>> pepList = new ArrayList<Pair<Float,Integer>>();
+		double[] aaMass = new double[128];
+		int[] nominalAAMass = new int[128];
+		for(int i=0; i<aaMass.length; i++)
+		{
+			aaMass[i] = -1;
+			nominalAAMass[i] = -1;
+		}
+		
+		for(AminoAcid aa : aaSet)
+		{
+			aaMass[aa.getResidue()] = aa.getAccurateMass();
+			nominalAAMass[aa.getResidue()] = aa.getNominalMass();
+		}
+		double[] prm = new double[maxPeptideLength];
+		int[] nominalPRM = new int[maxPeptideLength];
+		int i = Integer.MAX_VALUE-1000;
+		int[] numPeptides = new int[maxPeptideLength];
+		int[][] numPepWithError = new int[maxPeptideLength][11];
+		
+		DataInputStream indices = new DataInputStream(new BufferedInputStream(new FileInputStream(getIndexFile())));
+		indices.skip(CompactSuffixArray.INT_BYTE_SIZE*2);	// skip size and id
+
+		DataInputStream nlcps = new DataInputStream(new BufferedInputStream(new FileInputStream(getNeighboringLcpFile())));
+		nlcps.skip(CompactSuffixArray.INT_BYTE_SIZE*2);
+
+		int size = this.getSize();
+		int index = -1;
+		for(int bufferIndex=0; bufferIndex<size; bufferIndex++) {
+			index = indices.readInt();
+			int lcp = nlcps.readByte();
+			
+			int idx = sequence.getCharAt(index); 
+			if(aaMass[idx] <= 0)
+				continue;
+			
+			if(lcp > i)
+				continue;
+			for(i=lcp; i<maxPeptideLength; i++)
+			{
+				char residue = sequence.getCharAt(index+i);
+				double m = aaMass[residue];
+				if(m <= 0)
+				{
+					break;
+				}
+				if(i != 0)
+				{
+					prm[i] = prm[i-1] + m;
+					nominalPRM[i] = nominalPRM[i-1] + nominalAAMass[residue];
+				}
+				else
+				{
+					prm[i] = m;
+					nominalPRM[i] = nominalAAMass[residue];
+				}
+				if(i+1 <= maxPeptideLength)
+				{
+					numPeptides[i]++;
+					int error = (int)Math.round(prm[i]*0.9995)-nominalPRM[i];
+					error += 5;
+					numPepWithError[i][error]++;
+//					System.out.println(index+"\t"+(float)prm[i]+"\t"+sequence.getSubsequence(index, index+i+1));
+				}
+			}
+		}
+
+		long total = 0;
+		long totalErr = 0;
+		System.out.println("Length\tNumDistinctPeptides\tNumPeptides\tNumPeptidesWithErrors");
+		for(i=0; i<maxPeptideLength; i++)
+		{
+			System.out.print((i+1)+"\t"+this.numDisinctPeptides[i+1]+"\t"+numPeptides[i]);
+			total += numPeptides[i];
+			for(int j=0; j<11; j++)
+			{
+				if(numPepWithError[i][j]>0)
+				{
+					System.out.print("\t"+(j-5)+":"+numPepWithError[i][j]);
+					if(j != 5)
+						totalErr += numPepWithError[i][j];
+				}
+			}
+			System.out.println();
+		}
+		System.out.println("Total #Peptides\t" + total);
+		System.out.println("Total #Peptides with nominalMass errors\t" + totalErr + "\t" + totalErr/(double)total);
+		
+		indices.close();
+		nlcps.close();
+	}		
 }

@@ -839,6 +839,7 @@ public class SuffixArray {
 	}
 
 
+
 	public int getNumCandidatePeptides(AminoAcidSet aaSet, float peptideMass, Tolerance tolerance)
 	{
 		double[] aaMass = new double[128];

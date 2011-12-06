@@ -249,7 +249,8 @@ public class CompactFastaSequence implements Sequence {
 		this.byte2alpha = new HashMap<Byte, Character>();
 		this.byte2alpha.put(Constants.TERMINATOR, Constants.TERMINATOR_CHAR);
 		this.byte2alpha.put(Constants.INVALID_CHAR_CODE, Constants.INVALID_CHAR);
-		for(byte i = 0, value = 1; i < tokens.length; i++, value++) {
+		byte value = 2;
+		for(byte i = 0; i < tokens.length; i++, value++) {
 			for(int j = 0; j < tokens[i].length(); j++) {
 				alpha2byte.put(tokens[i].charAt(j), value);
 			}

@@ -61,7 +61,7 @@ public class Constants {
   /**
    * The byte representation of the invalid character.
    */
-  public static final byte INVALID_CHAR_CODE = 63;
+  public static final byte INVALID_CHAR_CODE = 1;
   
   /**
    * The character representation of the invalid character.
