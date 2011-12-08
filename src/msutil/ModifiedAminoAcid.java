@@ -5,6 +5,7 @@ public class ModifiedAminoAcid extends AminoAcid {
 	private Modification mod;
 	private AminoAcid targetAA;
 	private boolean isNTermNonSpecificMod = false;
+	private boolean isFixedModification = false;
 	
 	public ModifiedAminoAcid(AminoAcid targetAA, Modification mod, char residue)
 	{
@@ -20,13 +21,31 @@ public class ModifiedAminoAcid extends AminoAcid {
 		return this;
 	}
 	
+	public ModifiedAminoAcid setFixedModification()
+	{
+		this.isFixedModification = true;
+		return this;
+	}
+	
 	@Override
 	public char getUnmodResidue() 	{ return targetAA.getUnmodResidue(); }
+	
+	@Override
+	public char getModTargetResidue()
+	{
+		if(!isFixedModification)
+			return getResidue();
+		else
+			return getUnmodResidue();
+	}
+	
 	public Modification getModification()	{ return mod; }
 	
 	@Override
 	public String getResidueStr()
 	{
+		if(isFixedModification)
+			return String.valueOf(getUnmodResidue());
 		StringBuffer buf = new StringBuffer();
 		String massStr;
 		float modMass = mod.getMass();
@@ -46,5 +65,8 @@ public class ModifiedAminoAcid extends AminoAcid {
 	}
 	
 	@Override
-	public boolean isModified()		{ return true; }
+	public boolean isModified()		
+	{ 
+		return !isFixedModification; 
+	}
 }

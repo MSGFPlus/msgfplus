@@ -137,6 +137,12 @@ public class AminoAcid extends Matter {
 	public char getUnmodResidue() 	{ return residue; }
 	
 	/**
+	 * Gets the residue as a target of a modification.
+	 * @return the residue letter.    
+	 */
+	public char getModTargetResidue() { return residue; }
+
+	/**
 	 * Gets the full string.
 	 * @return the full name/description of the amino acid.
 	 */

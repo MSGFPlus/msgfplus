@@ -426,16 +426,17 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			
 			for(AminoAcid aa : oldAAList)
 			{
-				if(aa.getUnmodResidue() != residue)
+				if(aa.getModTargetResidue() != residue)
 					newAAList.add(aa);
 				else
 				{
 					if(location == Location.Anywhere)
-						newAAList.add(aa.getAAWithFixedModification(mod.getModification()));
+						newAAList.add(aa.getAAWithFixedModification(mod.getModification()));	// replace with a new amino acid
 					else
 					{
 						char modResidue = this.getModifiedResidue(aa.getUnmodResidue());
-						ModifiedAminoAcid modAA = new ModifiedAminoAcid(aa, mod.getModification(), modResidue);
+						// make a new amino acid and add
+						ModifiedAminoAcid modAA = new ModifiedAminoAcid(aa, mod.getModification(), modResidue).setFixedModification();
 						newAAList.add(modAA);
 					}
 				}
@@ -461,7 +462,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 				else
 				{
 					char modResidue = this.getModifiedResidue(aa.getUnmodResidue());
-					ModifiedAminoAcid modAA = new ModifiedAminoAcid(aa, mod.getModification(), modResidue);
+					ModifiedAminoAcid modAA = new ModifiedAminoAcid(aa, mod.getModification(), modResidue).setFixedModification();
 					if(location == Location.N_Term || location == Location.Protein_N_Term)
 						modAA.setNTermNonSpecificMod();
 					newAAList.add(modAA);
@@ -471,10 +472,6 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			for(Location loc : locMap.get(location))
 				aaListMap.put(loc, new ArrayList<AminoAcid>(newAAList));
 		}
-		/// debug
-//		System.out.println("\n"+location+"\t"+this.getAAList(location).size());
-//		for(AminoAcid aa : this.getAAList(location))
-//			System.out.println(aa.getResidueStr()+"\t"+aa.getMass());
 	}
 	
 	private void addVariableMods(HashMap<Modification.Location,ArrayList<Modification.Instance>> variableMods, Location location)
@@ -491,7 +488,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 				ArrayList<AminoAcid> newAAList = new ArrayList<AminoAcid>();
 				for(AminoAcid targetAA : this.getAAList(loc))
 				{
-					if(targetAA.getUnmodResidue() == residue)
+					if(targetAA.getModTargetResidue() == residue)
 					{
 						char modResidue = this.getModifiedResidue(targetAA.getUnmodResidue());
 						ModifiedAminoAcid modAA = new ModifiedAminoAcid(targetAA, mod.getModification(), modResidue);
