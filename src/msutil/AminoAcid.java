@@ -70,6 +70,31 @@ public class AminoAcid extends Matter {
 	 */
 	public boolean isModified()          { return false; }
 	
+	
+	/**
+	 * Quick way to tell the number of variable modifications applied to this amino acid.
+	 * @return the number of variable modifications applied to this amino acid.
+	 */
+	public int getNumVariableMods()		{ return 0; }
+	
+	/**
+	 * Tell whether this object is associated with a terminal-specific modification
+	 * @return false if this is not associated with terminal-specific modification
+	 */
+	public boolean hasTerminalVariableMod()
+	{
+		return false;
+	}
+	
+	/**
+	 * Tell whether this object is associated with a residue-specific modification
+	 * @return false if this is not associated with residue-specific modification
+	 */
+	public boolean hasAnywhereVariableMod()
+	{
+		return false;
+	}
+
 	//  accessor methods
 	/**
 	 * Gets the mass of this amino acid. This is the mono isotopic mass.
@@ -136,12 +161,6 @@ public class AminoAcid extends Matter {
 	 */
 	public char getUnmodResidue() 	{ return residue; }
 	
-	/**
-	 * Gets the residue as a target of a modification.
-	 * @return the residue letter.    
-	 */
-	public char getModTargetResidue() { return residue; }
-
 	/**
 	 * Gets the full string.
 	 * @return the full name/description of the amino acid.

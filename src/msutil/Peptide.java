@@ -125,7 +125,8 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
 				{
 					modification = Modification.register(name, mass);
 				}
-				AminoAcid modAA = new ModifiedAminoAcid(aa, modification, residue);
+				Modification.Instance modIns = new Modification.Instance(modification, aa.getResidue());
+				AminoAcid modAA = new ModifiedAminoAcid(aa, modIns, residue);
 				this.add(modAA);
 				//                this.add(AminoAcid.getCustomAminoAcid('&', aa.getMass()+mod));
 			}
