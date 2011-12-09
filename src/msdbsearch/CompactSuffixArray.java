@@ -433,7 +433,7 @@ public class CompactSuffixArray {
 						totalErr += numPepWithError[i][j];
 				}
 			}
-			System.out.println();
+			System.out.println("\t"+total+"\t"+totalErr+"\t"+(totalErr/(double)total));
 		}
 		System.out.println("Total #Peptides\t" + total);
 		System.out.println("Total #Peptides with nominalMass errors\t" + totalErr + "\t" + totalErr/(double)total);
