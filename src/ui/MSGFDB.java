@@ -45,8 +45,8 @@ import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
-	public static final String VERSION = "6953";
-	public static final String RELEASE_DATE = "12/08/2011";
+	public static final String VERSION = "6955";
+	public static final String RELEASE_DATE = "12/11/2011";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static void main(String argv[])
@@ -76,6 +76,7 @@ public class MSGFDB {
 		boolean useTDA = false;
 		boolean showFDR = true;
 		boolean replicateMergedResults = false;
+		boolean doNotDseEdgeScore = false;
 		boolean useUniformAAProb = false;
 		int minPeptideLength = 6;
 		int maxPeptideLength = 40;
@@ -467,7 +468,7 @@ public class MSGFDB {
 		runMSGFDB(specFile, specFormat, databaseFile, leftParentMassTolerance, rightParentMassTolerance, numAllowedC13,
 	    		outputFile, enzyme, numAllowedNonEnzymaticTermini,
 	    		activationMethod, instType, aaSet, numMatchesPerSpec, startSpecIndex, endSpecIndex, useTDA, showFDR,
-	    		minPeptideLength, maxPeptideLength, minCharge, maxCharge, numThreads, useUniformAAProb, dbIndexDir, replicateMergedResults);
+	    		minPeptideLength, maxPeptideLength, minCharge, maxCharge, numThreads, useUniformAAProb, dbIndexDir, replicateMergedResults, doNotDseEdgeScore);
 		System.out.format("MS-GFDB complete (total elapsed time: %.2f sec)\n", (System.currentTimeMillis()-time)/(float)1000);
 	}
 	
@@ -537,7 +538,8 @@ public class MSGFDB {
     		int numThreads,
     		boolean useUniformAAProb,
     		File dbIndexDir,
-    		boolean replicateMergedResults
+    		boolean replicateMergedResults,
+    		boolean doNotDseEdgeScore
     		)
 	{
 		long time = System.currentTimeMillis();

@@ -228,7 +228,7 @@ public class DBScanner {
 
 //				// For debugging
 //				System.out.println(sequence.getSubsequence(index, sequence.getSize()));
-//				if(index == 4749888)
+//				if(index == 1)
 //					System.out.println("Debug");
 				// skip redundant peptides
 				if(lcp > i+1)		
@@ -349,7 +349,7 @@ public class DBScanner {
 					if(i < minPeptideLength)
 						continue;
 					
-//					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("SRDTAIKT"))
+//					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("DKTLLADSLSELAGRKINVQTK"))
 //						System.out.println("Debug");
 					
 					int cTermCleavageScore = 0;
@@ -366,7 +366,10 @@ public class DBScanner {
 							{
 								cTermCleavageScore = peptideCleavagePenalty;
 								if(numNonEnzTermini+1 > numberOfAllowableNonEnzymaticTermini)
+								{
+									isExtensionAtTheSameIndex = true;
 									continue;
+								}
 							}
 						}
 						else if(enzyme.isNTerm())
@@ -377,7 +380,10 @@ public class DBScanner {
 							{
 								cTermCleavageScore = neighboringAACleavagePenalty;
 								if(numNonEnzTermini+1 > numberOfAllowableNonEnzymaticTermini)
+								{
+									isExtensionAtTheSameIndex = true;
 									continue;
+								}
 							}
 						}
 					}

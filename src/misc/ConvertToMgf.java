@@ -97,7 +97,7 @@ public class ConvertToMgf {
 				"\t-t TargetFileName (*.mgf)\n" +
 				"\t[-w 0/1] (0: don't write ActivationMethod (default), 1: write ActivationMethod)\n" +
 				"\t[-m FragmentationMethodID] (0: convert all (Default), 1: CID, 2: ETD, 3: HCD)\n" +
-				"\t[-index specIndex] (only write the spectrum with the specified index)");
+				"\t[-index startIndex(,endIndex)] (only write the spectrum of indices with the specified range, startIndex: inclu)");
 		System.exit(-1);
 	}
 	
