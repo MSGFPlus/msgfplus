@@ -428,6 +428,17 @@ public class MSGFDB {
 					printUsageAndExit("Illigal -replicate parameter: " + argv[i+1]);
 				}
 			}
+			else if(argv[i].equalsIgnoreCase("-edgeScore"))	// hidden parameter
+			{
+				if(argv[i+1].equalsIgnoreCase("1"))
+					doNotDseEdgeScore = false;
+				else if(argv[i+1].equalsIgnoreCase("0"))
+					doNotDseEdgeScore = true;
+				else
+				{
+					printUsageAndExit("Illigal -replicate parameter: " + argv[i+1]);
+				}
+			}
 			else
 			{
 				printUsageAndExit("Invalid parameter: " + argv[i]);
@@ -709,6 +720,8 @@ public class MSGFDB {
 		    			numAllowedC13,
 		    			specDataType
 		    			);
+		    	if(doNotDseEdgeScore)
+		    		specScanner.turnOffEdgeScoring();
 		    	
 				ConcurrentMSGFDB.RunMSGFDB msgfdbExecutor = new ConcurrentMSGFDB.RunMSGFDB(
 							specScanner,

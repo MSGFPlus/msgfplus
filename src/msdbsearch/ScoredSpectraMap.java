@@ -41,6 +41,8 @@ public class ScoredSpectraMap {
 	private SortedMap<Double,SpecKey> pepMassSpecKeyMap;
 	private Map<SpecKey,SimpleDBSearchScorer<NominalMass>> specKeyScorerMap;
 	private Map<Pair<Integer,Integer>, SpecKey> specIndexChargeToSpecKeyMap;
+	
+	private boolean turnOffEdgeScoring = false;
 
 	public ScoredSpectraMap(
 			SpectrumAccessorBySpecIndex specMap,
@@ -63,13 +65,18 @@ public class ScoredSpectraMap {
 		specIndexChargeToSpecKeyMap = Collections.synchronizedMap(new HashMap<Pair<Integer,Integer>,SpecKey>());
 	}
 	
+	public ScoredSpectraMap turnOffEdgeScoring()
+	{
+		this.turnOffEdgeScoring = true;
+		return this;
+	}
+	
 	public SortedMap<Double,SpecKey> getPepMassSpecKeyMap()		{ return pepMassSpecKeyMap; }
 	public Map<SpecKey,SimpleDBSearchScorer<NominalMass>> getSpecKeyScorerMap()	{ return specKeyScorerMap; }
 	public Tolerance getLeftParentMassTolerance()				{ return leftParentMassTolerance; }
 	public Tolerance getRightParentMassTolerance()				{ return rightParentMassTolerance; }
 	public int getNumAllowedC13()								{ return numAllowedC13; }
 	public List<SpecKey> getSpecKeyList()	{ return specKeyList; }
-	
 	public SpecKey getSpecKey(int specIndex, int charge)
 	{
 		return specIndexChargeToSpecKeyMap.get(new Pair<Integer,Integer>(specIndex, charge));
@@ -135,7 +142,11 @@ public class ScoredSpectraMap {
 		Modification mod = specDataType.getModification();
 		
 		if(activationMethod != null && activationMethod != ActivationMethod.FUSION)
+		{
 			scorer = NewScorerFactory.get(activationMethod, instType, enzyme, mod);
+			if(this.turnOffEdgeScoring)
+				scorer.doNotUseError();
+		}
 		
 		for(SpecKey specKey : specKeyList.subList(fromIndex, toIndex))
 		{
@@ -144,6 +155,8 @@ public class ScoredSpectraMap {
 			if(activationMethod == null || activationMethod == ActivationMethod.FUSION)
 			{
 				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, mod);
+				if(this.turnOffEdgeScoring)
+					scorer.doNotUseError();
 			}
 			int charge = specKey.getCharge();
 			spec.setCharge(charge);
