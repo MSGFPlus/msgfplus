@@ -212,7 +212,6 @@ public class PRMSpecGen {
 //				+ "\t-f FragMassTolerance (fragment mass tolerance in ppm or Da. The value must be less than 0.5Da or 100ppm. E.g. 0.5Da or 30ppm)\n"
 				+ "\t-o outputFileName (e.g. PRMSpec.mgf)\n"
 				+ "\t[-m FragmentationMethodID] (0: as written in the spectrum or CID if no info (Default), 1: CID, 2: ETD, 3: HCD)\n"
-//				+ "\t[-i IonTypes (e.g. \"b,y\", \"c+H,z+H,b,y\")]\n"
 				+ "\t[-inst InstrumentID] (0: Low-res LCQ/LTQ (Default for CID and ETD), 1: TOF , 2: High-res LTQ (Default for HCD))\n"
 				+ "\t[-e EnzymeID] (0: No enzyme, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N)\n"
 				);
@@ -285,8 +284,6 @@ public class PRMSpecGen {
 			{
 				System.out.format("Processing spectra... %.4f", (numSpecs*100/(float)totalNumSpecs));
 				System.out.println("% done.");
-//				out.close();
-//				System.exit(0);
 			}
 			if(spec.size() < Constants.MIN_NUM_PEAKS_PER_SPECTRUM)
 			{
