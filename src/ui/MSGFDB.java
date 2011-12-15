@@ -504,7 +504,7 @@ public class MSGFDB {
 				+ "\t[-m FragmentationMethodID] (0: as written in the spectrum or CID if no info (Default), 1: CID, 2: ETD, 3: HCD, 4: Merge spectra from the same precursor)\n"
 				+ "\t[-inst InstrumentID] (0: Low-res LCQ/LTQ (Default for CID and ETD), 1: TOF , 2: High-res LTQ (Default for HCD))\n"
 				+ "\t[-e EnzymeID] (0: No enzyme, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N, 8: alphaLP, 9: endogenous peptides)\n"
-				+ "\t[-c13 0/1/2] (Number of allowed C13, Default: 1)\n"
+				+ "\t[-c13 0/1/2] (Number of allowed 13C, Default: 1)\n"
 				+ "\t[-nnet 0/1/2] (Number of allowed non-enzymatic termini, Default: 1)\n"
 				+ "\t[-mod ModificationFileName] (Modification file, Default: standard amino acids with fixed C+57)\n"
 				+ "\t[-minLength MinPepLength] (Minimum peptide length to consider, Default: 6)\n"
