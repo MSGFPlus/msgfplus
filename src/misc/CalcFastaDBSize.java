@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 
 import msgf.Histogram;
-import msutil.AminoAcid;
 import msutil.AminoAcidSet;
 
 public class CalcFastaDBSize {
