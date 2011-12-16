@@ -16,7 +16,10 @@ public class TestNewScorer {
 //		rescoreMSGFResult(new File("/home/sangtaekim/Research/Data/ISBETD/MSGFDB0312"), new File("/home/sangtaekim/Research/Data/ISBETD/MSGFDBRescored"));
 //		mgfReadTest();
 //		ionSelectionTest();
-		testReading();
+//		testReading();
+		for(IonType ion : IonType.getAllKnownIonTypes(1, true, false))
+			System.out.println(ion.getName());
+		System.out.println(Composition.getMass("-H"));
 	}
 
 	public static void testReading() throws Exception

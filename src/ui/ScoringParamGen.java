@@ -1,13 +1,20 @@
 package ui;
 
-public class ScoringModelGen {
+import java.io.File;
 
+public class ScoringParamGen {
+
+	public static void main(String argv[])
+	{
+		
+	}
+	
 	public static void printUsageAndExit(String message)
 	{
 		if(message != null)
 			System.out.println("Error: " + message + "\n");
 		System.out.println("MSGFDB v"+ MSGFDB.VERSION + " (" + MSGFDB.RELEASE_DATE + ")");
-		System.out.print("Usage: java -Xmx2000M -cp MSGFDB.jar ScoringModelGen\n"
+		System.out.print("Usage: java -Xmx2000M -cp MSGFDB.jar ScoringParamGen\n"
 				+ "********** Disco"
 				+ "\t-s SpectrumFile (*.mzXML, *.mzML, *.mgf, *.ms2, *.pkl or *_dta.txt)\n" //, *.mgf, *.pkl, *.ms2)\n"
 				+ "\t-d Database (*.fasta or *.fa)\n"

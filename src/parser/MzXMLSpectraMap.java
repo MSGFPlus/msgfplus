@@ -96,7 +96,7 @@ public class MzXMLSpectraMap implements SpectrumAccessorBySpecIndex {
 			ActivationMethod method = ActivationMethod.get(activationName);
 			if(method == null)
 			{
-				ActivationMethod.register(activationName);
+				ActivationMethod.register(activationName, activationName);
 				method = ActivationMethod.get(activationName);
 			}
 			spec.setActivationMethod(method);

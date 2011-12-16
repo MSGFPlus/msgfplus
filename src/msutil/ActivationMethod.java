@@ -4,11 +4,13 @@ import java.util.Hashtable;
 
 public class ActivationMethod {
 	private String name;
+	private String fullName;
 	private boolean electronBased = false;
 	
-	private ActivationMethod(String name) 
+	private ActivationMethod(String name, String fullName) 
 	{
 		this.name = name;
+		this.fullName = fullName;
 	}
 
 	private ActivationMethod electronBased()
@@ -18,6 +20,7 @@ public class ActivationMethod {
 	}
 	
 	public String getName()		{ return name; }
+	public String getFullName()	{ return fullName; }
 	public boolean isElectronBased() { return electronBased; }
 	
 	public static final ActivationMethod CID;
@@ -31,14 +34,14 @@ public class ActivationMethod {
 		return table.get(name);
 	}
 
-	public static boolean register(String name)
+	public static boolean register(String name, String fullName)
 	{
 		ActivationMethod m = table.get(name);
 		if(m != null)
 			return false;	// registration was not successful
 		else
 		{
-			ActivationMethod newMethod = new ActivationMethod(name);
+			ActivationMethod newMethod = new ActivationMethod(name, fullName);
 			table.put(name, newMethod);
 			return true;
 		}
@@ -71,11 +74,11 @@ public class ActivationMethod {
 	private static Hashtable<String, ActivationMethod> table;
 	
 	static {
-		CID = new ActivationMethod("CID");
-		ETD = new ActivationMethod("ETD").electronBased();
-		HCD = new ActivationMethod("HCD");
-		PQD = new ActivationMethod("PQD");
-		FUSION = new ActivationMethod("FUSION");
+		CID = new ActivationMethod("CID", "collision-induced dissociation");
+		ETD = new ActivationMethod("ETD", "electron transfer dissociation").electronBased();
+		HCD = new ActivationMethod("HCD", "high-energy collision-induced dissociation");
+		PQD = new ActivationMethod("PQD", "pulsed q dissociation");
+		FUSION = new ActivationMethod("FUSION", "merge spectra from the same precursor");
 		
 		table = new Hashtable<String, ActivationMethod>();
 		table.put(CID.name, CID);
