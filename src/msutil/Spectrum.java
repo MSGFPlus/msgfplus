@@ -675,4 +675,35 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
   }
 	 */
 
+	/**
+	 * Take a spectrum file name, infers the spectrum format by recognizing the extension and returns the spectrum file format.
+	 * @param specFileName the spectrum file name.
+	 * @return SpecFileFormat object corresponding to specFileName
+	 */
+	public static SpecFileFormat getSpectrumFileFormat(String specFileName)
+	{
+		SpecFileFormat specFormat = null;
+		
+		int posDot = specFileName.lastIndexOf('.');
+		if(posDot >= 0)
+		{
+			String extension = specFileName.substring(posDot);
+			if(extension.equalsIgnoreCase(".mzXML") || extension.equalsIgnoreCase(".mzML"))
+				specFormat = SpecFileFormat.MZXML;
+			else if(extension.equalsIgnoreCase(".mgf"))
+				specFormat = SpecFileFormat.MGF;
+			else if(extension.equalsIgnoreCase(".ms2"))
+				specFormat = SpecFileFormat.MS2;
+			else if(extension.equalsIgnoreCase(".pkl"))
+				specFormat = SpecFileFormat.PKL;
+		}		
+		if(specFormat == null && specFileName.length() > 8)
+		{
+			String suffix = specFileName.substring(specFileName.length()-8);
+			if(suffix.equalsIgnoreCase("_dta.txt"))
+				specFormat = SpecFileFormat.DTA_TXT;
+		}
+		
+		return specFormat;
+	}
 }

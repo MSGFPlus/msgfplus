@@ -1,8 +1,8 @@
 package params;
 
-public class IntParameter extends Parameter {
+public class StringParameter extends Parameter {
 
-	protected IntParameter(String key, String name, String description,	boolean isOptional) {
+	protected StringParameter(String key, String name, String description, boolean isOptional) {
 		super(key, name, description, isOptional);
 	}
 
