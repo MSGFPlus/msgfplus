@@ -7,10 +7,20 @@ public class ToleranceParameter extends Parameter {
 	private Tolerance leftTolerance;
 	private Tolerance rightTolerance;
 	
-	public ToleranceParameter(String key, String name, String description, boolean isOptional) {
-		super(key, name, description, isOptional);
+	public ToleranceParameter(String key, String name, String description) {
+		super(key, name, description);
 	}
 
+	public ToleranceParameter defaultValue(String value)
+	{
+		if(parse(value) == false)
+		{
+			System.err.println("(ToleranceParameter) Error while setting default value: " + value);
+			System.exit(-1);
+		}
+		return this;
+	}
+	
 	@Override
 	public boolean parse(String value) {
 		String[] token = value.split(",");

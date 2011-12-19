@@ -13,10 +13,16 @@ public class FileParameter extends Parameter {
 	
 	private File[] files;
 	
-	public FileParameter(String key, String name, String description, boolean isOptional) {
-		super(key, name, description, isOptional);
+	public FileParameter(String key, String name, String description) {
+		super(key, name, description);
 	}
 
+	public FileParameter setAsOptional()
+	{
+		super.setOptional();
+		return this;
+	}
+	
 	public FileParameter mustExist()
 	{
 		this.mustExist = true;

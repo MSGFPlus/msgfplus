@@ -2,19 +2,49 @@ package params;
 
 public class IntParameter extends Parameter {
 
-	protected IntParameter(String key, String name, String description,	boolean isOptional) {
-		super(key, name, description, isOptional);
+	protected int minValue = 0;		// inclusive
+	private int maxValue = Integer.MAX_VALUE;	// exclusive
+	private int value;
+	
+	public IntParameter(String key, String name, String description) {
+		super(key, name, description);
 	}
 
+	public IntParameter defaultValue(int defaultValue)
+	{
+		value = defaultValue;
+		super.setOptional();
+		return this;
+	}
+	
+	public IntParameter minValue(int minValue) 
+	{
+		this.minValue = minValue;
+		return this;
+	}
+
+	public IntParameter maxValue(int maxValue) 
+	{
+		this.maxValue = maxValue;
+		return this;
+	}
+	
 	@Override
 	public boolean parse(String value) {
-		return false;
+		try {
+			this.value = Integer.valueOf(value);
+			if(this.value < minValue || this.value >= maxValue)
+				return false;
+		} catch (NumberFormatException e)
+		{
+			return false;
+		} 
+		return true;
 	}
 
 	@Override
 	public String getValueAsString() {
-		// TODO Auto-generated method stub
-		return null;
+		return String.valueOf(value);
 	}
 
 }
