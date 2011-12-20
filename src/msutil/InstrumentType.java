@@ -2,17 +2,23 @@ package msutil;
 
 import java.util.HashMap;
 
-public class InstrumentType {
+import params.ParamObject;
+
+public class InstrumentType implements ParamObject {
 	private String name;
 	boolean isHighResolution;
+	private String description;
 	
-	private InstrumentType(String name, boolean isHighResolution) 
+	private InstrumentType(String name, String description, boolean isHighResolution) 
 	{
 		this.name = name;
+		this.description = description;
 		this.isHighResolution = isHighResolution;
 	}
 
 	public String getName()		{ return name; }
+	@Override
+	public String getDescription()	{ return description; }
 	public boolean isHighResolution()	{ return isHighResolution; }
 	
 	@Override
@@ -48,9 +54,9 @@ public class InstrumentType {
 	}
 	
 	static {
-		LOW_RESOLUTION_LTQ = new InstrumentType("LowRes", false);
-		HIGH_RESOLUTION_LTQ = new InstrumentType("HighRes", false);
-		TOF = new InstrumentType("TOF", true);
+		LOW_RESOLUTION_LTQ = new InstrumentType("LowRes", "Low-res LCQ/LTQ", false);
+		HIGH_RESOLUTION_LTQ = new InstrumentType("HighRes", "High-res LTQ", false);
+		TOF = new InstrumentType("TOF", "TOF", true);
 		
 		table.put(LOW_RESOLUTION_LTQ.getName(), LOW_RESOLUTION_LTQ);
 		table.put(HIGH_RESOLUTION_LTQ.getName(), HIGH_RESOLUTION_LTQ);

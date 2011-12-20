@@ -2,13 +2,15 @@ package params;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
+
+import msutil.FileFormat;
 
 public class FileListParameter extends Parameter {
 
-	private HashSet<String> extensions = new HashSet<String>();	// if not empty, only those files with extensions contained here will be considered.
+	private ArrayList<FileFormat> fileFormats = new ArrayList<FileFormat>();
 	
 	private File[] files;
+	private FileFormat[] fileFormatArr;
 	
 	public FileListParameter(String key, String name, String description) {
 		super(key, name, description);
@@ -20,9 +22,9 @@ public class FileListParameter extends Parameter {
 		return this;
 	}
 	
-	public FileListParameter addExtension(String ext)
+	public FileListParameter addFileFormat(FileFormat fileFormat)
 	{
-		extensions.add(ext.toLowerCase());
+		fileFormats.add(fileFormat);
 		return this;
 	}
 	
@@ -35,19 +37,37 @@ public class FileListParameter extends Parameter {
 			return "must be a directory";
 		
 		ArrayList<File> fileList = new ArrayList<File>();
+		ArrayList<FileFormat> fileFormatList = new ArrayList<FileFormat>();
 		for(File f : path.listFiles())
 		{
-			if(extensions.isEmpty())
+			if(fileFormats.isEmpty())
 			{
 				fileList.add(f);
 			}
 			else
 			{
+				FileFormat matchedFormat = null;
 				String fileName = f.getName();
-				String ext = fileName.substring(fileName.lastIndexOf('.')+1);
-				if(extensions.contains(ext.toLowerCase()))
+				
+				for(FileFormat format : fileFormats)
+				{
+					if(!format.isCaseSensitive())
+						fileName = fileName.toLowerCase();
+					for(String suffix : format.getSuffixes())
+					{
+						if(!format.isCaseSensitive())
+							suffix = suffix.toLowerCase();
+						if(fileName.endsWith(suffix))
+						{
+							matchedFormat = format;
+							break;
+						}
+					}
+				}
+				if(matchedFormat != null)
 				{
 					fileList.add(f);
+					fileFormatList.add(matchedFormat);
 				}
 			}
 		}
@@ -57,12 +77,18 @@ public class FileListParameter extends Parameter {
 		}
 		
 		files = fileList.toArray(new File[0]);
+		fileFormatArr = fileFormatList.toArray(new FileFormat[0]);
 		return null;
 	}
 	
 	public File[] getFiles()
 	{
 		return files;
+	}
+	
+	public FileFormat[] getFileFormats()
+	{
+		return fileFormatArr;
 	}
 	
 	@Override

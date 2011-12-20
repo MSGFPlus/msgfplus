@@ -11,18 +11,23 @@ package msutil;
 
 import java.util.HashMap;
 
+import params.ParamObject;
+
 /**
  * This class represents an enzyme.
  * 
  * @author sangtaekim
  */
-public class Enzyme {
+public class Enzyme implements ParamObject {
 	
 	/** True if the enzyme cleaves n-terminus, false otherwise. */
 	private boolean isNTerm;
 	
 	/** Name of the enzyme. */
 	private String name;
+	
+	/** Description */
+	private String description;
 	
 	/** Amino acid residues cleaved by the enzyme. */
 	private char[] residues;
@@ -43,9 +48,10 @@ public class Enzyme {
 	 * @param residues the residues cleaved by the enzyme (String)
 	 * @param isNTerm N term or C term (true if it cleaves N-term)
 	 */
-	private Enzyme(String name, String residues, boolean isNTerm) 
+	private Enzyme(String name, String residues, boolean isNTerm, String description) 
 	{
 		this.name = name;
+		this.description = description;
 		if(residues != null)
 		{
 			this.residues = new char[residues.length()];
@@ -103,6 +109,14 @@ public class Enzyme {
 	 * @return the name of the enzyme.
 	 */
 	public String getName()		{ return name; }
+	
+	/**
+	 * Returns the description of the enzyme.
+	 * 
+	 * @return the description of the enzyme.
+	 */
+	@Override
+	public String getDescription()	{ return description; }
 	
 	/**
 	 * Checks if this enzyme cleaves N term.
@@ -206,6 +220,9 @@ public class Enzyme {
 	public char[] getResidues()	{ return residues; }
 	
 	/** The Constant TRYPSIN. */
+	public static final Enzyme NOENZYME;
+	
+	/** The Constant TRYPSIN. */
 	public static final Enzyme TRYPSIN;
 	
 	/** The Constant CHYMOTRYPSIN. */
@@ -250,7 +267,8 @@ public class Enzyme {
 	}
 	
 	static {
-		TRYPSIN = new Enzyme("Tryp", "KR", false);
+		NOENZYME = new Enzyme("NoEnzyme", null, false, "No enzyme");
+		TRYPSIN = new Enzyme("Tryp", "KR", false, "Trypsin");
 //		TRYPSIN.setNeighboringAAEfficiency(0.9148273f);
 //		TRYPSIN.setPeptideCleavageEffiency(0.98173124f);
 		
@@ -261,25 +279,25 @@ public class Enzyme {
 		TRYPSIN.setNeighboringAAEfficiency(0.99999f);
 		TRYPSIN.setPeptideCleavageEffiency(0.99999f);
 
-		CHYMOTRYPSIN = new Enzyme("CHYMOTRYPSIN", "FYWL", false);
+		CHYMOTRYPSIN = new Enzyme("CHYMOTRYPSIN", "FYWL", false, "Chymotrypsin");
 		
-		LysC = new Enzyme("LysC", "K", false);
+		LysC = new Enzyme("LysC", "K", false, "Lys-C");
 //		LysC.setNeighboringAAEfficiency(0.79f);
 //		LysC.setPeptideCleavageEffiency(0.89f);
 		LysC.setNeighboringAAEfficiency(0.999f);
 		LysC.setPeptideCleavageEffiency(0.999f);
 		
-		LysN = new Enzyme("LysN", "K", true);
+		LysN = new Enzyme("LysN", "K", true, "Lys-N");
 		LysN.setNeighboringAAEfficiency(0.79f);
 		LysN.setPeptideCleavageEffiency(0.89f);
 		
-		GluC = new Enzyme("GluC","E",false);
-		ArgC = new Enzyme("ArgC","R",false);
-		AspN = new Enzyme("AspN","D",true);
+		GluC = new Enzyme("GluC","E",false, "Glu-C");
+		ArgC = new Enzyme("ArgC","R",false, "Arg-C");
+		AspN = new Enzyme("AspN","D",true, "Asp-N");
 		
-		ALP = new Enzyme("aLP", null, false);
+		ALP = new Enzyme("aLP", null, false, "alphaLP");
 		
-		Peptidomics = new Enzyme("Peptidomics", null, false);
+		Peptidomics = new Enzyme("Peptidomics", null, false, "Endogenous peptides");
 		
 		registeredEnzyme = new HashMap<String,Enzyme>();
 		

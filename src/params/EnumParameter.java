@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class EnumParameter extends IntParameter {
 
 	private int defaultValue = Integer.MIN_VALUE;
-	ArrayList<String> descriptions = new ArrayList<String>();
+	private ArrayList<String> descriptions = new ArrayList<String>();
 	public EnumParameter(String key) {
 		super(key, null, null);
 		super.minValue(0);
@@ -40,6 +40,11 @@ public class EnumParameter extends IntParameter {
 		return this;
 	}
 
+	protected int getCurIndex()
+	{
+		return super.minValue + descriptions.size();
+	}
+	
 	@Override
 	public String getName()
 	{

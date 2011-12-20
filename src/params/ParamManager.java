@@ -1,9 +1,16 @@
 package params;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+
+import msutil.ActivationMethod;
+import msutil.DBFileFormat;
+import msutil.Enzyme;
+import msutil.InstrumentType;
+import msutil.SpecFileFormat;
 
 import ui.MSGFDB;
 
@@ -139,12 +146,12 @@ public class ParamManager {
 	
 	public void addSpecFileParam()
 	{
-		FileParameter specFileParam = new FileParameter("s", "SpectrumFile", "*.mzXML, *.mzML, *.mgf, *.ms2, *.pkl or *_dta.txt");
-		specFileParam.addExtension("mzXML");
-		specFileParam.addExtension("mzML");
-		specFileParam.addExtension("mgf");
-		specFileParam.addExtension("ms2");
-		specFileParam.addExtension("pkl");
+		FileParameter specFileParam = new FileParameter("s", "SpectrumFile", "*.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt");
+		specFileParam.addFileFormat(SpecFileFormat.MZXML);
+		specFileParam.addFileFormat(SpecFileFormat.MGF);
+		specFileParam.addFileFormat(SpecFileFormat.MS2);
+		specFileParam.addFileFormat(SpecFileFormat.PKL);
+		specFileParam.addFileFormat(SpecFileFormat.DTA_TXT);
 		specFileParam.fileMustExist();
 		specFileParam.mustBeAFile();
 		addParameter(specFileParam);
@@ -153,8 +160,7 @@ public class ParamManager {
 	public void addDBFileParam()
 	{
 		FileParameter dbFileParam = new FileParameter("d", "DatabaseFile", "*.fasta or *.fa");
-		dbFileParam.addExtension("fa");
-		dbFileParam.addExtension("fasta");
+		dbFileParam.addFileFormat(DBFileFormat.FASTA);
 		dbFileParam.fileMustExist();
 		dbFileParam.mustBeAFile();
 		addParameter(dbFileParam);
@@ -177,37 +183,37 @@ public class ParamManager {
 	
 	public void addFragMethodParam()
 	{
-		EnumParameter fragParam = new EnumParameter("m", "FragmentMethodID");
-		fragParam.registerEntry("as written in the spectrum or CID if no info").setDefault();
-		fragParam.registerEntry("CID");
-		fragParam.registerEntry("ETD");
-		fragParam.registerEntry("HCD");
-		fragParam.registerEntry("Merge spectra from the same precursor");
+		ObjectEnumParameter<ActivationMethod> fragParam = new ObjectEnumParameter<ActivationMethod>("m", "FragmentMethodID");
+		fragParam.registerObject(ActivationMethod.ASWRITTEN).setDefault();
+		fragParam.registerObject(ActivationMethod.CID);
+		fragParam.registerObject(ActivationMethod.ETD);
+		fragParam.registerObject(ActivationMethod.HCD);
+		fragParam.registerObject(ActivationMethod.FUSION);
 		addParameter(fragParam);
 	}
 	
 	public void addInstTypeParam()
 	{
-		EnumParameter instParam = new EnumParameter("inst", "InstrumentID");
-		instParam.registerEntry("Low-res LCQ/LTQ").setDefault();
-		instParam.registerEntry("TOF");
-		instParam.registerEntry("High-res LTQ (Default for HCD)");
+		ObjectEnumParameter<InstrumentType> instParam = new ObjectEnumParameter<InstrumentType>("inst", "InstrumentID");
+		instParam.registerObject(InstrumentType.LOW_RESOLUTION_LTQ).setDefault();
+		instParam.registerObject(InstrumentType.TOF);
+		instParam.registerObject(InstrumentType.HIGH_RESOLUTION_LTQ);
 		addParameter(instParam);
 	}
 	
 	public void addEnzymeParam()
 	{
-		EnumParameter enzParam = new EnumParameter("e", "EnzymeID");
-		enzParam.registerEntry("No enzyme");
-		enzParam.registerEntry("Trypsin").setDefault();
-		enzParam.registerEntry("Chymotrypsin");
-		enzParam.registerEntry("Lys-C");
-		enzParam.registerEntry("Lys-N");
-		enzParam.registerEntry("Glu-C");
-		enzParam.registerEntry("Arg-C");
-		enzParam.registerEntry("Asp-N");
-		enzParam.registerEntry("alphaLP");
-		enzParam.registerEntry("endogenous peptides");
+		ObjectEnumParameter<Enzyme> enzParam = new ObjectEnumParameter<Enzyme>("e", "EnzymeID");
+		enzParam.registerObject(Enzyme.NOENZYME);
+		enzParam.registerObject(Enzyme.TRYPSIN).setDefault();
+		enzParam.registerObject(Enzyme.CHYMOTRYPSIN);
+		enzParam.registerObject(Enzyme.LysC);
+		enzParam.registerObject(Enzyme.LysN);
+		enzParam.registerObject(Enzyme.GluC);
+		enzParam.registerObject(Enzyme.ArgC);
+		enzParam.registerObject(Enzyme.AspN);
+		enzParam.registerObject(Enzyme.ALP);
+		enzParam.registerObject(Enzyme.Peptidomics);
 		addParameter(enzParam);
 	}
 	
@@ -217,6 +223,72 @@ public class ParamManager {
 		modParam.setAsOptional();
 		modParam.fileMustExist();
 		addParameter(modParam);
+	}
+	
+	public FileParameter getSpecFileParam()
+	{
+		return ((FileParameter)getParameter("s"));
+	}
+
+	public FileParameter getDBFileParam()
+	{
+		return ((FileParameter)getParameter("d"));
+	}
+	
+	public ToleranceParameter getPMTolParam()
+	{
+		return ((ToleranceParameter)getParameter("t"));
+	}
+	
+	public FileParameter getOutputFileParam()
+	{
+		return ((FileParameter)getParameter("o"));
+	}
+	
+	public ActivationMethod getActivationMethod()
+	{
+		return (ActivationMethod)((ObjectEnumParameter<?>)getParameter("m")).getObject();
+	}
+
+	public InstrumentType getInstType()
+	{
+		return (InstrumentType)((ObjectEnumParameter<?>)getParameter("inst")).getObject();
+	}
+
+	public Enzyme getEnzyme()
+	{
+		return (Enzyme)((ObjectEnumParameter<?>)getParameter("e")).getObject();
+	}
+	
+	public FileParameter getModFileParam()
+	{
+		return ((FileParameter)getParameter("mod"));
+	}
+	
+	public int getIntValue(String key)
+	{
+		Parameter param = this.getParameter(key);
+		if(param instanceof IntParameter)
+			return ((IntParameter)param).getValue();
+		else
+		{
+			System.err.println("[Error] in ParamManager.getIntValue: " + key + " is not an instance of IntParameter.");
+			System.exit(-1);
+		}
+		return -1;
+	}
+	
+	public File getFile(String key)
+	{
+		Parameter param = this.getParameter(key);
+		if(param instanceof FileParameter)
+			return ((FileParameter)param).getFile();
+		else
+		{
+			System.err.println("[Error] in ParamManager.getFile: " + key + " is not an instance of FileParameter.");
+			System.exit(-1);
+		}
+		return null;
 	}
 	
 	public static void main(String argv[])
@@ -327,6 +399,11 @@ public class ParamManager {
 		edgeScoreParam.registerEntry("do not use edge scoring");
 		edgeScoreParam.setHidden();
 		paramManager.addParameter(edgeScoreParam);
+		
+//		FileListParameter testParam = new FileListParameter("test", "test", "test");
+//		testParam.addFileFormat(SpecFileFormat.MGF);
+//		testParam.addFileFormat(SpecFileFormat.MZXML);
+//		paramManager.addParameter(testParam);
 		
 		String errMessage = paramManager.parseParams(argv); 
 		if(errMessage == null)

@@ -2,9 +2,11 @@ package msutil;
 
 import java.util.Hashtable;
 
-public class ActivationMethod {
-	private String name;
-	private String fullName;
+import params.ParamObject;
+
+public class ActivationMethod implements ParamObject {
+	private final String name;
+	private final String fullName;
 	private boolean electronBased = false;
 	
 	private ActivationMethod(String name, String fullName) 
@@ -21,8 +23,11 @@ public class ActivationMethod {
 	
 	public String getName()		{ return name; }
 	public String getFullName()	{ return fullName; }
+	@Override
+	public String getDescription()	{ return name; }
 	public boolean isElectronBased() { return electronBased; }
 	
+	public static final ActivationMethod ASWRITTEN;
 	public static final ActivationMethod CID;
 	public static final ActivationMethod ETD;
 	public static final ActivationMethod HCD;
@@ -74,11 +79,12 @@ public class ActivationMethod {
 	private static Hashtable<String, ActivationMethod> table;
 	
 	static {
+		ASWRITTEN = new ActivationMethod("As written in the spectrum or CID if no info", "as written in the spectrum or CID if no info");
 		CID = new ActivationMethod("CID", "collision-induced dissociation");
 		ETD = new ActivationMethod("ETD", "electron transfer dissociation").electronBased();
 		HCD = new ActivationMethod("HCD", "high-energy collision-induced dissociation");
 		PQD = new ActivationMethod("PQD", "pulsed q dissociation");
-		FUSION = new ActivationMethod("FUSION", "merge spectra from the same precursor");
+		FUSION = new ActivationMethod("Merge spectra from the same precursor", "Merge spectra from the same precursor");
 		
 		table = new Hashtable<String, ActivationMethod>();
 		table.put(CID.name, CID);
@@ -86,6 +92,5 @@ public class ActivationMethod {
 		table.put(HCD.name, HCD);
 		table.put(PQD.name, PQD);
 		table.put("ETD+SA", ETD);
-		table.put(FUSION.name, FUSION);
 	}
 }

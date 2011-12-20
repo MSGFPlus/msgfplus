@@ -179,7 +179,13 @@ public class MSGFDB {
 		}
 		
 		System.out.println("MS-GFDB v"+ VERSION + " (" + RELEASE_DATE + ")");
-		runMSGFDB(paramManager);
+		String errorMessage = runMSGFDB(paramManager);
+		if(errorMessage != null)
+		{
+			System.err.println("[Error] " + errorMessage);
+			System.out.println();
+			paramManager.printUsageInfo();
+		}
 		System.out.format("MS-GFDB complete (total elapsed time: %.2f sec)\n", (System.currentTimeMillis()-time)/(float)1000);
 	}
 	
@@ -187,46 +193,88 @@ public class MSGFDB {
 	{
 		long time = System.currentTimeMillis();
     	
-		// Parameter validity check
-		int minPeptideLength = ((IntParameter)paramManager.getParameter("minLength")).getValue();
-		int maxPeptideLength = ((IntParameter)paramManager.getParameter("maxLength")).getValue();
-		if(minPeptideLength > maxPeptideLength)
-		{
-			return "MinPepLength must not be larger than MaxPepLength";
-		}
+		// Spectrum file
+		FileParameter specParam = paramManager.getSpecFileParam();
+		File specFile = specParam.getFile();
+		SpecFileFormat specFormat = (SpecFileFormat)specParam.getFileFormat();
 		
-		int minCharge = ((IntParameter)paramManager.getParameter("minCharge")).getValue();
-		int maxCharge = ((IntParameter)paramManager.getParameter("maxCharge")).getValue();
-		if(minCharge > maxCharge)
-		{
-			return "MinCharge must not be larger than MaxCharge";
-		}
-
+		// DB file
+		File databaseFile = paramManager.getDBFileParam().getFile();
+		
+		// PM tolerance
 		ToleranceParameter tol = ((ToleranceParameter)paramManager.getParameter("t"));
 		Tolerance leftParentMassTolerance = tol.getLeftTolerance();
 		Tolerance rightParentMassTolerance = tol.getRightTolerance();
-		int toleranceUnit = ((IntParameter)paramManager.getParameter("u")).getValue();
+		
+		int toleranceUnit = paramManager.getIntValue("u");
 		if(toleranceUnit != 3)
 		{
 			boolean isTolerancePPM;
 			if(toleranceUnit == 0)
 				isTolerancePPM = false;
-			else if(toleranceUnit == 1)
+			else 
 				isTolerancePPM = true;
 			leftParentMassTolerance = new Tolerance(leftParentMassTolerance.getValue(), isTolerancePPM);
 			rightParentMassTolerance = new Tolerance(rightParentMassTolerance.getValue(), isTolerancePPM);
 		}
-//
-//	if(aaSet == null)
-//		aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
-//	
-//	if(activationMethod == ActivationMethod.HCD)
-//		instType = InstrumentType.HIGH_RESOLUTION_LTQ;
-//	
-//	if(rightParentMassTolerance.getToleranceAsDa(1000) >= 0.5f)
-//		numAllowedC13 = 0;
+		
+		int numAllowedC13 = paramManager.getIntValue("c13");
+		if(rightParentMassTolerance.getToleranceAsDa(1000) >= 0.5f)
+			numAllowedC13 = 0;
+		
+		File outputFile = paramManager.getOutputFileParam().getFile();
+		
+		Enzyme enzyme = paramManager.getEnzyme();
+		int numAllowedNonEnzymaticTermini = paramManager.getIntValue("nnet");
+		ActivationMethod activationMethod = paramManager.getActivationMethod();
+		InstrumentType instType = paramManager.getInstType();
+		if(activationMethod == ActivationMethod.HCD)
+			instType = InstrumentType.HIGH_RESOLUTION_LTQ;
+		
+		AminoAcidSet aaSet = null;
+		File modFile = paramManager.getModFileParam().getFile();
+		if(modFile == null)
+			aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
+		else
+		{
+			String modFileName = modFile.getName();
+			String ext = modFileName.substring(modFileName.lastIndexOf('.')+1);
+			if(ext.equalsIgnoreCase("xml"))
+				aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile(modFile.getPath());
+			else
+				aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
+		}
+		
+		int numMatchesPerSpec = paramManager.getIntValue("n");
+		
+		int startSpecIndex = ((IntRangeParameter)paramManager.getParameter("index")).getMin();
+		int endSpecIndex = ((IntRangeParameter)paramManager.getParameter("index")).getMax();
+		
+		boolean useTDA = paramManager.getIntValue("tda") == 1 ? true : false;
+		boolean showFDR = paramManager.getIntValue("showFDR") == 1 ? true : false;
+		
+		int minPeptideLength = paramManager.getIntValue("minLength");
+		int maxPeptideLength = paramManager.getIntValue("maxLength");
+		if(minPeptideLength > maxPeptideLength)
+		{
+			return "MinPepLength must not be larger than MaxPepLength";
+		}
+		
+		int minCharge = paramManager.getIntValue("minCharge");
+		int maxCharge = paramManager.getIntValue("maxCharge");
+		if(minCharge > maxCharge)
+		{
+			return "MinCharge must not be larger than MaxCharge";
+		}
+		
+//		numThreads, useUniformAAProb, dbIndexDir, replicateMergedResults, doNotDseEdgeScore);
+		int numThreads = paramManager.getIntValue("thread");
+		boolean useUniformAAProb = paramManager.getIntValue("uniformAAProb") == 1 ? true : false;
+		boolean replicateMergedResults = paramManager.getIntValue("replicate") == 1 ? true : false;
+		boolean doNotDseEdgeScore = paramManager.getIntValue("edgeScore") == 1 ? true : false;
 		
 		System.out.println("Loading database files...");
+		File dbIndexDir = paramManager.getFile("dd");
 		if(dbIndexDir != null)
 		{
 			File newDBFile = new File(dbIndexDir.getPath()+File.separator+databaseFile.getName());
@@ -250,7 +298,7 @@ public class MSGFDB {
 				System.out.println("Creating " + concatTargetDecoyDBFile.getPath() + ".");
 				if(ReverseDB.reverseDB(databaseFile.getPath(), concatTargetDecoyDBFile.getPath(), true) == false)
 				{
-					printUsageAndExit("Cannot create a decoy database file!");
+					return "Cannot create a decoy database file!";
 				}
 			}
 			databaseFile = concatTargetDecoyDBFile;
@@ -316,9 +364,8 @@ public class MSGFDB {
 		
 		if(specItr == null || specMap == null)
 		{
-			printUsageAndExit("Error while parsing spectrum file: " + specFile.getPath());
+			return "Error while parsing spectrum file: " + specFile.getPath();
 		}
-		
 
 		if(enzyme == null)
 			numAllowedNonEnzymaticTermini = 2;
@@ -493,5 +540,6 @@ public class MSGFDB {
     		System.out.print("Computing FDRs finished");
     		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
     	}
+    	return null;
 	}	    
 }

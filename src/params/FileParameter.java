@@ -1,7 +1,9 @@
 package params;
 
 import java.io.File;
-import java.util.HashSet;
+import java.util.ArrayList;
+
+import msutil.FileFormat;
 
 public class FileParameter extends Parameter {
 
@@ -11,9 +13,10 @@ public class FileParameter extends Parameter {
 	private boolean mustBeADirectory = false;
 	private boolean mustBeAFile = false;
 	
-	private HashSet<String> extensions = new HashSet<String>();	// if not empty, only those files with extensions contained here will be considered.
+	private ArrayList<FileFormat> fileFormats = new ArrayList<FileFormat>();	// available file format; if empty, all files are allowed.
 	
 	private File file;
+	private FileFormat fileFormat;
 	
 	public FileParameter(String key, String name, String description) {
 		super(key, name, description);
@@ -49,9 +52,9 @@ public class FileParameter extends Parameter {
 		return this;
 	}
 	
-	public FileParameter addExtension(String ext)
+	public FileParameter addFileFormat(FileFormat fileFormat)
 	{
-		extensions.add(ext.toLowerCase());
+		fileFormats.add(fileFormat);
 		return this;
 	}
 	
@@ -72,11 +75,27 @@ public class FileParameter extends Parameter {
 		}
 		
 		
-		if(!extensions.isEmpty())
+		if(!fileFormats.isEmpty())
 		{
+			this.fileFormat = null;
 			String fileName = path.getName();
-			String ext = fileName.substring(fileName.lastIndexOf('.')+1);
-			if(!extensions.contains(ext.toLowerCase()))
+			
+			for(FileFormat format : fileFormats)
+			{
+				if(!format.isCaseSensitive())
+					fileName = fileName.toLowerCase();
+				for(String suffix : format.getSuffixes())
+				{
+					if(!format.isCaseSensitive())
+						suffix = suffix.toLowerCase();
+					if(fileName.endsWith(suffix))
+					{
+						this.fileFormat = format;
+						break;
+					}
+				}
+			}
+			if(this.fileFormat == null)
 				return "extension does not match";
 		}
 		
@@ -94,6 +113,11 @@ public class FileParameter extends Parameter {
 	public File getFile()
 	{
 		return file;
+	}
+	
+	public FileFormat getFileFormat()
+	{
+		return fileFormat;
 	}
 
 	@Override
