@@ -13,6 +13,12 @@ import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import params.EnumParameter;
+import params.FileParameter;
+import params.IntParameter;
+import params.IntRangeParameter;
+import params.ParamManager;
+import params.ToleranceParameter;
 import parser.MS2SpectrumParser;
 import parser.MgfSpectrumParser;
 import parser.MzXMLSpectraIterator;
@@ -52,508 +58,174 @@ public class MSGFDB {
 	public static void main(String argv[])
 	{
 		long time = System.currentTimeMillis();
-		if(argv.length < 2 || argv.length % 2 != 0)
-			printUsageAndExit("The number of parameters must be even.");
 
-		File 	specFile = null;
-		SpecFileFormat specFormat = null;
-		File 	databaseFile 	= null;
-		File	paramFile	= null;
-		File 	dbIndexDir 	= null;
-		File	outputFile = null;
-//		Tolerance parentMassTolerance = null;
-		Tolerance leftParentMassTolerance = null;
-		Tolerance rightParentMassTolerance = null;
-		Boolean isTolerancePPM = null;
-		int numAllowedC13 = 1;
-		int 	numMatchesPerSpec = 1;
-		Enzyme	enzyme = Enzyme.TRYPSIN;
-		ActivationMethod activationMethod = null;
+		ParamManager paramManager = new ParamManager("MSGFDB", MSGFDB.VERSION, MSGFDB.RELEASE_DATE, "java -Xmx2000M -jar MSGFDB.jar");
 		
-		InstrumentType instType = InstrumentType.LOW_RESOLUTION_LTQ;
-		int numAllowedNonEnzymaticTermini = 1;
-//		boolean showTitle = false;
-		boolean useTDA = false;
-		boolean showFDR = true;
-		boolean replicateMergedResults = false;
-		boolean doNotDseEdgeScore = false;
-		boolean useUniformAAProb = false;
-		int minPeptideLength = 6;
-		int maxPeptideLength = 40;
-		int minCharge = 2;
-		int maxCharge = 3;
-		int startSpecIndex = 0;
-		int endSpecIndex = Integer.MAX_VALUE;
-		int numThreads = Runtime.getRuntime().availableProcessors();
+		paramManager.addSpecFileParam();
+		paramManager.addDBFileParam();
+		paramManager.addPMTolParam();
+		paramManager.addOutputFileParam();
 		
-		AminoAcidSet aaSet = null;
+		IntParameter numThreadParam = new IntParameter("thread", "NumThreads", "Number of concurrent threads to be executed, Default: Number of available cores");
+		numThreadParam.defaultValue(Runtime.getRuntime().availableProcessors());
+		numThreadParam.minValue(1);
+		paramManager.addParameter(numThreadParam);
 		
-		for(int i=0; i<argv.length; i+=2)
+		EnumParameter tdaParam = new EnumParameter("tda");
+		tdaParam.registerEntry("don't search decoy database").setDefault();
+		tdaParam.registerEntry("search decoy database to compute FDR");
+		paramManager.addParameter(tdaParam);
+		
+		paramManager.addFragMethodParam();
+		paramManager.addInstTypeParam();
+		paramManager.addEnzymeParam();
+		
+		EnumParameter c13Param = new EnumParameter("c13");
+		c13Param.registerEntry("Consider only peptides matching precursor mass");
+		c13Param.registerEntry("Consider peptides having one 13C").setDefault();
+		c13Param.registerEntry("Consider peptides having up to two 13C");
+		paramManager.addParameter(c13Param);
+		
+		EnumParameter nnetParam = new EnumParameter("nnet", null, "Number of allowed non-enzymatic termini");
+		nnetParam.registerEntry("");
+		nnetParam.registerEntry("").setDefault();
+		nnetParam.registerEntry("");
+		paramManager.addParameter(nnetParam);
+		
+		paramManager.addModFileParam();
+		
+		IntParameter minLenParam = new IntParameter("minLength", "MinPepLength", "Minimum peptide length to consider, Default: 6");
+		minLenParam.minValue(1);
+		minLenParam.defaultValue(6);
+		paramManager.addParameter(minLenParam);
+
+		IntParameter maxLenParam = new IntParameter("maxLength", "MaxPepLength", "Maximum peptide length to consider, Default: 40");
+		maxLenParam.minValue(1);
+		maxLenParam.defaultValue(40);
+		paramManager.addParameter(maxLenParam);
+
+		IntParameter minCharge = new IntParameter("minCharge", "MinCharge", "Minimum precursor charge to consider if charges are not specified in the spectrum file, Default: 2");
+		minCharge.minValue(1);
+		minCharge.defaultValue(2);
+		paramManager.addParameter(minCharge);
+
+		IntParameter maxCharge = new IntParameter("maxCharge", "MaxCharge", "Maximum precursor charge to consider if charges are not specified in the spectrum file, Default: 3");
+		maxCharge.minValue(1);
+		maxCharge.defaultValue(3);
+		paramManager.addParameter(maxCharge);
+		
+		IntParameter numMatchesParam = new IntParameter("n", "NumMatchesPerSpec", "Number of matches per spectrum to be reported, Default: 1");
+		numMatchesParam.minValue(1);
+		numMatchesParam.defaultValue(1);
+		paramManager.addParameter(numMatchesParam);
+		
+		EnumParameter uniformAAProb = new EnumParameter("uniformAAProb");
+		uniformAAProb.registerEntry("use amino acid probabilities computed from the input database").setDefault();
+		uniformAAProb.registerEntry("use probability 0.05 for all amino acids");
+		paramManager.addParameter(uniformAAProb);
+		
+		paramManager.addExample("Example (high-precision): java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 30ppm -c13 1 -nnet 0 -tda 1 -o testMSGFDB.tsv");
+		paramManager.addExample("Example (low-precision): java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 0.5Da,2.5Da -nnet 0 -tda 1 -o testMSGFDB.tsv");
+		
+		// Hidden parameters
+		FileParameter dbIndexDirParam = new FileParameter("dd", "DBIndexDir", "Path to the directory containing database index files");
+		dbIndexDirParam.fileMustExist();
+		dbIndexDirParam.mustBeADirectory();
+		dbIndexDirParam.setAsOptional();
+		dbIndexDirParam.setHidden();
+		paramManager.addParameter(dbIndexDirParam);
+		
+		EnumParameter unitParam = new EnumParameter("u");
+		unitParam.registerEntry("Da");
+		unitParam.registerEntry("ppm");
+		unitParam.registerEntry("Don't care").setDefault();
+		unitParam.setHidden();
+		paramManager.addParameter(unitParam);
+		
+		IntRangeParameter specIndexParam = new IntRangeParameter("index", "SpecIndex", "Range of spectrum index to be considered");
+		specIndexParam.minValue(1);
+		specIndexParam.defaultValue("1,"+(Integer.MAX_VALUE-1));
+		specIndexParam.setHidden();
+		paramManager.addParameter(specIndexParam);
+		
+		EnumParameter showFDRParam = new EnumParameter("showFDR");
+		showFDRParam.registerEntry("do not show FDRs");
+		showFDRParam.registerEntry("show FDRs").setDefault();
+		showFDRParam.setHidden();
+		paramManager.addParameter(showFDRParam);
+		
+		EnumParameter replicateMergedResParam = new EnumParameter("replicate");
+		replicateMergedResParam.registerEntry("show merged spectra").setDefault();
+		replicateMergedResParam.registerEntry("show individual spectra");
+		replicateMergedResParam.setHidden();
+		paramManager.addParameter(replicateMergedResParam);
+
+		EnumParameter edgeScoreParam = new EnumParameter("edgeScore");
+		edgeScoreParam.registerEntry("use edge scoring").setDefault();
+		edgeScoreParam.registerEntry("do not use edge scoring");
+		edgeScoreParam.setHidden();
+		paramManager.addParameter(edgeScoreParam);
+		
+		String errMessage = paramManager.parseParams(argv); 
+		if(errMessage == null)
 		{
-			if(!argv[i].startsWith("-") || i+1 >= argv.length)
-				printUsageAndExit("Illegal parameters");
-			else if(argv[i].equalsIgnoreCase("-s"))
-			{
-				specFile = new File(argv[i+1]);
-				if(!specFile.exists())
-				{
-					printUsageAndExit(argv[i+1]+" doesn't exist.");
-				}
-				if(specFile.isDirectory())
-				{
-					printUsageAndExit(argv[i+1]+" must not be a directory!");
-				}
-				else
-				{
-					String specFileName = specFile.getName();
-					int posDot = specFileName.lastIndexOf('.');
-					if(posDot >= 0)
-					{
-						String extension = specFileName.substring(posDot);
-						if(extension.equalsIgnoreCase(".mzXML") || extension.equalsIgnoreCase(".mzML"))
-							specFormat = SpecFileFormat.MZXML;
-						else if(extension.equalsIgnoreCase(".mgf"))
-							specFormat = SpecFileFormat.MGF;
-						else if(extension.equalsIgnoreCase(".ms2"))
-							specFormat = SpecFileFormat.MS2;
-						else if(extension.equalsIgnoreCase(".pkl"))
-							specFormat = SpecFileFormat.PKL;
-					}		
-					if(specFormat == null && specFileName.length() > 8)
-					{
-						String suffix = specFileName.substring(specFileName.length()-8);
-						if(suffix.equalsIgnoreCase("_dta.txt"))
-							specFormat = SpecFileFormat.DTA_TXT;
-					}
-				}
-
-				if(specFormat == null)
-					printUsageAndExit("Illegal spectrum format: " + argv[i+1]);
-			}
-			else if(argv[i].equalsIgnoreCase("-d"))
-			{
-				databaseFile = new File(argv[i+1]);
-				if(!databaseFile.exists())
-				{
-					printUsageAndExit(argv[i+1]+" doesn't exist.");
-				}
-				String databaseFileName = databaseFile.getName();
-				String dbExt = databaseFileName.substring(databaseFileName.lastIndexOf('.')+1);
-				if(!dbExt.equalsIgnoreCase("fasta") && !dbExt.equalsIgnoreCase("fa"))
-				{
-					printUsageAndExit("Database file must ends with .fa or .fasta!: " + argv[i+1]);
-				}
-			}
-			else if(argv[i].equalsIgnoreCase("-dd"))
-			{
-				dbIndexDir = new File(argv[i+1]);
-				if(!dbIndexDir.exists())
-				{
-					printUsageAndExit(argv[i+1]+" doesn't exist.");
-				}
-				if(!dbIndexDir.isDirectory())
-				{
-					printUsageAndExit(argv[i+1]+" is not a directory.");
-				}
-			}
-			else if(argv[i].equalsIgnoreCase("-param"))
-			{
-				paramFile = new File(argv[i+1]);
-				if(!paramFile.exists())
-				{
-					printUsageAndExit(argv[i+1]+" doesn't exist.");
-				}
-			}
-			else if(argv[i].equalsIgnoreCase("-t"))
-			{
-				String[] token = argv[i+1].split(",");
-				if(token.length == 1)
-				{
-					leftParentMassTolerance = rightParentMassTolerance = Tolerance.parseToleranceStr(token[0]);
-				}
-				else if(token.length == 2)
-				{
-					leftParentMassTolerance = Tolerance.parseToleranceStr(token[0]);
-					rightParentMassTolerance = Tolerance.parseToleranceStr(token[1]);
-				}
-				if(leftParentMassTolerance == null || rightParentMassTolerance == null)
-				{
-					printUsageAndExit("Illegal tolerance value: " + argv[i+1]);
-				}
-				if(leftParentMassTolerance.isTolerancePPM() != rightParentMassTolerance.isTolerancePPM())
-				{
-					printUsageAndExit("Left and right tolerance units must be the same: " + argv[i+1]);
-				}
-				if(leftParentMassTolerance.getValue() < 0 || rightParentMassTolerance.getValue() < 0)
-				{
-					printUsageAndExit("Parent mass tolerance must not be negative: " + argv[i+1]);
-				}
-			}
-			else if(argv[i].equalsIgnoreCase("-u"))	// hidden option for ccms workflow
-			{
-				if(argv[i+1].equalsIgnoreCase("1"))
-					isTolerancePPM = true;
-				else if(argv[i+1].equalsIgnoreCase("0"))
-					isTolerancePPM = false;
-			}
-			else if(argv[i].equalsIgnoreCase("-c13"))
-			{
-				try {
-					numAllowedC13 = Integer.parseInt(argv[i+1]);
-					if(numAllowedC13 != 0 && numAllowedC13 != 1 && numAllowedC13 != 2)
-					{
-						printUsageAndExit("Illegal -c13 value (must be 0/1/2): " + argv[i+1]);
-					}
-				} catch (NumberFormatException e)
-				{
-					printUsageAndExit("Illigal numMatchesPerSpec: " + argv[i+1]);
-				} 
-				
-			}
-			else if(argv[i].equalsIgnoreCase("-o"))
-			{
-				outputFile = new File(argv[i+1]);
-			}
-			else if(argv[i].equalsIgnoreCase("-m"))	// Fragmentation method
-			{
-				// (0: written in the spectrum, 1: CID , 2: ETD, 3: HCD)
-				if(argv[i+1].equalsIgnoreCase("0"))
-				{
-					activationMethod = null;
-				}
-				else if(argv[i+1].equalsIgnoreCase("1"))
-				{
-					activationMethod = ActivationMethod.CID;
-				}
-				else if(argv[i+1].equalsIgnoreCase("2"))
-				{
-					activationMethod = ActivationMethod.ETD;
-				}
-				else if(argv[i+1].equalsIgnoreCase("3"))
-				{
-					activationMethod = ActivationMethod.HCD;
-				}
-				else if(argv[i+1].equalsIgnoreCase("4"))
-				{
-					activationMethod = ActivationMethod.FUSION;
-				}
-				else
-					printUsageAndExit("Illegal activation method: " + argv[i+1]);
-			}			
-			else if(argv[i].equalsIgnoreCase("-inst"))	// Instrument type
-			{
-				if(argv[i+1].equalsIgnoreCase("0"))
-				{
-					instType = InstrumentType.LOW_RESOLUTION_LTQ;
-				}
-				else if(argv[i+1].equalsIgnoreCase("1"))
-				{
-					instType = InstrumentType.TOF;
-				}
-				else if(argv[i+1].equalsIgnoreCase("2"))
-				{
-					instType = InstrumentType.HIGH_RESOLUTION_LTQ;
-				}
-				else
-				{
-					printUsageAndExit("Illegal instrument type: " + argv[i+1]);
-				}
-			}			
-			else if(argv[i].equalsIgnoreCase("-e"))	// Enzyme
-			{
-				// 0: No enzyme, 1: Trypsin, 2: Chymotrypsin, 3: LysC, 4: LysN, 5: GluC, 6: ArgC, 7: AspN
-				if(argv[i+1].equalsIgnoreCase("0"))
-					enzyme = null;
-				else if(argv[i+1].equalsIgnoreCase("1"))
-					enzyme = Enzyme.TRYPSIN;
-				else if(argv[i+1].equalsIgnoreCase("2"))
-					enzyme = Enzyme.CHYMOTRYPSIN;
-				else if(argv[i+1].equalsIgnoreCase("3"))
-					enzyme = Enzyme.LysC;
-				else if(argv[i+1].equalsIgnoreCase("4"))
-					enzyme = Enzyme.LysN;
-				else if(argv[i+1].equalsIgnoreCase("5"))
-					enzyme = Enzyme.GluC;
-				else if(argv[i+1].equalsIgnoreCase("6"))
-					enzyme = Enzyme.ArgC;
-				else if(argv[i+1].equalsIgnoreCase("7"))
-					enzyme = Enzyme.AspN;
-				else if(argv[i+1].equalsIgnoreCase("8"))
-					enzyme = Enzyme.ALP;
-				else if(argv[i+1].equalsIgnoreCase("9"))
-					enzyme = Enzyme.Peptidomics;
-				else
-					printUsageAndExit("Illegal enzyme: " + argv[i+1]);
-			}
-			else if(argv[i].equalsIgnoreCase("-mod"))
-			{
-				File modFile = new File(argv[i+1]);
-				if(!modFile.exists())
-				{
-					printUsageAndExit(modFile + " doesn't exist.");
-				}
-				String modFileName = modFile.getName();
-				if(!modFileName.substring(modFileName.lastIndexOf('.')+1).equalsIgnoreCase("xml"))	// custom mod file
-				{
-					aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
-				}
-				else	// mod file for ccms workflow
-				{
-					aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile(modFile.getPath());
-				}
-			}
-			else if(argv[i].equalsIgnoreCase("-n"))
-			{
-				try {
-					numMatchesPerSpec = Integer.parseInt(argv[i+1]);
-				} catch (NumberFormatException e)
-				{
-					printUsageAndExit("Illigal numMatchesPerSpec: " + argv[i+1]);
-				} 
-			}
-			else if(argv[i].equalsIgnoreCase("-scan"))
-			{
-				String[] token = argv[i+1].split(",");
-				if(token.length != 1 && token.length != 2)
-				{
-					printUsageAndExit("Illigal scanNum: " + argv[i+1]);
-				}
-				try {
-					startSpecIndex = Integer.parseInt(token[0]);
-					if(token.length == 2)
-						endSpecIndex = Integer.parseInt(token[1]);
-					else
-						endSpecIndex = startSpecIndex+1;
-				} catch (NumberFormatException e)
-				{
-					printUsageAndExit("Illigal scanNum: " + argv[i+1]);
-				} 
-			}
-			else if(argv[i].equalsIgnoreCase("-thread"))
-			{
-				try {
-					numThreads = Integer.parseInt(argv[i+1]);
-				} catch (NumberFormatException e)
-				{
-					printUsageAndExit("Illigal number of threads: " + argv[i+1]);
-				} 
-			}
-			else if(argv[i].equalsIgnoreCase("-minLength"))
-			{
-				try {
-					minPeptideLength = Integer.parseInt(argv[i+1]);
-				} catch (NumberFormatException e)
-				{
-					printUsageAndExit("Illigal minLength: " + argv[i+1]);
-				} 
-			}
-			else if(argv[i].equalsIgnoreCase("-maxLength"))
-			{
-				try {
-					maxPeptideLength = Integer.parseInt(argv[i+1]);
-				} catch (NumberFormatException e)
-				{
-					printUsageAndExit("Illigal maxLength: " + argv[i+1]);
-				} 
-			}
-			else if(argv[i].equalsIgnoreCase("-minCharge"))
-			{
-				try {
-					minCharge = Integer.parseInt(argv[i+1]);
-				} catch (NumberFormatException e)
-				{
-					printUsageAndExit("Illigal minCharge: " + argv[i+1]);
-				} 
-			}
-			else if(argv[i].equalsIgnoreCase("-maxCharge"))
-			{
-				try {
-					maxCharge = Integer.parseInt(argv[i+1]);
-				} catch (NumberFormatException e)
-				{
-					printUsageAndExit("Illigal maxCharge: " + argv[i+1]);
-				} 
-			}
-			else if(argv[i].equalsIgnoreCase("-nnet"))
-			{
-				try {
-					numAllowedNonEnzymaticTermini = Integer.parseInt(argv[i+1]);
-					if(numAllowedNonEnzymaticTermini != 0 && numAllowedNonEnzymaticTermini != 1 && numAllowedNonEnzymaticTermini !=2)
-						printUsageAndExit("Illegal -nnet (0/1/2 are allowed): " + argv[i+1]);
-				} catch (NumberFormatException e)
-				{
-					printUsageAndExit("Illigal numMatchesPerSpec: " + argv[i+1]);
-				} 
-			}
-//			else if(argv[i].equalsIgnoreCase("-title"))
-//			{
-//				if(argv[i+1].equalsIgnoreCase("1"))
-//					showTitle = true;
-//			}
-			else if(argv[i].equalsIgnoreCase("-uniformAAProb"))
-			{
-				if(argv[i+1].equalsIgnoreCase("1"))
-					useUniformAAProb = true;
-			}
-			else if(argv[i].equalsIgnoreCase("-tda"))
-			{
-				if(argv[i+1].equalsIgnoreCase("1"))
-					useTDA = true;
-				else if(argv[i+1].equalsIgnoreCase("0"))
-					useTDA = false;
-				else
-				{
-					printUsageAndExit("Illigal -tda parameter: " + argv[i+1]);
-				}
-			}
-			else if(argv[i].equalsIgnoreCase("-showFDR"))
-			{
-				if(argv[i+1].equalsIgnoreCase("1"))
-					showFDR = true;
-				else if(argv[i+1].equalsIgnoreCase("0"))
-					showFDR = false;
-				else
-				{
-					printUsageAndExit("Illigal -showFDR parameter: " + argv[i+1]);
-				}
-			}
-			else if(argv[i].equalsIgnoreCase("-replicate"))
-			{
-				if(argv[i+1].equalsIgnoreCase("1"))
-					replicateMergedResults = true;
-				else if(argv[i+1].equalsIgnoreCase("0"))
-					replicateMergedResults = false;
-				else
-				{
-					printUsageAndExit("Illigal -replicate parameter: " + argv[i+1]);
-				}
-			}
-			else if(argv[i].equalsIgnoreCase("-edgeScore"))	// hidden parameter
-			{
-				if(argv[i+1].equalsIgnoreCase("1"))
-					doNotDseEdgeScore = false;
-				else if(argv[i+1].equalsIgnoreCase("0"))
-					doNotDseEdgeScore = true;
-				else
-				{
-					printUsageAndExit("Illigal -replicate parameter: " + argv[i+1]);
-				}
-			}
-			else
-			{
-				printUsageAndExit("Invalid parameter: " + argv[i]);
-			}
+			paramManager.printValues();
 		}
-		
-		if(specFile == null)
-			printUsageAndExit("Spectrum is not specified.");
-		if(databaseFile == null)
-			printUsageAndExit("Database is not specified.");
-		
-		if(leftParentMassTolerance == null || rightParentMassTolerance == null)
-			printUsageAndExit("Parent mass tolerance is not specified.");
-
-		if(minPeptideLength > maxPeptideLength)
-			printUsageAndExit("MinPepLength must not be larger than MaxPepLength!");
-			
-		if(minCharge > maxCharge)
-			printUsageAndExit("MinPrecursorCharge must not be larger than MaxPrecursorCharge!");
-		
-		if(isTolerancePPM != null)
+		else
 		{
-			leftParentMassTolerance = new Tolerance(leftParentMassTolerance.getValue(), isTolerancePPM);
-			rightParentMassTolerance = new Tolerance(rightParentMassTolerance.getValue(), isTolerancePPM);
+			System.err.println("[Error] " + errMessage);
+			System.out.println();
+			paramManager.printUsageInfo();
 		}
-	
-		if(aaSet == null)
-			aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
-		
-		if(activationMethod == ActivationMethod.HCD)
-			instType = InstrumentType.HIGH_RESOLUTION_LTQ;
-		
-		if(rightParentMassTolerance.getToleranceAsDa(1000) >= 0.5f)
-			numAllowedC13 = 0;
 		
 		System.out.println("MS-GFDB v"+ VERSION + " (" + RELEASE_DATE + ")");
-		runMSGFDB(specFile, specFormat, databaseFile, leftParentMassTolerance, rightParentMassTolerance, numAllowedC13,
-	    		outputFile, enzyme, numAllowedNonEnzymaticTermini,
-	    		activationMethod, instType, aaSet, numMatchesPerSpec, startSpecIndex, endSpecIndex, useTDA, showFDR,
-	    		minPeptideLength, maxPeptideLength, minCharge, maxCharge, numThreads, useUniformAAProb, dbIndexDir, replicateMergedResults, doNotDseEdgeScore);
+		runMSGFDB(paramManager);
 		System.out.format("MS-GFDB complete (total elapsed time: %.2f sec)\n", (System.currentTimeMillis()-time)/(float)1000);
 	}
 	
-	public static void printUsageAndExit()
-	{
-		printUsageAndExit(null);
-	}
-	
-	public static void printUsageAndExit(String message)
-	{
-		if(message != null)
-			System.out.println("Error: " + message + "\n");
-		System.out.println("MSGFDB v"+ VERSION + " (" + RELEASE_DATE + ")");
-		System.out.print("Usage: java -Xmx2000M -jar MSGFDB.jar\n"
-				+ "\t-s SpectrumFile (*.mzXML, *.mzML, *.mgf, *.ms2, *.pkl or *_dta.txt)\n" //, *.mgf, *.pkl, *.ms2)\n"
-				+ "\t-d Database (*.fasta or *.fa)\n"
-				+ "\t-t ParentMassTolerance (e.g. 2.5Da, 30ppm or 0.5Da,2.5Da)\n"
-				+ "\t   Use comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (expMass<theoMass) and 2.5Da to the right (expMass>theoMass).\n"
-				+ "\t[-o outputFileName] (Default: stdout)\n"
-				+ "\t[-thread NumOfThreads] (Number of concurrent threads to be executed, Default: Number of available cores)\n"
-				+ "\t[-tda 0/1] (0: don't search decoy database (default), 1: search decoy database to compute FDR)\n"
-				+ "\t[-m FragmentationMethodID] (0: as written in the spectrum or CID if no info (Default), 1: CID, 2: ETD, 3: HCD, 4: Merge spectra from the same precursor)\n"
-				+ "\t[-inst InstrumentID] (0: Low-res LCQ/LTQ (Default for CID and ETD), 1: TOF , 2: High-res LTQ (Default for HCD))\n"
-				+ "\t[-e EnzymeID] (0: No enzyme, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N, 8: alphaLP, 9: endogenous peptides)\n"
-				+ "\t[-c13 0/1/2] (Number of allowed 13C, Default: 1)\n"
-				+ "\t[-nnet 0/1/2] (Number of allowed non-enzymatic termini, Default: 1)\n"
-				+ "\t[-mod ModificationFileName] (Modification file, Default: standard amino acids with fixed C+57)\n"
-				+ "\t[-minLength MinPepLength] (Minimum peptide length to consider, Default: 6)\n"
-				+ "\t[-maxLength MaxPepLength] (Maximum peptide length to consider, Default: 40)\n"
-				+ "\t[-minCharge MinPrecursorCharge] (Minimum precursor charge to consider if charges are not specified in the spectrum file, Default: 2)\n"
-				+ "\t[-maxCharge MaxPrecursorCharge] (Maximum precursor charge to consider if charges are not specified in the spectrum file, Default: 3)\n"
-				+ "\t[-n NumMatchesPerSpec] (Number of matches per spectrum to be reported, Default: 1)\n"
-				+ "\t[-uniformAAProb 0/1] (0: use amino acid probabilities computed from the input database (Default), 1: use probability 0.05 for all amino acids)\n"
-//				+ "\t[-scan scanNum] (scan number to be searched)\n" => hidden option
-//				+ "\t[-showFDR 0/1] (0: don't show FDR, 1: show FDR (default)\n" => hidden option
-//				+ "\t[-param paramFile]\n"
-//				+ "\t[-err 0/1 (0: don't use peak errors (default), 1: use peak errors for scoring]\n"
-//				+ "\t[-title 0/1] (0: don't show title (default), 1: show title)\n"
-				);
-		System.out.println("Example (high-precision): java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 30ppm -c13 1 -nnet 0 -tda 1 -o testMSGFDB.tsv");
-		System.out.println("Example (low-precision): java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 0.5Da,2.5Da -nnet 0 -tda 1 -o testMSGFDB.tsv");
-		System.exit(-1);
-	}
-	
-    public static void runMSGFDB(
-    		File specFile, 
-    		SpecFileFormat specFormat, 
-    		File databaseFile, 
-    		Tolerance leftParentMassTolerance, 
-    		Tolerance rightParentMassTolerance, 
-    		int numAllowedC13,
-    		File outputFile, 
-    		Enzyme enzyme, 
-    		int numAllowedNonEnzymaticTermini,
-    		ActivationMethod activationMethod, 
-    		InstrumentType instType,
-    		AminoAcidSet aaSet, 
-    		int numMatchesPerSpec,
-    		int startSpecIndex,
-    		int endSpecIndex,
-    		boolean useTDA,
-    		boolean showFDR,
-    		int minPeptideLength,
-    		int maxPeptideLength,
-    		int minCharge,
-    		int maxCharge,
-    		int numThreads,
-    		boolean useUniformAAProb,
-    		File dbIndexDir,
-    		boolean replicateMergedResults,
-    		boolean doNotDseEdgeScore
-    		)
+    public static String runMSGFDB(ParamManager paramManager)
 	{
 		long time = System.currentTimeMillis();
     	
+		// Parameter validity check
+		int minPeptideLength = ((IntParameter)paramManager.getParameter("minLength")).getValue();
+		int maxPeptideLength = ((IntParameter)paramManager.getParameter("maxLength")).getValue();
+		if(minPeptideLength > maxPeptideLength)
+		{
+			return "MinPepLength must not be larger than MaxPepLength";
+		}
+		
+		int minCharge = ((IntParameter)paramManager.getParameter("minCharge")).getValue();
+		int maxCharge = ((IntParameter)paramManager.getParameter("maxCharge")).getValue();
+		if(minCharge > maxCharge)
+		{
+			return "MinCharge must not be larger than MaxCharge";
+		}
+
+		ToleranceParameter tol = ((ToleranceParameter)paramManager.getParameter("t"));
+		Tolerance leftParentMassTolerance = tol.getLeftTolerance();
+		Tolerance rightParentMassTolerance = tol.getRightTolerance();
+		int toleranceUnit = ((IntParameter)paramManager.getParameter("u")).getValue();
+		if(toleranceUnit != 3)
+		{
+			boolean isTolerancePPM;
+			if(toleranceUnit == 0)
+				isTolerancePPM = false;
+			else if(toleranceUnit == 1)
+				isTolerancePPM = true;
+			leftParentMassTolerance = new Tolerance(leftParentMassTolerance.getValue(), isTolerancePPM);
+			rightParentMassTolerance = new Tolerance(rightParentMassTolerance.getValue(), isTolerancePPM);
+		}
+//
+//	if(aaSet == null)
+//		aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
+//	
+//	if(activationMethod == ActivationMethod.HCD)
+//		instType = InstrumentType.HIGH_RESOLUTION_LTQ;
+//	
+//	if(rightParentMassTolerance.getToleranceAsDa(1000) >= 0.5f)
+//		numAllowedC13 = 0;
+		
 		System.out.println("Loading database files...");
 		if(dbIndexDir != null)
 		{

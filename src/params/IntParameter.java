@@ -47,4 +47,8 @@ public class IntParameter extends Parameter {
 		return String.valueOf(value);
 	}
 
+	public int getValue()
+	{
+		return value;
+	}
 }
