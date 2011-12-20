@@ -13,16 +13,18 @@ public class ToleranceParameter extends Parameter {
 
 	public ToleranceParameter defaultValue(String value)
 	{
-		if(parse(value) == false)
+		super.setOptional();
+		String error = parse(value);
+		if(error != null)
 		{
-			System.err.println("(ToleranceParameter) Error while setting default value: " + value);
+			System.err.println("(ToleranceParameter) Error while setting default value: " + error);
 			System.exit(-1);
 		}
 		return this;
 	}
 	
 	@Override
-	public boolean parse(String value) {
+	public String parse(String value) {
 		String[] token = value.split(",");
 		if(token.length == 1)
 		{
@@ -35,20 +37,17 @@ public class ToleranceParameter extends Parameter {
 		}
 		if(leftTolerance == null || rightTolerance == null)
 		{
-//			printUsageAndExit("Illegal tolerance value: " + value);
-			return false;
+			return "illegal tolerance value";
 		}
 		if(leftTolerance.isTolerancePPM() != rightTolerance.isTolerancePPM())
 		{
-//			printUsageAndExit("Left and right tolerance units must be the same: " + value);
-			return false;
+			return "left and right tolerance units must be the same";
 		}
 		if(leftTolerance.getValue() < 0 || rightTolerance.getValue() < 0)
 		{
-//			printUsageAndExit("Parent mass tolerance must not be negative: " + value);
-			return false;
+			return "parent mass tolerance must not be negative";
 		}
-		return true;
+		return null;
 	}
 
 	@Override

@@ -475,7 +475,6 @@ public class MSGFDB {
 			numAllowedC13 = 0;
 		
 		System.out.println("MS-GFDB v"+ VERSION + " (" + RELEASE_DATE + ")");
-		
 		runMSGFDB(specFile, specFormat, databaseFile, leftParentMassTolerance, rightParentMassTolerance, numAllowedC13,
 	    		outputFile, enzyme, numAllowedNonEnzymaticTermini,
 	    		activationMethod, instType, aaSet, numMatchesPerSpec, startSpecIndex, endSpecIndex, useTDA, showFDR,

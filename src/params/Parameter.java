@@ -6,6 +6,7 @@ public abstract class Parameter {
 	private String description;
 	private boolean isOptional = false;
 	private boolean isValueAssigned = false;
+	private String additionalDescription = null;
 	
 	private boolean hidden = false;
 	
@@ -22,8 +23,14 @@ public abstract class Parameter {
 	public String getKey()	{ return key; }
 	public String getName()			{ return name; }
 	public String getDescription()	{ return description; }
+	public String getAdditionalDescription() { return additionalDescription; }
 	public boolean isOptional()		{ return isOptional; }
 	public boolean isHidden()		{ return hidden; }
+	
+	public void setAdditionalDescription(String additionalDescription)
+	{
+		this.additionalDescription = additionalDescription;
+	}
 	
 	public String toString()
 	{
@@ -43,6 +50,6 @@ public abstract class Parameter {
 		return true; 
 	}
 	
-	public abstract boolean parse(String value);
+	public abstract String parse(String value);
 	public abstract String getValueAsString();
 }

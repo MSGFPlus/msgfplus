@@ -77,7 +77,7 @@ public class EnumParameter extends IntParameter {
 	}
 	
 	@Override
-	public boolean parse(String value) {
+	public String parse(String value) {
 		super.maxValue(super.minValue+descriptions.size());
 		return super.parse(value);
 	}	

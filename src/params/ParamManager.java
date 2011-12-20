@@ -1,14 +1,26 @@
 package params;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import ui.MSGFDB;
+
 public class ParamManager {
 	private LinkedHashMap<String,Parameter> params;
+	private String toolName;
+	private String version;
+	private String date;
+	private String command;
+	private ArrayList<String> examples = new ArrayList<String>();
 	
-	public ParamManager()
+	public ParamManager(String toolName, String version, String date, String command)
 	{
+		this.toolName = toolName;
+		this.version = version;
+		this.date = date;
+		this.command = command;
 		params = new LinkedHashMap<String,Parameter>();
 	}
 
@@ -22,25 +34,18 @@ public class ParamManager {
 		params.put(param.getKey(), param);
 		return true;
 	}
+
+	public void addExample(String example)
+	{
+		this.examples.add(example);
+	}
 	
 	public Parameter getParameter(String key)
 	{
 		return params.get(key);
 	}
 	
-//	public boolean isValid()
-//	{
-//		Iterator<Entry<String, Parameter>> itr = params.entrySet().iterator();
-//		while(itr.hasNext())
-//		{
-//			Entry<String, Parameter> entry = itr.next();
-//			if(!entry.getValue().isValid())
-//				return false;
-//		}
-//		return true;
-//	}
-
-	public boolean isValid()
+	public String isValid()
 	{
 		Iterator<Entry<String, Parameter>> itr = params.entrySet().iterator();
 		while(itr.hasNext())
@@ -49,22 +54,30 @@ public class ParamManager {
 			Parameter param = entry.getValue();
 			if(!param.isValid())
 			{
-				System.err.println("Parameter -" + param.getKey() + " (" + param.getName() + ") is missing!");
-				return false;
+				return "Parameter -" + param.getKey() + " (" + param.getName() + ") is missing";
 			}
 		}
-		return true;
+		return null;
 	}
 	
-	public void printUsageInfo(String prefix)
+	public void printUsageInfo()
 	{
+		System.out.println(this.toolName + " v" + this.version + " (" + this.date + ")");
+		System.out.println("Usage: " + this.command);
 		Iterator<Entry<String, Parameter>> itr = params.entrySet().iterator();
 		while(itr.hasNext())
 		{
 			Entry<String, Parameter> entry = itr.next();
-			if(!entry.getValue().isHidden())
-				System.out.println(prefix+entry.getValue());
+			Parameter param = entry.getValue();
+			if(!param.isHidden())
+			{
+				System.out.println("\t"+param);
+				if(param.getAdditionalDescription() != null)
+					System.out.println("\t   "+param.getAdditionalDescription());
+			}
 		}
+		for(String example : examples)
+			System.out.println(example);
 	}
 	
 	public void printValues()
@@ -77,20 +90,23 @@ public class ParamManager {
 		}
 	}
 	
-	public boolean parseParams(String argv[])
+	public String parseParams(String argv[])
 	{
+		if(argv.length == 0)
+		{
+			return "No parameter specified.";
+		}
+		
 		if(argv.length < 2 || argv.length % 2 != 0)
 		{
-			System.err.println("The number of parameters must be even.");
-			return false;
+			return "The number of parameters must be even.";
 		}
 		
 		for(int i=0; i<argv.length; i+=2)
 		{
 			if(!argv[i].startsWith("-") || i+1 >= argv.length || argv[i].length() <= 1)
 			{
-				System.err.println("Illegal parameters!");
-				return false;
+				return "Syntax error.";
 			}
 			else
 			{
@@ -98,74 +114,89 @@ public class ParamManager {
 				Parameter param = params.get(key);
 				if(param == null)
 				{
-					System.err.println("Invalid parameter: " + argv[i]);
-					return false;
+					return "Invalid parameter: " + argv[i] + ".";
 				}
 				else 
 				{
-					if(param.parse(argv[i+1]) == false)
+					String error = param.parse(argv[i+1]);
+					if(error != null)
 					{
-						System.err.println("Invalid value for parameter " + argv[i] + ": " + argv[i+1]);
-						return false;
+						String err = "Invalid value for parameter " + argv[i] + ": " + argv[i+1];
+						err += " (" + error + ")"; 
+						return err;
 					}
 					param.setValueAssigned();
 				}
 			}
 		}
 		
-		return true;
+		String error;
+		if((error = isValid()) != null)
+			return error;
+			
+		return null;
 	}
 	
-	public static void main(String argv[])
+	public void addSpecFileParam()
 	{
-		ParamManager paramManager = new ParamManager();
-		
 		FileParameter specFileParam = new FileParameter("s", "SpectrumFile", "*.mzXML, *.mzML, *.mgf, *.ms2, *.pkl or *_dta.txt");
 		specFileParam.addExtension("mzXML");
 		specFileParam.addExtension("mzML");
 		specFileParam.addExtension("mgf");
 		specFileParam.addExtension("ms2");
 		specFileParam.addExtension("pkl");
-		specFileParam.mustExist();
-		paramManager.addParameter(specFileParam);
-		
+		specFileParam.fileMustExist();
+		specFileParam.mustBeAFile();
+		addParameter(specFileParam);
+	}
+
+	public void addDBFileParam()
+	{
 		FileParameter dbFileParam = new FileParameter("d", "DatabaseFile", "*.fasta or *.fa");
 		dbFileParam.addExtension("fa");
 		dbFileParam.addExtension("fasta");
-		dbFileParam.mustExist();
-		paramManager.addParameter(dbFileParam);
-		
+		dbFileParam.fileMustExist();
+		dbFileParam.mustBeAFile();
+		addParameter(dbFileParam);
+	}
+	
+	public void addPMTolParam()
+	{
 		ToleranceParameter pmTolParam = new ToleranceParameter("t", "ParentMassTolerance", "e.g. 2.5Da, 30ppm or 0.5Da,2.5Da");
-		paramManager.addParameter(pmTolParam);
+		pmTolParam.setAdditionalDescription("Use comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (expMass<theoMass) and 2.5Da to the right (expMass>theoMass).");
+		addParameter(pmTolParam);
+	}
 
-		FileParameter outputParam = new FileParameter("o", "DatabaseFile", "*.fasta or *.fa");
+	public void addOutputFileParam() 
+	{
+		FileParameter outputParam = new FileParameter("o", "OutputFile", "*.fasta or *.fa");
 		outputParam.setAsOptional();
-		outputParam.mustNotExist();
-		paramManager.addParameter(outputParam);
-		
-		IntParameter numThreadParam = new IntParameter("thread", "NumThreads", "Number of concurrent threads to be executed, Default: Number of available cores");
-		numThreadParam.defaultValue(Runtime.getRuntime().availableProcessors());
-		paramManager.addParameter(numThreadParam);
-		
-		EnumParameter tdaParam = new EnumParameter("tda");
-		tdaParam.registerEntry("don't search decoy database").setDefault();
-		tdaParam.registerEntry("search decoy database to compute FDR");
-		paramManager.addParameter(tdaParam);
-		
+		outputParam.fileMustNotExist();
+		addParameter(outputParam);
+	}
+	
+	public void addFragMethodParam()
+	{
 		EnumParameter fragParam = new EnumParameter("m", "FragmentMethodID");
 		fragParam.registerEntry("as written in the spectrum or CID if no info").setDefault();
 		fragParam.registerEntry("CID");
 		fragParam.registerEntry("ETD");
 		fragParam.registerEntry("HCD");
 		fragParam.registerEntry("Merge spectra from the same precursor");
-		paramManager.addParameter(fragParam);
-		
+		addParameter(fragParam);
+	}
+	
+	public void addInstTypeParam()
+	{
 		EnumParameter instParam = new EnumParameter("inst", "InstrumentID");
 		instParam.registerEntry("Low-res LCQ/LTQ").setDefault();
 		instParam.registerEntry("TOF");
 		instParam.registerEntry("High-res LTQ (Default for HCD)");
-		paramManager.addParameter(instParam);
-
+		addParameter(instParam);
+	}
+	
+	public void addEnzymeParam()
+	{
 		EnumParameter enzParam = new EnumParameter("e", "EnzymeID");
 		enzParam.registerEntry("No enzyme");
 		enzParam.registerEntry("Trypsin").setDefault();
@@ -177,7 +208,39 @@ public class ParamManager {
 		enzParam.registerEntry("Asp-N");
 		enzParam.registerEntry("alphaLP");
 		enzParam.registerEntry("endogenous peptides");
-		paramManager.addParameter(enzParam);
+		addParameter(enzParam);
+	}
+	
+	public void addModFileParam()
+	{
+		FileParameter modParam = new FileParameter("mod", "ModificationFileName", "Modification file, Default: standard amino acids with fixed C+57");
+		modParam.setAsOptional();
+		modParam.fileMustExist();
+		addParameter(modParam);
+	}
+	
+	public static void main(String argv[])
+	{
+		ParamManager paramManager = new ParamManager("MSGFDB", MSGFDB.VERSION, MSGFDB.RELEASE_DATE, "java -Xmx2000M -jar MSGFDB.jar");
+		
+		paramManager.addSpecFileParam();
+		paramManager.addDBFileParam();
+		paramManager.addPMTolParam();
+		paramManager.addOutputFileParam();
+		
+		IntParameter numThreadParam = new IntParameter("thread", "NumThreads", "Number of concurrent threads to be executed, Default: Number of available cores");
+		numThreadParam.defaultValue(Runtime.getRuntime().availableProcessors());
+		numThreadParam.minValue(1);
+		paramManager.addParameter(numThreadParam);
+		
+		EnumParameter tdaParam = new EnumParameter("tda");
+		tdaParam.registerEntry("don't search decoy database").setDefault();
+		tdaParam.registerEntry("search decoy database to compute FDR");
+		paramManager.addParameter(tdaParam);
+		
+		paramManager.addFragMethodParam();
+		paramManager.addInstTypeParam();
+		paramManager.addEnzymeParam();
 		
 		EnumParameter c13Param = new EnumParameter("c13");
 		c13Param.registerEntry("Consider only peptides matching precursor mass");
@@ -191,10 +254,7 @@ public class ParamManager {
 		nnetParam.registerEntry("");
 		paramManager.addParameter(nnetParam);
 		
-		FileParameter modParam = new FileParameter("mod", "ModificationFileName", "Modification file, Default: standard amino acids with fixed C+57");
-		modParam.setAsOptional();
-		modParam.mustExist();
-		paramManager.addParameter(modParam);
+		paramManager.addModFileParam();
 		
 		IntParameter minLenParam = new IntParameter("minLength", "MinPepLength", "Minimum peptide length to consider, Default: 6");
 		minLenParam.minValue(1);
@@ -226,13 +286,58 @@ public class ParamManager {
 		uniformAAProb.registerEntry("use probability 0.05 for all amino acids");
 		paramManager.addParameter(uniformAAProb);
 		
-		paramManager.printUsageInfo("\t");
+		paramManager.addExample("Example (high-precision): java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 30ppm -c13 1 -nnet 0 -tda 1 -o testMSGFDB.tsv");
+		paramManager.addExample("Example (low-precision): java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 0.5Da,2.5Da -nnet 0 -tda 1 -o testMSGFDB.tsv");
 		
+		// Hidden parameters
+		FileParameter dbIndexDirParam = new FileParameter("dd", "DBIndexDir", "Path to the directory containing database index files");
+		dbIndexDirParam.fileMustExist();
+		dbIndexDirParam.mustBeADirectory();
+		dbIndexDirParam.setAsOptional();
+		dbIndexDirParam.setHidden();
+		paramManager.addParameter(dbIndexDirParam);
 		
-		if(paramManager.parseParams(argv))
+		EnumParameter unitParam = new EnumParameter("u");
+		unitParam.registerEntry("Da");
+		unitParam.registerEntry("ppm");
+		unitParam.registerEntry("Don't care").setDefault();
+		unitParam.setHidden();
+		paramManager.addParameter(unitParam);
+		
+		IntRangeParameter specIndexParam = new IntRangeParameter("index", "SpecIndex", "Range of spectrum index to be considered");
+		specIndexParam.minValue(1);
+		specIndexParam.defaultValue("1,"+(Integer.MAX_VALUE-1));
+		specIndexParam.setHidden();
+		paramManager.addParameter(specIndexParam);
+		
+		EnumParameter showFDRParam = new EnumParameter("showFDR");
+		showFDRParam.registerEntry("do not show FDRs");
+		showFDRParam.registerEntry("show FDRs").setDefault();
+		showFDRParam.setHidden();
+		paramManager.addParameter(showFDRParam);
+		
+		EnumParameter replicateMergedResParam = new EnumParameter("replicate");
+		replicateMergedResParam.registerEntry("show merged spectra").setDefault();
+		replicateMergedResParam.registerEntry("show individual spectra");
+		replicateMergedResParam.setHidden();
+		paramManager.addParameter(replicateMergedResParam);
+
+		EnumParameter edgeScoreParam = new EnumParameter("edgeScore");
+		edgeScoreParam.registerEntry("use edge scoring").setDefault();
+		edgeScoreParam.registerEntry("do not use edge scoring");
+		edgeScoreParam.setHidden();
+		paramManager.addParameter(edgeScoreParam);
+		
+		String errMessage = paramManager.parseParams(argv); 
+		if(errMessage == null)
 		{
 			paramManager.printValues();
-			System.out.println("IsValid: " + paramManager.isValid());
+		}
+		else
+		{
+			System.err.println("[Error] " + errMessage);
+			System.out.println();
+			paramManager.printUsageInfo();
 		}
 	}
 }

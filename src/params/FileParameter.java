@@ -1,17 +1,19 @@
 package params;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashSet;
 
 public class FileParameter extends Parameter {
 
 	private boolean mustExist = false;
 	private boolean mustNotExist = false;
-	private boolean canBeADirectory = false;
+	
+	private boolean mustBeADirectory = false;
+	private boolean mustBeAFile = false;
+	
 	private HashSet<String> extensions = new HashSet<String>();	// if not empty, only those files with extensions contained here will be considered.
 	
-	private File[] files;
+	private File file;
 	
 	public FileParameter(String key, String name, String description) {
 		super(key, name, description);
@@ -23,21 +25,27 @@ public class FileParameter extends Parameter {
 		return this;
 	}
 	
-	public FileParameter mustExist()
+	public FileParameter fileMustExist()
 	{
 		this.mustExist = true;
 		return this;
 	}
 	
-	public FileParameter mustNotExist()
+	public FileParameter fileMustNotExist()
 	{
 		this.mustNotExist = true;
 		return this;
 	}
 
-	public FileParameter canBeADirectory()
+	public FileParameter mustBeADirectory()
 	{
-		this.canBeADirectory = true;
+		this.mustBeADirectory = true;
+		return this;
+	}
+
+	public FileParameter mustBeAFile()
+	{
+		this.mustBeAFile = true;
 		return this;
 	}
 	
@@ -48,81 +56,50 @@ public class FileParameter extends Parameter {
 	}
 	
 	@Override
-	public boolean parse(String value) 
+	public String parse(String value) 
 	{
 		File path = new File(value);
 		
-		File[] filesToBeConsidered;
 		if(path.isDirectory())
 		{
-			if(!this.canBeADirectory)
-			{
-				return false;
-			}
-			filesToBeConsidered = path.listFiles();
+			if(this.mustBeAFile)
+				return "must not be a directory";
 		}
-		else
+		else	// path is a file
 		{
-			filesToBeConsidered = new File[1];
-			filesToBeConsidered[0] = path;
+			if(this.mustBeADirectory)
+				return "must be a directory";
 		}
 		
-		ArrayList<File> fileList = new ArrayList<File>();
-		for(File f : filesToBeConsidered)
+		
+		if(!extensions.isEmpty())
 		{
-			if(extensions.isEmpty())
-			{
-				if(this.mustExist && !f.exists())
-					continue;
-				if(this.mustNotExist && f.exists())
-					continue;
-				fileList.add(f);
-			}
-			else
-			{
-				String fileName = f.getName();
-				String ext = fileName.substring(fileName.lastIndexOf('.')+1);
-				if(extensions.contains(ext.toLowerCase()))
-				{
-					if(this.mustExist && !f.exists())
-						continue;
-					if(this.mustNotExist && f.exists())
-						continue;
-					fileList.add(f);
-				}
-			}
-		}
-		if(fileList.size() == 0)
-		{
-			return false;
+			String fileName = path.getName();
+			String ext = fileName.substring(fileName.lastIndexOf('.')+1);
+			if(!extensions.contains(ext.toLowerCase()))
+				return "extension does not match";
 		}
 		
-		files = fileList.toArray(new File[0]);
-		return true;
-	}
-	
-	public File[] getFiles()
-	{
-		return files;
+		if(this.mustExist && !path.exists())
+			return "file does not exist";
+			
+		if(this.mustNotExist && path.exists())
+			return "file already exists";
+		
+		this.file = path;
+		
+		return null;
 	}
 	
 	public File getFile()
 	{
-		if(this.canBeADirectory || files.length != 1)
-			return null;
-		return files[0];
+		return file;
 	}
 
 	@Override
 	public String getValueAsString() {
-		if(files == null)
+		if(file == null)
 			return null;
-		StringBuffer output = new StringBuffer();
-		if(files.length == 0)
-			return output.toString();
-		output.append(files[0].getPath());
-		for(int i=1; i<files.length; i++)
-			output.append(","+files[i].getPath());
-		return output.toString();
+		return file.getPath();
 	}
 }

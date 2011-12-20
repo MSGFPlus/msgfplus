@@ -14,8 +14,8 @@ public class StringParameter extends Parameter {
 	}
 	
 	@Override
-	public boolean parse(String value) {
-		return false;
+	public String parse(String value) {
+		return null;
 	}
 
 	@Override

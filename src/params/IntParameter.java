@@ -30,16 +30,16 @@ public class IntParameter extends Parameter {
 	}
 	
 	@Override
-	public boolean parse(String value) {
+	public String parse(String value) {
 		try {
 			this.value = Integer.valueOf(value);
 			if(this.value < minValue || this.value >= maxValue)
-				return false;
+				return "must be in the range [" + minValue + "," + maxValue + ")";
 		} catch (NumberFormatException e)
 		{
-			return false;
+			return "must be an integer";
 		} 
-		return true;
+		return null;
 	}
 
 	@Override
