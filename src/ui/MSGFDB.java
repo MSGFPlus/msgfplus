@@ -51,8 +51,8 @@ import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
-	public static final String VERSION = "7003";
-	public static final String RELEASE_DATE = "12/15/2011";
+	public static final String VERSION = "7036";
+	public static final String RELEASE_DATE = "12/20/2011";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static void main(String argv[])
@@ -166,27 +166,32 @@ public class MSGFDB {
 		edgeScoreParam.setHidden();
 		paramManager.addParameter(edgeScoreParam);
 		
-		String errMessage = paramManager.parseParams(argv); 
-		if(errMessage == null)
+		if(argv.length == 0)
 		{
-			paramManager.printValues();
+			paramManager.printUsageInfo();
+			return;
 		}
-		else
+		
+		// Parse parameters
+		String errMessage = paramManager.parseParams(argv); 
+		if(errMessage != null)
 		{
 			System.err.println("[Error] " + errMessage);
 			System.out.println();
 			paramManager.printUsageInfo();
+			return;
 		}
 		
+		// Running MS-GFDB
 		System.out.println("MS-GFDB v"+ VERSION + " (" + RELEASE_DATE + ")");
 		String errorMessage = runMSGFDB(paramManager);
 		if(errorMessage != null)
 		{
 			System.err.println("[Error] " + errorMessage);
 			System.out.println();
-			paramManager.printUsageInfo();
 		}
-		System.out.format("MS-GFDB complete (total elapsed time: %.2f sec)\n", (System.currentTimeMillis()-time)/(float)1000);
+		else
+			System.out.format("MS-GFDB complete (total elapsed time: %.2f sec)\n", (System.currentTimeMillis()-time)/(float)1000);
 	}
 	
     public static String runMSGFDB(ParamManager paramManager)
