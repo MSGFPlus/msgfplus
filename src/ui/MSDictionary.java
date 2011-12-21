@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Iterator;
 
+import params.ParamParser;
 import parser.MgfSpectrumParser;
 import parser.MzXMLSpectraIterator;
 import parser.PklSpectrumParser;
@@ -64,7 +65,7 @@ public class MSDictionary {
 	// default parameters
 	public static void runMSDictionary(String paramFile, String outputFileName)
 	{
-		ParameterParser.Parameters params = ParameterParser.parseFromFile(paramFile);
+		ParamParser.Parameters params = ParamParser.parseFromFile(paramFile);
 
 		// Spectrum
 		String specFileName = params.getParameter("Spectrum");

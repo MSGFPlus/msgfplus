@@ -141,7 +141,7 @@ public class ScoredSpectraMap {
 		Enzyme enzyme = specDataType.getEnzyme();
 		Modification mod = specDataType.getModification();
 		
-		if(activationMethod != null && activationMethod != ActivationMethod.FUSION)
+		if(activationMethod != ActivationMethod.ASWRITTEN && activationMethod != ActivationMethod.FUSION)
 		{
 			scorer = NewScorerFactory.get(activationMethod, instType, enzyme, mod);
 			if(this.turnOffEdgeScoring)
@@ -152,7 +152,7 @@ public class ScoredSpectraMap {
 		{
 			int specIndex = specKey.getSpecIndex();
 			Spectrum spec = specMap.getSpectrumBySpecIndex(specIndex);
-			if(activationMethod == null || activationMethod == ActivationMethod.FUSION)
+			if(activationMethod == ActivationMethod.ASWRITTEN || activationMethod == ActivationMethod.FUSION)
 			{
 				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, mod);
 				if(this.turnOffEdgeScoring)

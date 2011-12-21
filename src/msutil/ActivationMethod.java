@@ -1,12 +1,14 @@
 package msutil;
 
-import java.util.Hashtable;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import params.ParamObject;
 
 public class ActivationMethod implements ParamObject {
 	private final String name;
-	private final String fullName;
+	private String fullName;
 	private boolean electronBased = false;
 	
 	private ActivationMethod(String name, String fullName) 
@@ -39,6 +41,22 @@ public class ActivationMethod implements ParamObject {
 		return table.get(name);
 	}
 
+	public static ActivationMethod addOrChange(String name, String fullName)
+	{
+		ActivationMethod m = table.get(name);
+		if(m != null)	// change
+		{
+			m.fullName = fullName;
+			return m;
+		}
+		else
+		{
+			ActivationMethod newMethod = new ActivationMethod(name, fullName);
+			table.put(name, newMethod);
+			return newMethod;
+		}
+	}
+	
 	public static boolean register(String name, String fullName)
 	{
 		ActivationMethod m = table.get(name);
@@ -73,24 +91,25 @@ public class ActivationMethod implements ParamObject {
 	//// static /////////////
 	public static ActivationMethod[] getAllRegisteredActivationMethods()
 	{
-		return table.values().toArray(new ActivationMethod[0]);
+		return table.keySet().toArray(new ActivationMethod[0]);
 	}
 	
-	private static Hashtable<String, ActivationMethod> table;
+	private static LinkedHashMap<String, ActivationMethod> table;
 	
 	static {
 		ASWRITTEN = new ActivationMethod("As written in the spectrum or CID if no info", "as written in the spectrum or CID if no info");
 		CID = new ActivationMethod("CID", "collision-induced dissociation");
 		ETD = new ActivationMethod("ETD", "electron transfer dissociation").electronBased();
 		HCD = new ActivationMethod("HCD", "high-energy collision-induced dissociation");
-		PQD = new ActivationMethod("PQD", "pulsed q dissociation");
 		FUSION = new ActivationMethod("Merge spectra from the same precursor", "Merge spectra from the same precursor");
-		
-		table = new Hashtable<String, ActivationMethod>();
+		PQD = new ActivationMethod("PQD", "pulsed q dissociation");
+
+		table = new LinkedHashMap<String, ActivationMethod>();
+		table.put(ASWRITTEN.name, ASWRITTEN);
 		table.put(CID.name, CID);
 		table.put(ETD.name, ETD);
 		table.put(HCD.name, HCD);
-		table.put(PQD.name, PQD);
+		table.put(FUSION.name, FUSION);
 		table.put("ETD+SA", ETD);
 	}
 }

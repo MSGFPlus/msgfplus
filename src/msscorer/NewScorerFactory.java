@@ -2,7 +2,6 @@ package msscorer;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Hashtable;
 
 import msutil.ActivationMethod;

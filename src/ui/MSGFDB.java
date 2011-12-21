@@ -51,7 +51,7 @@ import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
-	public static final String VERSION = "7036";
+	public static final String VERSION = "7045";
 	public static final String RELEASE_DATE = "12/20/2011";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
@@ -212,7 +212,7 @@ public class MSGFDB {
 		Tolerance rightParentMassTolerance = tol.getRightTolerance();
 		
 		int toleranceUnit = paramManager.getIntValue("u");
-		if(toleranceUnit != 3)
+		if(toleranceUnit != 2)
 		{
 			boolean isTolerancePPM;
 			if(toleranceUnit == 0)
@@ -272,7 +272,6 @@ public class MSGFDB {
 			return "MinCharge must not be larger than MaxCharge";
 		}
 		
-//		numThreads, useUniformAAProb, dbIndexDir, replicateMergedResults, doNotDseEdgeScore);
 		int numThreads = paramManager.getIntValue("thread");
 		boolean useUniformAAProb = paramManager.getIntValue("uniformAAProb") == 1 ? true : false;
 		boolean replicateMergedResults = paramManager.getIntValue("replicate") == 1 ? true : false;
@@ -402,7 +401,6 @@ public class MSGFDB {
 		String header = 
 			"#SpecFile\tSpecIndex\tScan#\t"
 			+"FragMethod\t"
-//			+(showTitle ? "Title\t" : "")
 			+"Precursor\tPMError("
 			+(rightParentMassTolerance.isTolerancePPM() ? "ppm" : "Da")
 			+")\tCharge\tPeptide\tProtein\tDeNovoScore\tMSGFScore\tSpecProb\tP-value";
@@ -410,7 +408,6 @@ public class MSGFDB {
 		
 		while(true)
 		{
-//			specSize = 728178;
 			if(fromIndexGlobal >= specSize)
 				break;
 			int toIndexGlobal = Math.min(specSize, fromIndexGlobal+numSpecScannedTogether);

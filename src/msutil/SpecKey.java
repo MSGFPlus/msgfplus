@@ -72,7 +72,7 @@ public class SpecKey extends Pair<Integer, Integer> {
 			
 			int charge = spec.getCharge();
 			
-			if(activationMethod != null && spec.getActivationMethod() != null && spec.getActivationMethod() != activationMethod)
+			if(activationMethod != ActivationMethod.ASWRITTEN && spec.getActivationMethod() != null && spec.getActivationMethod() != activationMethod)
 				continue;
 
 			if(spec.size() < Constants.MIN_NUM_PEAKS_PER_SPECTRUM)

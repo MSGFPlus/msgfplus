@@ -1,7 +1,7 @@
-package ui;
+package params;
 
 import java.io.FileNotFoundException;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import parser.BufferedLineReader;
 
@@ -10,8 +10,8 @@ import parser.BufferedLineReader;
  * @author sangtaekim
  *
  */
-public class ParameterParser {
-	public static class Parameters extends Hashtable<String, String> {
+public class ParamParser {
+	public static class Parameters extends HashMap<String, String> {
 		/**
 		 * 
 		 */
