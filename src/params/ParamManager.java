@@ -184,11 +184,18 @@ public class ParamManager {
 	public void addFragMethodParam()
 	{
 		ObjectEnumParameter<ActivationMethod> fragParam = new ObjectEnumParameter<ActivationMethod>("m", "FragmentMethodID");
-		fragParam.registerObject(ActivationMethod.ASWRITTEN).setDefault();
-		fragParam.registerObject(ActivationMethod.CID);
-		fragParam.registerObject(ActivationMethod.ETD);
-		fragParam.registerObject(ActivationMethod.HCD);
-		fragParam.registerObject(ActivationMethod.FUSION);
+		ActivationMethod[] methods = ActivationMethod.getAllRegisteredActivationMethods();
+		for(ActivationMethod m : methods)
+		{
+			fragParam.registerObject(m);
+			if(m == ActivationMethod.ASWRITTEN)
+				fragParam.setDefault();
+		}
+//		fragParam.registerObject(ActivationMethod.ASWRITTEN).setDefault();
+//		fragParam.registerObject(ActivationMethod.CID);
+//		fragParam.registerObject(ActivationMethod.ETD);
+//		fragParam.registerObject(ActivationMethod.HCD);
+//		fragParam.registerObject(ActivationMethod.FUSION);
 		addParameter(fragParam);
 	}
 	
@@ -204,16 +211,23 @@ public class ParamManager {
 	public void addEnzymeParam()
 	{
 		ObjectEnumParameter<Enzyme> enzParam = new ObjectEnumParameter<Enzyme>("e", "EnzymeID");
-		enzParam.registerObject(Enzyme.NOENZYME);
-		enzParam.registerObject(Enzyme.TRYPSIN).setDefault();
-		enzParam.registerObject(Enzyme.CHYMOTRYPSIN);
-		enzParam.registerObject(Enzyme.LysC);
-		enzParam.registerObject(Enzyme.LysN);
-		enzParam.registerObject(Enzyme.GluC);
-		enzParam.registerObject(Enzyme.ArgC);
-		enzParam.registerObject(Enzyme.AspN);
-		enzParam.registerObject(Enzyme.ALP);
-		enzParam.registerObject(Enzyme.Peptidomics);
+		Enzyme[] allEnzymes = Enzyme.getAllRegisteredEnzymes();
+		for(Enzyme e : allEnzymes)
+		{
+			enzParam.registerObject(e);
+			if(e == Enzyme.TRYPSIN)
+				enzParam.setDefault();
+		}
+//		enzParam.registerObject(Enzyme.NOENZYME);
+//		enzParam.registerObject(Enzyme.TRYPSIN).setDefault();
+//		enzParam.registerObject(Enzyme.CHYMOTRYPSIN);
+//		enzParam.registerObject(Enzyme.LysC);
+//		enzParam.registerObject(Enzyme.LysN);
+//		enzParam.registerObject(Enzyme.GluC);
+//		enzParam.registerObject(Enzyme.ArgC);
+//		enzParam.registerObject(Enzyme.AspN);
+//		enzParam.registerObject(Enzyme.ALP);
+//		enzParam.registerObject(Enzyme.Peptidomics);
 		addParameter(enzParam);
 	}
 	

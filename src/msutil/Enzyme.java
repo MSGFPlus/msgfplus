@@ -9,9 +9,12 @@
   ***************************************************************************/
 package msutil;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import params.ParamObject;
+import params.UserParam;
 
 /**
  * This class represents an enzyme.
@@ -249,21 +252,28 @@ public class Enzyme implements ParamObject {
 	/** Endogenous peptides */
 	public static final Enzyme Peptidomics;
 	
-	private static HashMap<String,Enzyme> registeredEnzyme;
-	
-	public static void register(String name, Enzyme enzyme)
-	{
-		registeredEnzyme.put(name, enzyme);
-	}
-	
 	public static Enzyme getEnzymeByName(String name)
 	{
-		return registeredEnzyme.get(name);
+		return enzymeTable.get(name);
 	}
 	
 	public static Enzyme[] getAllRegisteredEnzymes()
 	{
-		return registeredEnzyme.values().toArray(new Enzyme[0]);
+		return registeredEnzymeList.toArray(new Enzyme[0]);
+	}
+	
+	public static Enzyme register(String name, String residues, boolean isNTerm, String description)
+	{
+		return null;
+	}
+	
+	private static HashMap<String,Enzyme> enzymeTable;
+	private static ArrayList<Enzyme> registeredEnzymeList;
+	
+	private static void register(String name, Enzyme enzyme)
+	{
+		if(enzymeTable.put(name, enzyme) == null)
+			registeredEnzymeList.add(enzyme);
 	}
 	
 	static {
@@ -299,8 +309,10 @@ public class Enzyme implements ParamObject {
 		
 		Peptidomics = new Enzyme("Peptidomics", null, false, "Endogenous peptides");
 		
-		registeredEnzyme = new HashMap<String,Enzyme>();
+		enzymeTable = new HashMap<String,Enzyme>();
+		registeredEnzymeList = new ArrayList<Enzyme>();
 		
+		registeredEnzymeList.add(NOENZYME);
 		register("Tryp", TRYPSIN);
 		register("CHYMOTRYPSIN", CHYMOTRYPSIN);
 		register("LysC", LysC);
@@ -310,5 +322,35 @@ public class Enzyme implements ParamObject {
 		register("AspN", AspN);
 		register("aLP", ALP);
 		register("Peptidomics", Peptidomics);
+		
+		// Add user-defined enzymes
+		File enzymeFile = new File("params/enzymes.txt");
+		if(enzymeFile.exists())
+		{
+//			System.out.println("Loading " + enzymeFile.getAbsolutePath());
+			ArrayList<String> paramStrs = UserParam.parseFromFile(enzymeFile.getPath(), 4);
+			for(String paramStr : paramStrs)
+			{
+				String[] token = paramStr.split(",");
+				String shortName = token[0];
+				String cleaveAt = token[1];
+				boolean isNTerm = false;	// C-Term: false, N-term: true
+				if(token[2].equals("C"))
+					isNTerm = false;
+				else if(token[2].equals("N"))
+					isNTerm = true;
+				else
+				{
+					System.err.println("Illegal user-defined enzyme at " + enzymeFile.getAbsolutePath() + ": " + paramStr);
+					System.exit(-1);
+				}
+				String description = token[3];
+
+				if(cleaveAt.equalsIgnoreCase("null"))
+					cleaveAt = null;
+				Enzyme userEnzyme = new Enzyme(shortName, cleaveAt, isNTerm, description);
+				register(shortName, userEnzyme);
+			}
+		}
 	}
 }

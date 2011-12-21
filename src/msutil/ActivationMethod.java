@@ -2,9 +2,10 @@ package msutil;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 
 import params.ParamObject;
+import params.UserParam;
 
 public class ActivationMethod implements ParamObject {
 	private final String name;
@@ -41,32 +42,16 @@ public class ActivationMethod implements ParamObject {
 		return table.get(name);
 	}
 
-	public static ActivationMethod addOrChange(String name, String fullName)
+	public static ActivationMethod register(String name, String fullName)
 	{
 		ActivationMethod m = table.get(name);
-		if(m != null)	// change
-		{
-			m.fullName = fullName;
-			return m;
-		}
+		if(m != null)
+			return m;	// registration was not successful
 		else
 		{
 			ActivationMethod newMethod = new ActivationMethod(name, fullName);
 			table.put(name, newMethod);
 			return newMethod;
-		}
-	}
-	
-	public static boolean register(String name, String fullName)
-	{
-		ActivationMethod m = table.get(name);
-		if(m != null)
-			return false;	// registration was not successful
-		else
-		{
-			ActivationMethod newMethod = new ActivationMethod(name, fullName);
-			table.put(name, newMethod);
-			return true;
 		}
 	}
 
@@ -91,10 +76,29 @@ public class ActivationMethod implements ParamObject {
 	//// static /////////////
 	public static ActivationMethod[] getAllRegisteredActivationMethods()
 	{
-		return table.keySet().toArray(new ActivationMethod[0]);
+		return registeredActMethods.toArray(new ActivationMethod[0]);
 	}
 	
-	private static LinkedHashMap<String, ActivationMethod> table;
+	private static HashMap<String, ActivationMethod> table;
+	private static ArrayList<ActivationMethod> registeredActMethods;
+	
+	private static void add(ActivationMethod actMethod)
+	{
+		registeredActMethods.add(actMethod);
+		table.put(actMethod.name, actMethod);
+	}
+	
+	// add to the HashMap only
+	private static void addAlias(String name, ActivationMethod actMethod)
+	{
+		table.put(name, actMethod);
+	}
+	
+	// add to the list only
+	private static void addToList(ActivationMethod actMethod)
+	{
+		registeredActMethods.add(actMethod);
+	}	
 	
 	static {
 		ASWRITTEN = new ActivationMethod("As written in the spectrum or CID if no info", "as written in the spectrum or CID if no info");
@@ -104,12 +108,30 @@ public class ActivationMethod implements ParamObject {
 		FUSION = new ActivationMethod("Merge spectra from the same precursor", "Merge spectra from the same precursor");
 		PQD = new ActivationMethod("PQD", "pulsed q dissociation");
 
-		table = new LinkedHashMap<String, ActivationMethod>();
-		table.put(ASWRITTEN.name, ASWRITTEN);
-		table.put(CID.name, CID);
-		table.put(ETD.name, ETD);
-		table.put(HCD.name, HCD);
-		table.put(FUSION.name, FUSION);
-		table.put("ETD+SA", ETD);
+		table = new HashMap<String, ActivationMethod>();
+		registeredActMethods = new ArrayList<ActivationMethod>();
+		
+		addToList(ASWRITTEN);
+		add(CID);
+		add(ETD);
+		add(HCD);
+		addToList(FUSION);
+		addAlias("ETD+SA", ETD);
+		
+		// Parse activation methods defined by a user
+		File actMethodFile = new File("params/activationMethods.txt");
+		if(actMethodFile.exists())
+		{
+//			System.out.println("Loading " + actMethodFile.getAbsolutePath());
+			ArrayList<String> paramStrs = UserParam.parseFromFile(actMethodFile.getPath(), 2);
+			for(String paramStr : paramStrs)
+			{
+				String[] token = paramStr.split(",");
+				String shortName = token[0];
+				String fullName = token[1];
+				ActivationMethod newMethod = new ActivationMethod(shortName, fullName);
+				add(newMethod);
+			}
+		}
 	}
 }
