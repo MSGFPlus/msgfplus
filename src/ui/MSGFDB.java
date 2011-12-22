@@ -40,7 +40,6 @@ import msutil.AminoAcidSet;
 import msutil.Enzyme;
 import msutil.ActivationMethod;
 import msutil.InstrumentType;
-import msutil.Modification;
 import msutil.Protocol;
 import msutil.SpecFileFormat;
 import msutil.SpecKey;
@@ -50,8 +49,8 @@ import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
-	public static final String VERSION = "7053";
-	public static final String RELEASE_DATE = "12/20/2011";
+	public static final String VERSION = "7061";
+	public static final String RELEASE_DATE = "12/21/2011";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static void main(String argv[])
