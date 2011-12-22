@@ -23,8 +23,8 @@ public class TrainScoringParameters {
 	
 	public static void main(String argv[]) throws Exception
 	{
-		backup();
-		createParamFiles();
+//		backup();
+//		createParamFiles();
 		testParamFiles();
 	}
 	
@@ -115,6 +115,8 @@ public class TrainScoringParameters {
 				Protocol protocol = null;
 				if(protocolStr != null)
 					protocol = Protocol.get(protocolStr);
+				else
+					protocol = Protocol.NOPROTOCOL;
 				
 				if(actMethod == null || instType == null || enzyme == null || protocol == null)
 				{

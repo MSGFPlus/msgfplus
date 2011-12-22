@@ -35,7 +35,7 @@ import msutil.WindowFilter;
 import msutil.IonType.PrefixIon;
 
 public class NewRankScorer implements NewAdditiveScorer {
-	public static final String VERSION = "7059";
+	public static final int VERSION = 7061;
 	public static final String DATE = "12/21/2011";
 	// Optional
 	protected WindowFilter filter = new WindowFilter(6, 50);
@@ -211,12 +211,15 @@ public class NewRankScorer implements NewAdditiveScorer {
 
 		// Read the date
 		try {
-			int year = in.readInt();	// version information
-			int month = in.readInt();
-			int date = in.readInt();
-
+//			int year = in.readInt();	// version information
+//			int month = in.readInt();
+//			int date = in.readInt();
+//			if(verbose)
+//			System.out.println("CreationDate: " + year + "/" + (month+1) + "/" + date);
+			
+			int version = in.readInt();
 			if(verbose)
-				System.out.println("CreationDate: " + year + "/" + (month+1) + "/" + date);
+				System.out.println("Version: " + version);
 
 			// Read activation method
 			StringBuffer bufMet = new StringBuffer();
@@ -647,10 +650,8 @@ public class NewRankScorer implements NewAdditiveScorer {
 
 		// Write the date
 		try {
-			out.writeInt(Calendar.getInstance().get(Calendar.YEAR));
-			out.writeInt(Calendar.getInstance().get(Calendar.MONTH));
-			out.writeInt(Calendar.getInstance().get(Calendar.DATE));
-
+			out.writeInt(VERSION);
+			
 			// Write method
 			out.writeByte(dataType.getActivationMethod().getName().length());
 			out.writeChars(dataType.getActivationMethod().getName());
