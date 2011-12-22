@@ -96,7 +96,13 @@ public class NewScorerFactory {
 		if(scorer != null)
 			return scorer;
 		
-//		File userParamFile = new File("params/"+condition+".param");
+		File userParamFile = new File("params/"+condition+".param");
+		if(userParamFile.exists())
+		{
+			System.out.println("Loading user param file: " + userParamFile.getName());
+			scorer = new NewRankScorer(userParamFile.getPath());
+			return scorer;
+		}
 		InputStream is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+condition+".param");
 		if(is != null)
 		{
