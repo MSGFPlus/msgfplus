@@ -28,12 +28,14 @@ import msutil.Enzyme;
 import msutil.InstrumentType;
 import msutil.IonType;
 import msutil.Matter;
+import msutil.Protocol;
 import msutil.Spectrum;
 import msutil.WindowFilter;
 import msutil.IonType.PrefixIon;
 
 public class NewRankScorer implements NewAdditiveScorer {
-
+	public static final String VERSION = "v6695";
+	public static final String DATE = "12/21/2011";
 	// Optional
 	protected WindowFilter filter = new WindowFilter(6, 50);
 	
@@ -41,6 +43,7 @@ public class NewRankScorer implements NewAdditiveScorer {
 	protected ActivationMethod activationMethod;
 	protected InstrumentType instType;
 	protected Enzyme enzyme;
+	protected Protocol protocol;
 	
 	// Parameters to be used for scoring
 	protected int numSegments = 1;
@@ -102,6 +105,11 @@ public class NewRankScorer implements NewAdditiveScorer {
 	public Enzyme getEnzyme()
 	{
 		return enzyme;
+	}
+	
+	public Protocol getProtocol()
+	{
+		return protocol;
 	}
 	
 	public void filterPrecursorPeaks(Spectrum spec)
@@ -252,6 +260,18 @@ public class NewRankScorer implements NewAdditiveScorer {
 			}
 			else
 				this.enzyme = null;
+			
+			// Read protocol
+			StringBuffer bufProtocol = new StringBuffer();
+			byte lenProtocol = in.readByte();
+			if(lenProtocol != 0)
+			{
+				for(byte i=0; i<lenProtocol; i++)
+					bufProtocol.append(in.readChar());
+				this.protocol = Protocol.get(bufProtocol.toString());
+			}
+			else
+				this.protocol = Protocol.NOPROTOCOL;
 			
 			// MME
 			boolean isTolerancePPM = in.readBoolean();
@@ -660,6 +680,15 @@ public class NewRankScorer implements NewAdditiveScorer {
 			}
 			else
 				out.writeByte((byte)0);
+	
+			// Write protocol
+			if(protocol != null && protocol != Protocol.NOPROTOCOL)
+			{
+				out.writeByte(protocol.getName().length());
+				out.writeChars(protocol.getName());
+			}
+			else
+				out.writeByte((byte)0);
 			
 			// Maximum mass error
 			out.writeBoolean(mme.isTolerancePPM());
@@ -810,6 +839,10 @@ public class NewRankScorer implements NewAdditiveScorer {
 		// Write enzyme
 		if(enzyme != null)
 			out.println("#Enzyme: " + enzyme.getName());
+		
+		// Write protocol
+		if(protocol != null)
+			out.println("#Protocol: " + protocol.getName());
 		
 		// Write mme
 		out.println("#Maximum mass error: " + mme.toString());
