@@ -20,6 +20,9 @@ import params.StringParameter;
 
 public class ScoringParamGen {
 
+	public static final int VERSION = 7065;
+	public static final String DATE = "12/21/2011";
+	
 	public static void main(String argv[])
 	{
 		ParamManager paramManager = new ParamManager("ScoringParamGen", String.valueOf(NewRankScorer.VERSION), NewRankScorer.DATE,
