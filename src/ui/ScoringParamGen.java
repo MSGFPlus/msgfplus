@@ -4,6 +4,7 @@ import java.io.File;
 
 import msscorer.NewRankScorer;
 import msscorer.ScoringParameterGeneratorWithErrors;
+import msscorer.NewScorerFactory.SpecDataType;
 import msutil.ActivationMethod;
 import msutil.AminoAcidSet;
 import msutil.AnnotatedSpectra;
@@ -21,7 +22,7 @@ public class ScoringParamGen {
 
 	public static void main(String argv[])
 	{
-		ParamManager paramManager = new ParamManager("ScoringParamGen", NewRankScorer.VERSION, NewRankScorer.DATE,
+		ParamManager paramManager = new ParamManager("ScoringParamGen", String.valueOf(NewRankScorer.VERSION), NewRankScorer.DATE,
 			"java -Xmx2000M -cp MSGFDB.jar ui.ScoringParamGen");
 		
 		FileListParameter resFileParam = new FileListParameter("i", "ResultPath", "MSGFDBResultFile (*.tsv) or MSGFDBResultDir");
@@ -125,19 +126,14 @@ public class ScoringParamGen {
 		InstrumentType instType = paramManager.getInstType();
 		Enzyme enzyme = paramManager.getEnzyme();
 		Protocol protocol = paramManager.getProtocol();
+		SpecDataType dataType = new SpecDataType(activationMethod, instType, enzyme, protocol);
 		
 		ScoringParameterGeneratorWithErrors.generateParameters(
 				annotatedSpec.getAnnotatedSpecContainer(), 
-				activationMethod, 
-				instType, 
-				enzyme, 
-				protocol, 
-				errorScalingFactor, 
-				considerPhosLoss, 
-				applyDeconvolution, 
-				outputFile, 
-				aaSet, 
-				isText, 
+				dataType,
+				aaSet,
+				new File("."),
+				false,
 				true);
 		return null;
 	}
