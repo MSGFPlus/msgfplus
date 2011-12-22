@@ -74,6 +74,9 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			boolean isText, 
 			boolean verbose)
 	{
+		if(verbose)
+			System.out.println("Number of annotated PSMs: " + container.size());
+		
 		String paramFileName = dataType.toString()+".param";
 		
 		File outputFile;
@@ -82,6 +85,8 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		else
 			outputFile = new File(paramFileName);
 		
+		if(verbose)
+			System.out.println("Output file name: " + outputFile.getAbsolutePath());
 		int errorScalingFactor = 0;
 		boolean applyDeconvolution = false;
 		
@@ -90,22 +95,38 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		{
 			errorScalingFactor = 100;
 			applyDeconvolution = true;
+			if(verbose)
+				System.out.println("High-precision MS/MS data: " +
+						"errorScalingFactor("+errorScalingFactor+") " +
+						"chargeDeconvolution("+applyDeconvolution+")");
 		}
 		
 		boolean considerPhosLoss = false;
 		if(dataType.getProtocol().getName().equals("Phosphorylation"))
+		{
 			considerPhosLoss = true;
+			if(verbose)
+				System.out.println("Consider H3PO4 loss.");
+		}
 		
 		HashSet<String> pepSet = new HashSet<String>();
 		for(Spectrum spec : container)
 			pepSet.add(spec.getAnnotationStr());
 
+		if(verbose)
+			System.out.println("Number of unique peptides: " + pepSet.size());
 		int numSpecsPerPeptide;
 		if(pepSet.size() < 2000)
+		{
 			numSpecsPerPeptide = 3;
+		}
 		else
+		{
 			numSpecsPerPeptide = 1;
-
+		}
+		if(verbose)
+			System.out.println("Consider " + numSpecsPerPeptide + " per spectrum.");
+		
 		// multiple spectra with the same peptide -> one spec per peptide
 		HashMap<String,ArrayList<Spectrum>> pepSpecMap = new HashMap<String,ArrayList<Spectrum>>();
 		for(Spectrum spec : container)

@@ -118,9 +118,11 @@ public class ScoringParamGen {
 		}
 
 		AnnotatedSpectra annotatedSpec = new AnnotatedSpectra(resultFiles, specDir, aaSet);
+		System.out.print("Reading training PSMs...");
 		String errMsg = annotatedSpec.parse();
 		if(errMsg != null)
 			return errMsg;
+		System.out.println("Done.");
 		
 		ActivationMethod activationMethod = paramManager.getActivationMethod();
 		InstrumentType instType = paramManager.getInstType();

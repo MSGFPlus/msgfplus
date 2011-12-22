@@ -25,44 +25,45 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
 	private boolean isModified; // Indicates the peptid has a modified aminoacid
 
 	static final boolean FAIL_WHEN_PEPTIDE_IS_MODIFIED=false; // Fail loudly
-	//private int[] modMass = null;
-	//boolean   isModified = false;
 
 	// true if this peptide contains invalid amino acid
 	private boolean isInvalid = false;
 	
 	// true if there's n-term modification
-	private boolean hasNTermMod = false;
-	private float nTermModMass = 0f;
+//	private boolean hasNTermMod = false;
+//	private float nTermModMass = 0f;
 	
 	/**
 	 * Constructor. Parses sequence string and check for modifications. Not fully implemented!!
-	 * Examples: QWSYL   Q-17SVL   QSV+2.12QLK-3
+	 * Examples: QWSYL   -17QSVL   QSV+2.12QLK-3
 	 * @params sequence the sequence in string representation.
 	 */
 	public Peptide(String sequence, AminoAcidSet aaSet) {
-		isModified=false;
+		isModified = false;
 		int seqLen = sequence.length();
 		int index = 0;
 		
-		if(seqLen > 0)
+		float nTermModMass = 0;
+		while(index < seqLen)
 		{
-			char c = sequence.charAt(0);
+			char c = sequence.charAt(index);
 			if(c == '-' || c == '+')	// sequence has an N-term mod (e.g. +42ACDEFGR)
 			{
+				int startIndex = index;
 				while(++index < seqLen)
 				{
 					c = sequence.charAt(index);
 					if(!Character.isDigit(c) && c != '.')
 						break;
 				}
-				nTermModMass = Float.parseFloat(sequence.substring(0, index));
-				hasNTermMod = true;
+				nTermModMass += Float.parseFloat(sequence.substring(startIndex, index));
 			}
+			else
+				break;
 		}
 		
 		for(;index < seqLen; index++) {
-			char c=sequence.charAt(index);
+			char c = sequence.charAt(index);
 			assert(Character.isLetter(c)):"Error in string at index "+index;
 			float mod=0f;
 			if (index+1<seqLen) { // Check for modification (e.g. +17, -12.5)
@@ -103,35 +104,23 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
 					index += 4;
 				}
 			}
-			AminoAcid aa=aaSet.getAminoAcid(c);
-			if(aa == null)	// not a valid amino acid
+			AminoAcid aa = aaSet.getAminoAcid(c);
+			if(!Character.isUpperCase(c) || aa == null)	// not a valid amino acid
 			{
 				this.isInvalid = true;
 				return;
 			}
-//			if(this.hasNTermMod && this.size() == 0)
-//				mod += nTermModMass;
-//			assert(aa!=null):"Not a valid amino acid: \'"+c+"\'"+" (" + sequence + ")";
+			if(this.size() == 0)
+				mod += nTermModMass;
+			
 			if (mod==0f) this.add(aa);
-			else { // Aminoacid is modified
-				// TODO add modified aminoacid correctly. Other classes need to be able to handle it too.
-				if(FAIL_WHEN_PEPTIDE_IS_MODIFIED) throw new NotImplementedException();
+			else { // modified
 				isModified=true; // Now peptide is modified
-				char residue = Character.toLowerCase(aa.getResidue());	// TODO: 2 ptms, same residue
-				String name = aa.getName()+(mod>0 ? "+" : "")+mod;
-				float mass = mod;
-				Modification modification = Modification.get(name);
-				if(modification == null)
-				{
-					modification = Modification.register(name, mass);
-				}
-				Modification.Instance modIns = new Modification.Instance(modification, aa.getResidue());
-				AminoAcid modAA = new ModifiedAminoAcid(aa, modIns, residue);
+				float mass = aa.getMass() + mod;
+				AminoAcid modAA = VolatileAminoAcid.getVolatileAminoAcid(mass);
 				this.add(modAA);
-				//                this.add(AminoAcid.getCustomAminoAcid('&', aa.getMass()+mod));
 			}
 		}
-		//        if (isModified) System.out.println(this.toString());
 	}  
 
 	/**
@@ -229,32 +218,32 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
 		return isTrue;
 	}
 
-	/**
-	 * Returns whether this has N-term mod.
-	 * @return true if this peptide has N-term modification, false otherwise.;
-	 */
-	public boolean hasNTermMod()
-	{
-		return this.hasNTermMod;
-	}
+//	/**
+//	 * Returns whether this has N-term mod.
+//	 * @return true if this peptide has N-term modification, false otherwise.;
+//	 */
+//	public boolean hasNTermMod()
+//	{
+//		return this.hasNTermMod;
+//	}
 	
-	/**
-	 * Returns n-terminal modification mass;
-	 * @return n-terminal modification mass;
-	 */
-	public float getNTermModMass() 
-	{
-		return this.nTermModMass;
-	}
+//	/**
+//	 * Returns n-terminal modification mass;
+//	 * @return n-terminal modification mass;
+//	 */
+//	public float getNTermModMass() 
+//	{
+//		return this.nTermModMass;
+//	}
 
-	/**
-	 * Returns n-terminal nominal modification mass;
-	 * @return n-terminal nominal modification mass;
-	 */
-	public int getNominalNTermModMass() 
-	{
-		return NominalMass.toNominalMass(this.nTermModMass);
-	}
+//	/**
+//	 * Returns n-terminal nominal modification mass;
+//	 * @return n-terminal nominal modification mass;
+//	 */
+//	public int getNominalNTermModMass() 
+//	{
+//		return NominalMass.toNominalMass(this.nTermModMass);
+//	}
 	
 	/**
 	 * Returns whether this peptide contains invalid amino acids.
@@ -369,15 +358,8 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
 	public String toString()
 	{
 		StringBuffer output = new StringBuffer();
-		if(hasNTermMod)
-		{
-			if(nTermModMass > 0)
-				output.append('+');
-			output.append(nTermModMass);
-		}
 		for (AminoAcid aa : this)
 		{
-			//TODO: what if aa is modified?
 			output.append(aa.getResidueStr());
 		}
 		return output.toString();
@@ -898,12 +880,12 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
   }
 	 */
 	public static void main(String[] a) {
-		Peptide p=new Peptide("+42M+16ACDEFR");
+		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(System.getProperty("user.home")+"/Research/ToolDistribution/Mods.txt");
+		Peptide p = new Peptide("+42.011+15.995MDNKTPVTLAK", aaSet);
+		System.out.println(p);
 		for(AminoAcid aa : p)
 			System.out.println(aa.getResidueStr()+" " + aa.getMass());
 		System.out.println(p.getMass());
-		System.out.println(p.hasNTermMod() + "\t" + p.getNTermModMass());
-		System.out.println(p.toString());
 	}
 
 }

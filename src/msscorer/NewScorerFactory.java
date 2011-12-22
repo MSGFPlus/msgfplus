@@ -1,6 +1,7 @@
 package msscorer;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.util.Hashtable;
 
@@ -95,6 +96,7 @@ public class NewScorerFactory {
 		if(scorer != null)
 			return scorer;
 		
+//		File userParamFile = new File("params/"+condition+".param");
 		InputStream is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+condition+".param");
 		if(is != null)
 		{

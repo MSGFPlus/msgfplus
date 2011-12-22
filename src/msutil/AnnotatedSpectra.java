@@ -127,8 +127,16 @@ public class AnnotatedSpectra {
 				return specFileName+":"+specIndex+" is not available!";
 			else
 			{
-				spec.setAnnotation(aaSet.getPeptide(pep));
-				annotatedSpectra.add(spec);
+				Peptide peptide = new Peptide(pep, aaSet);
+				if(Math.abs(spec.getPeptideMass()-peptide.getMass()) < 5)
+				{
+					spec.setAnnotation(peptide);
+					annotatedSpectra.add(spec);
+				}
+				else
+				{
+					System.out.println("Debug");
+				}
 			}
 		}
 		
