@@ -33,12 +33,20 @@ public class FileListParameter extends Parameter {
 	{
 		File path = new File(value);
 		
+		File[] dirFiles;
 		if(!path.isDirectory())
-			return "must be a directory";
+		{
+			if(!path.exists())
+				return "File does not exist";
+			dirFiles = new File[1];
+			dirFiles[0] = path;
+		}
+		else
+			dirFiles = path.listFiles();
 		
 		ArrayList<File> fileList = new ArrayList<File>();
 		ArrayList<FileFormat> fileFormatList = new ArrayList<FileFormat>();
-		for(File f : path.listFiles())
+		for(File f : dirFiles)
 		{
 			if(fileFormats.isEmpty())
 			{
@@ -73,7 +81,7 @@ public class FileListParameter extends Parameter {
 		}
 		if(fileList.size() == 0)
 		{
-			return "file does not exist";
+			return "no file exists with the given extensions";
 		}
 		
 		files = fileList.toArray(new File[0]);

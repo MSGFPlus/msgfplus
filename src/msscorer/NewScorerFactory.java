@@ -7,21 +7,21 @@ import java.util.Hashtable;
 import msutil.ActivationMethod;
 import msutil.Enzyme;
 import msutil.InstrumentType;
-import msutil.Modification;
+import msutil.Protocol;
 
 public class NewScorerFactory {
 	private NewScorerFactory() {}
 	
 	public static class SpecDataType {
 		public SpecDataType(ActivationMethod method, InstrumentType instType, Enzyme enzyme) {
-			this(method, instType, enzyme, null);
+			this(method, instType, enzyme, Protocol.NOPROTOCOL);
 		}
 
-		public SpecDataType(ActivationMethod method, InstrumentType instType, Enzyme enzyme, Modification modification) {
+		public SpecDataType(ActivationMethod method, InstrumentType instType, Enzyme enzyme, Protocol protocol) {
 			this.method = method;
 			this.instType = instType;
 			this.enzyme = enzyme;
-			this.modification = modification;
+			this.protocol = protocol;
 		}
 		
 		@Override
@@ -32,7 +32,7 @@ public class NewScorerFactory {
 				if(this.method == other.method &&
 					this.instType == other.instType &&
 					this.enzyme == other.enzyme &&
-					this.modification == other.modification
+					this.protocol == other.protocol
 					)
 					return true;
 			}
@@ -41,26 +41,26 @@ public class NewScorerFactory {
 		
 		@Override
 		public int hashCode() {
-			return method.hashCode()*(enzyme == null ? 1 : enzyme.hashCode())*instType.hashCode()*(modification == null ? 1 : modification.hashCode());
+			return method.hashCode()*(enzyme == null ? 1 : enzyme.hashCode())*instType.hashCode()*protocol.hashCode();
 		}
 		
 		@Override
 		public String toString() {
-			if(modification == null)
+			if(protocol == Protocol.NOPROTOCOL)
 				return method.getName()+"_"+instType.getName()+"_"+(enzyme == null ? "null" : enzyme.getName());
 			else
-				return method.getName()+"_"+instType.getName()+"_"+(enzyme == null ? "null" : enzyme.getName())+"_"+modification.getName();
+				return method.getName()+"_"+instType.getName()+"_"+(enzyme == null ? "null" : enzyme.getName())+"_"+protocol.getName();
 		}
 		
 		public ActivationMethod getActivationMethod()	{ return method; }
 		public InstrumentType getInstrumentType()		{ return instType; }
 		public Enzyme getEnzyme()						{ return enzyme; }
-		public Modification getModification()			{ return modification; }
+		public Protocol getProtocol()			{ return protocol; }
 		
 		private ActivationMethod method;
 		private InstrumentType instType;
 		private Enzyme enzyme;
-		private Modification modification;
+		private Protocol protocol;
 	}
 	
 	private static Hashtable<SpecDataType, NewRankScorer> scorerTable = new Hashtable<SpecDataType, NewRankScorer>();
@@ -74,12 +74,12 @@ public class NewScorerFactory {
 	public static NewRankScorer get(ActivationMethod method, Enzyme enzyme)
 	{
 		if(method != ActivationMethod.HCD)
-			return get(method, InstrumentType.LOW_RESOLUTION_LTQ, enzyme, null);
+			return get(method, InstrumentType.LOW_RESOLUTION_LTQ, enzyme, Protocol.NOPROTOCOL);
 		else
-			return get(method, InstrumentType.HIGH_RESOLUTION_LTQ, enzyme, null);
+			return get(method, InstrumentType.HIGH_RESOLUTION_LTQ, enzyme, Protocol.NOPROTOCOL);
 	}
 	
-	public static NewRankScorer get(ActivationMethod method, InstrumentType instType, Enzyme enzyme, Modification mod)
+	public static NewRankScorer get(ActivationMethod method, InstrumentType instType, Enzyme enzyme, Protocol protocol)
 	{
 		if(method == null || method == ActivationMethod.PQD)
 			method = ActivationMethod.CID;
@@ -90,7 +90,7 @@ public class NewScorerFactory {
 		if(method == ActivationMethod.HCD)
 			instType = InstrumentType.HIGH_RESOLUTION_LTQ;
 		
-		SpecDataType condition = new SpecDataType(method, instType, enzyme, mod);
+		SpecDataType condition = new SpecDataType(method, instType, enzyme, protocol);
 		NewRankScorer scorer = scorerTable.get(condition);
 		if(scorer != null)
 			return scorer;
@@ -161,16 +161,19 @@ public class NewScorerFactory {
 			{
 				for(Enzyme enzyme : Enzyme.getAllRegisteredEnzymes())
 				{
-					NewRankScorer scorer = NewScorerFactory.get(method, inst, enzyme, null);
-					System.out.print(method.getName()+" "+inst.getName()+" "+enzyme.getName()+" -> ");
-					if(scorer != null)
+					for(Protocol protocol : Protocol.getAllRegisteredProtocols())
 					{
-						System.out.println(scorer.getActivationMethod().getName()+" "+scorer.getInstrumentType().getName()+" "+scorer.getEnzyme().getName()+" "+scorer.hashCode());
-					}
-					else
-					{
-						System.err.println("Null!");
-						System.exit(-1);
+						NewRankScorer scorer = NewScorerFactory.get(method, inst, enzyme, protocol);
+						System.out.print(method.getName()+"_"+inst.getName()+"_"+enzyme.getName()+"_"+protocol.getName()+" -> ");
+						if(scorer != null)
+						{
+							System.out.println(scorer.getSpecDataType());
+						}
+						else
+						{
+							System.err.println("Null!");
+							System.exit(-1);
+						}
 					}
 				}
 			}

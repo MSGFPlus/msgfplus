@@ -13,9 +13,7 @@ import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import params.EnumParameter;
 import params.FileParameter;
-import params.IntParameter;
 import params.IntRangeParameter;
 import params.ParamManager;
 import params.ToleranceParameter;
@@ -43,6 +41,7 @@ import msutil.Enzyme;
 import msutil.ActivationMethod;
 import msutil.InstrumentType;
 import msutil.Modification;
+import msutil.Protocol;
 import msutil.SpecFileFormat;
 import msutil.SpecKey;
 import msutil.SpectraIterator;
@@ -60,111 +59,7 @@ public class MSGFDB {
 		long time = System.currentTimeMillis();
 
 		ParamManager paramManager = new ParamManager("MSGFDB", MSGFDB.VERSION, MSGFDB.RELEASE_DATE, "java -Xmx2000M -jar MSGFDB.jar");
-		
-		paramManager.addSpecFileParam();
-		paramManager.addDBFileParam();
-		paramManager.addPMTolParam();
-		paramManager.addOutputFileParam();
-		
-		IntParameter numThreadParam = new IntParameter("thread", "NumThreads", "Number of concurrent threads to be executed, Default: Number of available cores");
-		numThreadParam.defaultValue(Runtime.getRuntime().availableProcessors());
-		numThreadParam.minValue(1);
-		paramManager.addParameter(numThreadParam);
-		
-		EnumParameter tdaParam = new EnumParameter("tda");
-		tdaParam.registerEntry("don't search decoy database").setDefault();
-		tdaParam.registerEntry("search decoy database to compute FDR");
-		paramManager.addParameter(tdaParam);
-		
-		paramManager.addFragMethodParam();
-		paramManager.addInstTypeParam();
-		paramManager.addEnzymeParam();
-		
-		EnumParameter c13Param = new EnumParameter("c13");
-		c13Param.registerEntry("Consider only peptides matching precursor mass");
-		c13Param.registerEntry("Consider peptides having one 13C").setDefault();
-		c13Param.registerEntry("Consider peptides having up to two 13C");
-		paramManager.addParameter(c13Param);
-		
-		EnumParameter nnetParam = new EnumParameter("nnet", null, "Number of allowed non-enzymatic termini");
-		nnetParam.registerEntry("");
-		nnetParam.registerEntry("").setDefault();
-		nnetParam.registerEntry("");
-		paramManager.addParameter(nnetParam);
-		
-		paramManager.addModFileParam();
-		
-		IntParameter minLenParam = new IntParameter("minLength", "MinPepLength", "Minimum peptide length to consider, Default: 6");
-		minLenParam.minValue(1);
-		minLenParam.defaultValue(6);
-		paramManager.addParameter(minLenParam);
-
-		IntParameter maxLenParam = new IntParameter("maxLength", "MaxPepLength", "Maximum peptide length to consider, Default: 40");
-		maxLenParam.minValue(1);
-		maxLenParam.defaultValue(40);
-		paramManager.addParameter(maxLenParam);
-
-		IntParameter minCharge = new IntParameter("minCharge", "MinCharge", "Minimum precursor charge to consider if charges are not specified in the spectrum file, Default: 2");
-		minCharge.minValue(1);
-		minCharge.defaultValue(2);
-		paramManager.addParameter(minCharge);
-
-		IntParameter maxCharge = new IntParameter("maxCharge", "MaxCharge", "Maximum precursor charge to consider if charges are not specified in the spectrum file, Default: 3");
-		maxCharge.minValue(1);
-		maxCharge.defaultValue(3);
-		paramManager.addParameter(maxCharge);
-		
-		IntParameter numMatchesParam = new IntParameter("n", "NumMatchesPerSpec", "Number of matches per spectrum to be reported, Default: 1");
-		numMatchesParam.minValue(1);
-		numMatchesParam.defaultValue(1);
-		paramManager.addParameter(numMatchesParam);
-		
-		EnumParameter uniformAAProb = new EnumParameter("uniformAAProb");
-		uniformAAProb.registerEntry("use amino acid probabilities computed from the input database").setDefault();
-		uniformAAProb.registerEntry("use probability 0.05 for all amino acids");
-		paramManager.addParameter(uniformAAProb);
-		
-		paramManager.addExample("Example (high-precision): java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 30ppm -c13 1 -nnet 0 -tda 1 -o testMSGFDB.tsv");
-		paramManager.addExample("Example (low-precision): java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 0.5Da,2.5Da -nnet 0 -tda 1 -o testMSGFDB.tsv");
-		
-		// Hidden parameters
-		FileParameter dbIndexDirParam = new FileParameter("dd", "DBIndexDir", "Path to the directory containing database index files");
-		dbIndexDirParam.fileMustExist();
-		dbIndexDirParam.mustBeADirectory();
-		dbIndexDirParam.setAsOptional();
-		dbIndexDirParam.setHidden();
-		paramManager.addParameter(dbIndexDirParam);
-		
-		EnumParameter unitParam = new EnumParameter("u");
-		unitParam.registerEntry("Da");
-		unitParam.registerEntry("ppm");
-		unitParam.registerEntry("Don't care").setDefault();
-		unitParam.setHidden();
-		paramManager.addParameter(unitParam);
-		
-		IntRangeParameter specIndexParam = new IntRangeParameter("index", "SpecIndex", "Range of spectrum index to be considered");
-		specIndexParam.minValue(1);
-		specIndexParam.defaultValue("1,"+(Integer.MAX_VALUE-1));
-		specIndexParam.setHidden();
-		paramManager.addParameter(specIndexParam);
-		
-		EnumParameter showFDRParam = new EnumParameter("showFDR");
-		showFDRParam.registerEntry("do not show FDRs");
-		showFDRParam.registerEntry("show FDRs").setDefault();
-		showFDRParam.setHidden();
-		paramManager.addParameter(showFDRParam);
-		
-		EnumParameter replicateMergedResParam = new EnumParameter("replicate");
-		replicateMergedResParam.registerEntry("show merged spectra").setDefault();
-		replicateMergedResParam.registerEntry("show individual spectra");
-		replicateMergedResParam.setHidden();
-		paramManager.addParameter(replicateMergedResParam);
-
-		EnumParameter edgeScoreParam = new EnumParameter("edgeScore");
-		edgeScoreParam.registerEntry("use edge scoring").setDefault();
-		edgeScoreParam.registerEntry("do not use edge scoring");
-		edgeScoreParam.setHidden();
-		paramManager.addParameter(edgeScoreParam);
+		paramManager.addMSGFDBParams();
 		
 		if(argv.length == 0)
 		{
@@ -183,7 +78,7 @@ public class MSGFDB {
 		}
 		
 		// Running MS-GFDB
-		System.out.println("MS-GFDB v"+ VERSION + " (" + RELEASE_DATE + ")");
+		paramManager.printToolInfo();
 		String errorMessage = runMSGFDB(paramManager);
 		if(errorMessage != null)
 		{
@@ -235,6 +130,8 @@ public class MSGFDB {
 		InstrumentType instType = paramManager.getInstType();
 		if(activationMethod == ActivationMethod.HCD)
 			instType = InstrumentType.HIGH_RESOLUTION_LTQ;
+		
+		Protocol protocol = paramManager.getProtocol();
 		
 		AminoAcidSet aaSet = null;
 		File modFile = paramManager.getModFileParam().getFile();
@@ -329,7 +226,6 @@ public class MSGFDB {
 		System.out.print("Loading database finished ");
 		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
 		
-		
 		System.out.println("Reading spectra...");
     	Iterator<Spectrum> specItr = null;
 		SpectrumAccessorBySpecIndex specMap = null;
@@ -391,11 +287,7 @@ public class MSGFDB {
 			numThreads = 1;
 		System.out.println("Using " + numThreads + (numThreads == 1 ? " thread." : " threads."));
 		
-		SpecDataType specDataType;
-		if(!aaSet.containsPhosphorylation())
-			specDataType = new SpecDataType(activationMethod, instType, enzyme);
-		else
-			specDataType = new SpecDataType(activationMethod, instType, enzyme, Modification.get("Phosphorylation"));
+		SpecDataType specDataType = new SpecDataType(activationMethod, instType, enzyme, protocol);
 		int fromIndexGlobal = 0;
 		
 		String header = 

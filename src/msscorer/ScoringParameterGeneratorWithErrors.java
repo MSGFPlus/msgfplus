@@ -13,6 +13,7 @@ import msgf.Histogram;
 import msgf.IntHistogram;
 import msgf.NominalMass;
 import msgf.Tolerance;
+import msscorer.NewScorerFactory.SpecDataType;
 import msutil.ActivationMethod;
 import msutil.AminoAcid;
 import msutil.AminoAcidSet;
@@ -23,6 +24,7 @@ import msutil.IonType;
 import msutil.Pair;
 import msutil.Peak;
 import msutil.Peptide;
+import msutil.Protocol;
 import msutil.SpectraContainer;
 import msutil.Spectrum;
 import msutil.IonType.PrefixIon;
@@ -38,219 +40,72 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 	private static final float MAX_PRECURSOR_OFFSET = 30f;
 	private static final int MIN_NUM_SPECTRA_PER_PARTITION = 400;	// 400
 	private static final int MIN_NUM_SPECTRA_FOR_PRECURSOR_OFF = 150;
-	
+
 	private static final float MIN_PRECURSOR_OFFSET_PROBABILITY = 0.15f;	// 0.15
 	private static final float MIN_ION_OFFSET_PROBABILITY = 0.15f;	// 0.15, for ion types
 	private static final float MIN_MAIN_ION_OFFSET_PROBABILITY = 0.01f;	// ion of probability below this number will be ignored 
-	
+
 	private static final int MAX_RANK = 150;
 	private static final int NUM_SEGMENTS_PER_SPECTRUM = 2;	// 2
-	
-    private static final int[] smoothingRanks = {3, 5, 10, 20, 50, Integer.MAX_VALUE}; //Ranks around which smoothing occurs
-    private static final int[] smoothingWindowSize = {0, 1, 2, 3, 4, 5}; //Smoothing windows for each smoothing rank
-	
-    private static final float DECONVOLUTION_MASS_TOLERANCE = 0.02f;
+
+	private static final int[] smoothingRanks = {3, 5, 10, 20, 50, Integer.MAX_VALUE}; //Ranks around which smoothing occurs
+	private static final int[] smoothingWindowSize = {0, 1, 2, 3, 4, 5}; //Smoothing windows for each smoothing rank
+
+	private static final float DECONVOLUTION_MASS_TOLERANCE = 0.02f;
 	protected static final int MAX_CHARGE = 20;
- 	
-	public static void main(String argv[])
-	{
-		File specFile = null;
-		File outputFile = null;
-		boolean isText = false;
-		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
-		int errorScalingFactor = 0;
-		boolean considerPhosLoss = false;
-		boolean applyDeconvolution = false;
-		
-		ActivationMethod activationMethod = null;
-		InstrumentType instType = null;
-		Enzyme enzyme = null;
-		
-		for(int i=0; i<argv.length; i+=2)
-		{
-			if(!argv[i].startsWith("-") || i+1 >= argv.length)
-				printUsageAndExit("Illegal parameter!");
-			if(argv[i].equalsIgnoreCase("-i"))
-			{
-				specFile = new File(argv[i+1]);
-				if(!specFile.exists())
-				{
-					printUsageAndExit(argv[i+1]+" doesn't exist.");
-				}
-				int posDot = specFile.getName().lastIndexOf('.');
-				if(posDot >= 0)
-				{
-					String extension = specFile.getName().substring(posDot);
-					if(!extension.equalsIgnoreCase(".mgf"))
-						printUsageAndExit("Illegal spectrum format: " + argv[i+1]);
-				}
-				else
-					printUsageAndExit("Illegal spectrum format: " + argv[i+1]);
-			}
-			else if(argv[i].equalsIgnoreCase("-o"))
-			{
-				outputFile = new File(argv[i+1]);
-			}
-			else if(argv[i].equalsIgnoreCase("-t"))
-			{
-				outputFile = new File(argv[i+1]);
-				isText = true;
-			}
-			else if(argv[i].equalsIgnoreCase("-fixMod"))
-			{
-				// 0: No mod, 1: Carbamidomethyl C, 2: Carboxymethyl C
-				if(argv[i+1].equalsIgnoreCase("0"))
-					aaSet = AminoAcidSet.getStandardAminoAcidSet();
-				else if(argv[i+1].equalsIgnoreCase("1"))
-					aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
-				else if(argv[i+1].equalsIgnoreCase("2"))
-					aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarboxymethylatedCys();
-				else
-					printUsageAndExit("Illigal -fixMod parameter: " + argv[i+1]);
-			}
-			else if(argv[i].equalsIgnoreCase("-err"))
-			{
-				errorScalingFactor = Integer.parseInt(argv[i+1]);
-			}
-			else if(argv[i].equalsIgnoreCase("-m"))	// Fragmentation method
-			{
-				// (0: written in the spectrum, 1: CID , 2: ETD, 3: HCD)
-				if(argv[i+1].equalsIgnoreCase("1"))
-				{
-					activationMethod = ActivationMethod.CID;
-				}
-				else if(argv[i+1].equalsIgnoreCase("2"))
-				{
-					activationMethod = ActivationMethod.ETD;
-				}
-				else if(argv[i+1].equalsIgnoreCase("3"))
-				{
-					activationMethod = ActivationMethod.HCD;
-				}
-				else
-				{
-					printUsageAndExit("Illegal activation method: " + argv[i+1]);
-				}
-			}			
-			else if(argv[i].equalsIgnoreCase("-inst"))	// Instrument type
-			{
-				if(argv[i+1].equalsIgnoreCase("0"))
-				{
-					instType = InstrumentType.LOW_RESOLUTION_LTQ;
-				}
-				else if(argv[i+1].equalsIgnoreCase("1"))
-				{
-					instType = InstrumentType.TOF;
-				}
-				else if(argv[i+1].equalsIgnoreCase("2"))
-				{
-					instType = InstrumentType.HIGH_RESOLUTION_LTQ;
-				}
-				else
-				{
-					printUsageAndExit("Illegal instrument type: " + argv[i+1]);
-				}
-			}		
-			else if(argv[i].equalsIgnoreCase("-e"))	// Enzyme
-			{
-				// 0: No enzyme, 1: Trypsin, 2: Chymotrypsin, 3: LysC, 4: LysN, 5: GluC, 6: ArgC, 7: AspN
-				if(argv[i+1].equalsIgnoreCase("0"))
-					enzyme = null;
-				else if(argv[i+1].equalsIgnoreCase("1"))
-					enzyme = Enzyme.TRYPSIN;
-				else if(argv[i+1].equalsIgnoreCase("2"))
-					enzyme = Enzyme.CHYMOTRYPSIN;
-				else if(argv[i+1].equalsIgnoreCase("3"))
-					enzyme = Enzyme.LysC;
-				else if(argv[i+1].equalsIgnoreCase("4"))
-					enzyme = Enzyme.LysN;
-				else if(argv[i+1].equalsIgnoreCase("5"))
-					enzyme = Enzyme.GluC;
-				else if(argv[i+1].equalsIgnoreCase("6"))
-					enzyme = Enzyme.ArgC;
-				else if(argv[i+1].equalsIgnoreCase("7"))
-					enzyme = Enzyme.AspN;
-				else if(argv[i+1].equalsIgnoreCase("8"))
-					enzyme = Enzyme.ALP;
-				else
-					printUsageAndExit("Illegal enzyme: " + argv[i+1]);
-			}			
-			else if(argv[i].equalsIgnoreCase("-phos"))	// H3PO4 loss
-			{
-				if(argv[i+1].equalsIgnoreCase("1"))
-					considerPhosLoss = true;
-				else if(argv[i+1].equalsIgnoreCase("0"))
-					considerPhosLoss = false;
-				else
-					printUsageAndExit("Illegal -phos parameter: " + argv[i+1]);
-			}
-			else if(argv[i].equalsIgnoreCase("-deconv"))	// H3PO4 loss
-			{
-				if(argv[i+1].equalsIgnoreCase("1"))
-					applyDeconvolution = true;
-				else if(argv[i+1].equalsIgnoreCase("0"))
-					applyDeconvolution = false;
-				else
-					printUsageAndExit("Illegal -deconv parameter: " + argv[i+1]);
-			}
-			else
-				printUsageAndExit("Illegal parameters!");
-		}
-		if(specFile == null)
-			printUsageAndExit("missing annotatedMgfFileName!");
-		if(outputFile == null)
-			printUsageAndExit("missing outputFileName!");
-		if(activationMethod == null)
-			printUsageAndExit("missing activationMethod!");
-		if(instType == null)
-			printUsageAndExit("missing instrumentType!");
-		
-		generateParameters(specFile, activationMethod, instType, enzyme, errorScalingFactor, considerPhosLoss, applyDeconvolution, outputFile, aaSet, isText, false);
-	}
-	
-	public static void printUsageAndExit(String message)
-	{
-		System.err.println(message);
-		System.out.println("usage: java -Xmx2000M -cp MSGF.jar msscorer.ScoringParameterGenerator\n" +
-				"\t-i annotatedMgfFileName (*.mgf)\n" +
-				"\t-o outputFileName (e.g. CID_Tryp.param)\n" +
-				"\t-m FragmentationMethodID (1: CID, 2: ETD, 3: HCD)\n" +
-				"\t-inst InstrumentID (0: Low-res LCQ/LTQ, 1: TOF , 2: High-res LTQ)\n" +
-				"\t-e EnzymeID (0: No enzyme, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N, 8: aLP)\n" +
-				"\t[-phos 0/1] (0: Don't consider H3PO4 loss (default), 1: Consider H3PO4 loss)\n" +
-				"\t[-deconv 0/1] (0: Don't apply deconvolution (Default), 1: Apply deconvolution/deisotping)" +
-				"\t[-fixMod 0/1/2] (0: NoCysteineProtection, 1: CarbamidomethyC (default), 2: CarboxymethylC)\n" +
-//				"\t[-pep numPeptidesPerSpec]  (default: 1)\n" +
-				"\t[-err errorScalingFactor]  (default: 0)"
-		);
-		System.exit(0);
-	}
-	
+
 	public static void generateParameters(
-			File specFile, 
-			ActivationMethod activationMethod,
-			InstrumentType instType,
-			Enzyme enzyme,
-//			int numSpecsPerPeptide, 
-			int errorScalingFactor,
-			boolean considerPhosLoss,
-			boolean applyDeconvolution,
-			File outputFile, 
+			File specFile,
+			SpecDataType dataType,
 			AminoAcidSet aaSet, 
+			File outputDir,
 			boolean isText, 
 			boolean verbose)
 	{
 		SpectraContainer container = new SpectraContainer(specFile.getPath(), new MgfSpectrumParser().aaSet(aaSet));
+		generateParameters(container, dataType, aaSet, outputDir, isText, verbose);
+	}
+
+	public static void generateParameters(
+			SpectraContainer container, 
+			SpecDataType dataType,
+			AminoAcidSet aaSet,
+			File outputDir,
+			boolean isText, 
+			boolean verbose)
+	{
+		String paramFileName = dataType.toString()+".param";
+		
+		File outputFile;
+		if(outputDir != null)
+			outputFile = new File(outputDir, paramFileName);
+		else
+			outputFile = new File(paramFileName);
+		
+		int errorScalingFactor = 0;
+		boolean applyDeconvolution = false;
+		
+		if(dataType.getInstrumentType() == InstrumentType.HIGH_RESOLUTION_LTQ 
+				|| dataType.getInstrumentType() == InstrumentType.TOF)
+		{
+			errorScalingFactor = 100;
+			applyDeconvolution = true;
+		}
+		
+		boolean considerPhosLoss = false;
+		if(dataType.getProtocol().getName().equals("Phosphorylation"))
+			considerPhosLoss = true;
+		
 		HashSet<String> pepSet = new HashSet<String>();
 		for(Spectrum spec : container)
 			pepSet.add(spec.getAnnotationStr());
-		
+
 		int numSpecsPerPeptide;
 		if(pepSet.size() < 2000)
 			numSpecsPerPeptide = 3;
 		else
 			numSpecsPerPeptide = 1;
-		 
+
 		// multiple spectra with the same peptide -> one spec per peptide
 		HashMap<String,ArrayList<Spectrum>> pepSpecMap = new HashMap<String,ArrayList<Spectrum>>();
 		for(Spectrum spec : container)
@@ -270,7 +125,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 					specList.add(spec);
 			}
 		}
-		
+
 		SpectraContainer specContOnePerPep = new SpectraContainer();
 		for(ArrayList<Spectrum> specList : pepSpecMap.values())
 		{
@@ -279,16 +134,21 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 				specContOnePerPep.add(spec);
 			}
 		}
+
+		ScoringParameterGeneratorWithErrors gen = new ScoringParameterGeneratorWithErrors(
+				specContOnePerPep, 
+				dataType,
+				considerPhosLoss, 
+				applyDeconvolution);
 		
-		ScoringParameterGeneratorWithErrors gen = new ScoringParameterGeneratorWithErrors(specContOnePerPep, activationMethod, instType, enzyme, considerPhosLoss, applyDeconvolution);
 		// set up the tolerance
 		gen.tolerance(new Tolerance(0.5f));
-		
+
 		// Step 1: partition spectra
 		gen.partition(NUM_SEGMENTS_PER_SPECTRUM);
 		if(verbose)
 			System.out.println("Partition: " + gen.partitionSet.size());
-		
+
 		// Step 2: compute offset frequency functions of precursor peaks and their neutral losses
 		gen.precursorOFF(MIN_PRECURSOR_OFFSET_PROBABILITY);
 		if(verbose)
@@ -298,19 +158,19 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		gen.filterPrecursorPeaks();
 		if(verbose)
 			System.out.println("Filtering Done.");
-		
+
 		if(applyDeconvolution)
 		{
 			gen.deconvoluteSpectra();
 			if(verbose)
 				System.out.println("Deconvolution Done.");
 		}
-			
+
 		// Step 4: compute offset frequency function of fragment peaks and determine ion types to be considered for scoring
 		gen.selectIonTypes();
 		if(verbose)
 			System.out.println("Ion types selected.");
-		
+
 		// Step 5: compute rank distributions
 		gen.generateRankDist(MAX_RANK);
 		if(verbose)
@@ -320,12 +180,12 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		gen.generateErrorDist(errorScalingFactor);
 		if(verbose)
 			System.out.println("Error disbribution computed");
-		
+
 		// Step 7: smoothing parameters
 		gen.smoothing();
 		if(verbose)
 			System.out.println("Smoothing complete.");
-		
+
 		// output
 		if(!isText)
 			gen.writeParameters(outputFile);
@@ -335,28 +195,26 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		if(verbose)
 			System.out.println("Writing Done.");
 	}
-	
+
 	// Required
 	private SpectraContainer specContainer;
 	private final boolean considerPhosLoss;
-	
-	public ScoringParameterGeneratorWithErrors(SpectraContainer specContainer, ActivationMethod actMethod, InstrumentType instType, Enzyme enzyme, boolean considerPhosLoss, boolean applyDeconvolution)
+
+	public ScoringParameterGeneratorWithErrors(SpectraContainer specContainer, SpecDataType dataType, boolean considerPhosLoss, boolean applyDeconvolution)
 	{
 		this.specContainer = specContainer;
 		this.considerPhosLoss = considerPhosLoss;
-		super.activationMethod = actMethod;
-		super.instType = instType;
-		super.enzyme = enzyme;
+		super.dataType = dataType;
 		super.applyDeconvolution = applyDeconvolution;
 		super.deconvolutionErrorTolerance = DECONVOLUTION_MASS_TOLERANCE;
 	}
-	
+
 	public void partition(int numSegments)
 	{
 		super.numSegments = numSegments;
 		chargeHist = new Histogram<Integer>();
 		partitionSet = new TreeSet<Partition>();
-		
+
 		Hashtable<Integer,ArrayList<Float>> parentMassMap = new Hashtable<Integer,ArrayList<Float>>();
 		for(Spectrum spec : specContainer)
 		{
@@ -375,17 +233,17 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 				precursorList.add(spec.getParentMass());
 			}
 		}
-		
+
 		for(int c=chargeHist.minKey(); c<=chargeHist.maxKey(); c++)
 		{
 			ArrayList<Float> parentMassList = parentMassMap.get(c);
 			if(parentMassList == null)
 				continue;
-			
+
 			int numSpec = parentMassList.size();
 			if(numSpec < Math.round(MIN_NUM_SPECTRA_PER_PARTITION*0.9f))	// to few spectra
 				continue;
-			
+
 			Collections.sort(parentMassList);
 			int bestSetSize = 0;
 			int smallestRemainder = MIN_NUM_SPECTRA_PER_PARTITION;
@@ -417,7 +275,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			}
 		}
 	}	
-	
+
 	private void precursorOFF(float minProbThreshold)
 	{
 		if(chargeHist == null)
@@ -427,7 +285,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		}
 		precursorOFFMap = new TreeMap<Integer,ArrayList<PrecursorOffsetFrequency>>();
 		numPrecurOFF = 0;
-		
+
 		for(int charge=chargeHist.minKey(); charge<=chargeHist.maxKey(); charge++)
 		{
 			if(chargeHist.get(charge) < MIN_NUM_SPECTRA_FOR_PRECURSOR_OFF)
@@ -437,8 +295,8 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			Hashtable<Integer, Histogram<Integer>> histList = new Hashtable<Integer, Histogram<Integer>>();
 			for(int c=charge; c>=2; c--)
 				histList.put(c, new Histogram<Integer>());
-			
-	 		for(Spectrum spec : specContainer)
+
+			for(Spectrum spec : specContainer)
 			{
 				if(spec.getAnnotation() == null)
 					continue;
@@ -467,7 +325,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 					}
 				}
 			}
-	 		
+
 			for(int c=charge; c>=2; c--)
 			{
 				ArrayList<Integer> keyList = new ArrayList<Integer>(histList.get(c).keySet());
@@ -485,7 +343,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			numPrecurOFF += precursorOffsetList.size();
 		}
 	}
-	
+
 	private void filterPrecursorPeaks()
 	{
 		if(this.precursorOFFMap == null)
@@ -506,7 +364,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		}
 		specContainer = newSpecContainer;
 	}
-	
+
 	private Pair<Float,Float> getParentMassRange(Partition partition)
 	{
 		float minParentMass = partition.getParentMass();
@@ -521,7 +379,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		}
 		return new Pair<Float,Float>(minParentMass, maxParentMass);
 	}
-	
+
 	private void selectIonTypes()
 	{
 		if(partitionSet == null)
@@ -531,7 +389,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		}
 
 		fragOFFTable = new Hashtable<Partition,ArrayList<FragmentOffsetFrequency>>();
-		
+
 		for(Partition partition : partitionSet)
 		{
 			int charge = partition.getCharge();
@@ -545,36 +403,36 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 					continue;
 				if(spec.getCharge() != charge)
 					continue;
-				
+
 				float curParentMass = spec.getParentMass();
 				if(curParentMass < parentMassRange.getFirst() || curParentMass >= parentMassRange.getSecond())
 					continue;
-				
+
 				curPartContainer.add(spec);
 			}
-			
+
 			ArrayList<FragmentOffsetFrequency> signalFragmentOffsetFrequencyList = new ArrayList<FragmentOffsetFrequency>();
-			
+
 			int seg = partition.getSegNum();
 			IonType[] allIonTypes = IonType.getAllKnownIonTypes(Math.min(charge, 4), true, considerPhosLoss).toArray(new IonType[0]);
 			IonProbability probGen = new IonProbability(
 					curPartContainer.iterator(), 
 					allIonTypes,
 					mme)
-					.filter(filter)
-					.segment(seg, numSegments);
-	 		
+			.filter(filter)
+			.segment(seg, numSegments);
+
 			float[] ionProb = probGen.getIonProb();
-			
+
 			float signalThreshold = MIN_ION_OFFSET_PROBABILITY;
 			for(int i=0; i<allIonTypes.length; i++)
 			{
 				if(ionProb[i] >= signalThreshold)
 					signalFragmentOffsetFrequencyList.add(new FragmentOffsetFrequency(allIonTypes[i], ionProb[i]));
 			}
-			
-	 		if(signalFragmentOffsetFrequencyList.size() == 0)
-	 		{
+
+			if(signalFragmentOffsetFrequencyList.size() == 0)
+			{
 				int maxIndex = -1;
 				float maxIonProb = Float.MIN_VALUE;
 				for(int i=0; i<allIonTypes.length; i++)
@@ -587,14 +445,14 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 				}
 				if(maxIndex >= 0)
 					signalFragmentOffsetFrequencyList.add(new FragmentOffsetFrequency(allIonTypes[maxIndex], maxIonProb));
-	 		}
-	 		
-	 		Collections.sort(signalFragmentOffsetFrequencyList, Collections.reverseOrder());
-	 		fragOFFTable.put(partition, signalFragmentOffsetFrequencyList);
+			}
+
+			Collections.sort(signalFragmentOffsetFrequencyList, Collections.reverseOrder());
+			fragOFFTable.put(partition, signalFragmentOffsetFrequencyList);
 		}
 		super.determineIonTypes();
 	}	
-	
+
 	private void generateRankDist(int maxRank)
 	{
 		if(partitionSet == null)
@@ -602,10 +460,10 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			assert(false): "partition() must have been called!";
 			return;
 		}
-		
+
 		rankDistTable = new Hashtable<Partition,Hashtable<IonType,Float[]>>();
 		this.maxRank = maxRank;
-		
+
 		for(Partition partition : partitionSet)
 		{
 			int charge = partition.getCharge();
@@ -614,12 +472,12 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 				continue;
 			Pair<Float,Float> parentMassRange = getParentMassRange(partition);
 			int seg = partition.getSegNum();
-			
+
 			int numSpec = 0;
 			Hashtable<IonType, Histogram<Integer>> rankDist = new Hashtable<IonType, Histogram<Integer>>();
 			Hashtable<IonType, Float> rankDistMaxRank = new Hashtable<IonType, Float>();
 			Hashtable<IonType, Float> rankDistUnexplained = new Hashtable<IonType, Float>();
-			
+
 			for(IonType ion : ionTypes)
 			{
 				rankDist.put(ion, new Histogram<Integer>());
@@ -627,11 +485,11 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 				rankDistUnexplained.put(ion, 0f);
 			}
 			rankDist.put(IonType.NOISE, new Histogram<Integer>());
-			
+
 			float[] noiseDist = new float[maxRank+2];
 			int numMaxRankPeaks = 0;
 			int totalCleavageSites = 0;
-			
+
 			for(Spectrum spec : specContainer)
 			{
 				int numExplainedPeaks = 0;
@@ -642,7 +500,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 				float curParentMass = spec.getParentMass();
 				if(curParentMass < parentMassRange.getFirst() || curParentMass >= parentMassRange.getSecond())
 					continue;
-				
+
 				Peptide annotation = spec.getAnnotation();
 				spec.setRanksOfPeaks();
 				numSpec++;
@@ -650,7 +508,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 				totalCleavageSites += annotation.size()-1;
 				int prmMassIndex = 0;
 				int srmMassIndex = 0;
-				
+
 				HashSet<Peak> explainedPeakSet = new HashSet<Peak>();
 				Hashtable<IonType, Integer> numExplainedMaxRankPeaks = new Hashtable<IonType, Integer>();
 				for(IonType ion : ionTypes)
@@ -663,7 +521,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 				{
 					prmMassIndex += NominalMass.toNominalMass(annotation.get(i).getMass());
 					srmMassIndex += NominalMass.toNominalMass(annotation.get(annotation.size()-1-i).getMass());
-					
+
 					float prm = NominalMass.getMassFromNominalMass(prmMassIndex);
 					float srm = NominalMass.getMassFromNominalMass(srmMassIndex);
 					for(IonType ion : ionTypes)
@@ -673,7 +531,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 							theoMass = ion.getMz(prm);
 						else
 							theoMass = ion.getMz(srm);
-						
+
 						int segNum = super.getSegmentNum(theoMass, curParentMass);
 						if(segNum == seg)
 						{
@@ -698,7 +556,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 						}
 					}
 				}
-				
+
 				ArrayList<Peak> unexplainedPeaksAtThisSegment = new ArrayList<Peak>();
 				int numPeaksAtThisSegment = 0;
 				int numMaxRankPeaksAtThisSegment = 0;
@@ -716,18 +574,18 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 
 				float midMassThisSegment = (1f/numSegments*seg+1f/numSegments/2)*annotation.getParentMass();
 				float numBinsAtThisSegment = annotation.getParentMass()/numSegments/mme.getToleranceAsDa(midMassThisSegment)/2;
-				
+
 				for(Peak p : unexplainedPeaksAtThisSegment)
 				{
 					int rank = p.getRank();
-//					float noiseFreq = (float)(annotation.size()-1)/(annotation.getParentMass()/(mme.getToleranceAsDa(midMassThisSegment)*2));
+					//					float noiseFreq = (float)(annotation.size()-1)/(annotation.getParentMass()/(mme.getToleranceAsDa(midMassThisSegment)*2));
 					float noiseFreq = (annotation.size()-1)/numSegments/numBinsAtThisSegment;
 					if(rank >= maxRank)
 						noiseDist[maxRank] += noiseFreq/numMaxRankPeaksAtThisSegment;
 					else
 						noiseDist[rank] += noiseFreq;
 				}
-				
+
 				for(IonType ion : ionTypes)
 				{
 					if(numMaxRankPeaksAtThisSegment > 0)
@@ -737,10 +595,10 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 						rankDistMaxRank.put(ion, prevSumFreq+curFreq);
 					}
 				}
-				
+
 				noiseDist[maxRank+1] += (numBinsAtThisSegment-numPeaksAtThisSegment)*(annotation.size()-1)/numSegments/numBinsAtThisSegment;
 			}
-			
+
 			Hashtable<IonType,Float[]> freqDist = new Hashtable<IonType,Float[]>();
 			for(IonType ion : ionTypes)
 			{
@@ -755,17 +613,17 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 				dist[maxRank] = hist.get(maxRank+1)/(float)numSpec;
 				freqDist.put(ion, dist);
 			}
-			
+
 			// noise
 			Float[] dist = new Float[maxRank+1];
 			for(int i=1; i<=maxRank+1; i++)
 				dist[i-1] = noiseDist[i]/numSpec;
 			freqDist.put(IonType.NOISE, dist);
-			
+
 			rankDistTable.put(partition, freqDist);
 		}
 	}
-	
+
 	private void generateErrorDist(int errorScalingFactor)
 	{
 		this.errorScalingFactor = errorScalingFactor;
@@ -775,7 +633,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			generateNoiseErrorDist();
 		}
 	}
-	
+
 	private void generateIonErrorDist()
 	{
 		ionErrDistTable = new Hashtable<Partition,Float[]>();
@@ -797,19 +655,19 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 					continue;
 				if(spec.getCharge() != charge)
 					continue;
-				
+
 				float curParentMass = spec.getParentMass();
 				if(curParentMass < parentMassRange.getFirst() || curParentMass >= parentMassRange.getSecond())
 					continue;
-				
+
 				numSpecs++;
 				Peptide peptide;
-				
+
 				peptide = spec.getAnnotation();
-				
+
 				int intResidueMass = 0;
 				float[] obsMass = new float[peptide.size()+1];
-				
+
 				obsMass[0] = mainIon.getOffset(); 
 				for(int i=0; i<peptide.size()-1; i++)
 				{
@@ -817,7 +675,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 						intResidueMass += peptide.get(i).getNominalMass();
 					else
 						intResidueMass += peptide.get(peptide.size()-1-i).getNominalMass();
-					
+
 					float theoMass = mainIon.getMz(NominalMass.getMassFromNominalMass(intResidueMass));
 					Peak p = spec.getPeakByMass(theoMass, mme);
 					if(p != null)
@@ -825,7 +683,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 					else
 						obsMass[i+1] = -1;
 				}
-						
+
 				obsMass[peptide.size()] = mainIon.getMz(peptide.getMass());
 				for(int i=1; i<=peptide.size(); i++)
 				{
@@ -838,7 +696,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 								aa = peptide.get(i-1);
 							else
 								aa = peptide.get(peptide.size()-i);
-							
+
 							float expMass = obsMass[i]-obsMass[i-1];
 							float theoMass = aa.getMass()/mainIon.getCharge();
 							float diff = expMass-theoMass;
@@ -862,20 +720,20 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 					}
 				}	
 			}
-			
+
 			Float[] ionErrHist = new Float[2*errorScalingFactor+1];
 			// smoothing
 			float[] smoothedHist = errHist.getSmoothedHist(errorScalingFactor);
 			for(int i=-errorScalingFactor; i<=errorScalingFactor; i++)
 				ionErrHist[i+errorScalingFactor] = smoothedHist[i+errorScalingFactor]/(float)errHist.totalCount();
-			
+
 			Float[] ionExistence = new Float[edgeCount.length];
 			int sumEdgeCount = 0;
 			for(int i=0; i<edgeCount.length; i++)
 				sumEdgeCount += edgeCount[i];
 			for(int i=0; i<edgeCount.length; i++)
 				ionExistence[i] = edgeCount[i]/(float)sumEdgeCount;
-			
+
 			for(int i=0; i<this.numSegments; i++)
 			{
 				Partition part = new Partition(partition.getCharge(), partition.getParentMass(), i);
@@ -885,19 +743,19 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 					ionExistenceTable.put(part, ionExistence);
 				}
 			}
-//			if(partition.getCharge() == 2 && partition.getParentMass() > 1000 && partition.getParentMass() < 1110)
-//			{
-//				System.out.println("Partition\t"+partition.getCharge()+"\t"+partition.getParentMass());
-//				System.out.println("ErrorHist:");
-//				for(int i=0; i<errorScalingFactor*2+1; i++)
-//					System.out.println((i-errorScalingFactor)+"\t"+errHist.get(i-errorScalingFactor)+"\t"+ionErrHist[i]);
-//				System.out.println("IonExistence:");
-//				for(int i=0;i<ionExistence.length; i++)
-//					System.out.println(i+"\t"+ionExistence[i]);
-//			}
+			//			if(partition.getCharge() == 2 && partition.getParentMass() > 1000 && partition.getParentMass() < 1110)
+			//			{
+			//				System.out.println("Partition\t"+partition.getCharge()+"\t"+partition.getParentMass());
+			//				System.out.println("ErrorHist:");
+			//				for(int i=0; i<errorScalingFactor*2+1; i++)
+			//					System.out.println((i-errorScalingFactor)+"\t"+errHist.get(i-errorScalingFactor)+"\t"+ionErrHist[i]);
+			//				System.out.println("IonExistence:");
+			//				for(int i=0;i<ionExistence.length; i++)
+			//					System.out.println(i+"\t"+ionExistence[i]);
+			//			}
 		}
 	}
-	
+
 	private void generateNoiseErrorDist()
 	{
 		this.noiseErrDistTable = new Hashtable<Partition,Float[]>();
@@ -908,7 +766,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		float[] nominalMass = new float[heaviestAANominalMass+1];
 		for(AminoAcid aa : aaSet)
 			nominalMass[aa.getNominalMass()] = aa.getMass();
-		
+
 		for(Partition partition : partitionSet)
 		{
 			int charge = partition.getCharge();
@@ -931,7 +789,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 					continue;
 
 				Spectrum noiseSpec = (Spectrum)spec.clone();
-				
+
 				numSpecs++;
 
 				for(int i=0; i<noiseSpec.size()-1; i++)
@@ -949,7 +807,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 							break;
 						if(nominalMass[nominalDiff] == 0)
 							continue;
-						
+
 						float diff = p2Mass-p1Mass;
 						float aaMass = nominalMass[nominalDiff];
 						if(nominalDiff == 128)	// K or Q
@@ -969,7 +827,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			float[] smoothedHist = errHist.getSmoothedHist(errorScalingFactor);
 			for(int i=-errorScalingFactor; i<=errorScalingFactor; i++)
 				noiseErrHist[i+errorScalingFactor] = smoothedHist[i+errorScalingFactor]/(float)errHist.totalCount();
-			
+
 			for(int i=0; i<this.numSegments; i++)
 			{
 				Partition part = new Partition(partition.getCharge(), partition.getParentMass(), i);
@@ -980,12 +838,12 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			}
 		}		
 	}
-	
+
 	protected void smoothing()
 	{
 		smoothingRankDistTable();
 	}
-	
+
 	protected void smoothingRankDistTable()
 	{
 		if(rankDistTable == null)

@@ -27,7 +27,7 @@ public class ActivationMethod implements ParamObject {
 	public String getName()		{ return name; }
 	public String getFullName()	{ return fullName; }
 	@Override
-	public String getDescription()	{ return name; }
+	public String getParamDescription()	{ return name; }
 	public boolean isElectronBased() { return electronBased; }
 	
 	public static final ActivationMethod ASWRITTEN;
@@ -84,8 +84,8 @@ public class ActivationMethod implements ParamObject {
 	
 	private static void add(ActivationMethod actMethod)
 	{
-		registeredActMethods.add(actMethod);
-		table.put(actMethod.name, actMethod);
+		if(table.put(actMethod.name, actMethod) == null)
+			registeredActMethods.add(actMethod);
 	}
 	
 	// add to the HashMap only

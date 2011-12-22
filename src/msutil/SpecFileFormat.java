@@ -1,5 +1,18 @@
 package msutil;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+
+import parser.MS2SpectrumParser;
+import parser.MgfSpectrumParser;
+import parser.MzXMLSpectraIterator;
+import parser.MzXMLSpectraMap;
+import parser.PNNLSpectraIterator;
+import parser.PNNLSpectraMap;
+import parser.PklSpectrumParser;
+import parser.SpectrumParser;
+
 public class SpecFileFormat extends FileFormat {
 	private SpecFileFormat(String[] suffixes)
 	{
@@ -18,6 +31,47 @@ public class SpecFileFormat extends FileFormat {
 	public static final SpecFileFormat PKL;
 	public static final SpecFileFormat DTA_TXT;
 	
+	public static SpectrumAccessorBySpecIndex getSpecMap(File specFile)
+	{
+		SpectrumAccessorBySpecIndex specMap = null;
+		SpecFileFormat specFormat = getSpecFileFormat(specFile.getName());
+		if(specFormat == null)
+			return null;
+		
+		if(specFormat == MZXML || specFormat == MZML)
+			specMap = new MzXMLSpectraMap(specFile.getPath());
+		else if(specFormat == SpecFileFormat.DTA_TXT)
+			specMap = new PNNLSpectraMap(specFile.getPath());
+		else
+		{
+			SpectrumParser parser = null;
+			if(specFormat == SpecFileFormat.MGF)
+				parser = new MgfSpectrumParser();
+			else if(specFormat == SpecFileFormat.MS2)
+				parser = new MS2SpectrumParser();
+			else if(specFormat == SpecFileFormat.PKL)
+				parser = new PklSpectrumParser();
+			specMap = new SpectraMap(specFile.getPath(), parser);
+		}
+		
+		return specMap;
+	}
+	
+	public static SpecFileFormat getSpecFileFormat(String specFileName)
+	{
+		String lowerCaseFileName = specFileName.toLowerCase();
+		for(SpecFileFormat f : specFileFormatList)
+		{
+			for(String suffix : f.getSuffixes())
+			{
+				if(lowerCaseFileName.endsWith(suffix))
+					return f;
+			}
+		}
+		return null;
+	}
+	
+	private static ArrayList<SpecFileFormat> specFileFormatList;
 	static {
 		MGF = new SpecFileFormat(".mgf");
 		MZXML = new SpecFileFormat(".mzXML");
@@ -25,5 +79,13 @@ public class SpecFileFormat extends FileFormat {
 		MS2 = new SpecFileFormat(".ms2");
 		PKL = new SpecFileFormat(".pkl");
 		DTA_TXT = new SpecFileFormat("_dta.txt");
+		
+		specFileFormatList = new ArrayList<SpecFileFormat>();
+		specFileFormatList.add(MGF);
+		specFileFormatList.add(MZXML);
+		specFileFormatList.add(MZML);
+		specFileFormatList.add(MS2);
+		specFileFormatList.add(PKL);
+		specFileFormatList.add(DTA_TXT);
 	}
 }

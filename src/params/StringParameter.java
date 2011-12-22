@@ -1,8 +1,8 @@
 package params;
 
 public class StringParameter extends Parameter {
-	String value;
-	protected StringParameter(String key, String name, String description) {
+	String value = null;
+	public StringParameter(String key, String name, String description) {
 		super(key, name, description);
 	}
 
@@ -15,13 +15,13 @@ public class StringParameter extends Parameter {
 	
 	@Override
 	public String parse(String value) {
+		this.value = value.trim();
 		return null;
 	}
 
 	@Override
 	public String getValueAsString() {
-		// TODO Auto-generated method stub
-		return null;
+		return (value == null ? "null" : value);
 	}
 
 }

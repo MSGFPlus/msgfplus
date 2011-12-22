@@ -1,6 +1,6 @@
 package msutil;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import params.ParamObject;
 
@@ -17,8 +17,10 @@ public class InstrumentType implements ParamObject {
 	}
 
 	public String getName()		{ return name; }
-	@Override
 	public String getDescription()	{ return description; }
+	
+	@Override
+	public String getParamDescription()	{ return description; }
 	public boolean isHighResolution()	{ return isHighResolution; }
 	
 	@Override
@@ -43,7 +45,7 @@ public class InstrumentType implements ParamObject {
 		return table.get(name);
 	}
 	
-	public static HashMap<String,InstrumentType> table = new HashMap<String,InstrumentType>();
+	public static LinkedHashMap<String,InstrumentType> table = new LinkedHashMap<String,InstrumentType>();
 	public static final InstrumentType LOW_RESOLUTION_LTQ;
 	public static final InstrumentType TOF;
 	public static final InstrumentType HIGH_RESOLUTION_LTQ;

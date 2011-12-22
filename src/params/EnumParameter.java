@@ -74,7 +74,7 @@ public class EnumParameter extends IntParameter {
 		{
 			if(i > super.minValue)
 				buf.append(", ");
-			buf.append(i+": " + descriptions.get(i));
+			buf.append(i+": " + descriptions.get(i-super.minValue));
 			if(i == defaultValue)
 				buf.append(" (Default)");
 		}

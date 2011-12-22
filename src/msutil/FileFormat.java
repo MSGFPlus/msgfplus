@@ -4,12 +4,12 @@ public class FileFormat {
 	private final String[] suffixes;
 	private boolean isCaseSensitive = false;
 	
-	protected FileFormat(String[] suffixes)
+	public FileFormat(String[] suffixes)
 	{
 		this.suffixes = suffixes;
 	}
 	
-	protected FileFormat(String suffix)
+	public FileFormat(String suffix)
 	{
 		this.suffixes = new String[1];
 		suffixes[0] = suffix;

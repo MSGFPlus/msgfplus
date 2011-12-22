@@ -10,6 +10,7 @@ import msutil.ActivationMethod;
 import msutil.DBFileFormat;
 import msutil.Enzyme;
 import msutil.InstrumentType;
+import msutil.Protocol;
 import msutil.SpecFileFormat;
 
 import ui.MSGFDB;
@@ -67,6 +68,11 @@ public class ParamManager {
 		return null;
 	}
 	
+	public void printToolInfo()
+	{
+		System.out.println(this.toolName + " v" + this.version + " (" + this.date + ")");
+	}
+	
 	public void printUsageInfo()
 	{
 		System.out.println(this.toolName + " v" + this.version + " (" + this.date + ")");
@@ -93,7 +99,8 @@ public class ParamManager {
 		while(itr.hasNext())
 		{
 			Entry<String, Parameter> entry = itr.next();
-			System.out.println(entry.getKey() + "\t" + entry.getValue().getValueAsString());
+			Parameter param = entry.getValue();
+			System.out.println(param.getKey() + "\t" + param.getValueAsString());
 		}
 	}
 	
@@ -169,7 +176,7 @@ public class ParamManager {
 	public void addPMTolParam()
 	{
 		ToleranceParameter pmTolParam = new ToleranceParameter("t", "ParentMassTolerance", "e.g. 2.5Da, 30ppm or 0.5Da,2.5Da");
-		pmTolParam.setAdditionalDescription("Use comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (expMass<theoMass) and 2.5Da to the right (expMass>theoMass).");
+		pmTolParam.setAdditionalDescription("Use comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (expMass<theoMass) and 2.5Da to the right (expMass>theoMass)");
 		addParameter(pmTolParam);
 	}
 
@@ -183,52 +190,74 @@ public class ParamManager {
 	
 	public void addFragMethodParam()
 	{
+		addFragMethodParam(ActivationMethod.ASWRITTEN);
+	}
+	
+	public void addFragMethodParam(ActivationMethod defaultMethod)
+	{
 		ObjectEnumParameter<ActivationMethod> fragParam = new ObjectEnumParameter<ActivationMethod>("m", "FragmentMethodID");
 		ActivationMethod[] methods = ActivationMethod.getAllRegisteredActivationMethods();
 		for(ActivationMethod m : methods)
 		{
 			fragParam.registerObject(m);
-			if(m == ActivationMethod.ASWRITTEN)
+			if(m == defaultMethod)
 				fragParam.setDefault();
 		}
-//		fragParam.registerObject(ActivationMethod.ASWRITTEN).setDefault();
-//		fragParam.registerObject(ActivationMethod.CID);
-//		fragParam.registerObject(ActivationMethod.ETD);
-//		fragParam.registerObject(ActivationMethod.HCD);
-//		fragParam.registerObject(ActivationMethod.FUSION);
 		addParameter(fragParam);
 	}
-	
+
 	public void addInstTypeParam()
 	{
+		addInstTypeParam(InstrumentType.LOW_RESOLUTION_LTQ);
+	}
+	
+	public void addInstTypeParam(InstrumentType defaultInst)
+	{
 		ObjectEnumParameter<InstrumentType> instParam = new ObjectEnumParameter<InstrumentType>("inst", "InstrumentID");
-		instParam.registerObject(InstrumentType.LOW_RESOLUTION_LTQ).setDefault();
-		instParam.registerObject(InstrumentType.TOF);
-		instParam.registerObject(InstrumentType.HIGH_RESOLUTION_LTQ);
+		InstrumentType[] allInstTypes = InstrumentType.getAllRegisteredInstrumentTypes();
+		for(InstrumentType inst : allInstTypes)
+		{
+			instParam.registerObject(inst);
+			if(inst == defaultInst)
+				instParam.setDefault();
+		}
 		addParameter(instParam);
 	}
 	
 	public void addEnzymeParam()
+	{
+		addEnzymeParam(Enzyme.TRYPSIN);
+	}
+	
+	public void addEnzymeParam(Enzyme defaulEnzyme)
 	{
 		ObjectEnumParameter<Enzyme> enzParam = new ObjectEnumParameter<Enzyme>("e", "EnzymeID");
 		Enzyme[] allEnzymes = Enzyme.getAllRegisteredEnzymes();
 		for(Enzyme e : allEnzymes)
 		{
 			enzParam.registerObject(e);
-			if(e == Enzyme.TRYPSIN)
+			if(e == defaulEnzyme)
 				enzParam.setDefault();
 		}
-//		enzParam.registerObject(Enzyme.NOENZYME);
-//		enzParam.registerObject(Enzyme.TRYPSIN).setDefault();
-//		enzParam.registerObject(Enzyme.CHYMOTRYPSIN);
-//		enzParam.registerObject(Enzyme.LysC);
-//		enzParam.registerObject(Enzyme.LysN);
-//		enzParam.registerObject(Enzyme.GluC);
-//		enzParam.registerObject(Enzyme.ArgC);
-//		enzParam.registerObject(Enzyme.AspN);
-//		enzParam.registerObject(Enzyme.ALP);
-//		enzParam.registerObject(Enzyme.Peptidomics);
 		addParameter(enzParam);
+	}
+	
+	public void addProtocolParam()
+	{
+		addProtocolParam(Protocol.NOPROTOCOL);
+	}
+	
+	public void addProtocolParam(Protocol defaultProtocol)
+	{
+		ObjectEnumParameter<Protocol> protocolParam = new ObjectEnumParameter<Protocol>("protocol", "ProtocolID");
+		Protocol[] protocols = Protocol.getAllRegisteredProtocols();
+		for(Protocol protocol : protocols)
+		{
+			protocolParam.registerObject(protocol);
+			if(protocol == defaultProtocol)
+				protocolParam.setDefault();
+		}
+		addParameter(protocolParam);
 	}
 	
 	public void addModFileParam()
@@ -237,6 +266,115 @@ public class ParamManager {
 		modParam.setAsOptional();
 		modParam.fileMustExist();
 		addParameter(modParam);
+	}
+	
+	public void addMSGFDBParams()
+	{
+		addSpecFileParam();
+		addDBFileParam();
+		addPMTolParam();
+		addOutputFileParam();
+		
+		IntParameter numThreadParam = new IntParameter("thread", "NumThreads", "Number of concurrent threads to be executed, Default: Number of available cores");
+		numThreadParam.defaultValue(Runtime.getRuntime().availableProcessors());
+		numThreadParam.minValue(1);
+		addParameter(numThreadParam);
+		
+		EnumParameter tdaParam = new EnumParameter("tda");
+		tdaParam.registerEntry("don't search decoy database").setDefault();
+		tdaParam.registerEntry("search decoy database to compute FDR");
+		addParameter(tdaParam);
+		
+		addFragMethodParam();
+		addInstTypeParam();
+		addEnzymeParam();
+		addProtocolParam();
+		
+		EnumParameter c13Param = new EnumParameter("c13");
+		c13Param.registerEntry("Consider only peptides matching precursor mass");
+		c13Param.registerEntry("Consider peptides having one 13C").setDefault();
+		c13Param.registerEntry("Consider peptides having up to two 13C");
+		addParameter(c13Param);
+		
+		EnumParameter nnetParam = new EnumParameter("nnet", null, "Number of allowed non-enzymatic termini");
+		nnetParam.registerEntry("");
+		nnetParam.registerEntry("").setDefault();
+		nnetParam.registerEntry("");
+		addParameter(nnetParam);
+		
+		addModFileParam();
+		
+		IntParameter minLenParam = new IntParameter("minLength", "MinPepLength", "Minimum peptide length to consider, Default: 6");
+		minLenParam.minValue(1);
+		minLenParam.defaultValue(6);
+		addParameter(minLenParam);
+
+		IntParameter maxLenParam = new IntParameter("maxLength", "MaxPepLength", "Maximum peptide length to consider, Default: 40");
+		maxLenParam.minValue(1);
+		maxLenParam.defaultValue(40);
+		addParameter(maxLenParam);
+
+		IntParameter minCharge = new IntParameter("minCharge", "MinCharge", "Minimum precursor charge to consider if charges are not specified in the spectrum file, Default: 2");
+		minCharge.minValue(1);
+		minCharge.defaultValue(2);
+		addParameter(minCharge);
+
+		IntParameter maxCharge = new IntParameter("maxCharge", "MaxCharge", "Maximum precursor charge to consider if charges are not specified in the spectrum file, Default: 3");
+		maxCharge.minValue(1);
+		maxCharge.defaultValue(3);
+		addParameter(maxCharge);
+		
+		IntParameter numMatchesParam = new IntParameter("n", "NumMatchesPerSpec", "Number of matches per spectrum to be reported, Default: 1");
+		numMatchesParam.minValue(1);
+		numMatchesParam.defaultValue(1);
+		addParameter(numMatchesParam);
+		
+		EnumParameter uniformAAProb = new EnumParameter("uniformAAProb");
+		uniformAAProb.registerEntry("use amino acid probabilities computed from the input database").setDefault();
+		uniformAAProb.registerEntry("use probability 0.05 for all amino acids");
+		addParameter(uniformAAProb);
+		
+		addExample("Example (high-precision): java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 30ppm -c13 1 -nnet 0 -tda 1 -o testMSGFDB.tsv");
+		addExample("Example (low-precision): java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 0.5Da,2.5Da -nnet 0 -tda 1 -o testMSGFDB.tsv");
+		
+		// Hidden parameters
+		FileParameter dbIndexDirParam = new FileParameter("dd", "DBIndexDir", "Path to the directory containing database index files");
+		dbIndexDirParam.fileMustExist();
+		dbIndexDirParam.mustBeADirectory();
+		dbIndexDirParam.setAsOptional();
+		dbIndexDirParam.setHidden();
+		addParameter(dbIndexDirParam);
+		
+		EnumParameter unitParam = new EnumParameter("u");
+		unitParam.registerEntry("Da");
+		unitParam.registerEntry("ppm");
+		unitParam.registerEntry("Don't care").setDefault();
+		unitParam.setHidden();
+		addParameter(unitParam);
+		
+		IntRangeParameter specIndexParam = new IntRangeParameter("index", "SpecIndex", "Range of spectrum index to be considered");
+		specIndexParam.minValue(1);
+		specIndexParam.defaultValue("1,"+(Integer.MAX_VALUE-1));
+		specIndexParam.setHidden();
+		addParameter(specIndexParam);
+		
+		EnumParameter showFDRParam = new EnumParameter("showFDR");
+		showFDRParam.registerEntry("do not show FDRs");
+		showFDRParam.registerEntry("show FDRs").setDefault();
+		showFDRParam.setHidden();
+		addParameter(showFDRParam);
+		
+		EnumParameter replicateMergedResParam = new EnumParameter("replicate");
+		replicateMergedResParam.registerEntry("show merged spectra").setDefault();
+		replicateMergedResParam.registerEntry("show individual spectra");
+		replicateMergedResParam.setHidden();
+		addParameter(replicateMergedResParam);
+
+		EnumParameter edgeScoreParam = new EnumParameter("edgeScore");
+		edgeScoreParam.registerEntry("use edge scoring").setDefault();
+		edgeScoreParam.registerEntry("do not use edge scoring");
+		edgeScoreParam.setHidden();
+		addParameter(edgeScoreParam);		
 	}
 	
 	public FileParameter getSpecFileParam()
@@ -273,6 +411,11 @@ public class ParamManager {
 	{
 		return (Enzyme)((ObjectEnumParameter<?>)getParameter("e")).getObject();
 	}
+
+	public Protocol getProtocol()
+	{
+		return (Protocol)((ObjectEnumParameter<?>)getParameter("protocol")).getObject();
+	}
 	
 	public FileParameter getModFileParam()
 	{
@@ -304,115 +447,24 @@ public class ParamManager {
 		}
 		return null;
 	}
+
+	public File[] getFiles(String key)
+	{
+		Parameter param = this.getParameter(key);
+		if(param instanceof FileListParameter)
+			return ((FileListParameter)param).getFiles();
+		else
+		{
+			System.err.println("[Error] in ParamManager.getFile: " + key + " is not an instance of FileListParameter.");
+			System.exit(-1);
+		}
+		return null;
+	}
 	
 	public static void main(String argv[])
 	{
 		ParamManager paramManager = new ParamManager("MSGFDB", MSGFDB.VERSION, MSGFDB.RELEASE_DATE, "java -Xmx2000M -jar MSGFDB.jar");
-		
-		paramManager.addSpecFileParam();
-		paramManager.addDBFileParam();
-		paramManager.addPMTolParam();
-		paramManager.addOutputFileParam();
-		
-		IntParameter numThreadParam = new IntParameter("thread", "NumThreads", "Number of concurrent threads to be executed, Default: Number of available cores");
-		numThreadParam.defaultValue(Runtime.getRuntime().availableProcessors());
-		numThreadParam.minValue(1);
-		paramManager.addParameter(numThreadParam);
-		
-		EnumParameter tdaParam = new EnumParameter("tda");
-		tdaParam.registerEntry("don't search decoy database").setDefault();
-		tdaParam.registerEntry("search decoy database to compute FDR");
-		paramManager.addParameter(tdaParam);
-		
-		paramManager.addFragMethodParam();
-		paramManager.addInstTypeParam();
-		paramManager.addEnzymeParam();
-		
-		EnumParameter c13Param = new EnumParameter("c13");
-		c13Param.registerEntry("Consider only peptides matching precursor mass");
-		c13Param.registerEntry("Consider peptides having one 13C").setDefault();
-		c13Param.registerEntry("Consider peptides having up to two 13C");
-		paramManager.addParameter(c13Param);
-		
-		EnumParameter nnetParam = new EnumParameter("nnet", null, "Number of allowed non-enzymatic termini");
-		nnetParam.registerEntry("");
-		nnetParam.registerEntry("").setDefault();
-		nnetParam.registerEntry("");
-		paramManager.addParameter(nnetParam);
-		
-		paramManager.addModFileParam();
-		
-		IntParameter minLenParam = new IntParameter("minLength", "MinPepLength", "Minimum peptide length to consider, Default: 6");
-		minLenParam.minValue(1);
-		minLenParam.defaultValue(6);
-		paramManager.addParameter(minLenParam);
-
-		IntParameter maxLenParam = new IntParameter("maxLength", "MaxPepLength", "Maximum peptide length to consider, Default: 40");
-		maxLenParam.minValue(1);
-		maxLenParam.defaultValue(40);
-		paramManager.addParameter(maxLenParam);
-
-		IntParameter minCharge = new IntParameter("minCharge", "MinCharge", "Minimum precursor charge to consider if charges are not specified in the spectrum file, Default: 2");
-		minCharge.minValue(1);
-		minCharge.defaultValue(2);
-		paramManager.addParameter(minCharge);
-
-		IntParameter maxCharge = new IntParameter("maxCharge", "MaxCharge", "Maximum precursor charge to consider if charges are not specified in the spectrum file, Default: 3");
-		maxCharge.minValue(1);
-		maxCharge.defaultValue(3);
-		paramManager.addParameter(maxCharge);
-		
-		IntParameter numMatchesParam = new IntParameter("n", "NumMatchesPerSpec", "Number of matches per spectrum to be reported, Default: 1");
-		numMatchesParam.minValue(1);
-		numMatchesParam.defaultValue(1);
-		paramManager.addParameter(numMatchesParam);
-		
-		EnumParameter uniformAAProb = new EnumParameter("uniformAAProb");
-		uniformAAProb.registerEntry("use amino acid probabilities computed from the input database").setDefault();
-		uniformAAProb.registerEntry("use probability 0.05 for all amino acids");
-		paramManager.addParameter(uniformAAProb);
-		
-		paramManager.addExample("Example (high-precision): java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 30ppm -c13 1 -nnet 0 -tda 1 -o testMSGFDB.tsv");
-		paramManager.addExample("Example (low-precision): java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 0.5Da,2.5Da -nnet 0 -tda 1 -o testMSGFDB.tsv");
-		
-		// Hidden parameters
-		FileParameter dbIndexDirParam = new FileParameter("dd", "DBIndexDir", "Path to the directory containing database index files");
-		dbIndexDirParam.fileMustExist();
-		dbIndexDirParam.mustBeADirectory();
-		dbIndexDirParam.setAsOptional();
-		dbIndexDirParam.setHidden();
-		paramManager.addParameter(dbIndexDirParam);
-		
-		EnumParameter unitParam = new EnumParameter("u");
-		unitParam.registerEntry("Da");
-		unitParam.registerEntry("ppm");
-		unitParam.registerEntry("Don't care").setDefault();
-		unitParam.setHidden();
-		paramManager.addParameter(unitParam);
-		
-		IntRangeParameter specIndexParam = new IntRangeParameter("index", "SpecIndex", "Range of spectrum index to be considered");
-		specIndexParam.minValue(1);
-		specIndexParam.defaultValue("1,"+(Integer.MAX_VALUE-1));
-		specIndexParam.setHidden();
-		paramManager.addParameter(specIndexParam);
-		
-		EnumParameter showFDRParam = new EnumParameter("showFDR");
-		showFDRParam.registerEntry("do not show FDRs");
-		showFDRParam.registerEntry("show FDRs").setDefault();
-		showFDRParam.setHidden();
-		paramManager.addParameter(showFDRParam);
-		
-		EnumParameter replicateMergedResParam = new EnumParameter("replicate");
-		replicateMergedResParam.registerEntry("show merged spectra").setDefault();
-		replicateMergedResParam.registerEntry("show individual spectra");
-		replicateMergedResParam.setHidden();
-		paramManager.addParameter(replicateMergedResParam);
-
-		EnumParameter edgeScoreParam = new EnumParameter("edgeScore");
-		edgeScoreParam.registerEntry("use edge scoring").setDefault();
-		edgeScoreParam.registerEntry("do not use edge scoring");
-		edgeScoreParam.setHidden();
-		paramManager.addParameter(edgeScoreParam);
+		paramManager.addMSGFDBParams();
 		
 //		FileListParameter testParam = new FileListParameter("test", "test", "test");
 //		testParam.addFileFormat(SpecFileFormat.MGF);

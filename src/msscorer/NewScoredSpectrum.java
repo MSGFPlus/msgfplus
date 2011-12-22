@@ -38,7 +38,7 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 		if(spec.getActivationMethod() != null)
 			activationMethodArr[0] = spec.getActivationMethod();
 		else
-			activationMethodArr[0] = scorer.getActivationMethod();
+			activationMethodArr[0] = scorer.getSpecDataType().getActivationMethod();
 		this.scanNumArr = new int[1];
 		scanNumArr[0] = spec.getScanNum();
 		

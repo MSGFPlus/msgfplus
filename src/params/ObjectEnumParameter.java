@@ -12,7 +12,7 @@ public class ObjectEnumParameter<T extends ParamObject> extends EnumParameter {
 
 	public ObjectEnumParameter<T> registerObject(T obj)
 	{
-		super.registerEntry(obj.getDescription());
+		super.registerEntry(obj.getParamDescription());
 		objectList.add(obj);
 		return this;
 	}
@@ -26,6 +26,6 @@ public class ObjectEnumParameter<T extends ParamObject> extends EnumParameter {
 	@Override
 	public String getValueAsString()
 	{
-		return getObject().getDescription();
+		return getObject().getParamDescription();
 	}
 }

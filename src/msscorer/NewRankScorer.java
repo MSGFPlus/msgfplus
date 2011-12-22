@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 
 import msgf.Histogram;
 import msgf.Tolerance;
+import msscorer.NewScorerFactory.SpecDataType;
 import msutil.ActivationMethod;
 import msutil.Enzyme;
 import msutil.InstrumentType;
@@ -34,16 +35,13 @@ import msutil.WindowFilter;
 import msutil.IonType.PrefixIon;
 
 public class NewRankScorer implements NewAdditiveScorer {
-	public static final String VERSION = "v6695";
+	public static final String VERSION = "7059";
 	public static final String DATE = "12/21/2011";
 	// Optional
 	protected WindowFilter filter = new WindowFilter(6, 50);
 	
 	// Type of the data
-	protected ActivationMethod activationMethod;
-	protected InstrumentType instType;
-	protected Enzyme enzyme;
-	protected Protocol protocol;
+	protected SpecDataType dataType;
 	
 	// Parameters to be used for scoring
 	protected int numSegments = 1;
@@ -92,24 +90,9 @@ public class NewRankScorer implements NewAdditiveScorer {
 		return new NewScoredSpectrum<T>(spec, this);
 	}
 	
-	public ActivationMethod getActivationMethod()
+	public SpecDataType getSpecDataType()
 	{
-		return activationMethod;
-	}
-	
-	public InstrumentType getInstrumentType()
-	{
-		return instType;
-	}
-	
-	public Enzyme getEnzyme()
-	{
-		return enzyme;
-	}
-	
-	public Protocol getProtocol()
-	{
-		return protocol;
+		return dataType;
 	}
 	
 	public void filterPrecursorPeaks(Spectrum spec)
@@ -240,38 +223,42 @@ public class NewRankScorer implements NewAdditiveScorer {
 			byte lenActMethod = in.readByte();
 			for(byte i=0; i<lenActMethod; i++)
 				bufMet.append(in.readChar());
-			this.activationMethod = ActivationMethod.get(bufMet.toString());
+			ActivationMethod activationMethod = ActivationMethod.get(bufMet.toString());
 			
 			// Read instrument type
 			StringBuffer bufInst = new StringBuffer();
 			byte lenInst = in.readByte();
 			for(byte i=0; i<lenInst; i++)
 				bufInst.append(in.readChar());
-			this.instType = InstrumentType.get(bufInst.toString());
+			InstrumentType instType = InstrumentType.get(bufInst.toString());
 
 			// Read enzyme
+			Enzyme enzyme;
 			StringBuffer bufEnz = new StringBuffer();
 			byte lenEnz = in.readByte();
 			if(lenEnz != 0)
 			{
 				for(byte i=0; i<lenEnz; i++)
 					bufEnz.append(in.readChar());
-				this.enzyme = Enzyme.getEnzymeByName(bufEnz.toString());
+				enzyme = Enzyme.getEnzymeByName(bufEnz.toString());
 			}
 			else
-				this.enzyme = null;
+				enzyme = null;
 			
 			// Read protocol
+			Protocol protocol;
 			StringBuffer bufProtocol = new StringBuffer();
 			byte lenProtocol = in.readByte();
 			if(lenProtocol != 0)
 			{
 				for(byte i=0; i<lenProtocol; i++)
 					bufProtocol.append(in.readChar());
-				this.protocol = Protocol.get(bufProtocol.toString());
+				protocol = Protocol.get(bufProtocol.toString());
 			}
 			else
-				this.protocol = Protocol.NOPROTOCOL;
+				protocol = Protocol.NOPROTOCOL;
+			
+			this.dataType = new SpecDataType(activationMethod, instType, enzyme, protocol);
 			
 			// MME
 			boolean isTolerancePPM = in.readBoolean();
@@ -665,14 +652,15 @@ public class NewRankScorer implements NewAdditiveScorer {
 			out.writeInt(Calendar.getInstance().get(Calendar.DATE));
 
 			// Write method
-			out.writeByte(activationMethod.getName().length());
-			out.writeChars(activationMethod.getName());
+			out.writeByte(dataType.getActivationMethod().getName().length());
+			out.writeChars(dataType.getActivationMethod().getName());
 			
 			// Write instrument type
-			out.writeByte(instType.getName().length());
-			out.writeChars(instType.getName());
+			out.writeByte(dataType.getInstrumentType().getName().length());
+			out.writeChars(dataType.getInstrumentType().getName());
 			
 			// Write enzyme
+			Enzyme enzyme = dataType.getEnzyme();
 			if(enzyme != null)
 			{
 				out.writeByte(enzyme.getName().length());
@@ -682,6 +670,7 @@ public class NewRankScorer implements NewAdditiveScorer {
 				out.writeByte((byte)0);
 	
 			// Write protocol
+			Protocol protocol = dataType.getProtocol();
 			if(protocol != null && protocol != Protocol.NOPROTOCOL)
 			{
 				out.writeByte(protocol.getName().length());
@@ -829,20 +818,20 @@ public class NewRankScorer implements NewAdditiveScorer {
 				new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime()));
 
 		// Write method
-		if(activationMethod != null)
-			out.println("#Activation Method: " + activationMethod.getName());
+		if(dataType.getActivationMethod() != null)
+			out.println("#Activation Method: " + dataType.getActivationMethod().getName());
 		
 		// Write instrument type
-		if(instType != null)
-			out.println("#Instrument type: " + instType.getName());
+		if(dataType.getInstrumentType() != null)
+			out.println("#Instrument type: " + dataType.getInstrumentType().getName());
 		
 		// Write enzyme
-		if(enzyme != null)
-			out.println("#Enzyme: " + enzyme.getName());
+		if(dataType.getEnzyme() != null)
+			out.println("#Enzyme: " + dataType.getEnzyme().getName());
 		
 		// Write protocol
-		if(protocol != null)
-			out.println("#Protocol: " + protocol.getName());
+		if(dataType.getProtocol() != null)
+			out.println("#Protocol: " + dataType.getProtocol().getName());
 		
 		// Write mme
 		out.println("#Maximum mass error: " + mme.toString());

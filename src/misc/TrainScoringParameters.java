@@ -8,11 +8,12 @@ import java.util.Calendar;
 
 import msscorer.NewRankScorer;
 import msscorer.ScoringParameterGeneratorWithErrors;
+import msscorer.NewScorerFactory.SpecDataType;
 import msutil.ActivationMethod;
 import msutil.AminoAcidSet;
 import msutil.Enzyme;
 import msutil.InstrumentType;
-import msutil.Modification;
+import msutil.Protocol;
 
 public class TrainScoringParameters {
 	
@@ -22,7 +23,7 @@ public class TrainScoringParameters {
 	
 	public static void main(String argv[]) throws Exception
 	{
-//		backup();
+		backup();
 		createParamFiles();
 		testParamFiles();
 	}
@@ -104,45 +105,32 @@ public class TrainScoringParameters {
 				String actMethodStr = token[0];
 				String instTypeStr = token[1];
 				String enzymeStr = token[2];
-				String modStr = null;
+				String protocolStr = null;
 				if(token.length == 4)
-					modStr = token[3];
+					protocolStr = token[3];
 				
 				ActivationMethod actMethod = ActivationMethod.get(actMethodStr);
 				InstrumentType instType = InstrumentType.get(instTypeStr);
 				Enzyme enzyme = Enzyme.getEnzymeByName(enzymeStr);
-				Modification mod = null;
-				if(modStr != null)
-					mod = Modification.get(modStr);
+				Protocol protocol = null;
+				if(protocolStr != null)
+					protocol = Protocol.get(protocolStr);
 				
-				if(actMethod == null || instType == null || enzyme == null)
+				if(actMethod == null || instType == null || enzyme == null || protocol == null)
 				{
 					System.err.println("Wrong file name: " + specFile.getName());
 					System.exit(-1);
 				}
 				
-				String paramFileName = id+".param";
-				File outputFile = new File(PARAM_DIR, paramFileName);
-				int errorScalingFactor = 0;
-				boolean deconvoluteSpectra = false;
-				
-				if(instType == InstrumentType.HIGH_RESOLUTION_LTQ || instType == InstrumentType.TOF)
-				{
-					errorScalingFactor = 100;
-					deconvoluteSpectra = true;
-				}
-				
-				boolean considerPhosLoss = false;
-				if(mod == Modification.get("Phosphorylation"))
-				{
-					considerPhosLoss = true;
-				}
-				
-				if(specFile.getName().contains("Peptidomics"))
-				{
-					System.out.println("Generating " + outputFile.getPath());
-					ScoringParameterGeneratorWithErrors.generateParameters(specFile, actMethod, instType, enzyme, errorScalingFactor, considerPhosLoss, deconvoluteSpectra, outputFile, aaSet, false, false);
-				}
+				SpecDataType dataType = new SpecDataType(actMethod, instType, enzyme, protocol);
+				System.out.println("Processing " + dataType.toString());
+				ScoringParameterGeneratorWithErrors.generateParameters(
+						specFile,
+						dataType,
+						aaSet, 
+						new File(PARAM_DIR),
+						false, 
+						false);
 			}
 		}
 		System.out.println("Successfully generated parameters!");
@@ -157,7 +145,7 @@ public class TrainScoringParameters {
 				System.out.println("Reading " + f.getName());
 				InputStream is = new BufferedInputStream(new FileInputStream(f));
 				NewRankScorer scorer = new NewRankScorer(new BufferedInputStream(is));
-				System.out.println(scorer.getActivationMethod().getName()+"_"+scorer.getInstrumentType().getName()+"_"+scorer.getEnzyme().getName());
+				System.out.println(scorer.getSpecDataType());
 			}
 		}
 		System.out.println("Read Success");

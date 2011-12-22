@@ -118,8 +118,15 @@ public class Enzyme implements ParamObject {
 	 * 
 	 * @return the description of the enzyme.
 	 */
-	@Override
 	public String getDescription()	{ return description; }
+	
+	/**
+	 * Returns the description of the enzyme when it is showed in the usage info.
+	 * 
+	 * @return the description of the enzyme when it is showed in the usage info.
+	 */
+	@Override
+	public String getParamDescription()	{ return description; }
 	
 	/**
 	 * Checks if this enzyme cleaves N term.
@@ -334,6 +341,20 @@ public class Enzyme implements ParamObject {
 				String[] token = paramStr.split(",");
 				String shortName = token[0];
 				String cleaveAt = token[1];
+				if(cleaveAt.equalsIgnoreCase("null"))
+					cleaveAt = null;
+				else
+				{
+					for(int i=0; i<cleaveAt.length(); i++)
+					{
+						if(!AminoAcid.isStdAminoAcid(cleaveAt.charAt(i)))
+						{
+							System.err.println("Illegal user-defined enzyme at " + enzymeFile.getAbsolutePath() + ": " + paramStr);
+							System.err.println("Unrecognizable aa residue: " + cleaveAt.charAt(i));
+							System.exit(-1);
+						}
+					}
+				}
 				boolean isNTerm = false;	// C-Term: false, N-term: true
 				if(token[2].equals("C"))
 					isNTerm = false;
@@ -342,12 +363,11 @@ public class Enzyme implements ParamObject {
 				else
 				{
 					System.err.println("Illegal user-defined enzyme at " + enzymeFile.getAbsolutePath() + ": " + paramStr);
+					System.err.println(token[2] + " must be 'C' or 'N'.");
 					System.exit(-1);
 				}
 				String description = token[3];
 
-				if(cleaveAt.equalsIgnoreCase("null"))
-					cleaveAt = null;
 				Enzyme userEnzyme = new Enzyme(shortName, cleaveAt, isNTerm, description);
 				register(shortName, userEnzyme);
 			}

@@ -26,6 +26,7 @@ import msutil.Enzyme;
 import msutil.InstrumentType;
 import msutil.Modification;
 import msutil.Pair;
+import msutil.Protocol;
 import msutil.SpecKey;
 import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
@@ -139,11 +140,11 @@ public class ScoredSpectraMap {
 		ActivationMethod activationMethod = specDataType.getActivationMethod();
 		InstrumentType instType = specDataType.getInstrumentType();
 		Enzyme enzyme = specDataType.getEnzyme();
-		Modification mod = specDataType.getModification();
+		Protocol protocol = specDataType.getProtocol();
 		
 		if(activationMethod != ActivationMethod.ASWRITTEN && activationMethod != ActivationMethod.FUSION)
 		{
-			scorer = NewScorerFactory.get(activationMethod, instType, enzyme, mod);
+			scorer = NewScorerFactory.get(activationMethod, instType, enzyme, protocol);
 			if(this.turnOffEdgeScoring)
 				scorer.doNotUseError();
 		}
@@ -154,7 +155,7 @@ public class ScoredSpectraMap {
 			Spectrum spec = specMap.getSpectrumBySpecIndex(specIndex);
 			if(activationMethod == ActivationMethod.ASWRITTEN || activationMethod == ActivationMethod.FUSION)
 			{
-				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, mod);
+				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, protocol);
 				if(this.turnOffEdgeScoring)
 					scorer.doNotUseError();
 			}
@@ -177,7 +178,7 @@ public class ScoredSpectraMap {
 	{
 		InstrumentType instType = specDataType.getInstrumentType();
 		Enzyme enzyme = specDataType.getEnzyme();
-		Modification mod = specDataType.getModification();
+		Protocol protocol = specDataType.getProtocol();
 		
 		for(SpecKey specKey : specKeyList.subList(fromIndex, toIndex))
 		{
@@ -193,7 +194,7 @@ public class ScoredSpectraMap {
 			{
 				Spectrum spec = specMap.getSpectrumBySpecIndex(specIndex);
 				
-				NewRankScorer scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, mod);
+				NewRankScorer scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, protocol);
 				if(!scorer.supportEdgeScores())
 					supportEdgeScore = false;
 				int charge = specKey.getCharge();

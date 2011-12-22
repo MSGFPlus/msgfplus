@@ -12,6 +12,7 @@ import java.util.TreeSet;
 import msgf.Histogram;
 import msgf.NominalMass;
 import msgf.Tolerance;
+import msscorer.NewScorerFactory.SpecDataType;
 import msutil.ActivationMethod;
 import msutil.AminoAcid;
 import msutil.AminoAcidSet;
@@ -23,6 +24,7 @@ import msutil.IonType;
 import msutil.Pair;
 import msutil.Peak;
 import msutil.Peptide;
+import msutil.Protocol;
 import msutil.SpectraContainer;
 import msutil.SpectraIterator;
 import msutil.Spectrum;
@@ -191,7 +193,7 @@ public class ScoringParameterGenerator extends NewRankScorer {
 		if(instType == null)
 			printUsageAndExit("missing instrumentType!");
 		
-		generateParameters(specFile, activationMethod, instType, enzyme, numSpecsPerPeptide, errorScalingFactor, outputFile, aaSet, isText, false);
+		generateParameters(specFile, activationMethod, instType, enzyme, Protocol.NOPROTOCOL, numSpecsPerPeptide, errorScalingFactor, outputFile, aaSet, isText, false);
 	}
 	
 	public static void printUsageAndExit(String message)
@@ -215,6 +217,7 @@ public class ScoringParameterGenerator extends NewRankScorer {
 			ActivationMethod activationMethod,
 			InstrumentType instType,
 			Enzyme enzyme,
+			Protocol protocol,
 			int numSpecsPerPeptide, 
 			int errorScalingFactor,
 			File outputFile, 
@@ -246,7 +249,8 @@ public class ScoringParameterGenerator extends NewRankScorer {
 			for(Spectrum spec : specList)
 				specContOnePerPep.add(spec);
 		
-		ScoringParameterGenerator gen = new ScoringParameterGenerator(specContOnePerPep, activationMethod, instType, enzyme);
+		SpecDataType dataType = new SpecDataType(activationMethod, instType, enzyme, protocol);
+		ScoringParameterGenerator gen = new ScoringParameterGenerator(specContOnePerPep, dataType);
 		
 		// set up the tolerance
 		gen.tolerance(new Tolerance(1/Constants.INTEGER_MASS_SCALER/2));
@@ -296,12 +300,10 @@ public class ScoringParameterGenerator extends NewRankScorer {
 	// Required
 	private SpectraContainer specContainer;
 	
-	public ScoringParameterGenerator(SpectraContainer specContainer, ActivationMethod actMethod, InstrumentType instType, Enzyme enzyme)
+	public ScoringParameterGenerator(SpectraContainer specContainer, SpecDataType dataType)
 	{
 		this.specContainer = specContainer;
-		super.activationMethod = actMethod;
-		super.instType = instType;
-		super.enzyme = enzyme;
+		super.dataType = dataType;
 	}
 	
 	public void partition(int numSegments)
