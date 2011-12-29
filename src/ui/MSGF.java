@@ -167,10 +167,10 @@ public class MSGF {
 		
 		for(InsPecTPSM psm : psmList)
 		{
-			////////// debug
-			if(psm.getSpecIndex() != 60409)
-				continue;
-			/////////////////
+//			////////// debug
+//			if(psm.getSpecIndex() != 60409)
+//				continue;
+//			/////////////////
 			
 			if(psm.getPeptide() == null)
 			{
