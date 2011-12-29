@@ -498,6 +498,19 @@ public class ParamManager {
 		}
 		return -1;
 	}
+
+	public float getFloatValue(String key)
+	{
+		Parameter param = this.getParameter(key);
+		if(param instanceof FloatParameter)
+			return ((FloatParameter)param).getValue();
+		else
+		{
+			System.err.println("[Error] in ParamManager.getFloatValue: " + key + " is not an instance of FloatParameter.");
+			System.exit(-1);
+		}
+		return -1;
+	}
 	
 	public File getFile(String key)
 	{

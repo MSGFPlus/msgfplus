@@ -8,7 +8,6 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import msdbsearch.DBScanner;
 import msgf.DeNovoGraph;
 import msgf.FlexAminoAcidGraph;
 import msgf.GeneratingFunction;
@@ -19,6 +18,7 @@ import msscorer.NewScorerFactory;
 import msutil.ActivationMethod;
 import msutil.AminoAcidSet;
 import msutil.Enzyme;
+import msutil.InstrumentType;
 import msutil.SpectraMap;
 import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
@@ -89,11 +89,24 @@ public class MSGF {
 			}
 		}
 		
-		AminoAcidSet aaSet;
+		AminoAcidSet aaSet = null;
 		int fixModID = paramManager.getIntValue("fixMod");
+		if(fixModID == 0)
+			aaSet = AminoAcidSet.getStandardAminoAcidSet();
+		else if(fixModID == 1)
+			aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
+		else if(fixModID == 2)
+			aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarboxymethylatedCys();
 		
+		File resultFile = paramManager.getFile("i");
 		InsPecTParser parser = new InsPecTParser(aaSet);
 		parser.parse(resultFile.getPath());
+		
+		boolean addMSGFColumn;
+		if(paramManager.getIntValue("addScore") == 1)
+			addMSGFColumn = true;
+		else
+			addMSGFColumn = false;
 		
 		String header = parser.getHeader();
 		if(header != null)
@@ -107,6 +120,13 @@ public class MSGF {
 		ArrayList<String> keyList = null;
 		Hashtable<String, Double> minSpecProb = null;
 		Hashtable<String, String> bestOut = null;
+		
+		boolean onePerSpec;
+		if(paramManager.getIntValue("x") == 1)
+			onePerSpec = true;
+		else
+			onePerSpec = false;
+		
 		if(onePerSpec)
 		{
 			minSpecProb = new Hashtable<String, Double>();
@@ -114,23 +134,33 @@ public class MSGF {
 			keyList = new ArrayList<String>();
 		}
 		
+		float specProbThreshold = paramManager.getFloatValue("p");
+		
 		PSMList<InsPecTPSM> psmList = parser.getPSMList(); 
 		if(psmList == null)
 		{
-			out.println("The result file is empty!");
 			out.close();
-			return;
+			return "The result file is empty!";
 		}
-//		Collections.sort(psmList, new PSM.PSMSpecFileAndScanNumComparator());
+		
 		SpectrumAccessorBySpecIndex specAccessor = null;
 		String prevFileName = "";
 		int prevScanNum = -1;
 		Spectrum spec = null;
+		File specDir = paramManager.getFile("d");
+		
+		ActivationMethod activationMethod = paramManager.getActivationMethod();
+		InstrumentType instType = paramManager.getInstType();
+		if(activationMethod == ActivationMethod.HCD)
+			instType = InstrumentType.HIGH_RESOLUTION_LTQ;
+		Enzyme enzyme = paramManager.getEnzyme();
+		
+		NewRankScorer scorer = null;
+		if(activationMethod != ActivationMethod.ASWRITTEN)
+			scorer  = NewScorerFactory.get(activationMethod, instType, enzyme, null);
 		
 		for(InsPecTPSM psm : psmList)
 		{
-//			if(psm.getScanNum() != 4215 || !psm.getPeptideStr().equals("KHQLSQQENIQTY"))
-//				continue;
 			if(psm.getPeptide() == null)
 			{
 				out.print(psm.getInsPecTString()+"\t"+"N/A: unrecognizable annotation");
@@ -229,7 +259,7 @@ public class MSGF {
 			spec.getPrecursorPeak().setCharge(psm.getCharge());
 			
 			float expPM = spec.getParentMass();
-			float calcPM = psm.getPeptide().getParentMass() + nTermFixedMod + cTermFixedMod;
+			float calcPM = psm.getPeptide().getParentMass();
 			if(Math.abs(expPM - calcPM) > 10)
 			{
 				out.print(psm.getInsPecTString()+"\t"+"N/A: precursor mass != peptide mass (" + expPM + " vs " + calcPM + ")");
@@ -239,8 +269,10 @@ public class MSGF {
 				continue;
 			}
 			
+			if(activationMethod == ActivationMethod.ASWRITTEN)
+				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, null);
 			NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
-//			GenericDeNovoGraph<NominalMass> graph = new GenericDeNovoGraph<NominalMass>(factory, (psm.getPeptide().getNominalMass()+18)/Constants.INTEGER_MASS_SCALER, pmTolerance, enzyme, scoredSpec);
+			
 			AminoAcidSet modAASet = psm.getAASet(aaSet);
 			modAASet.registerEnzyme(enzyme);
 			DeNovoGraph<NominalMass> graph = new FlexAminoAcidGraph(
@@ -276,7 +308,6 @@ public class MSGF {
 					}
 				}
 			}
-//			System.exit(0);
 		}
 		
 		if(onePerSpec)
@@ -288,7 +319,6 @@ public class MSGF {
 		out.flush();
 		out.close();	
 		
-		System.out.format("MS-GF complete (total elapsed time: %.2f sec)\n", (System.currentTimeMillis()-time)/(float)1000);
 		return null;
 	}
 }
