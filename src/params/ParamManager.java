@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import msutil.ActivationMethod;
 import msutil.DBFileFormat;
 import msutil.Enzyme;
+import msutil.FileFormat;
 import msutil.InstrumentType;
 import msutil.Protocol;
 import msutil.SpecFileFormat;
@@ -166,7 +167,14 @@ public class ParamManager {
 
 	public void addDBFileParam()
 	{
-		FileParameter dbFileParam = new FileParameter("d", "DatabaseFile", "*.fasta or *.fa");
+		addDBFileParam("d", "*.fasta or *.fa", false);
+	}
+	
+	public void addDBFileParam(String key, String description, boolean isOptional)
+	{
+		FileParameter dbFileParam = new FileParameter(key, "DatabaseFile", description);
+		if(isOptional)
+			dbFileParam.setAsOptional();
 		dbFileParam.addFileFormat(DBFileFormat.FASTA);
 		dbFileParam.fileMustExist();
 		dbFileParam.mustBeAFile();
@@ -182,7 +190,7 @@ public class ParamManager {
 
 	public void addOutputFileParam() 
 	{
-		FileParameter outputParam = new FileParameter("o", "OutputFile", "*.fasta or *.fa");
+		FileParameter outputParam = new FileParameter("o", "OutputFile", "Default: stdout");
 		outputParam.setAsOptional();
 		outputParam.fileMustNotExist();
 		addParameter(outputParam);
@@ -190,15 +198,17 @@ public class ParamManager {
 	
 	public void addFragMethodParam()
 	{
-		addFragMethodParam(ActivationMethod.ASWRITTEN);
+		addFragMethodParam(ActivationMethod.ASWRITTEN, false);
 	}
 	
-	public void addFragMethodParam(ActivationMethod defaultMethod)
+	public void addFragMethodParam(ActivationMethod defaultMethod, boolean doNotAddMergeMode)
 	{
 		ObjectEnumParameter<ActivationMethod> fragParam = new ObjectEnumParameter<ActivationMethod>("m", "FragmentMethodID");
 		ActivationMethod[] methods = ActivationMethod.getAllRegisteredActivationMethods();
 		for(ActivationMethod m : methods)
 		{
+			if(doNotAddMergeMode && m == ActivationMethod.FUSION)
+				continue;
 			fragParam.registerObject(m);
 			if(m == defaultMethod)
 				fragParam.setDefault();
@@ -375,6 +385,60 @@ public class ParamManager {
 		edgeScoreParam.registerEntry("do not use edge scoring");
 		edgeScoreParam.setHidden();
 		addParameter(edgeScoreParam);		
+	}
+
+	public void addMSGFParams()
+	{
+		// SpectrumFile
+		FileListParameter resFileParam = new FileListParameter("i", "ResultFile", "ResultFile");
+		addParameter(resFileParam);
+		
+		// SpecDir
+		FileParameter specDirParam = new FileParameter("d", "SpecDir", "Path to directory containing spectrum files");
+		specDirParam.mustBeADirectory();
+		specDirParam.fileMustExist();
+		addParameter(specDirParam);
+
+		// OutputFileName
+		addOutputFileParam();
+		
+		// DBFile
+		addDBFileParam("db", "To get AA frequencies, if not specified, 1/20 is used for all AAs", true);
+
+		// Fragmentation method
+		addFragMethodParam(ActivationMethod.ASWRITTEN, true);
+		
+		// Instrument type
+		addInstTypeParam();
+		
+		// Enzyme
+		addEnzymeParam();
+		
+		// FixedMod
+		EnumParameter fixModParam = new EnumParameter("fidMod");
+		fixModParam.registerEntry("NoCysteineProtection");
+		fixModParam.registerEntry("Carbamidomethyl-C").setDefault();
+		fixModParam.registerEntry("Carboxymethyl-C");
+		addParameter(fixModParam);
+		
+		// -x
+		EnumParameter numSpecParam = new EnumParameter("x");
+		numSpecParam.registerEntry("All").setDefault();
+		numSpecParam.registerEntry("OnePerSpec");
+		addParameter(numSpecParam);
+		
+		// -p
+		FloatParameter spThParam = new FloatParameter("p", "SpecProbThreshold", "Spectral probability threshold (Default: 1)");
+		spThParam.minValue(0f);
+		spThParam.maxValue(1f);
+		spThParam.defaultValue(1f);
+		addParameter(spThParam);
+		
+		// -addScore
+		EnumParameter addScoreParam = new EnumParameter("addScore");
+		addScoreParam.registerEntry("Don't add MSGFScore").setDefault();
+		addScoreParam.registerEntry("Add MSGFScore");
+		addParameter(addScoreParam);
 	}
 	
 	public FileParameter getSpecFileParam()
