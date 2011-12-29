@@ -38,16 +38,15 @@ public class InsPecTPSM extends PSM {
 		Peptide peptide = getPeptide();
 		if(peptide != null && peptide.isModified())	
 		{
-			ArrayList<Modification.Instance> mods = new ArrayList<Modification.Instance>();
+			ArrayList<AminoAcid> modAAList = new ArrayList<AminoAcid>();
 			for(AminoAcid aa : peptide)
 			{
 				if(aa.isModified())	// modified residue
 				{
-					ModifiedAminoAcid modAA = (ModifiedAminoAcid)aa;
-					mods.add(new Modification.Instance(modAA.getModification(), modAA.getUnmodResidue()));
+					modAAList.add(aa);
 				}
 			}
-			return AminoAcidSet.getAminoAcidSet(baseAASet, mods);
+			return AminoAcidSet.getAminoAcidSetFromModAAList(baseAASet, modAAList);
 		}
 		else 
 			return baseAASet;

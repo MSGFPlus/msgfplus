@@ -548,13 +548,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		for(Location location : aaListMap.keySet())
 		{
 			for(AminoAcid aa : aaListMap.get(location))
-			{
 				allAASet.add(aa);
-//				if(allAASet.add(aa) == false)
-//				{
-//					System.out.println("Debug");
-//				}
-			}
 		}
 		
 		this.allAminoAcidArr = allAASet.toArray(EMPTY_AA_ARRAY);
@@ -1218,6 +1212,20 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			aaSet.addAminoAcid(aa);
 		
 		aaSet.applyModifications(mods);
+		aaSet.finalizeSet();
+		
+		return aaSet;
+	}
+
+	public static AminoAcidSet getAminoAcidSetFromModAAList(AminoAcidSet baseAASet, ArrayList<AminoAcid> modAAList)
+	{
+		AminoAcidSet aaSet = new AminoAcidSet();
+		for(AminoAcid aa : baseAASet)
+			aaSet.addAminoAcid(aa);
+
+		for(AminoAcid aa : modAAList)
+			aaSet.addAminoAcid(aa);
+		
 		aaSet.finalizeSet();
 		
 		return aaSet;

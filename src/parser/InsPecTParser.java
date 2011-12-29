@@ -173,8 +173,6 @@ public class InsPecTParser {
 				specIndex = Integer.parseInt(token[specIndexColumn]);
 			// parse specIndex
 
-//			float fScore = Float.parseFloat(token[fScoreColumn]);
-
 			// process specFileName
 			if(specFileName.contains("/"))
 				specFileName = specFileName.substring(specFileName.lastIndexOf('/')+1);

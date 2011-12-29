@@ -14,6 +14,12 @@ public class VolatileAminoAcid extends AminoAcid {
 		return super.getName();
 	}	
 
+	@Override
+	public boolean isModified()
+	{
+		return true;
+	}
+	
 	public static AminoAcid getVolatileAminoAcid(float mass)
 	{
 		AminoAcid aa = table.get(mass);
