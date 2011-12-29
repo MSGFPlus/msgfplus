@@ -11,9 +11,12 @@ public class IntParameter extends NumberParameter<Integer> {
 	@Override
 	public String parse(String value) {
 		try {
-			this.value = Integer.valueOf(value);
-			if(this.value < minValue || this.value >= maxValue)
-				return "must be in the range [" + minValue + "," + maxValue + ")";
+			super.value = Integer.valueOf(value);
+			String range = (super.isMinInclusive ? "[" : "(") + minValue + "," + maxValue + (super.isMaxInclusive ? "]" : ")"); 
+			if(this.value < minValue || this.value > maxValue
+					|| !super.isMinInclusive && this.value.equals(minValue)
+					|| !super.isMaxInclusive && this.value.equals(maxValue))
+				return "must be in the range " + range;
 		} catch (NumberFormatException e)
 		{
 			return "must be an integer";

@@ -118,6 +118,10 @@ public class InsPecTParser {
 				specProbColumn = i;
 		}
 		
+		// if there is specIndex column, use it instead of scanNum
+		if(specIndexColumn >= 0)
+			scanNumColumn = specIndexColumn;
+		
 		String s;
 		while((s=in.readLine()) != null)
 		{
@@ -129,11 +133,17 @@ public class InsPecTParser {
 			String specFileName = token[specFileColumn].trim();
 
 			// parse scan number(s)
-			String[] scanNumToken = token[scanNumColumn].split("-");
-			int scanNum = Integer.parseInt(scanNumToken[0]);
 			ArrayList<Integer> scanNumList = new ArrayList<Integer>();
-			for(int i=0; i<scanNumToken.length; i++)
-				scanNumList.add(Integer.parseInt(scanNumToken[i]));
+			int scanNum;
+			if(token[scanNumColumn].equals("-1"))
+				scanNum = -1;
+			else
+			{
+				String[] scanNumToken = token[scanNumColumn].split("-");
+				scanNum = Integer.parseInt(scanNumToken[0]);
+				for(int i=0; i<scanNumToken.length; i++)
+					scanNumList.add(Integer.parseInt(scanNumToken[i]));
+			}
 			
 			String annotationStr = token[annotationColumn];
 			String proteinStr;

@@ -14,6 +14,7 @@ import msutil.InstrumentType;
 import msutil.Protocol;
 import msutil.SpecFileFormat;
 
+import ui.MSGF;
 import ui.MSGFDB;
 
 public class ParamManager {
@@ -390,7 +391,8 @@ public class ParamManager {
 	public void addMSGFParams()
 	{
 		// SpectrumFile
-		FileListParameter resFileParam = new FileListParameter("i", "ResultFile", "ResultFile");
+		FileParameter resFileParam = new FileParameter("i", "ResultFile", "ResultFile");
+		resFileParam.fileMustExist();
 		addParameter(resFileParam);
 		
 		// SpecDir
@@ -415,7 +417,7 @@ public class ParamManager {
 		addEnzymeParam();
 		
 		// FixedMod
-		EnumParameter fixModParam = new EnumParameter("fidMod");
+		EnumParameter fixModParam = new EnumParameter("fixMod");
 		fixModParam.registerEntry("NoCysteineProtection");
 		fixModParam.registerEntry("Carbamidomethyl-C").setDefault();
 		fixModParam.registerEntry("Carboxymethyl-C");
@@ -429,8 +431,8 @@ public class ParamManager {
 		
 		// -p
 		FloatParameter spThParam = new FloatParameter("p", "SpecProbThreshold", "Spectral probability threshold (Default: 1)");
-		spThParam.minValue(0f);
-		spThParam.maxValue(1f);
+		spThParam.minValue(0f).setMinExclusive();
+		spThParam.maxValue(1f).setMaxInclusive();
 		spThParam.defaultValue(1f);
 		addParameter(spThParam);
 		
@@ -540,8 +542,8 @@ public class ParamManager {
 	
 	public static void main(String argv[])
 	{
-		ParamManager paramManager = new ParamManager("MSGFDB", MSGFDB.VERSION, MSGFDB.RELEASE_DATE, "java -Xmx2000M -jar MSGFDB.jar");
-		paramManager.addMSGFDBParams();
+		ParamManager paramManager = new ParamManager("MSGF", MSGF.VERSION, MSGF.RELEASE_DATE, "java -Xmx2000M -jar MSGFDB.jar");
+		paramManager.addMSGFParams();
 		
 //		FileListParameter testParam = new FileListParameter("test", "test", "test");
 //		testParam.addFileFormat(SpecFileFormat.MGF);

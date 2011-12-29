@@ -8,6 +8,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import msdbsearch.DBScanner;
 import msgf.DeNovoGraph;
 import msgf.FlexAminoAcidGraph;
 import msgf.GeneratingFunction;
@@ -19,6 +20,7 @@ import msutil.ActivationMethod;
 import msutil.AminoAcidSet;
 import msutil.Enzyme;
 import msutil.InstrumentType;
+import msutil.Protocol;
 import msutil.SpectraMap;
 import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
@@ -33,14 +35,14 @@ import parser.PSMList;
 import parser.PklSpectrumParser;
 
 public class MSGF {
-	public static final String VERSION = "6432";
-	public static final String RELEASE_DATE = "09/08/2011";
+	public static final String VERSION = "7083";
+	public static final String RELEASE_DATE = "12/28/2011";
 	
 	public static void main(String argv[])
 	{
 		long time = System.currentTimeMillis();
 
-		ParamManager paramManager = new ParamManager("MSGF", MSGFDB.VERSION, MSGFDB.RELEASE_DATE, "java -Xmx2000M -cp MSGFDB.jar ui.MSGF");
+		ParamManager paramManager = new ParamManager("MSGF", VERSION, RELEASE_DATE, "java -Xmx2000M -cp MSGFDB.jar ui.MSGF");
 		paramManager.addMSGFParams();
 
 		if(argv.length == 0)
@@ -75,15 +77,15 @@ public class MSGF {
 	
 	public static String runMSGF(ParamManager paramManager)
 	{
-		String outputFileName = paramManager.getFile("o").getPath();
+		File outputFile = paramManager.getFile("o");
 		
 		PrintStream out = null;
-		if(outputFileName == null)
+		if(outputFile == null)
 			out = System.out;
 		else
 		{
 			try {
-				out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFileName)));
+				out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFile)));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -97,6 +99,10 @@ public class MSGF {
 			aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
 		else if(fixModID == 2)
 			aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarboxymethylatedCys();
+		
+		File databaseFile = paramManager.getFile("db");
+		if(databaseFile != null)
+			DBScanner.setAminoAcidProbabilities(databaseFile.getPath(), aaSet);
 		
 		File resultFile = paramManager.getFile("i");
 		InsPecTParser parser = new InsPecTParser(aaSet);
@@ -157,7 +163,7 @@ public class MSGF {
 		
 		NewRankScorer scorer = null;
 		if(activationMethod != ActivationMethod.ASWRITTEN)
-			scorer  = NewScorerFactory.get(activationMethod, instType, enzyme, null);
+			scorer  = NewScorerFactory.get(activationMethod, instType, enzyme, Protocol.NOPROTOCOL);
 		
 		for(InsPecTPSM psm : psmList)
 		{
@@ -270,7 +276,7 @@ public class MSGF {
 			}
 			
 			if(activationMethod == ActivationMethod.ASWRITTEN)
-				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, null);
+				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, Protocol.NOPROTOCOL);
 			NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
 			
 			AminoAcidSet modAASet = psm.getAASet(aaSet);
