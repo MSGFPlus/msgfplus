@@ -119,7 +119,7 @@ public class TargetDecoyPSMSet {
 	
 	public void writeResults(PrintStream out, float fdrThreshold, float pepFDRThreshold, boolean showDecoy)
 	{
-		writeResults(out, fdrThreshold, pepFDRThreshold, (target.isGreaterBetter ? Float.MIN_VALUE : Float.MAX_VALUE), false);
+		writeResults(out, fdrThreshold, pepFDRThreshold, (target.isGreaterBetter ? Float.MIN_VALUE : Float.MAX_VALUE), showDecoy);
 	}
 	
 	public void writeResults(PrintStream out, float fdrThreshold, float pepFDRThreshold, float scoreThreshold, boolean showDecoy)

@@ -374,6 +374,12 @@ public class ParamManager {
 		showFDRParam.registerEntry("show FDRs").setDefault();
 		showFDRParam.setHidden();
 		addParameter(showFDRParam);
+
+		EnumParameter showDecoyParam = new EnumParameter("showDecoy");
+		showDecoyParam.registerEntry("do not show decoy PSMs").setDefault();
+		showDecoyParam.registerEntry("show decoy PSMs").setDefault();
+		showDecoyParam.setHidden();
+		addParameter(showDecoyParam);
 		
 		EnumParameter replicateMergedResParam = new EnumParameter("replicate");
 		replicateMergedResParam.registerEntry("show merged spectra").setDefault();

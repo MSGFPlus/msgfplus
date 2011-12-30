@@ -153,6 +153,7 @@ public class MSGFDB {
 		
 		boolean useTDA = paramManager.getIntValue("tda") == 1 ? true : false;
 		boolean showFDR = paramManager.getIntValue("showFDR") == 1 ? true : false;
+		boolean showDecoy = paramManager.getIntValue("showDecoy") == 1 ? true : false;
 		
 		int minPeptideLength = paramManager.getIntValue("minLength");
 		int maxPeptideLength = paramManager.getIntValue("maxLength");
@@ -423,7 +424,7 @@ public class MSGFDB {
 				int dbCol = 8;
 				int scoreCol = 11;
 				fdr.ComputeFDR.computeFDR(tempFile, null, scoreCol, false, "\t", 
-						specFileCol, specIndexCol, pepCol, null, true, true, 
+						specFileCol, specIndexCol, pepCol, null, true, showDecoy, 
 						true, dbCol, "REV_",
 						1, 1, outputFile);
 				
