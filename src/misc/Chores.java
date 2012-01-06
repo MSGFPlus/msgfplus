@@ -58,7 +58,8 @@ public class Chores {
 //		System.out.println("1");
 //		System.out.println(Composition.getMass("H-2O-1"));
 //		System.out.println(Composition.getMass("C2H2"));
-		System.out.println(null instanceof Object);
+		Modification phospho = Modification.get("Phosphorylation");
+		System.out.println(phospho.getAccurateMass());
 	}
 
 	public static void simpleTest() throws Exception

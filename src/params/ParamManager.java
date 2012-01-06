@@ -377,7 +377,7 @@ public class ParamManager {
 
 		EnumParameter showDecoyParam = new EnumParameter("showDecoy");
 		showDecoyParam.registerEntry("do not show decoy PSMs").setDefault();
-		showDecoyParam.registerEntry("show decoy PSMs").setDefault();
+		showDecoyParam.registerEntry("show decoy PSMs");
 		showDecoyParam.setHidden();
 		addParameter(showDecoyParam);
 		
