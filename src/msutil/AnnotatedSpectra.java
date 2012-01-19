@@ -64,6 +64,7 @@ public class AnnotatedSpectra {
 		int specFileCol = -1;
 		int pepCol = -1;
 		int fdrCol = -1;
+		int chargeCol = -1;
 		
 		String[] label = s.split("\t");
 		for(int i=0; i<label.length; i++)
@@ -76,6 +77,8 @@ public class AnnotatedSpectra {
 				pepCol = i;
 			else if(label[i].equalsIgnoreCase("FDR") || label[i].equalsIgnoreCase("EFDR"))
 				fdrCol = i;
+			else if(label[i].equalsIgnoreCase("Charge"))
+				chargeCol = i;
 		}
 		if(specIndexCol < 0 || specFileCol < 0 || pepCol < 0 || fdrCol < 0)
 			return "Not a valid tsv result file";
@@ -110,6 +113,8 @@ public class AnnotatedSpectra {
 			String specFileName = token[specFileCol];
 			specFileName = new File(specFileName).getName();
 			
+			int charge = Integer.parseInt(token[chargeCol]);
+			
 			SpectrumAccessorBySpecIndex specMap = specAccessorMap.get(specFileName);
 			if(specMap == null)
 			{
@@ -128,6 +133,8 @@ public class AnnotatedSpectra {
 			else
 			{
 				Peptide peptide = new Peptide(pep, aaSet);
+				spec.setCharge(charge);
+				
 				if(Math.abs(spec.getPeptideMass()-peptide.getMass()) < 5)
 				{
 					spec.setAnnotation(peptide);
@@ -135,7 +142,7 @@ public class AnnotatedSpectra {
 				}
 				else
 				{
-					System.out.println("Debug");
+					return "parent mass doesn't match " + specFileName+":"+specIndex + " " + peptide.toString() + " " + spec.getPeptideMass() + " != " + peptide.getMass();
 				}
 			}
 		}

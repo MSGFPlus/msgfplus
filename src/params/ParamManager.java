@@ -345,6 +345,7 @@ public class ParamManager {
 		uniformAAProb.registerEntry("use probability 0.05 for all amino acids");
 		addParameter(uniformAAProb);
 		
+		
 		addExample("Example (high-precision): java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 30ppm -c13 1 -nnet 0 -tda 1 -o testMSGFDB.tsv");
 		addExample("Example (low-precision): java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 0.5Da,2.5Da -nnet 0 -tda 1 -o testMSGFDB.tsv");
 		
@@ -365,6 +366,7 @@ public class ParamManager {
 		
 		IntRangeParameter specIndexParam = new IntRangeParameter("index", "SpecIndex", "Range of spectrum index to be considered");
 		specIndexParam.minValue(1);
+		specIndexParam.setMaxInclusive();
 		specIndexParam.defaultValue("1,"+(Integer.MAX_VALUE-1));
 		specIndexParam.setHidden();
 		addParameter(specIndexParam);

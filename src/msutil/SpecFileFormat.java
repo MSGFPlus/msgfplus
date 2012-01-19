@@ -64,7 +64,7 @@ public class SpecFileFormat extends FileFormat {
 		{
 			for(String suffix : f.getSuffixes())
 			{
-				if(lowerCaseFileName.endsWith(suffix))
+				if(lowerCaseFileName.endsWith(suffix.toLowerCase()))
 					return f;
 			}
 		}
