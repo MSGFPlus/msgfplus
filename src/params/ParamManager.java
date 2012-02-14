@@ -315,6 +315,13 @@ public class ParamManager {
 		
 		addModFileParam();
 		
+//		FloatRangeParameter itrqParam = new FloatRangeParameter("itraq", "minMass,maxMass", "Remove MS/MS peaks in the mass range between minMass and maxMass (for iTRAQ analysis).");
+//		itrqParam.minValue(0f);
+//		itrqParam.setMaxInclusive();
+//		itrqParam.defaultValue("0,0");
+//		itrqParam.setHidden();
+//		addParameter(itrqParam);
+		
 		IntParameter minLenParam = new IntParameter("minLength", "MinPepLength", "Minimum peptide length to consider, Default: 6");
 		minLenParam.minValue(1);
 		minLenParam.defaultValue(6);
@@ -551,7 +558,7 @@ public class ParamManager {
 	public static void main(String argv[])
 	{
 		ParamManager paramManager = new ParamManager("MSGF", MSGF.VERSION, MSGF.RELEASE_DATE, "java -Xmx2000M -jar MSGFDB.jar");
-		paramManager.addMSGFParams();
+		paramManager.addMSGFDBParams();
 		
 //		FileListParameter testParam = new FileListParameter("test", "test", "test");
 //		testParam.addFileFormat(SpecFileFormat.MGF);

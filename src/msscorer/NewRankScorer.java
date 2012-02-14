@@ -95,6 +95,11 @@ public class NewRankScorer implements NewAdditiveScorer {
 		return dataType;
 	}
 	
+	public TreeSet<Partition> getParitionSet()
+	{
+		return partitionSet;
+	}
+	
 	public void filterPrecursorPeaks(Spectrum spec)
 	{
 		for(PrecursorOffsetFrequency off : getPrecursorOFF(spec.getCharge()))

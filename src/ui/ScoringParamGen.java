@@ -20,8 +20,8 @@ import params.StringParameter;
 
 public class ScoringParamGen {
 
-	public static final int VERSION = 7065;
-	public static final String DATE = "12/21/2011";
+	public static final int VERSION = 7067;
+	public static final String DATE = "01/19/2012";
 	
 	public static void main(String argv[])
 	{

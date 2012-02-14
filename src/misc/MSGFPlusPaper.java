@@ -1,15 +1,55 @@
 package misc;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.InputStream;
+
 import msdbsearch.CompactFastaSequence;
 import msdbsearch.CompactSuffixArray;
+import msscorer.NewRankScorer;
+import msscorer.NewScorerFactory;
+import msscorer.NewScorerFactory.SpecDataType;
+import msutil.ActivationMethod;
 import msutil.AminoAcid;
 import msutil.AminoAcidSet;
+import msutil.Enzyme;
+import msutil.InstrumentType;
+import msutil.Protocol;
 
 public class MSGFPlusPaper {
 	public static void main(String argv[]) throws Exception
 	{
-		nominalMassTable();
+//		nominalMassTable();
 //		checkPeptidesWithNominalMassErrors();
+		countTotalNumberOfPartitions();
+	}
+
+	public static void countTotalNumberOfPartitions() throws Exception
+	{
+		int numPartitions = 0;
+		for(ActivationMethod method : ActivationMethod.getAllRegisteredActivationMethods())
+		{
+			if(method == ActivationMethod.FUSION || method == ActivationMethod.ASWRITTEN)
+				continue;
+			for(InstrumentType inst : InstrumentType.getAllRegisteredInstrumentTypes())
+			{
+				for(Enzyme enzyme : Enzyme.getAllRegisteredEnzymes())
+				{
+					for(Protocol protocol : Protocol.getAllRegisteredProtocols())
+					{
+						SpecDataType condition = new SpecDataType(method, inst, enzyme, protocol);
+						InputStream is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+condition+".param");
+						if(is != null)
+						{
+							System.out.println(condition);
+							NewRankScorer scorer = new NewRankScorer(new BufferedInputStream(is));
+							numPartitions += scorer.getParitionSet().size();
+						}
+					}
+				}
+			}
+		}
+		System.out.println("NumPartitions: " + numPartitions);
 	}
 	
 	public static void nominalMassTable() throws Exception
