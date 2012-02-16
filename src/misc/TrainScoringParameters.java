@@ -23,9 +23,9 @@ public class TrainScoringParameters {
 	
 	public static void main(String argv[]) throws Exception
 	{
-//		backup();
+		backup();
 //		createParamFiles();
-		testParamFiles();
+//		testParamFiles();
 	}
 	
 	public static void backup() throws Exception

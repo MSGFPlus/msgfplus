@@ -365,7 +365,7 @@ public class DBScanner {
 							else
 							{
 								cTermCleavageScore = peptideCleavagePenalty;
-								if(numNonEnzTermini+1 > numberOfAllowableNonEnzymaticTermini)
+								if(!isProteinCTerm && numNonEnzTermini+1 > numberOfAllowableNonEnzymaticTermini)
 								{
 									isExtensionAtTheSameIndex = true;
 									continue;
