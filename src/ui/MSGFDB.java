@@ -9,6 +9,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -290,13 +291,7 @@ public class MSGFDB {
 		SpecDataType specDataType = new SpecDataType(activationMethod, instType, enzyme, protocol);
 		int fromIndexGlobal = 0;
 		
-		String header = 
-			"#SpecFile\tSpecIndex\tScan#\t"
-			+"FragMethod\t"
-			+"Precursor\tPMError("
-			+(rightParentMassTolerance.isTolerancePPM() ? "ppm" : "Da")
-			+")\tCharge\tPeptide\tProtein\tDeNovoScore\tMSGFScore\tSpecProb\tP-value";
-		MSGFDBResultGenerator gen = new MSGFDBResultGenerator(header);
+		List<MSGFDBResultGenerator.DBMatch> resultList = Collections.synchronizedList(new ArrayList<MSGFDBResultGenerator.DBMatch>());
 		
 		while(true)
 		{
@@ -345,7 +340,7 @@ public class MSGFDB {
 							maxPeptideLength,
 							numAllowedNonEnzymaticTermini, 
 							!useTDA,
-							gen, 
+							resultList, 
 							specFile.getName(),
 							replicateMergedResults
 							);
@@ -360,9 +355,18 @@ public class MSGFDB {
 		
     	time = System.currentTimeMillis();
 		// Sort search results by spectral probabilities
-		Collections.sort(gen);
+		Collections.sort(resultList);
 
 		// Write results
+		
+		String header = 
+			"#SpecFile\tSpecIndex\tScan#\t"
+			+"FragMethod\t"
+			+"Precursor\tPMError("
+			+(rightParentMassTolerance.isTolerancePPM() ? "ppm" : "Da")
+			+")\tCharge\tPeptide\tProtein\tDeNovoScore\tMSGFScore\tSpecProb\tP-value";
+		
+		MSGFDBResultGenerator gen = new MSGFDBResultGenerator(header, resultList);
 		
     	if(showFDR && !useTDA && numMatchesPerSpec == 1)
     	{

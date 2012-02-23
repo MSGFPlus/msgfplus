@@ -4,8 +4,9 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
-public class MSGFDBResultGenerator extends ArrayList<MSGFDBResultGenerator.DBMatch> {
+public class MSGFDBResultGenerator {
 	/**
 	 * 
 	 */
@@ -13,33 +14,37 @@ public class MSGFDBResultGenerator extends ArrayList<MSGFDBResultGenerator.DBMat
 	private static final int NUM_SPECS_TO_USE_SIMPLE_ETDA_FORMULA = 30000;
 	private static final long serialVersionUID = 1L;
 	private String header;
-	public MSGFDBResultGenerator(String header)
+	private List<MSGFDBResultGenerator.DBMatch> resultList;
+	
+	public MSGFDBResultGenerator(String header, List<MSGFDBResultGenerator.DBMatch> resultList)
 	{
 		this.header = header;
+		this.resultList = resultList;
 	}
+	
 	public void computeEFDR()
 	{
 		double cumulativePValue = 0;
 		boolean useComplicatedFormula = true;
-		if(this.size() >= NUM_SPECS_TO_USE_SIMPLE_ETDA_FORMULA)
+		if(resultList.size() >= NUM_SPECS_TO_USE_SIMPLE_ETDA_FORMULA)
 			useComplicatedFormula = false;
-		for(int i=0; i<this.size(); i++)
+		for(int i=0; i<resultList.size(); i++)
 		{
-			double specProb = get(i).getSpecProb();
-			double pValue = get(i).getPValue();
+			double specProb = resultList.get(i).getSpecProb();
+			double pValue = resultList.get(i).getPValue();
 			cumulativePValue += pValue;
 			double eTD = (i+1) - cumulativePValue;	// expected target discovery
 			double eDD = cumulativePValue;	// expected decoy discovery
 			if(useComplicatedFormula)
 			{
-				for(int j=i+1; j<this.size(); j++)
-					eDD += get(j).getEDD(specProb);
+				for(int j=i+1; j<resultList.size(); j++)
+					eDD += resultList.get(j).getEDD(specProb);
 			}
 			else
 			{
-				eDD += pValue*(this.size()-(i+1));
+				eDD += pValue*(resultList.size()-(i+1));
 			}
-			get(i).setEFDR(Math.min(eDD/eTD, 1));
+			resultList.get(i).setEFDR(Math.min(eDD/eTD, 1));
 		}
 	}
 	
@@ -50,7 +55,7 @@ public class MSGFDBResultGenerator extends ArrayList<MSGFDBResultGenerator.DBMat
 		else
 			out.println(header);
 		String eFDRStr;
-		for(MSGFDBResultGenerator.DBMatch m : this)
+		for(MSGFDBResultGenerator.DBMatch m : resultList)
 		{
 			if(printEFDR)
 			{

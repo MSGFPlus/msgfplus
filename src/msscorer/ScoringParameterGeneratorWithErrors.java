@@ -60,10 +60,12 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			AminoAcidSet aaSet, 
 			File outputDir,
 			boolean isText, 
-			boolean verbose)
+			boolean verbose,
+			boolean singlePartition
+			)
 	{
 		SpectraContainer container = new SpectraContainer(specFile.getPath(), new MgfSpectrumParser().aaSet(aaSet));
-		generateParameters(container, dataType, aaSet, outputDir, isText, verbose);
+		generateParameters(container, dataType, aaSet, outputDir, isText, verbose, singlePartition);
 	}
 
 	public static void generateParameters(
@@ -73,6 +75,18 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			File outputDir,
 			boolean isText, 
 			boolean verbose)
+	{
+		generateParameters(container, dataType, aaSet, outputDir, isText, verbose, false);
+	}
+	
+	public static void generateParameters(
+			SpectraContainer container, 
+			SpecDataType dataType,
+			AminoAcidSet aaSet,
+			File outputDir,
+			boolean isText, 
+			boolean verbose,
+			boolean singlePartition)
 	{
 		if(verbose)
 			System.out.println("Number of annotated PSMs: " + container.size());
@@ -166,7 +180,10 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		gen.tolerance(new Tolerance(0.5f));
 
 		// Step 1: partition spectra
-		gen.partition(NUM_SEGMENTS_PER_SPECTRUM);
+		if(singlePartition)
+			gen.partition(2, true);
+		else
+			gen.partition(NUM_SEGMENTS_PER_SPECTRUM, false);
 		if(verbose)
 			System.out.println("Partition: " + gen.partitionSet.size());
 
@@ -230,7 +247,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		super.deconvolutionErrorTolerance = DECONVOLUTION_MASS_TOLERANCE;
 	}
 
-	public void partition(int numSegments)
+	public void partition(int numSegments, boolean singlePartition)
 	{
 		super.numSegments = numSegments;
 		chargeHist = new Histogram<Integer>();
@@ -267,16 +284,22 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 
 			Collections.sort(parentMassList);
 			int bestSetSize = 0;
-			int smallestRemainder = MIN_NUM_SPECTRA_PER_PARTITION;
-			for(int i=Math.round(MIN_NUM_SPECTRA_PER_PARTITION*0.9f); i<=Math.round(MIN_NUM_SPECTRA_PER_PARTITION*1.1f); i++)
+			
+			if(singlePartition)
+				bestSetSize = numSpec;
+			else
 			{
-				int remainder = numSpec % i;
-				if(i-remainder < remainder)
-					remainder = i-remainder;
-				if(remainder < smallestRemainder || (remainder==smallestRemainder && Math.abs(MIN_NUM_SPECTRA_PER_PARTITION-i) < Math.abs(MIN_NUM_SPECTRA_PER_PARTITION-bestSetSize)))
+				int smallestRemainder = MIN_NUM_SPECTRA_PER_PARTITION;
+				for(int i=Math.round(MIN_NUM_SPECTRA_PER_PARTITION*0.9f); i<=Math.round(MIN_NUM_SPECTRA_PER_PARTITION*1.1f); i++)
 				{
-					bestSetSize = i;
-					smallestRemainder = remainder;
+					int remainder = numSpec % i;
+					if(i-remainder < remainder)
+						remainder = i-remainder;
+					if(remainder < smallestRemainder || (remainder==smallestRemainder && Math.abs(MIN_NUM_SPECTRA_PER_PARTITION-i) < Math.abs(MIN_NUM_SPECTRA_PER_PARTITION-bestSetSize)))
+					{
+						bestSetSize = i;
+						smallestRemainder = remainder;
+					}
 				}
 			}
 			int num=0;

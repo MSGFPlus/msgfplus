@@ -8,6 +8,7 @@ import msdbsearch.CompactFastaSequence;
 import msdbsearch.CompactSuffixArray;
 import msscorer.NewRankScorer;
 import msscorer.NewScorerFactory;
+import msscorer.ScoringParameterGeneratorWithErrors;
 import msscorer.NewScorerFactory.SpecDataType;
 import msutil.ActivationMethod;
 import msutil.AminoAcid;
@@ -15,15 +16,31 @@ import msutil.AminoAcidSet;
 import msutil.Enzyme;
 import msutil.InstrumentType;
 import msutil.Protocol;
+import msutil.SpectraContainer;
 
 public class MSGFPlusPaper {
 	public static void main(String argv[]) throws Exception
 	{
 //		nominalMassTable();
 //		checkPeptidesWithNominalMassErrors();
-		countTotalNumberOfPartitions();
+//		countTotalNumberOfPartitions();
+		aLPModel();
 	}
 
+	public static void aLPModel() throws Exception
+	{
+		File specFile = new File("/home/sangtaekim/Research/Data/IonStat/SpectraForTraining/ETD_LowRes_aLP.mgf");
+		SpecDataType dataType = new SpecDataType(ActivationMethod.ETD, InstrumentType.LOW_RESOLUTION_LTQ, Enzyme.ALP, Protocol.NOPROTOCOL);
+		
+//		File specFile = new File("/home/sangtaekim/Research/Data/IonStat/SpectraForTraining/ETD_LowRes_Tryp.mgf");
+//		SpecDataType dataType = new SpecDataType(ActivationMethod.ETD, InstrumentType.LOW_RESOLUTION_LTQ, Enzyme.TRYPSIN, Protocol.NOPROTOCOL);
+		
+		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
+		File outputDir = new File("/home/sangtaekim/Developments/MS_Java_Dev/bin");
+		
+		ScoringParameterGeneratorWithErrors.generateParameters(specFile, dataType, aaSet, outputDir, true, true, true);
+	}
+	
 	public static void countTotalNumberOfPartitions() throws Exception
 	{
 		int numPartitions = 0;

@@ -1,5 +1,7 @@
 package msdbsearch;
 
+import java.util.List;
+
 import msgf.MSGFDBResultGenerator;
 import msutil.AminoAcidSet;
 import msutil.Enzyme;
@@ -82,7 +84,7 @@ public class ConcurrentMSGFDB {
 		private final int searchMode;
 		private final boolean storeScoreDist;
 		private final String specFileName;
-		private final MSGFDBResultGenerator gen;
+		private final List<MSGFDBResultGenerator.DBMatch> gen;
 		private final boolean replicateMergedResults;
 		
 		public RunMSGFDB(
@@ -95,7 +97,7 @@ public class ConcurrentMSGFDB {
 				int maxPeptideLength,
 				int numberOfAllowableNonEnzymaticTermini, 
 				boolean storeScoreDist,
-				MSGFDBResultGenerator gen, 
+				List<MSGFDBResultGenerator.DBMatch> gen, 
 				String specFileName,
 				boolean replicateMergedResults
 				)

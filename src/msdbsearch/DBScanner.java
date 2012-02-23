@@ -542,7 +542,7 @@ public class DBScanner {
 		}
 	}
 	
-	public synchronized void addDBSearchResults(MSGFDBResultGenerator gen, String specFileName, boolean replicateMergedResults)
+	public synchronized void addDBSearchResults(List<MSGFDBResultGenerator.DBMatch> gen, String specFileName, boolean replicateMergedResults)
 	{
 		Iterator<Entry<SpecKey, PriorityQueue<DatabaseMatch>>> itr = specKeyDBMatchMap.entrySet().iterator();
 		while(itr.hasNext())
