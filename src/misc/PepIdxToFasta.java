@@ -33,7 +33,7 @@ public class PepIdxToFasta {
 		}
 		
 		// Running MS-GFDB
-		paramManager.printToolInfo();
+//		paramManager.printToolInfo();
 		String errorMessage = convertToFasta(paramManager);
 		if(errorMessage != null)
 		{
