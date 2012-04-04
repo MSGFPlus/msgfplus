@@ -3,6 +3,9 @@ package misc;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.util.HashSet;
+
+import parser.BufferedLineReader;
 
 import msdbsearch.CompactFastaSequence;
 import msdbsearch.CompactSuffixArray;
@@ -24,9 +27,45 @@ public class MSGFPlusPaper {
 //		nominalMassTable();
 //		checkPeptidesWithNominalMassErrors();
 //		countTotalNumberOfPartitions();
-		aLPModel();
+//		aLPModel();
+		modInLib();
 	}
 
+	public static void modInLib() throws Exception
+	{
+		String fileName = "/home/sangtaekim/Research/Data/NISTLib/yeast_2011_05_24_it.pepidx";
+		BufferedLineReader in = new BufferedLineReader(fileName);
+		String s;
+		HashSet<String> modNames = new HashSet<String>();
+		while((s=in.readLine()) != null)
+		{
+			if(s.startsWith("#") || s.length() == 0)
+				continue;
+
+			String[] token = s.split("\\s+");
+			String pepStr = token[0];
+			String pepInfoStr = token[1];
+			
+			String[] tokenInfo = pepInfoStr.split("\\|");
+			int charge = Integer.parseInt(tokenInfo[0]);
+			
+			String modInfo = tokenInfo[1];
+			String[] tokenMod = modInfo.split("/");
+			int numMods = Integer.parseInt(tokenMod[0]);
+			for(int i=1; i<tokenMod.length; i++)
+			{
+				String[] mod = tokenMod[i].split(",");
+				int location = Integer.parseInt(mod[0]);
+				char residue = mod[1].charAt(0);
+				String modName = mod[2];
+				modNames.add(modName);
+			}			
+		}
+		
+		for(String modName : modNames)
+			System.out.println(modName);
+	}
+	
 	public static void aLPModel() throws Exception
 	{
 		File specFile = new File("/home/sangtaekim/Research/Data/IonStat/SpectraForTraining/ETD_LowRes_aLP.mgf");
