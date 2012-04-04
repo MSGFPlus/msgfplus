@@ -349,9 +349,9 @@ public class DBScanner {
 					if(i < minPeptideLength)
 						continue;
 					
-					System.out.println(sequence.getSubsequence(index+1, index+i+1));
-					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("CGLYAVCVAAGYLYVVGVNAVALQTAAAVTTAVWKYVAKYSS"))
-						System.out.println("Debug");
+//					System.out.println(sequence.getSubsequence(index+1, index+i+1));
+//					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("CGLYAVCVAAGYLYVVGVNAVALQTAAAVTTAVWKYVAKYSS"))
+//						System.out.println("Debug");
 					
 					int cTermCleavageScore = 0;
 					if(enzyme != null)

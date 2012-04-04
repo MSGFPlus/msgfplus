@@ -58,10 +58,58 @@ public class Chores {
 //		System.out.println("1");
 //		System.out.println(Composition.getMass("H-2O-1"));
 //		System.out.println(Composition.getMass("C2H2"));
-		Modification phospho = Modification.get("Phosphorylation");
-		System.out.println(phospho.getAccurateMass());
+//		Modification phospho = Modification.get("Phosphorylation");
+//		System.out.println(phospho.getAccurateMass());
+		recombCPReg();
 	}
 
+	public static void recombCPReg() throws Exception
+	{
+		File regList = new File("/Users/sangtaekim/Dropbox/Documents/RECOMB-CP 2012/regList.txt");
+		File submissions = new File("/Users/sangtaekim/Dropbox/Documents/RECOMB-CP 2012/submissions.txt");
+		
+		HashSet<String> names = new HashSet<String>();
+		
+		String s;
+		BufferedLineReader in = new BufferedLineReader(regList.getPath());
+		while((s=in.readLine()) != null)
+		{
+			names.add(s.toLowerCase());
+		}
+		in.close();
+					
+		in = new BufferedLineReader(submissions.getPath());
+		while((s=in.readLine()) != null)
+		{
+			String[] token = s.split("\t");
+			if(token.length != 4)
+			{
+				System.err.println("Error: " + s);
+				System.exit(-1);
+			}
+			String authors = token[1];
+			String type = token[3];
+			if(!type.equalsIgnoreCase("Abstract"))
+				continue;
+			String[] aToken = authors.split("\\s+");
+			boolean isRegistered = false;
+			for(String name : aToken)
+			{
+				for(String r : names)
+				{
+					if(r.contains(name.toLowerCase()))
+					{
+						System.out.println("***" + name + ":" + r);
+						isRegistered = true;
+					}
+				}
+			}
+			if(isRegistered)
+				System.out.println(s);
+		}
+		
+	}
+	
 	public static void simpleTest() throws Exception
 	{
 		int specSize = 728178;

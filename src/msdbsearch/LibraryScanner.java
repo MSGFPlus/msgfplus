@@ -170,9 +170,10 @@ public class LibraryScanner {
 			String[] tokenInfo = pepInfoStr.split("\\|");
 			int charge = Integer.parseInt(tokenInfo[0]);
 			
-			// extract modification info
+			// extract modification info, 1-based
 			double[] modMass = new double[MAX_LIBRARY_PEPTIDE_LENGTH];
 			int[] nominalModMass = new int[MAX_LIBRARY_PEPTIDE_LENGTH];
+			String[] modResidues = new String[MAX_LIBRARY_PEPTIDE_LENGTH];
 			
 			String modInfo = tokenInfo[1];
 			String[] tokenMod = modInfo.split("/");
@@ -183,74 +184,66 @@ public class LibraryScanner {
 				int location = Integer.parseInt(mod[0]);	// 0-base
 				if(location == -1)
 					location = 0;
-				char residue = mod[1].charAt(0);
+//				char residue = mod[1].charAt(0);
 				String modName = mod[2];
-				
+				double deltaMass = modTable.get(modName);
+				modMass[location+1] = deltaMass;
+				nominalModMass[location+1] = NominalMass.toNominalMass((float)deltaMass);
+				modResidues[location+1] = modResidueTable.get(modName);
 			}
-			
 				
+			// always 0 at index 0, mass of ith prefix at index i
 			int[] nominalPRM = new int[MAX_LIBRARY_PEPTIDE_LENGTH];
 			double[] prm = new double[MAX_LIBRARY_PEPTIDE_LENGTH];
-			StringBuffer peptide = new StringBuffer();
 			
-			for(int i=0; i<pepStr.length(); i++)	// ith character of a peptide (base 0)
+			nominalPRM[0] = 0;
+			prm[0] = 0;
+			StringBuffer peptideOutput = new StringBuffer();
+			int pepLength = peptideOutput.length();
+			for(int i=0; i<pepLength; i++)	// ith character of a peptide (base 0)
 			{
 				char residue = pepStr.charAt(i);
-				
-
-				
-				for(int j=0; j<candidatePepGrid.size(); j++)
-				{
-					float peptideMass = candidatePepGrid.getPeptideMass(j);
-					int nominalPeptideMass = candidatePepGrid.getNominalPeptideMass(j);
-					float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
-					float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
+				nominalPRM[i+1] = nominalPRM[i] + intAAMass[residue] + nominalModMass[i+1];
+				prm[i+1] = prm[i] + aaMass[residue] + modMass[i+1];
+				peptideOutput.append(modResidues[i+1]);
+			}
+			
+			float peptideMass = (float)prm[pepLength];
+			int nominalPeptideMass = nominalPRM[pepLength];
+			float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
+			float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
 					
-					double leftThr = (double)(peptideMass - tolDaRight);
-					double rightThr = (double)(peptideMass + tolDaLeft);
-					Collection<SpecKey> matchedSpecKeyList = specScanner.getPepMassSpecKeyMap().subMap(leftThr, rightThr).values();
-					if(matchedSpecKeyList.size() > 0)
-					{
-						boolean isNTermMetCleaved = candidatePepGrid.isNTermMetCleaved(j);
-						int pepLength;
-						if(!isNTermMetCleaved)
-							pepLength = i;
-						else
-							pepLength = i-1;
-						
-						for(SpecKey specKey : matchedSpecKeyList)
-						{
-							SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(specKey);
-//								if(sequence.getSubsequence(index, index+i+1).equalsIgnoreCase("SRDTAIKT"))
-//									System.out.println("Debug");
-							int score = cleavageScore + scorer.getScore(candidatePepGrid.getPRMGrid(j), candidatePepGrid.getNominalPRMGrid(j), 1, pepLength+1, candidatePepGrid.getNumMods(j)); 
-							PriorityQueue<DatabaseMatch> prevMatchQueue = curSpecKeyDBMatchMap.get(specKey);
-							if(prevMatchQueue == null)
-							{
-								prevMatchQueue = new PriorityQueue<DatabaseMatch>();
-								curSpecKeyDBMatchMap.put(specKey, prevMatchQueue);
-							}
-							if(prevMatchQueue.size() < this.numPeptidesPerSpec)
-							{
-								prevMatchQueue.add(new DatabaseMatch(index, i+2, score, nominalPeptideMass,candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
-							}
-							else if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
-							{
-								if(score > prevMatchQueue.peek().getScore())
-								{
-									prevMatchQueue.poll();
-									prevMatchQueue.add(new DatabaseMatch(index, i+2, score, nominalPeptideMass,candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
-								}
-							}
-						}
-					}					
+			double leftThr = (double)(peptideMass - tolDaRight);
+			double rightThr = (double)(peptideMass + tolDaLeft);
+			Collection<SpecKey> matchedSpecKeyList = specScanner.getPepMassSpecKeyMap().subMap(leftThr, rightThr).values();
+			for(SpecKey specKey : matchedSpecKeyList)
+			{
+				if(charge != specKey.getCharge())
+					continue;
+				SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(specKey);
+				int score = scorer.getScore(prm, nominalPRM, 1, pepLength+1, numMods); 
+				PriorityQueue<DatabaseMatch> prevMatchQueue = curSpecKeyDBMatchMap.get(specKey);
+				if(prevMatchQueue == null)
+				{
+					prevMatchQueue = new PriorityQueue<DatabaseMatch>();
+					curSpecKeyDBMatchMap.put(specKey, prevMatchQueue);
 				}
-				isExtensionAtTheSameIndex = true;
+				if(prevMatchQueue.size() < this.numPeptidesPerSpec)
+				{
+					prevMatchQueue.add(new DatabaseMatch(0, pepLength, score, nominalPeptideMass, peptideOutput.toString()));
+				}
+				else if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
+				{
+					if(score > prevMatchQueue.peek().getScore())
+					{
+						prevMatchQueue.poll();
+						prevMatchQueue.add(new DatabaseMatch(0, pepLength, score, nominalPeptideMass, peptideOutput.toString()));
+					}
+				}
 			}
 		}
+		
 		this.addDBMatches(curSpecKeyDBMatchMap);
-		indices.close();
-		nlcps.close();
 	}  		
 	
 	public void computeSpecProb(boolean storeScoreDist)
@@ -278,16 +271,9 @@ public class LibraryScanner {
 				continue;
 
 			int specIndex = specKey.getSpecIndex();
-			
-			boolean useProtNTerm = false;
-			boolean useProtCTerm = false;
 			int minScore = Integer.MAX_VALUE;
 			for(DatabaseMatch m : matchQueue)
 			{
-				if(m.isProteinNTerm())
-					useProtNTerm = true;
-				if(m.isProteinCTerm())
-					useProtCTerm = true;
 				if(m.getScore() < minScore)
 					minScore = m.getScore();
 			}
@@ -310,10 +296,10 @@ public class LibraryScanner {
 				DeNovoGraph<NominalMass> graph = new FlexAminoAcidGraph(
 						aaSet, 
 						peptideMassIndex,
-						enzyme,
+						Enzyme.TRYPSIN,
 						scoredSpec,
-						useProtNTerm,
-						useProtCTerm
+						true,
+						false
 						);
 				
 				GeneratingFunction<NominalMass> gfi = new GeneratingFunction<NominalMass>(graph)
@@ -408,11 +394,7 @@ public class LibraryScanner {
 				int length = match.getLength();
 				int charge = match.getCharge();
 				
-				String peptideStr = match.getPepSeq();
-				if(peptideStr == null)
-					peptideStr = sa.getSequence().getSubsequence(index+1, index+length-1);
-				Peptide pep = aaSet.getPeptide(peptideStr);
-				String annotationStr = sa.getSequence().getCharAt(index)+"."+pep+"."+sa.getSequence().getCharAt(index+length-1);
+				String annotationStr = match.getPepSeq();
 				SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(new SpecKey(specIndex, charge));
 				ArrayList<Integer> specIndexList = specScanner.getSpecKey(specIndex, charge).getSpecIndexList();
 				if(specIndexList == null)
@@ -513,6 +495,7 @@ public class LibraryScanner {
 	}
 
 	private static HashMap<String,Double> modTable;
+	private static HashMap<String,String> modResidueTable;
 	
 	static {
 		modTable = new HashMap<String,Double>();
@@ -522,6 +505,15 @@ public class LibraryScanner {
 		modTable.put("Acetyl", Modification.get("Acetylation").getAccurateMass());
 		modTable.put("Oxidation", Modification.get("Oxidation").getAccurateMass());
 		modTable.put("Glu->pyro-Glu", Modification.get("PyrogluE").getAccurateMass());
+		
+		modResidueTable = new HashMap<String,String>();
+		modResidueTable.put("Pyro-carbamidomethyl", String.format("%.3f", Modification.get("PyroCarbamidomethyl").getMass()));
+		modResidueTable.put("Carbamidomethyl", String.format("%.3f", "+"+Modification.get("Carbamidomethylation").getMass()));
+		modResidueTable.put("Gln->pyro-Glu", String.format("%.3f", Modification.get("PyrogluQ").getMass()));
+		modResidueTable.put("Acetyl", String.format("%.3f", "+"+Modification.get("Acetylation").getMass()));
+		modResidueTable.put("Oxidation", String.format("%.3f", "+"+Modification.get("Oxidation").getMass()));
+		modResidueTable.put("Glu->pyro-Glu", String.format("%.3f", Modification.get("PyrogluE").getMass()));
+		
 	}
 
 }
