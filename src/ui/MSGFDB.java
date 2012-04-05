@@ -119,7 +119,7 @@ public class MSGFDB {
 		}
 		
 		int numAllowedC13 = paramManager.getIntValue("c13");
-		if(rightParentMassTolerance.getToleranceAsDa(1000) >= 0.5f)
+		if(rightParentMassTolerance.getToleranceAsDa(1000, 2) >= 0.5f)
 			numAllowedC13 = 0;
 		
 		File outputFile = paramManager.getOutputFileParam().getFile();

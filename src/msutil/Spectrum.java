@@ -383,7 +383,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	 *         if there are no peaks within tolerance.
 	 */
 	public ArrayList<Peak> getPeakListByMass(float mass, Tolerance tolerance) {
-		float toleranceDa = tolerance.getToleranceAsDa(mass);
+		float toleranceDa = tolerance.getToleranceAsDa(mass, getCharge());
 		return getPeakListByMassRange(mass-toleranceDa, mass+toleranceDa);
 	}
 

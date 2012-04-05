@@ -63,16 +63,21 @@ public class Chores {
 //		System.out.println(phospho.getAccurateMass());
 //		recombCPReg();
 		
-		ArrayList<Modification.Instance> mods = new ArrayList<Modification.Instance>();
-		mods.add(new Modification.Instance(Modification.get("Carbamidomethylation"), 'C').fixedModification());
-		mods.add(new Modification.Instance(Modification.get("PyroCarbamidomethyl"), 'C', Location.N_Term));
-		mods.add(new Modification.Instance(Modification.get("Oxidation"), 'M', Location.Anywhere));
-		mods.add(new Modification.Instance(Modification.get("Acetylation"), '*', Location.N_Term));
-		mods.add(new Modification.Instance(Modification.get("PyrogluQ"), 'Q', Location.N_Term));
-		mods.add(new Modification.Instance(Modification.get("PyrogluE"), 'E', Location.N_Term));
-		
-		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSet(mods);
-		aaSet.printAASet();
+//		ArrayList<Modification.Instance> mods = new ArrayList<Modification.Instance>();
+//		mods.add(new Modification.Instance(Modification.get("Carbamidomethylation"), 'C').fixedModification());
+//		mods.add(new Modification.Instance(Modification.get("PyroCarbamidomethyl"), 'C', Location.N_Term));
+//		mods.add(new Modification.Instance(Modification.get("Oxidation"), 'M', Location.Anywhere));
+//		mods.add(new Modification.Instance(Modification.get("Acetylation"), '*', Location.N_Term));
+//		mods.add(new Modification.Instance(Modification.get("PyrogluQ"), 'Q', Location.N_Term));
+//		mods.add(new Modification.Instance(Modification.get("PyrogluE"), 'E', Location.N_Term));
+//		
+//		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSet(mods);
+//		aaSet.printAASet();
+
+		String s = "SEQ=(Q,-17.026549)YWEYQFQHQPSQEE(C,57.02146)EGSSLSAVFEHFAMMQR";
+		String[] token = s.split("[(,)]");
+		for(int i=0; i<token.length; i++)
+			System.out.println(i+"\t"+token[i]);
 		
 	}
 
