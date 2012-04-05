@@ -458,6 +458,44 @@ public class ParamManager {
 		addParameter(addScoreParam);
 	}
 	
+	public void addMSGFLibParams()
+	{
+		addSpecFileParam();
+		
+		// Add library file param
+		FileParameter libFileParam = new FileParameter("d", "LibraryFile", "library file name (no extension)");
+		libFileParam.addFileFormat(new FileFormat(".sptxt"));
+		libFileParam.fileMustExist();
+		libFileParam.mustBeAFile();
+		addParameter(libFileParam);
+
+		addPMTolParam();
+		addOutputFileParam();
+		
+		IntParameter numThreadParam = new IntParameter("thread", "NumThreads", "Number of concurrent threads to be executed, Default: Number of available cores");
+		numThreadParam.defaultValue(Runtime.getRuntime().availableProcessors());
+		numThreadParam.minValue(1);
+		addParameter(numThreadParam);
+		
+		addFragMethodParam();
+		addInstTypeParam();
+		addEnzymeParam();
+		addProtocolParam();
+		
+		EnumParameter c13Param = new EnumParameter("c13");
+		c13Param.registerEntry("Consider only peptides matching precursor mass");
+		c13Param.registerEntry("Consider peptides having one 13C").setDefault();
+		c13Param.registerEntry("Consider peptides having up to two 13C");
+		addParameter(c13Param);
+		
+		IntParameter numMatchesParam = new IntParameter("n", "NumMatchesPerSpec", "Number of matches per spectrum to be reported, Default: 1");
+		numMatchesParam.minValue(1);
+		numMatchesParam.defaultValue(1);
+		addParameter(numMatchesParam);
+		
+		addExample("Example (high-precision): java -Xmx2000M -jar MSGFLib.jar -s test.mzXML -d IPI_human_3.79.fasta -t 30ppm -c13 1 -nnet 0 -o testMSGFDB.tsv");
+	}
+	
 	public FileParameter getSpecFileParam()
 	{
 		return ((FileParameter)getParameter("s"));

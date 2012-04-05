@@ -424,14 +424,14 @@ public class DBScanner {
 								}
 								if(prevMatchQueue.size() < this.numPeptidesPerSpec)
 								{
-									prevMatchQueue.add(new DatabaseMatch(index, i+2, score, nominalPeptideMass,candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
+									prevMatchQueue.add(new DatabaseMatch(index, (byte)(i+2), score, peptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
 								}
 								else if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
 								{
 									if(score > prevMatchQueue.peek().getScore())
 									{
 										prevMatchQueue.poll();
-										prevMatchQueue.add(new DatabaseMatch(index, i+2, score, nominalPeptideMass,candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
+										prevMatchQueue.add(new DatabaseMatch(index, (byte)(i+2), score, peptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
 									}
 								}
 							}
@@ -555,7 +555,6 @@ public class DBScanner {
 				continue;
 			
 			int specIndex = specKey.getSpecIndex();
-			int charge = specKey.getCharge();
 			PriorityQueue<DatabaseMatch> existingQueue = specIndexDBMatchMap.get(specIndex);
 			if(existingQueue == null)
 			{
@@ -565,7 +564,6 @@ public class DBScanner {
 			
 			for(DatabaseMatch match : matchQueue)
 			{
-				match.setCharge(charge);
 				if(existingQueue.size() < this.numPeptidesPerSpec)
 				{
 					existingQueue.add(match);
@@ -619,9 +617,10 @@ public class DBScanner {
 				}
 				
 				float expMass = scorer.getPrecursorPeak().getMass();
-				float theoMass = pep.getParentMass();
+//				float theoMass = pep.getParentMass();
+				float peptideMass = match.getPeptideMass();
 				float pmError = Float.MAX_VALUE;
-				float peptideMass = expMass - (float)Composition.H2O;
+				float theoMass = expMass + (float)Composition.H2O;
 				
 				float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
 				int nC13 = tolDaRight >= 0.5f ? 0 : specScanner.getNumAllowedC13();

@@ -58,12 +58,12 @@ public class MSGFPlusPaper {
 				int location = Integer.parseInt(mod[0]);
 				char residue = mod[1].charAt(0);
 				String modName = mod[2];
-				modNames.add(modName);
+				modNames.add(modName+":"+residue+":"+location);
 			}			
 		}
 		
-		for(String modName : modNames)
-			System.out.println(modName);
+		for(String m : modNames)
+			System.out.println(m);
 	}
 	
 	public static void aLPModel() throws Exception

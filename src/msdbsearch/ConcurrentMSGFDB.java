@@ -2,6 +2,8 @@ package msdbsearch;
 
 import java.util.List;
 
+import parser.BufferedLineReader;
+
 import msgf.MSGFDBResultGenerator;
 import msutil.AminoAcidSet;
 import msutil.Enzyme;
@@ -161,10 +163,63 @@ public class ConcurrentMSGFDB {
 			System.out.print(threadName+": Computing spectral probabilities finished ");
 			System.out.format("(elapsed time: %.2f sec)\n", (float)((System.currentTimeMillis()-time)/1000));
 			
-//			time = System.currentTimeMillis();
 			scanner.addDBSearchResults(gen, specFileName, replicateMergedResults);
-//			System.out.print(threadName+": Generating results... ");
-//			System.out.format("%.2f sec\n", (float)((System.currentTimeMillis()-time)/1000));
 		}
 	}	
+	
+	public static class RunMSGFLib implements Runnable {
+		private final ScoredSpectraMap specScanner;
+		private final LibraryScanner scanner;
+		private final String specFileName;
+		private final List<MSGFDBResultGenerator.DBMatch> gen;
+		private final BufferedLineReader in;	// library file reader
+		
+		public RunMSGFLib(
+				ScoredSpectraMap specScanner,
+				int numPeptidesPerSpec,
+				List<MSGFDBResultGenerator.DBMatch> gen, 
+				String specFileName,
+				BufferedLineReader in
+				)
+		{
+			this.specScanner = specScanner;
+			this.scanner = new LibraryScanner(specScanner, numPeptidesPerSpec);
+			this.specFileName = specFileName;
+			this.gen = gen;
+			this.in = in;
+		}
+		
+		@Override
+		public void run() 
+		{
+			String threadName = Thread.currentThread().getName();
+			
+			// Pre-process spectra
+			long time = System.currentTimeMillis();
+			if(specScanner.getPepMassSpecKeyMap().size() == 0)
+				specScanner.makePepMassSpecKeyMap();
+			System.out.println(threadName+": Preprocessing spectra...");
+			specScanner.preProcessSpectra();
+			System.out.print(threadName+": Preprocessing spectra finished ");
+			System.out.format("(elapsed time: %.2f sec)\n", (float)((System.currentTimeMillis()-time)/1000));
+			
+			time = System.currentTimeMillis();
+			
+			// Library search
+			System.out.println(threadName+": Library search...");
+			scanner.setThreadName(threadName);
+			scanner.libSearch(in, true);
+			System.out.print(threadName+": Library search finished ");
+			System.out.format("(elapsed time: %.2f sec)\n", (float)((System.currentTimeMillis()-time)/1000));
+
+			// Computing spectral probabilities
+			time = System.currentTimeMillis();
+			System.out.println(threadName+": Computing spectral probabilities...");
+			scanner.computeSpecProb();
+			System.out.print(threadName+": Computing spectral probabilities finished ");
+			System.out.format("(elapsed time: %.2f sec)\n", (float)((System.currentTimeMillis()-time)/1000));
+			
+			scanner.addLibSearchResults(gen, specFileName);
+		}
+	}		
 }

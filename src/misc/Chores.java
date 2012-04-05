@@ -60,7 +60,12 @@ public class Chores {
 //		System.out.println(Composition.getMass("C2H2"));
 //		Modification phospho = Modification.get("Phosphorylation");
 //		System.out.println(phospho.getAccurateMass());
-		recombCPReg();
+//		recombCPReg();
+		String str = "Protein=1/sp|28482|MK01_HUMAN";
+		String[] token = str.split("[=/]");
+		System.out.println(token.length);
+		for(int i=0; i<token.length; i++)
+			System.out.println(i + "\t" + token[i]);
 	}
 
 	public static void recombCPReg() throws Exception
