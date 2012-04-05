@@ -174,12 +174,12 @@ public class LibraryScanner {
 					if(isDecoy)	
 					{
 						// e.g. QGACK -> QCAGK
-//						StringBuffer reversePepStr = new StringBuffer();
-//						reversePepStr.append(pepStr.charAt(0));
-//						for(int j=pepLength-2; j>=1; j--)
-//							reversePepStr.append(pepStr.charAt(j));
-//						reversePepStr.append(pepStr.charAt(pepLength-1));
-//						pepStr = reversePepStr.toString();
+						StringBuffer reversePepStr = new StringBuffer();
+						reversePepStr.append(pepStr.charAt(0));
+						for(int j=pepLength-2; j>=1; j--)
+							reversePepStr.append(pepStr.charAt(j));
+						reversePepStr.append(pepStr.charAt(pepLength-1));
+						pepStr = reversePepStr.toString();
 
 						// QGACK -> KCAGQ
 //						StringBuffer reversePepStr = new StringBuffer();
@@ -187,14 +187,16 @@ public class LibraryScanner {
 //							reversePepStr.append(pepStr.charAt(j));
 //						pepStr = reversePepStr.toString();
 						
-						// R.QGACK -> CAGQR
-						char preceedingAA = pepToken[1].charAt(0);
-						StringBuffer reversePepStr = new StringBuffer();
-						for(int j=pepLength-2; j>=0; j--)
-							reversePepStr.append(pepStr.charAt(j));
-						reversePepStr.append(preceedingAA);
-						pepStr = reversePepStr.toString();
-						
+//						// R.QGACK -> CAGQR
+//						char preceedingAA = pepToken[1].charAt(0);
+//						if(preceedingAA == '-')
+//							preceedingAA = pepStr.charAt(pepLength-1);
+//						
+//						StringBuffer reversePepStr = new StringBuffer();
+//						for(int j=pepLength-2; j>=0; j--)
+//							reversePepStr.append(pepStr.charAt(j));
+//						reversePepStr.append(preceedingAA);
+//						pepStr = reversePepStr.toString();
 					}
 				}
 				
@@ -212,13 +214,13 @@ public class LibraryScanner {
 						
 						if(isDecoy)
 						{
-//							if(location > 0 && location < pepLength-1)
-//								location = pepLength-1-location;
+							if(location > 0 && location < pepLength-1)
+								location = pepLength-1-location;
 							
 //							location = pepLength-1-location;
 							
-							if(location < pepLength-1)
-								location = pepLength-2-location; 
+//							if(location < pepLength-1)
+//								location = pepLength-2-location; 
 						}
 						
 						String modName = mod[2];

@@ -44,7 +44,7 @@ import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFLib {
-	public static final String VERSION = "7293";
+	public static final String VERSION = "7573";
 	public static final String RELEASE_DATE = "04/04/2012";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
