@@ -463,7 +463,7 @@ public class ParamManager {
 		addSpecFileParam();
 		
 		// Add library file param
-		FileParameter libFileParam = new FileParameter("d", "LibraryFile", "library file name (no extension)");
+		FileParameter libFileParam = new FileParameter("d", "LibraryFile", "*.sptxt");
 		libFileParam.addFileFormat(new FileFormat(".sptxt"));
 		libFileParam.fileMustExist();
 		libFileParam.mustBeAFile();

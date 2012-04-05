@@ -592,8 +592,8 @@ public class LibraryScanner {
 //		modResidueTable.put("Carbamidomethyl", String.format("%.3f", "+"+Modification.get("Carbamidomethylation").getMass()));
 		modResidueTable.put("Carbamidomethyl", "");
 		modResidueTable.put("Pyro-carbamidomethyl", String.format("%.3f", Modification.get("PyroCarbamidomethyl").getMass()));
-		modResidueTable.put("Oxidation", String.format("%.3f", "+"+Modification.get("Oxidation").getMass()));
-		modResidueTable.put("Acetyl", String.format("%.3f", "+"+Modification.get("Acetylation").getMass()));
+		modResidueTable.put("Oxidation", String.format("+%.3f", Modification.get("Oxidation").getMass()));
+		modResidueTable.put("Acetyl", String.format("+%.3f", Modification.get("Acetylation").getMass()));
 		modResidueTable.put("Gln->pyro-Glu", String.format("%.3f", Modification.get("PyrogluQ").getMass()));
 		modResidueTable.put("Glu->pyro-Glu", String.format("%.3f", Modification.get("PyrogluE").getMass()));
 
