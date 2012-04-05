@@ -17,7 +17,6 @@ import java.util.concurrent.Executors;
 import params.FileParameter;
 import params.ParamManager;
 import params.ToleranceParameter;
-import parser.BufferedLineReader;
 import parser.MS2SpectrumParser;
 import parser.MgfSpectrumParser;
 import parser.MzXMLSpectraIterator;
@@ -53,7 +52,7 @@ public class MSGFLib {
 	{
 		long time = System.currentTimeMillis();
 
-		ParamManager paramManager = new ParamManager("MSGFLib", MSGFDB.VERSION, MSGFDB.RELEASE_DATE, "java -Xmx2000M -jar MSGFLib.jar");
+		ParamManager paramManager = new ParamManager("MSGFLib", VERSION, RELEASE_DATE, "java -Xmx2000M -jar MSGFLib.jar");
 		paramManager.addMSGFLibParams();
 		
 		if(argv.length == 0)
@@ -95,12 +94,6 @@ public class MSGFLib {
 		
 		// Library file
 		File libraryFile = paramManager.getFile("d");
-		BufferedLineReader in = null;
-		try {
-			in = new BufferedLineReader(libraryFile.getPath());
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		}
 		
 		// PM tolerance
 		ToleranceParameter tol = ((ToleranceParameter)paramManager.getParameter("t"));
@@ -231,7 +224,7 @@ public class MSGFLib {
 							numMatchesPerSpec,
 							resultList, 
 							specFile.getName(),
-							in
+							libraryFile.getPath()
 							);
 				executor.execute(msgfdbExecutor);
 			}
@@ -246,15 +239,6 @@ public class MSGFLib {
 		// Sort search results by spectral probabilities
 		Collections.sort(resultList);
 
-		if(in != null)
-		{
-			try {
-				in.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
 		// Write results
 		String header = 
 			"#SpecFile\tSpecIndex\tScan#\t"

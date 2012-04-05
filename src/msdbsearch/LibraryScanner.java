@@ -1,5 +1,7 @@
 package msdbsearch;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -111,9 +113,24 @@ public class LibraryScanner {
 		}
 	}
 
-	// Reads peptide variants from sptxt file
-	public void libSearch(BufferedLineReader in, boolean verbose)
+	public void libSearch(String libFilePath, boolean verbose)
 	{
+		Map<SpecKey,PriorityQueue<LibraryMatch>> targetSpecKeyDBMatchMap = libSearch(libFilePath, false, true);
+		Map<SpecKey,PriorityQueue<LibraryMatch>> decoySpecKeyDBMatchMap = libSearch(libFilePath, true, true);
+		this.addDBMatches(targetSpecKeyDBMatchMap);
+		this.addDBMatches(decoySpecKeyDBMatchMap);
+	}
+	
+	// Reads peptide variants from sptxt file
+	private Map<SpecKey,PriorityQueue<LibraryMatch>> libSearch(String libFilePath, boolean isDecoy, boolean verbose)
+	{
+		BufferedLineReader in = null;
+		try {
+			in = new BufferedLineReader(libFilePath);
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		}
+		
 		Map<SpecKey,PriorityQueue<LibraryMatch>> curSpecKeyDBMatchMap = new HashMap<SpecKey,PriorityQueue<LibraryMatch>>();
 
 		String s;
@@ -128,11 +145,12 @@ public class LibraryScanner {
 			if(verbose && numPeptides > 0 && numPeptides % 100000 == 0)
 			{
 				System.out.print(threadName + ": Database search progress... "); 
-				System.out.format("%d * 10^5 peptides complete\n", numPeptides/100000);
+				System.out.format("%dE5 peptides complete\n", numPeptides/100000);
 			}
 
 			// these should be filled by parsing the file
 			String pepStr = null;
+			int pepLength = 0;
 			int charge = -1;
 			int numMods = -1;
 			double[] modMass = new double[MAX_LIBRARY_PEPTIDE_LENGTH]; // 1-based
@@ -147,9 +165,39 @@ public class LibraryScanner {
 				if(curToken.startsWith("Fullname="))
 				{
 					String[] pepToken = curToken.split("[=./]");
+//					assert(pepToken[1].length() == 1);
 					pepStr = pepToken[2];
+					pepStr = pepStr.replaceAll("M\\(O\\)","M");
+					pepLength = pepStr.length();
 					charge = Integer.parseInt(pepToken[4]);
+					
+					if(isDecoy)	
+					{
+						// e.g. QGACK -> QCAGK
+//						StringBuffer reversePepStr = new StringBuffer();
+//						reversePepStr.append(pepStr.charAt(0));
+//						for(int j=pepLength-2; j>=1; j--)
+//							reversePepStr.append(pepStr.charAt(j));
+//						reversePepStr.append(pepStr.charAt(pepLength-1));
+//						pepStr = reversePepStr.toString();
+
+						// QGACK -> KCAGQ
+//						StringBuffer reversePepStr = new StringBuffer();
+//						for(int j=pepLength-1; j>=0; j--)
+//							reversePepStr.append(pepStr.charAt(j));
+//						pepStr = reversePepStr.toString();
+						
+						// R.QGACK -> CAGQR
+						char preceedingAA = pepToken[1].charAt(0);
+						StringBuffer reversePepStr = new StringBuffer();
+						for(int j=pepLength-2; j>=0; j--)
+							reversePepStr.append(pepStr.charAt(j));
+						reversePepStr.append(preceedingAA);
+						pepStr = reversePepStr.toString();
+						
+					}
 				}
+				
 				// modification
 				else if(curToken.startsWith("Mods="))
 				{
@@ -161,6 +209,18 @@ public class LibraryScanner {
 						int location = Integer.parseInt(mod[0]);	// 0-base
 						if(location == -1)
 							location = 0;
+						
+						if(isDecoy)
+						{
+//							if(location > 0 && location < pepLength-1)
+//								location = pepLength-1-location;
+							
+//							location = pepLength-1-location;
+							
+							if(location < pepLength-1)
+								location = pepLength-2-location; 
+						}
+						
 						String modName = mod[2];
 						double deltaMass = modTable.get(modName);
 						modMass[location+1] = deltaMass;
@@ -173,10 +233,13 @@ public class LibraryScanner {
 				{
 					String[] protToken = curToken.split("[=/]");
 					protein = protToken[2];
+					if(isDecoy)
+						protein = "DECOY_" + protein;
 				}
 			}
 
-
+			numPeptides++;
+			
 			// always 0 at index 0, mass of ith prefix at index i
 			int[] nominalPRM = new int[MAX_LIBRARY_PEPTIDE_LENGTH];
 			double[] prm = new double[MAX_LIBRARY_PEPTIDE_LENGTH];
@@ -184,13 +247,12 @@ public class LibraryScanner {
 			nominalPRM[0] = 0;
 			prm[0] = 0;
 			StringBuffer peptideOutput = new StringBuffer();
-			int pepLength = peptideOutput.length();
 			for(int i=0; i<pepLength; i++)	// ith character of a peptide (base 0)
 			{
 				char residue = pepStr.charAt(i);
 				nominalPRM[i+1] = nominalPRM[i] + intAAMass[residue] + nominalModMass[i+1];
 				prm[i+1] = prm[i] + aaMass[residue] + modMass[i+1];
-				peptideOutput.append(modResidues[i+1]);
+				peptideOutput.append(pepStr.charAt(i)+(modResidues[i+1] == null ? "" : modResidues[i+1]));
 			}
 
 			float peptideMass = (float)prm[pepLength];
@@ -228,136 +290,18 @@ public class LibraryScanner {
 			}
 		}
 
-		this.numPeptidesInLib = numPeptides;
-		this.addDBMatches(curSpecKeyDBMatchMap);
+		if(in != null)
+		{
+			try {
+				in.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return curSpecKeyDBMatchMap;
 	}  		
 
-	public void libSearchPepIdx(BufferedLineReader in, boolean verbose)
-	{
-		Map<SpecKey,PriorityQueue<LibraryMatch>> curSpecKeyDBMatchMap = new HashMap<SpecKey,PriorityQueue<LibraryMatch>>();
-
-		String s;
-
-		// read the number of distinct peptide ions
-		int numDistinctPeptideIons = 0;
-		String keyword = "Total number of distinct ions in library";
-		while((s=in.readLine()) != null)
-		{
-			if(s.startsWith("#") && s.contains(keyword))
-			{
-				String[] token = s.split("\\s+");
-				numDistinctPeptideIons = Integer.parseInt(token[token.length-1]);
-				break;
-			}
-			if(s.startsWith("#") && s.contains("==="))
-				break;
-		}
-
-		if(numDistinctPeptideIons == 0)
-		{
-			System.err.println("Wrong pepidx file!");
-			System.exit(-1);
-		}
-
-		int numPeptides = 0;
-		while((s=in.readLine()) != null)
-		{
-			if(s.length() == 0 || s.startsWith("#"))
-				continue;
-
-			String[] token = s.split("\\s+");
-			if(token.length != 3)
-				continue;
-
-			// Print out the progress
-			if(verbose && numPeptides % 100000 == 0)
-			{
-				System.out.print(threadName + ": Database search progress... "); 
-				System.out.format("%.1f%% complete\n", numPeptides/(float)numDistinctPeptideIons*100);
-			}
-
-			String pepStr = token[0];
-			String pepInfoStr = token[1];
-
-			String[] tokenInfo = pepInfoStr.split("\\|");
-			int charge = Integer.parseInt(tokenInfo[0]);
-
-			// extract modification info, 1-based
-			double[] modMass = new double[MAX_LIBRARY_PEPTIDE_LENGTH];
-			int[] nominalModMass = new int[MAX_LIBRARY_PEPTIDE_LENGTH];
-			String[] modResidues = new String[MAX_LIBRARY_PEPTIDE_LENGTH];
-
-			String modInfo = tokenInfo[1];
-			String[] tokenMod = modInfo.split("/");
-			int numMods = Integer.parseInt(tokenMod[0]);
-			for(int i=1; i<tokenMod.length; i++)
-			{
-				String[] mod = tokenMod[i].split(",");
-				int location = Integer.parseInt(mod[0]);	// 0-base
-				if(location == -1)
-					location = 0;
-				//				char residue = mod[1].charAt(0);
-				String modName = mod[2];
-				double deltaMass = modTable.get(modName);
-				modMass[location+1] = deltaMass;
-				nominalModMass[location+1] = NominalMass.toNominalMass((float)deltaMass);
-				modResidues[location+1] = modResidueTable.get(modName);
-			}
-
-			// always 0 at index 0, mass of ith prefix at index i
-			int[] nominalPRM = new int[MAX_LIBRARY_PEPTIDE_LENGTH];
-			double[] prm = new double[MAX_LIBRARY_PEPTIDE_LENGTH];
-
-			nominalPRM[0] = 0;
-			prm[0] = 0;
-			StringBuffer peptideOutput = new StringBuffer();
-			int pepLength = peptideOutput.length();
-			for(int i=0; i<pepLength; i++)	// ith character of a peptide (base 0)
-			{
-				char residue = pepStr.charAt(i);
-				nominalPRM[i+1] = nominalPRM[i] + intAAMass[residue] + nominalModMass[i+1];
-				prm[i+1] = prm[i] + aaMass[residue] + modMass[i+1];
-				peptideOutput.append(modResidues[i+1]);
-			}
-
-			float peptideMass = (float)prm[pepLength];
-			int nominalPeptideMass = nominalPRM[pepLength];
-			float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
-			float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
-
-			double leftThr = (double)(peptideMass - tolDaRight);
-			double rightThr = (double)(peptideMass + tolDaLeft);
-			Collection<SpecKey> matchedSpecKeyList = specScanner.getPepMassSpecKeyMap().subMap(leftThr, rightThr).values();
-			for(SpecKey specKey : matchedSpecKeyList)
-			{
-				if(charge != specKey.getCharge())
-					continue;
-				SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(specKey);
-				int score = scorer.getScore(prm, nominalPRM, 1, pepLength+1, numMods); 
-				PriorityQueue<LibraryMatch> prevMatchQueue = curSpecKeyDBMatchMap.get(specKey);
-				if(prevMatchQueue == null)
-				{
-					prevMatchQueue = new PriorityQueue<LibraryMatch>();
-					curSpecKeyDBMatchMap.put(specKey, prevMatchQueue);
-				}
-				if(prevMatchQueue.size() < this.numPeptidesPerSpec)
-				{
-					prevMatchQueue.add(new LibraryMatch(score, peptideMass, nominalPeptideMass, charge, peptideOutput.toString(), null));
-				}
-				else if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
-				{
-					if(score > prevMatchQueue.peek().getScore())
-					{
-						prevMatchQueue.poll();
-						prevMatchQueue.add(new LibraryMatch(score, peptideMass, nominalPeptideMass, charge, peptideOutput.toString(), null));
-					}
-				}
-			}
-		}
-
-		this.numPeptidesInLib = numPeptides;
-		this.addDBMatches(curSpecKeyDBMatchMap);
-	}  			
 	public void computeSpecProb()
 	{
 		computeSpecProb(0, specScanner.getSpecKeyList().size());
@@ -408,7 +352,7 @@ public class LibraryScanner {
 				DeNovoGraph<NominalMass> graph = new FlexAminoAcidGraph(
 						aaSet, 
 						peptideMassIndex,
-						Enzyme.TRYPSIN,
+						null,
 						scoredSpec,
 						true,
 						false
@@ -525,7 +469,7 @@ public class LibraryScanner {
 				if(specScanner.getRightParentMassTolerance().isTolerancePPM())
 					pmError = pmError/theoMass*1e6f;
 
-				String protein = "";	// current no protein id is assigned
+				String protein = match.getProtein();	// current no protein id is assigned
 
 				int score = match.getScore();
 				double specProb = match.getSpecProb();
@@ -580,7 +524,7 @@ public class LibraryScanner {
 
 	static {
 		modTable = new HashMap<String,Double>();
-//		modTable.put("Carbamidomethyl", Modification.get("Carbamidomethylation").getAccurateMass());
+		//		modTable.put("Carbamidomethyl", Modification.get("Carbamidomethylation").getAccurateMass());
 		modTable.put("Carbamidomethyl", 0.);
 		modTable.put("Pyro-carbamidomethyl", Modification.get("PyroCarbamidomethyl").getAccurateMass());
 		modTable.put("Oxidation", Modification.get("Oxidation").getAccurateMass());
@@ -589,7 +533,7 @@ public class LibraryScanner {
 		modTable.put("Glu->pyro-Glu", Modification.get("PyrogluE").getAccurateMass());
 
 		modResidueTable = new HashMap<String,String>();
-//		modResidueTable.put("Carbamidomethyl", String.format("%.3f", "+"+Modification.get("Carbamidomethylation").getMass()));
+		//		modResidueTable.put("Carbamidomethyl", String.format("%.3f", "+"+Modification.get("Carbamidomethylation").getMass()));
 		modResidueTable.put("Carbamidomethyl", "");
 		modResidueTable.put("Pyro-carbamidomethyl", String.format("%.3f", Modification.get("PyroCarbamidomethyl").getMass()));
 		modResidueTable.put("Oxidation", String.format("+%.3f", Modification.get("Oxidation").getMass()));
@@ -599,13 +543,13 @@ public class LibraryScanner {
 
 		// set up aaSet
 		ArrayList<Modification.Instance> mods = new ArrayList<Modification.Instance>();
-		mods.add(new Modification.Instance(Modification.get("Carbamidomethylation"), '*').fixedModification());
+		mods.add(new Modification.Instance(Modification.get("Carbamidomethylation"), 'C').fixedModification());
 		mods.add(new Modification.Instance(Modification.get("PyroCarbamidomethyl"), 'C', Location.N_Term));
 		mods.add(new Modification.Instance(Modification.get("Oxidation"), 'M', Location.Anywhere));
 		mods.add(new Modification.Instance(Modification.get("Acetylation"), '*', Location.N_Term));
 		mods.add(new Modification.Instance(Modification.get("PyrogluQ"), 'Q', Location.N_Term));
 		mods.add(new Modification.Instance(Modification.get("PyrogluE"), 'E', Location.N_Term));
-		
+
 		aaSet = AminoAcidSet.getAminoAcidSet(mods);
 	}
 

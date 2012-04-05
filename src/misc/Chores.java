@@ -10,6 +10,7 @@ import msdbsearch.*;
 import msgf.*;
 import msscorer.*;
 import msutil.*;
+import msutil.Modification.Location;
 
 import parser.*;
 
@@ -61,11 +62,18 @@ public class Chores {
 //		Modification phospho = Modification.get("Phosphorylation");
 //		System.out.println(phospho.getAccurateMass());
 //		recombCPReg();
-		String str = "Protein=1/sp|28482|MK01_HUMAN";
-		String[] token = str.split("[=/]");
-		System.out.println(token.length);
-		for(int i=0; i<token.length; i++)
-			System.out.println(i + "\t" + token[i]);
+		
+		ArrayList<Modification.Instance> mods = new ArrayList<Modification.Instance>();
+		mods.add(new Modification.Instance(Modification.get("Carbamidomethylation"), 'C').fixedModification());
+		mods.add(new Modification.Instance(Modification.get("PyroCarbamidomethyl"), 'C', Location.N_Term));
+		mods.add(new Modification.Instance(Modification.get("Oxidation"), 'M', Location.Anywhere));
+		mods.add(new Modification.Instance(Modification.get("Acetylation"), '*', Location.N_Term));
+		mods.add(new Modification.Instance(Modification.get("PyrogluQ"), 'Q', Location.N_Term));
+		mods.add(new Modification.Instance(Modification.get("PyrogluE"), 'E', Location.N_Term));
+		
+		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSet(mods);
+		aaSet.printAASet();
+		
 	}
 
 	public static void recombCPReg() throws Exception

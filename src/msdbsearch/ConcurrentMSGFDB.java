@@ -172,21 +172,21 @@ public class ConcurrentMSGFDB {
 		private final LibraryScanner scanner;
 		private final String specFileName;
 		private final List<MSGFDBResultGenerator.DBMatch> gen;
-		private final BufferedLineReader in;	// library file reader
+		private final String libraryFileName;
 		
 		public RunMSGFLib(
 				ScoredSpectraMap specScanner,
 				int numPeptidesPerSpec,
 				List<MSGFDBResultGenerator.DBMatch> gen, 
 				String specFileName,
-				BufferedLineReader in
+				String libraryFileName
 				)
 		{
 			this.specScanner = specScanner;
 			this.scanner = new LibraryScanner(specScanner, numPeptidesPerSpec);
 			this.specFileName = specFileName;
 			this.gen = gen;
-			this.in = in;
+			this.libraryFileName = libraryFileName;
 		}
 		
 		@Override
@@ -208,7 +208,7 @@ public class ConcurrentMSGFDB {
 			// Library search
 			System.out.println(threadName+": Library search...");
 			scanner.setThreadName(threadName);
-			scanner.libSearch(in, true);
+			scanner.libSearch(libraryFileName, true);
 			System.out.print(threadName+": Library search finished ");
 			System.out.format("(elapsed time: %.2f sec)\n", (float)((System.currentTimeMillis()-time)/1000));
 

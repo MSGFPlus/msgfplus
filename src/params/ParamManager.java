@@ -493,7 +493,7 @@ public class ParamManager {
 		numMatchesParam.defaultValue(1);
 		addParameter(numMatchesParam);
 		
-		addExample("Example (high-precision): java -Xmx2000M -jar MSGFLib.jar -s test.mzXML -d IPI_human_3.79.fasta -t 30ppm -c13 1 -nnet 0 -o testMSGFDB.tsv");
+		addExample("Example: java -Xmx2000M -jar MSGFLib.jar -s test.mzXML -d IPI_human_3.79.fasta -t 30ppm -c13 1 -nnet 0 -o testMSGFDB.tsv");
 	}
 	
 	public FileParameter getSpecFileParam()
