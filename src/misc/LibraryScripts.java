@@ -22,6 +22,8 @@ public class LibraryScripts {
 		BufferedLineReader in = new BufferedLineReader(fileName);
 		String s;
 		Histogram<Integer> hist = new Histogram<Integer>();
+		Histogram<Integer> histLength = new Histogram<Integer>();
+		
 		while((s=in.readLine()) != null)
 		{
 			if(s.startsWith("#") || s.length() == 0)
@@ -39,8 +41,12 @@ public class LibraryScripts {
 			float specProb = Float.parseFloat(token[4]);
 			float specProbScore = -(float)Math.log10(specProb);
 			hist.add(Math.round(specProbScore));
+			
+			if(specProbScore < 10)
+				histLength.add(pepLength);
 		}
-		hist.printSortedRatio();
+//		hist.printSortedRatio();
+		histLength.printSortedRatio();
 	}
 	
 	public static void convert() throws Exception
