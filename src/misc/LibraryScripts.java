@@ -5,12 +5,42 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
+import msgf.Histogram;
+
 import parser.BufferedLineReader;
 
 public class LibraryScripts {
 	public static void main(String argv[]) throws Exception
 	{
-		convert();
+//		convert();
+		analyzeLibraryPSMs();
+	}
+
+	public static void analyzeLibraryPSMs() throws Exception
+	{
+		String fileName = System.getProperty("user.home")+"/Research/Data/SpecLib/MSGFOut_Human.tsv";
+		BufferedLineReader in = new BufferedLineReader(fileName);
+		String s;
+		Histogram<Integer> hist = new Histogram<Integer>();
+		while((s=in.readLine()) != null)
+		{
+			if(s.startsWith("#") || s.length() == 0)
+				continue;
+			String[] token = s.split("\t");
+			if(token[4].startsWith("N"))
+				continue;
+			String annotation = token[2];
+			int pepLength = 0;
+			for(int i=0; i<annotation.length(); i++)
+				if(Character.isLetter(annotation.charAt(i)))
+					pepLength++;
+			
+			int charge = Integer.parseInt(token[3]);
+			float specProb = Float.parseFloat(token[4]);
+			float specProbScore = -(float)Math.log10(specProb);
+			hist.add(Math.round(specProbScore));
+		}
+		hist.printSortedRatio();
 	}
 	
 	public static void convert() throws Exception

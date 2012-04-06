@@ -79,10 +79,12 @@ public class Chores {
 //		for(int i=0; i<token.length; i++)
 //			System.out.println(i+"\t"+token[i]);
 		
-		String s = "SEQ=(A,42.0106)AAAA(C,39.99)AVGPGAGGAGSAVPGGAGP(C,57.02146)(C,57.02146)ATVSVFPGAR";
-		s = s.replaceAll("\\(C,39\\.99\\)", "\\(C,-17\\.026549\\)");
-		s = s.replaceAll("\\(C,57\\.02146\\)", "C");
-		System.out.println(s);
+//		String s = "SEQ=(A,42.0106)AAAA(C,39.99)AVGPGAGGAGSAVPGGAGP(C,57.02146)(C,57.02146)ATVSVFPGAR";
+//		s = s.replaceAll("\\(C,39\\.99\\)", "\\(C,-17\\.026549\\)");
+//		s = s.replaceAll("\\(C,57\\.02146\\)", "C");
+//		System.out.println(s);
+		
+		System.out.println(Character.isLetter('+'));
 	}
 
 	public static void recombCPReg() throws Exception
