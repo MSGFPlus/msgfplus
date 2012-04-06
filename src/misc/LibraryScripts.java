@@ -15,8 +15,8 @@ public class LibraryScripts {
 	
 	public static void convert() throws Exception
 	{
-		File inputFile = new File("/Users/sangtaekim/Research/Data/SpecLib/human_target.mgf");
-		File outputFile = new File("/Users/sangtaekim/Research/Data/SpecLib/human_target_annotated.mgf");
+		File inputFile = new File(System.getProperty("user.home")+"/Research/Data/SpecLib/human_target.mgf");
+		File outputFile = new File(System.getProperty("user.home")+"/Research/Data/SpecLib/human_target_annotated.mgf");
 		
 		PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFile)));
 		String s;
@@ -25,6 +25,8 @@ public class LibraryScripts {
 		{
 			if(s.startsWith("SEQ="))
 			{
+				s = s.replaceAll("\\(C,57\\.02146\\)", "C");
+				s = s.replaceAll("\\(C,39\\.99\\)", "\\(C,-17\\.026549\\)");
 				StringBuffer buf = new StringBuffer();
 				String[] token = s.split("[(,)]");
 				for(int i=0; i<token.length; i++)

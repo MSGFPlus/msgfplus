@@ -74,11 +74,15 @@ public class Chores {
 //		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSet(mods);
 //		aaSet.printAASet();
 
-		String s = "SEQ=(Q,-17.026549)YWEYQFQHQPSQEE(C,57.02146)EGSSLSAVFEHFAMMQR";
-		String[] token = s.split("[(,)]");
-		for(int i=0; i<token.length; i++)
-			System.out.println(i+"\t"+token[i]);
+//		String s = "SEQ=(Q,-17.026549)YWEYQFQHQPSQEE(C,57.02146)EGSSLSAVFEHFAMMQR";
+//		String[] token = s.split("[(,)]");
+//		for(int i=0; i<token.length; i++)
+//			System.out.println(i+"\t"+token[i]);
 		
+		String s = "SEQ=(A,42.0106)AAAA(C,39.99)AVGPGAGGAGSAVPGGAGP(C,57.02146)(C,57.02146)ATVSVFPGAR";
+		s = s.replaceAll("\\(C,39\\.99\\)", "\\(C,-17\\.026549\\)");
+		s = s.replaceAll("\\(C,57\\.02146\\)", "C");
+		System.out.println(s);
 	}
 
 	public static void recombCPReg() throws Exception
