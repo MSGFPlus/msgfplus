@@ -153,17 +153,6 @@ public class MgfSpectrumParser implements SpectrumParser {
 				specOffset = offset;
 				specIndexMap.put(specIndex, specOffset);
 			}
-//			else if(buf.startsWith("SCANS="))
-//			{
-//				int scanNum = Integer.parseInt(buf.substring(buf.indexOf('=')+1));
-//				scanNumMap.put(scanNum, specOffset);
-//				needsScan = false;
-//			}
-//			else if(buf.startsWith("END IONS"))
-//			{
-//				if(needsScan)	// SCANS field is empty
-//					scanNumMap.put(sequentialScanNum++, specOffset);
-//			}
 			offset = lineReader.getPosition();
 		}
 		return specIndexMap;

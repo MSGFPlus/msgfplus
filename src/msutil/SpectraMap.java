@@ -8,9 +8,9 @@ import parser.BufferedRandomAccessLineReader;
 import parser.SpectrumParser;
 
 public class SpectraMap implements SpectrumAccessorBySpecIndex {
-	private Hashtable<Integer, Long> scanNumMap = null; 	// key: scanNum, value: filePos
+	private Hashtable<Integer, Long> specIndexMap = null; 	// key: specIndex, value: filePos
 	private SpectrumParser parser;
-	private BufferedRandomAccessLineReader lineReader;
+	protected BufferedRandomAccessLineReader lineReader;
 	private ArrayList<Integer> scanNumList = null;
 	
 	public SpectraMap(String fileName, SpectrumParser parser)
@@ -19,12 +19,12 @@ public class SpectraMap implements SpectrumAccessorBySpecIndex {
 		
 		this.parser = parser;
 		// set map
-	    scanNumMap = parser.getSpecIndexMap(lineReader);
+	    specIndexMap = parser.getSpecIndexMap(lineReader);
 	}
 	
 	public synchronized Spectrum getSpectrumBySpecIndex(int specIndex)
 	{
-		Long filePos = scanNumMap.get(specIndex);
+		Long filePos = specIndexMap.get(specIndex);
 		if(filePos == null)
 			return null;
 		else
@@ -41,7 +41,7 @@ public class SpectraMap implements SpectrumAccessorBySpecIndex {
 	{
 		if(scanNumList == null)
 		{
-			scanNumList = new ArrayList<Integer>(scanNumMap.keySet()); 
+			scanNumList = new ArrayList<Integer>(specIndexMap.keySet()); 
 			Collections.sort(scanNumList);
 		}
 		return scanNumList;

@@ -122,7 +122,7 @@ public class LibraryScanner {
 	}
 	
 	// Reads peptide variants from sptxt file
-	private Map<SpecKey,PriorityQueue<LibraryMatch>> libSearch(String libFilePath, boolean verbose)
+	private Map<SpecKey,PriorityQueue<LibraryMatch>> libSearchPlain(String libFilePath, boolean verbose)
 	{
 		BufferedLineReader in = null;
 		try {

@@ -6,12 +6,9 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 import msutil.SpecFileFormat;
-import msutil.SpectraIterator;
-import msutil.Spectrum;
 import params.FileParameter;
 import params.ParamManager;
 import parser.BufferedLineReader;
-import parser.MgfSpectrumParser;
 
 public class AnnotatedMgfToMSGFInput {
 	public static final int VERSION = 7556;

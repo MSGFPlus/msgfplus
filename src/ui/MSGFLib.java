@@ -2,65 +2,64 @@ package ui;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Hashtable;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import params.FileParameter;
-import params.ParamManager;
-import params.ToleranceParameter;
-import parser.MS2SpectrumParser;
-import parser.MgfSpectrumParser;
-import parser.MzXMLSpectraIterator;
-import parser.MzXMLSpectraMap;
-import parser.PNNLSpectraIterator;
-import parser.PNNLSpectraMap;
-import parser.PklSpectrumParser;
-import parser.SpectrumParser;
-
-import msdbsearch.ConcurrentMSGFDB;
-import msdbsearch.ScoredSpectraMap;
-
-import msgf.MSGFDBResultGenerator;
-import msgf.Tolerance;
-import msscorer.NewScorerFactory.SpecDataType;
-import msutil.Enzyme;
+import msdbsearch.DBScanner;
+import msgf.DeNovoGraph;
+import msgf.FlexAminoAcidGraph;
+import msgf.GeneratingFunction;
+import msgf.NominalMass;
+import msscorer.NewRankScorer;
+import msscorer.NewScoredSpectrum;
+import msscorer.NewScorerFactory;
 import msutil.ActivationMethod;
+import msutil.AminoAcidSet;
+import msutil.Enzyme;
+import msutil.FileFormat;
 import msutil.InstrumentType;
 import msutil.Protocol;
 import msutil.SpecFileFormat;
-import msutil.SpecKey;
-import msutil.SpectraIterator;
 import msutil.SpectraMap;
 import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
+import params.FileParameter;
+import params.ParamManager;
+import parser.InsPecTPSM;
+import parser.InsPecTParser;
+import parser.MS2SpectrumParser;
+import parser.MgfSpectrumParser;
+import parser.MzXMLSpectraMap;
+import parser.PSMList;
+import parser.PklSpectrumParser;
+
 public class MSGFLib {
-	public static final String VERSION = "7573";
-	public static final String RELEASE_DATE = "04/04/2012";
+	public static final String VERSION = "7097";
+	public static final String RELEASE_DATE = "12/29/2011";
 	
-	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static void main(String argv[])
 	{
 		long time = System.currentTimeMillis();
 
-		ParamManager paramManager = new ParamManager("MSGFLib", VERSION, RELEASE_DATE, "java -Xmx2000M -jar MSGFLib.jar");
-		paramManager.addMSGFLibParams();
+		ParamManager paramManager = new ParamManager("MSGFLib", VERSION, RELEASE_DATE, "java -Xmx2000M -cp MSGFDB.jar ui.MSGF");
+		paramManager.addMSGFParams();
 		
+		FileParameter libFileParam = new FileParameter("l", "LibraryFile", "*.sptxt");
+		libFileParam.addFileFormat(new FileFormat(".sptxt"));
+		libFileParam.fileMustExist();
+		libFileParam.mustBeAFile();
+		paramManager.addParameter(libFileParam);
+
 		if(argv.length == 0)
 		{
 			paramManager.printUsageInfo();
 			return;
 		}
-		
+
 		// Parse parameters
 		String errMessage = paramManager.parseParams(argv); 
 		if(errMessage != null)
@@ -71,7 +70,7 @@ public class MSGFLib {
 			return;
 		}
 		
-		// Running MS-GFDB
+		// Run MS-GF
 		paramManager.printToolInfo();
 		String errorMessage = runMSGFLib(paramManager);
 		if(errorMessage != null)
@@ -80,174 +79,15 @@ public class MSGFLib {
 			System.out.println();
 		}
 		else
-			System.out.format("MS-GFLib complete (total elapsed time: %.2f sec)\n", (System.currentTimeMillis()-time)/(float)1000);
+			System.out.format("MS-GF complete (total elapsed time: %.2f sec)\n", (System.currentTimeMillis()-time)/(float)1000);
+		
+		runMSGFLib(paramManager);
 	}
 	
-    public static String runMSGFLib(ParamManager paramManager)
+	public static String runMSGFLib(ParamManager paramManager)
 	{
-		long time = System.currentTimeMillis();
-    	
-		// Spectrum file
-		FileParameter specParam = paramManager.getSpecFileParam();
-		File specFile = specParam.getFile();
-		SpecFileFormat specFormat = (SpecFileFormat)specParam.getFileFormat();
+		File outputFile = paramManager.getFile("o");
 		
-		// Library file
-		File libraryFile = paramManager.getFile("d");
-		
-		// PM tolerance
-		ToleranceParameter tol = ((ToleranceParameter)paramManager.getParameter("t"));
-		Tolerance leftParentMassTolerance = tol.getLeftTolerance();
-		Tolerance rightParentMassTolerance = tol.getRightTolerance();
-		
-		int numAllowedC13 = paramManager.getIntValue("c13");
-		if(rightParentMassTolerance.getToleranceAsDa(1000, 2) >= 0.5f)
-			numAllowedC13 = 0;
-		
-		File outputFile = paramManager.getOutputFileParam().getFile();
-		
-		Enzyme enzyme = paramManager.getEnzyme();
-		ActivationMethod activationMethod = paramManager.getActivationMethod();
-		InstrumentType instType = paramManager.getInstType();
-		if(activationMethod == ActivationMethod.HCD)
-			instType = InstrumentType.HIGH_RESOLUTION_LTQ;
-		
-		Protocol protocol = paramManager.getProtocol();
-		
-		int numMatchesPerSpec = paramManager.getIntValue("n");
-		int numThreads = paramManager.getIntValue("thread");
-		
-//		System.out.println("Loading the library file...");
-//		System.out.print("Loading database finished ");
-//		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
-		
-		System.out.println("Reading spectra...");
-    	Iterator<Spectrum> specItr = null;
-		SpectrumAccessorBySpecIndex specMap = null;
-		
-		if(specFormat == SpecFileFormat.MZXML)
-		{
-			specItr = new MzXMLSpectraIterator(specFile.getPath());
-			specMap = new MzXMLSpectraMap(specFile.getPath());
-		}
-		else if(specFormat == SpecFileFormat.DTA_TXT)
-		{
-			try {
-				specItr = new PNNLSpectraIterator(specFile.getPath());
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-			specMap = new PNNLSpectraMap(specFile.getPath());
-		}
-		else
-		{
-			SpectrumParser parser = null;
-			if(specFormat == SpecFileFormat.MGF)
-				parser = new MgfSpectrumParser();
-			else if(specFormat == SpecFileFormat.MS2)
-				parser = new MS2SpectrumParser();
-			else if(specFormat == SpecFileFormat.PKL)
-				parser = new PklSpectrumParser();
-			
-			try {
-				specItr = new SpectraIterator(specFile.getPath(), parser);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-			specMap = new SpectraMap(specFile.getPath(), parser);
-		}
-		
-		if(specItr == null || specMap == null)
-		{
-			return "Error while parsing spectrum file: " + specFile.getPath();
-		}
-
-		// determine the number of spectra to be scanned together 
-		long maxMemory = Runtime.getRuntime().maxMemory() - 1<<28;
-		
-		int avgPeptideMass = 2000;
-		int numBytesPerMass = 12;
-		int numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
-		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specItr, 0, Integer.MAX_VALUE, 0, Integer.MAX_VALUE, activationMethod);
-		int specSize = specKeyList.size();
-		
-		System.out.print("Reading spectra finished ");
-		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
-		
-		numThreads = Math.min(numThreads, Math.round(Math.min(specSize, numSpecScannedTogether)/1000f));
-		if(numThreads == 0)
-			numThreads = 1;
-		System.out.println("Using " + numThreads + (numThreads == 1 ? " thread." : " threads."));
-		
-		SpecDataType specDataType = new SpecDataType(activationMethod, instType, enzyme, protocol);
-		int fromIndexGlobal = 0;
-		
-		List<MSGFDBResultGenerator.DBMatch> resultList = Collections.synchronizedList(new ArrayList<MSGFDBResultGenerator.DBMatch>());
-		
-		while(true)
-		{
-			if(fromIndexGlobal >= specSize)
-				break;
-			int toIndexGlobal = Math.min(specSize, fromIndexGlobal+numSpecScannedTogether);
-			System.out.println("Spectrum " + fromIndexGlobal + "-" + (toIndexGlobal-1) + " (total: " + specSize + ")");
-			
-			// Thread pool
-			ExecutorService executor = Executors.newFixedThreadPool(numThreads);
-			
-			// Partition specKeyList
-			int size = toIndexGlobal - fromIndexGlobal;
-			int subListSize = size/numThreads;
-			int residue = size % numThreads;
-			
-			int[] startIndex = new int[numThreads];
-			int[] endIndex = new int[numThreads];
-			
-			for(int i=0; i<numThreads; i++)
-			{
-				startIndex[i] =  i > 0 ? endIndex[i-1] : fromIndexGlobal;
-				endIndex[i] = startIndex[i] + subListSize + (i < residue ? 1 : 0);
-			}
-			
-			for(int i=0; i<numThreads; i++)
-			{
-		    	ScoredSpectraMap specScanner = new ScoredSpectraMap(
-		    			specMap,
-		    			Collections.synchronizedList(specKeyList.subList(startIndex[i], endIndex[i])),
-		    			leftParentMassTolerance,
-		    			rightParentMassTolerance,
-		    			numAllowedC13,
-		    			specDataType
-		    			);
-		    	
-				ConcurrentMSGFDB.RunMSGFLib msgfdbExecutor = new ConcurrentMSGFDB.RunMSGFLib(
-							specScanner,
-							numMatchesPerSpec,
-							resultList, 
-							specFile.getName(),
-							libraryFile.getPath()
-							);
-				executor.execute(msgfdbExecutor);
-			}
-			
-			executor.shutdown();
-			while(!executor.isTerminated()) {}	// wait until all threads terminate
-			
-			fromIndexGlobal += numSpecScannedTogether;
-		}
-		
-    	time = System.currentTimeMillis();
-		// Sort search results by spectral probabilities
-		Collections.sort(resultList);
-
-		// Write results
-		String header = 
-			"#SpecFile\tSpecIndex\tScan#\t"
-			+"FragMethod\t"
-			+"Precursor\tPMError("
-			+(rightParentMassTolerance.isTolerancePPM() ? "ppm" : "Da")
-			+")\tCharge\tPeptide\tProtein\tDeNovoScore\tMSGFScore\tSpecProb\tP-value";
-		
-		MSGFDBResultGenerator gen = new MSGFDBResultGenerator(header, resultList);
 		PrintStream out = null;
 		if(outputFile == null)
 			out = System.out;
@@ -259,10 +99,241 @@ public class MSGFLib {
 				e.printStackTrace();
 			}
 		}
-		gen.writeResults(out, false);
-		if(out != System.out)
-			out.close();
 		
-    	return null;
-	}	    
+		AminoAcidSet aaSet = null;
+		int fixModID = paramManager.getIntValue("fixMod");
+		if(fixModID == 0)
+			aaSet = AminoAcidSet.getStandardAminoAcidSet();
+		else if(fixModID == 1)
+			aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
+		else if(fixModID == 2)
+			aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarboxymethylatedCys();
+		
+		File databaseFile = paramManager.getFile("db");
+		if(databaseFile != null)
+			DBScanner.setAminoAcidProbabilities(databaseFile.getPath(), aaSet);
+		
+		File resultFile = paramManager.getFile("i");
+		InsPecTParser parser = new InsPecTParser(aaSet);
+		parser.parse(resultFile.getPath());
+		
+		boolean addMSGFColumn;
+		if(paramManager.getIntValue("addScore") == 1)
+			addMSGFColumn = true;
+		else
+			addMSGFColumn = false;
+		
+		String header = parser.getHeader();
+		if(header != null)
+		{
+			out.print(header+"\tSpecProb");
+			if(addMSGFColumn)
+				out.print("\tMSGFScore\tDeNovoScore");
+			out.println();
+		}
+			
+		ArrayList<String> keyList = null;
+		Hashtable<String, Double> minSpecProb = null;
+		Hashtable<String, String> bestOut = null;
+		
+		boolean onePerSpec;
+		if(paramManager.getIntValue("x") == 1)
+			onePerSpec = true;
+		else
+			onePerSpec = false;
+		
+		if(onePerSpec)
+		{
+			minSpecProb = new Hashtable<String, Double>();
+			bestOut = new Hashtable<String, String>();
+			keyList = new ArrayList<String>();
+		}
+		
+		float specProbThreshold = paramManager.getFloatValue("p");
+		
+		PSMList<InsPecTPSM> psmList = parser.getPSMList(); 
+		if(psmList == null)
+		{
+			out.close();
+			return "The result file is empty!";
+		}
+		
+		SpectrumAccessorBySpecIndex specAccessor = null;
+		String prevFileName = "";
+		int prevScanNum = -1;
+		Spectrum spec = null;
+		File specDir = paramManager.getFile("d");
+		
+		ActivationMethod activationMethod = paramManager.getActivationMethod();
+		InstrumentType instType = paramManager.getInstType();
+		if(activationMethod == ActivationMethod.HCD)
+			instType = InstrumentType.HIGH_RESOLUTION_LTQ;
+		Enzyme enzyme = paramManager.getEnzyme();
+		
+		NewRankScorer scorer = null;
+		if(activationMethod != ActivationMethod.ASWRITTEN)
+			scorer  = NewScorerFactory.get(activationMethod, instType, enzyme, Protocol.NOPROTOCOL);
+		
+		for(InsPecTPSM psm : psmList)
+		{
+			if(psm.getPeptide() == null)
+			{
+				out.print(psm.getInsPecTString()+"\t"+"N/A: unrecognizable annotation");
+				if(addMSGFColumn)
+					out.print("\t\t");
+				out.println();
+				continue;
+			}
+			String fileName = psm.getSpecFileName();
+			if(fileName.equalsIgnoreCase(prevFileName) && specAccessor != null)	// same spec file name
+			{
+				assert(specAccessor != null);
+				if(psm.getScanNum() == prevScanNum)	// same spectrum
+					assert(spec != null);
+				else	// different spectrum
+				{
+					spec = specAccessor.getSpectrumBySpecIndex(prevScanNum = psm.getScanNum());
+					prevScanNum = psm.getScanNum();
+					if(onePerSpec)
+						keyList.add(psm.getSpecFileName()+":"+psm.getScanNum());
+				}
+			}
+			else	// different spec file name
+			{
+				prevFileName = fileName;
+				String filePrefix = fileName.substring(0, fileName.lastIndexOf('.'));
+				String ext = fileName.substring(fileName.lastIndexOf('.'));
+				String specFilePath = specDir.getPath()+File.separatorChar+fileName;
+				if(ext.equalsIgnoreCase(".mzxml"))	// mzXML
+				{
+					File specFile = new File(specFilePath);
+					if(!specFile.exists())
+					{
+						for(File f : specDir.listFiles())
+						{
+							if(f.getName().startsWith(filePrefix))
+							{
+								if(f.getName().substring(f.getName().lastIndexOf('.')).equalsIgnoreCase(".mzxml"))
+									specFile = f;
+							}
+						}
+						if(!specFile.exists())
+						{
+							out.print(psm.getInsPecTString()+"\t"+"N/A: spectrum file is missing");
+							if(addMSGFColumn)
+								out.print("\t\t");
+							out.println();
+							continue;
+						}
+					}
+					specAccessor = new MzXMLSpectraMap(specFile.getPath());
+				}
+				else if(ext.equalsIgnoreCase(".mgf"))
+				{
+					specAccessor = new SpectraMap(specFilePath, new MgfSpectrumParser());
+				}
+				else if(ext.equalsIgnoreCase(".pkl"))
+				{
+					specAccessor = new SpectraMap(specFilePath, new PklSpectrumParser());
+				}
+				else if(ext.equalsIgnoreCase(".ms2"))
+				{			
+					specAccessor = new SpectraMap(specFilePath, new MS2SpectrumParser());
+				}
+				else
+				{
+					out.print(psm.getInsPecTString()+"\t"+"N/A: unrecognizable spec format");
+					if(addMSGFColumn)
+						out.print("\t\t");
+					out.println();
+					continue;
+				}
+				spec = specAccessor.getSpectrumBySpecIndex(prevScanNum = psm.getScanNum());
+				if(onePerSpec)
+					keyList.add(psm.getSpecFileName()+":"+psm.getScanNum());
+			}
+			
+			if(spec == null)
+			{
+				out.print(psm.getInsPecTString()+"\t"+"N/A: unrecognizable spec format");
+				if(addMSGFColumn)
+					out.print("\t\t");
+				out.println();
+				continue;
+			}
+			
+			if(psm.getPeptide() == null || psm.getPeptide().contains(null))
+			{			
+				out.print(psm.getInsPecTString()+"\t"+"N/A: unrecognizable identification: " + psm.getPeptideStr());
+				if(addMSGFColumn)
+					out.print("\t\t");
+				out.println();
+				continue;
+			}
+			
+			spec.getPrecursorPeak().setCharge(psm.getCharge());
+			
+			float expPM = spec.getParentMass();
+			float calcPM = psm.getPeptide().getParentMass();
+			if(Math.abs(expPM - calcPM) > 10)
+			{
+				out.print(psm.getInsPecTString()+"\t"+"N/A: precursor mass != peptide mass (" + expPM + " vs " + calcPM + ")");
+				if(addMSGFColumn)
+					out.print("\t\t");
+				out.println();
+				continue;
+			}
+			
+			if(activationMethod == ActivationMethod.ASWRITTEN)
+				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, Protocol.NOPROTOCOL);
+			NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
+			
+			AminoAcidSet modAASet = psm.getAASet(aaSet);
+			modAASet.registerEnzyme(enzyme);
+			DeNovoGraph<NominalMass> graph = new FlexAminoAcidGraph(
+					modAASet, 
+					psm.getPeptide().getNominalMass(),
+					enzyme,
+					scoredSpec,
+					false,
+					false
+					);
+			
+			int msgfScore = graph.getScore(psm.getAnnotation());
+			GeneratingFunction<NominalMass> gf = new GeneratingFunction<NominalMass>(graph).enzyme(enzyme).doNotBacktrack().doNotCalcNumber();
+			gf.setUpScoreThreshold(msgfScore);
+			gf.computeGeneratingFunction();
+			double specProb = gf.getSpectralProbability(msgfScore);
+			assert(specProb > 0): psm.getInsPecTString()+"\t"+"SpecProb is zero!";
+			String output = psm.getInsPecTString()+"\t"+specProb;
+			if(addMSGFColumn)
+				output += "\t"+msgfScore+"\t"+(gf.getMaxScore()-1);
+			if(specProb <= specProbThreshold)
+			{
+				if(!onePerSpec)
+					out.println(output);
+				else
+				{
+					String specKey = psm.getSpecFileName()+":"+psm.getScanNum();
+					Double prevBest = minSpecProb.get(specKey);
+					if(prevBest == null || specProb < prevBest)
+					{
+						minSpecProb.put(specKey, specProb);
+						bestOut.put(specKey, output);
+					}
+				}
+			}
+		}
+		
+		if(onePerSpec)
+		{
+			for(String key : keyList)
+				out.println(bestOut.get(key));
+		}
+		
+		out.flush();
+		out.close();	
+		
+		return null;
+	}
 }
