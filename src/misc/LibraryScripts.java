@@ -6,8 +6,11 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 import msgf.Histogram;
+import msutil.SpectraIterator;
+import msutil.Spectrum;
 
 import parser.BufferedLineReader;
+import parser.MgfSpectrumParser;
 
 public class LibraryScripts {
 	public static void main(String argv[]) throws Exception
@@ -15,9 +18,29 @@ public class LibraryScripts {
 //		convert();
 //		analyzeLibraryPSMs();
 //		makeTh();
-		extractShortPeptides();
+//		extractShortPeptides();
+		cleanMgf();
 	}
 
+	public static void cleanMgf() throws Exception
+	{
+		String fileName = "/home/sangtaekim/Research/Data/Heck_DDDT/CID_IT.mgf";
+		String outputFileName = "/home/sangtaekim/Test/MSGFLib/CID_IT_Idx.mgf";
+		PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFileName)));
+		int specIndex = 0;
+		SpectraIterator itr = new SpectraIterator(fileName, new MgfSpectrumParser());
+		while(itr.hasNext())
+		{
+			Spectrum spec = itr.next();
+			++specIndex;
+			String title = spec.getTitle();
+			spec.setTitle(String.valueOf(specIndex));
+			spec.outputMgf(out);
+		}
+		out.close();
+		System.out.println("Done");
+	}
+	
 	public static void extractShortPeptidesSpectraST() throws Exception
 	{
 		File dir = new File("/home/sangtaekim/Test/MSGFLib");
