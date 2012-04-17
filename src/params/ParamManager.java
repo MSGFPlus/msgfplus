@@ -79,6 +79,8 @@ public class ParamManager {
 	{
 		System.out.println(this.toolName + " v" + this.version + " (" + this.date + ")");
 		System.out.println("Usage: " + this.command);
+		
+		ArrayList<Parameter> optParams = new ArrayList<Parameter>();
 		Iterator<Entry<String, Parameter>> itr = params.entrySet().iterator();
 		while(itr.hasNext())
 		{
@@ -86,11 +88,24 @@ public class ParamManager {
 			Parameter param = entry.getValue();
 			if(!param.isHidden())
 			{
-				System.out.println("\t"+param);
-				if(param.getAdditionalDescription() != null)
-					System.out.println("\t   "+param.getAdditionalDescription());
+				if(!param.isOptional())
+				{
+					System.out.println("\t"+param);
+					if(param.getAdditionalDescription() != null)
+						System.out.println("\t   "+param.getAdditionalDescription());
+				}
+				else
+					optParams.add(param);
 			}
 		}
+		
+		for(Parameter param : optParams)
+		{
+			System.out.println("\t"+param);
+			if(param.getAdditionalDescription() != null)
+				System.out.println("\t   "+param.getAdditionalDescription());
+		}
+		
 		for(String example : examples)
 			System.out.println(example);
 	}

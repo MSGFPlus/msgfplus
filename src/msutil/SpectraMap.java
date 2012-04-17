@@ -11,7 +11,7 @@ public class SpectraMap implements SpectrumAccessorBySpecIndex {
 	private Hashtable<Integer, Long> specIndexMap = null; 	// key: specIndex, value: filePos
 	private SpectrumParser parser;
 	protected BufferedRandomAccessLineReader lineReader;
-	private ArrayList<Integer> scanNumList = null;
+	private ArrayList<Integer> specIndexList = null;
 	
 	public SpectraMap(String fileName, SpectrumParser parser)
 	{
@@ -39,11 +39,11 @@ public class SpectraMap implements SpectrumAccessorBySpecIndex {
 	@Override
 	public synchronized ArrayList<Integer> getSpecIndexList()
 	{
-		if(scanNumList == null)
+		if(specIndexList == null)
 		{
-			scanNumList = new ArrayList<Integer>(specIndexMap.keySet()); 
-			Collections.sort(scanNumList);
+			specIndexList = new ArrayList<Integer>(specIndexMap.keySet()); 
+			Collections.sort(specIndexList);
 		}
-		return scanNumList;
+		return specIndexList;
 	}
 }

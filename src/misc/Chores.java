@@ -83,9 +83,6 @@ public class Chores {
 //		s = s.replaceAll("\\(C,39\\.99\\)", "\\(C,-17\\.026549\\)");
 //		s = s.replaceAll("\\(C,57\\.02146\\)", "C");
 //		System.out.println(s);
-		
-		String s = "FullName: R.GAAAAAAAAAGAAGAAAAAAAIDK.Q/3";
-		
 	}
 
 	public static void recombCPReg() throws Exception

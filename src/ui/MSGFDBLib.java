@@ -219,7 +219,7 @@ public class MSGFDBLib {
 		    			specDataType
 		    			);
 		    	
-				ConcurrentMSGFDB.RunMSGFLib msgfdbExecutor = new ConcurrentMSGFDB.RunMSGFLib(
+				ConcurrentMSGFDB.RunMSGFDBLib msgfdbExecutor = new ConcurrentMSGFDB.RunMSGFDBLib(
 							specScanner,
 							numMatchesPerSpec,
 							resultList, 

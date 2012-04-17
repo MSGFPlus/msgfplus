@@ -71,8 +71,6 @@ public class MSGF {
 		}
 		else
 			System.out.format("MS-GF complete (total elapsed time: %.2f sec)\n", (System.currentTimeMillis()-time)/(float)1000);
-		
-		runMSGF(paramManager);
 	}
 	
 	public static String runMSGF(ParamManager paramManager)

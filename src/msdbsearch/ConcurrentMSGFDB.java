@@ -167,14 +167,14 @@ public class ConcurrentMSGFDB {
 		}
 	}	
 	
-	public static class RunMSGFLib implements Runnable {
+	public static class RunMSGFDBLib implements Runnable {
 		private final ScoredSpectraMap specScanner;
 		private final LibraryScanner scanner;
 		private final String specFileName;
 		private final List<MSGFDBResultGenerator.DBMatch> gen;
 		private final String libraryFileName;
 		
-		public RunMSGFLib(
+		public RunMSGFDBLib(
 				ScoredSpectraMap specScanner,
 				int numPeptidesPerSpec,
 				List<MSGFDBResultGenerator.DBMatch> gen, 

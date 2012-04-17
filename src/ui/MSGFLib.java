@@ -13,6 +13,9 @@ import msgf.DeNovoGraph;
 import msgf.FlexAminoAcidGraph;
 import msgf.GeneratingFunction;
 import msgf.NominalMass;
+import msgf.ScoredSpectrum;
+import msgf.ScoredSpectrumSum;
+import mslibsearch.ProcessedSpectrum;
 import msscorer.NewRankScorer;
 import msscorer.NewScoredSpectrum;
 import msscorer.NewScorerFactory;
@@ -22,8 +25,8 @@ import msutil.Enzyme;
 import msutil.FileFormat;
 import msutil.InstrumentType;
 import msutil.Protocol;
-import msutil.SpecFileFormat;
 import msutil.SpectraMap;
+import msutil.SpectraMapByTitle;
 import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
@@ -36,6 +39,7 @@ import parser.MgfSpectrumParser;
 import parser.MzXMLSpectraMap;
 import parser.PSMList;
 import parser.PklSpectrumParser;
+import parser.SPTxtParser;
 
 public class MSGFLib {
 	public static final String VERSION = "7097";
@@ -45,10 +49,11 @@ public class MSGFLib {
 	{
 		long time = System.currentTimeMillis();
 
-		ParamManager paramManager = new ParamManager("MSGFLib", VERSION, RELEASE_DATE, "java -Xmx2000M -cp MSGFDB.jar ui.MSGF");
+		ParamManager paramManager = new ParamManager("MSGFLib", VERSION, RELEASE_DATE, "java -Xmx2000M -cp MSGFDB.jar ui.MSGFLib");
 		paramManager.addMSGFParams();
 		
 		FileParameter libFileParam = new FileParameter("l", "LibraryFile", "*.sptxt");
+		
 		libFileParam.addFileFormat(new FileFormat(".sptxt"));
 		libFileParam.fileMustExist();
 		libFileParam.mustBeAFile();
@@ -81,7 +86,7 @@ public class MSGFLib {
 		else
 			System.out.format("MS-GF complete (total elapsed time: %.2f sec)\n", (System.currentTimeMillis()-time)/(float)1000);
 		
-		runMSGFLib(paramManager);
+//		runMSGFLib(paramManager);
 	}
 	
 	public static String runMSGFLib(ParamManager paramManager)
@@ -173,6 +178,13 @@ public class MSGFLib {
 		NewRankScorer scorer = null;
 		if(activationMethod != ActivationMethod.ASWRITTEN)
 			scorer  = NewScorerFactory.get(activationMethod, instType, enzyme, Protocol.NOPROTOCOL);
+
+		File sptxtFile = paramManager.getFile("l");
+		
+		System.out.println("Parsing library " + sptxtFile.getName());
+		long time = System.currentTimeMillis();
+		SpectraMapByTitle libMap = new SpectraMapByTitle(sptxtFile.getPath(), new SPTxtParser());
+		System.out.println("Parsing library finished. " + (System.currentTimeMillis()-time));
 		
 		for(InsPecTPSM psm : psmList)
 		{
@@ -284,9 +296,28 @@ public class MSGFLib {
 				continue;
 			}
 			
+			String pepStr = psm.getInsPecTString().split("\t")[2];
+			pepStr = pepStr.substring(pepStr.indexOf('.')+1, pepStr.lastIndexOf('.'));
+			Spectrum libSpec = libMap.getSpectrumByTitle(pepStr+":"+psm.getCharge());
+			
+			if(libSpec == null)
+			{
+				System.err.println("No library spectrum for " + pepStr);
+				System.exit(-1);
+			}
+			
 			if(activationMethod == ActivationMethod.ASWRITTEN)
 				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, Protocol.NOPROTOCOL);
-			NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
+
+			Spectrum processedSpec = new ProcessedSpectrum(spec, libSpec).getSpectrum();
+			NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(processedSpec);
+			
+//			ArrayList<ScoredSpectrum<NominalMass>> scoredSpecList = new ArrayList<ScoredSpectrum<NominalMass>>();
+//			NewScoredSpectrum<NominalMass> expScoredSpec = scorer.getScoredSpectrum(spec);
+//			NewScoredSpectrum<NominalMass> libScoredSpec = scorer.getScoredSpectrum(libSpec);
+//			scoredSpecList.add(expScoredSpec);
+//			scoredSpecList.add(libScoredSpec);
+//			ScoredSpectrumSum<NominalMass> scoredSpec = new ScoredSpectrumSum<NominalMass>(scoredSpecList);
 			
 			AminoAcidSet modAASet = psm.getAASet(aaSet);
 			modAASet.registerEnzyme(enzyme);

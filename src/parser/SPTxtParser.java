@@ -6,9 +6,11 @@ import msutil.AminoAcidSet;
 import msutil.Pair;
 import msutil.Peak;
 import msutil.Peptide;
+import msutil.SpectraMap;
+import msutil.SpectraMapByTitle;
 import msutil.Spectrum;
 
-public class SPTXTParser implements SpectrumParserWithTitle {
+public class SPTxtParser implements SpectrumParserWithTitle {
 
 	@Override
 	public Spectrum readSpectrum(LineReader lineReader) 
@@ -42,6 +44,12 @@ public class SPTXTParser implements SpectrumParserWithTitle {
 				String[] token = buf.split("\\s+");
 				precursorMz = Float.parseFloat(token[1]);
 			}	
+  			else if(buf.trim().length() == 0)
+  			{
+  				assert(spec != null);
+  				spec.setPrecursor(new Peak(precursorMz, 0, precursorCharge));
+  				return spec;
+  			}
 			else if(parse && Character.isDigit(buf.charAt(0)))
 			{
 				String[] token = buf.split("\\s+");
@@ -51,12 +59,6 @@ public class SPTXTParser implements SpectrumParserWithTitle {
 				float intensity = Float.parseFloat(token[1]);
 				spec.add(new Peak(mass, intensity, 1));
 			}
-  			else if(buf.trim().length() == 0)
-  			{
-  				assert(spec != null);
-  				spec.setPrecursor(new Peak(precursorMz, 0, precursorCharge));
-  				return spec;
-  			}
 		}
 		return null;	
 	}
@@ -100,7 +102,7 @@ public class SPTXTParser implements SpectrumParserWithTitle {
 		return titleToSpecIndexMap;	
 	}
 	
-	public Pair<String,Integer> parseSPTXTName(String name)
+	public static Pair<String,Integer> parseSPTXTName(String name)
 	{
 		String annotationStr = name.substring(0, name.lastIndexOf('/'));
 		StringBuffer pepBuf = new StringBuffer();
@@ -135,4 +137,14 @@ public class SPTXTParser implements SpectrumParserWithTitle {
 		
 		return new Pair<String,Integer>(pepBuf.toString(), charge);
 	}	
+	
+	public static void main(String argv[]) throws Exception
+	{
+		String fileName = "/home/sangtaekim/Research/Data/NISTLib/human_targetdecoy_spectrast.sptxt";
+		SpectraMapByTitle map = new SpectraMapByTitle(fileName, new SPTxtParser());
+		System.out.println("Parsing complete.");
+		Spectrum spec = map.getSpectrumByTitle("+42AAAAAAGAGPEM+16VRGQVFDVGPR:3");
+		System.out.println(spec.getSpecIndex()+"\t"+spec.size());
+		
+	}
 }
