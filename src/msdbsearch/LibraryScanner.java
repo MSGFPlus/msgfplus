@@ -161,14 +161,17 @@ public class LibraryScanner {
 				// Name: AAAAA...GAK/2
 				String[] token = s.split("\\s+");
 				String name = token[1];
-				Pair<String,Integer> namePair = SPTxtParser.parseSPTXTName(name);
-				pepStr = namePair.getFirst();
-				charge = namePair.getSecond();
-				int length = 0;
+				charge = Integer.parseInt(name.substring(name.lastIndexOf('/')+1));
+				StringBuffer pepBuf = new StringBuffer();
 				for(int i=0; i<name.length(); i++)
+				{
 					if(Character.isUpperCase(name.charAt(i)))
-						length++;
-				pepLength = length;
+					{
+						pepBuf.append(name.charAt(i));
+					}
+				}
+				pepLength = pepBuf.length();
+				pepStr = pepBuf.toString();
 			}
 			else if(s.startsWith("Comment:"))
 			{

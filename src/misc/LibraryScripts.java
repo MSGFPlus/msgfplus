@@ -17,9 +17,9 @@ public class LibraryScripts {
 	{
 //		convert();
 //		analyzeLibraryPSMs();
-//		makeTh();
+		makeTh();
 //		extractShortPeptides();
-		cleanMgf();
+//		cleanMgf();
 	}
 
 	public static void cleanMgf() throws Exception
@@ -103,17 +103,18 @@ public class LibraryScripts {
 	public static void makeTh() throws Exception
 	{
 		File dir = new File("/home/sangtaekim/Test/MSGFLib");
+		dir = new File(System.getProperty("user.home")+"/Research/Data/MSGFLib");
 		
-		PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(dir.getPath()+"/CID_IT_1Th.tsv")));
+		PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(dir.getPath()+"/CID_IT_1Th_2.tsv")));
 		out.println("#SpecFile\tSpecIndex\tScan#\tFragMethod\tPrecursor\tPMError(Da)\tCharge\tPeptide\tProtein\tDeNovoScore\tMSGFScore\tSpecProb\tP-value");
 		for(File f : dir.listFiles())
 		{
-			if(!f.getName().startsWith("CID_IT"))
+			if(!f.getName().endsWith("Da_2.tsv"))
 				continue;
 			
 			String fileName = f.getName();
 			System.out.println("Processing " + fileName);
-			int tol = Integer.parseInt(fileName.substring(fileName.lastIndexOf('_')+1, fileName.lastIndexOf('_')+2));
+			int tol = Integer.parseInt(fileName.substring("CID_IT_".length(), fileName.lastIndexOf("Da")));
 			String s;
 			BufferedLineReader in = new BufferedLineReader(f.getPath());
 			while((s=in.readLine()) != null)
@@ -160,7 +161,7 @@ public class LibraryScripts {
 			float specProbScore = -(float)Math.log10(specProb);
 			hist.add(Math.round(specProbScore));
 			
-			if(specProbScore < 10)
+//			if(specProbScore < 10)
 				histLength.add(pepLength);
 		}
 //		hist.printSortedRatio();
