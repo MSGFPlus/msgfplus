@@ -83,6 +83,7 @@ public class Chores {
 //		s = s.replaceAll("\\(C,39\\.99\\)", "\\(C,-17\\.026549\\)");
 //		s = s.replaceAll("\\(C,57\\.02146\\)", "C");
 //		System.out.println(s);
+		System.out.println(msscorer.NewScorerFactory.get(ActivationMethod.HCD, InstrumentType.HIGH_RESOLUTION_LTQ, Enzyme.TRYPSIN, Protocol.PHOSPHORYLATION).getSpecDataType());
 	}
 
 	public static void recombCPReg() throws Exception
