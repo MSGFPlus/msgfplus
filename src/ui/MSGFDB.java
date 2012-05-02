@@ -50,8 +50,8 @@ import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
-	public static final String VERSION = "7664";
-	public static final String RELEASE_DATE = "04/30/2012";
+	public static final String VERSION = "7703";
+	public static final String RELEASE_DATE = "05/01/2012";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static void main(String argv[])
@@ -91,12 +91,41 @@ public class MSGFDB {
 	
     public static String runMSGFDB(ParamManager paramManager)
 	{
-		long time = System.currentTimeMillis();
     	
 		// Spectrum file
 		FileParameter specParam = paramManager.getSpecFileParam();
-		File specFile = specParam.getFile();
-		SpecFileFormat specFormat = (SpecFileFormat)specParam.getFileFormat();
+		File specPath = specParam.getFile();
+		
+		if(!specPath.isDirectory())
+		{
+			// Spectrum format
+			SpecFileFormat specFormat = (SpecFileFormat)specParam.getFileFormat();
+			// Output file
+			File outputFile = paramManager.getOutputFileParam().getFile();
+			
+			return runMSGFDB(specPath, specFormat, outputFile, paramManager);
+		}
+		else	// spectrum directory
+		{
+			for(File f : specPath.listFiles())
+			{
+				SpecFileFormat specFormat = SpecFileFormat.getSpecFileFormat(f.getName());
+				if(specParam.isSupported(specFormat))
+				{
+					System.out.println("\nProcessing " + f.getName());
+					String errMsg = runMSGFDB(f, specFormat, paramManager);
+					if(errMsg != null)
+						return errMsg;
+				}
+			}
+			return null;
+		}
+	}
+    
+    private static String runMSGFDB(File specFile, SpecFileFormat specFormat, File outputFile, ParamManager paramManager)
+    {
+		long time = System.currentTimeMillis();
+		
 		
 		// DB file
 		File databaseFile = paramManager.getDBFileParam().getFile();
@@ -122,7 +151,6 @@ public class MSGFDB {
 		if(rightParentMassTolerance.getToleranceAsDa(1000, 2) >= 0.5f)
 			numAllowedC13 = 0;
 		
-		File outputFile = paramManager.getOutputFileParam().getFile();
 		
 		Enzyme enzyme = paramManager.getEnzyme();
 		int numAllowedNonEnzymaticTermini = paramManager.getIntValue("nnet");

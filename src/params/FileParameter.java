@@ -58,6 +58,14 @@ public class FileParameter extends Parameter {
 		return this;
 	}
 	
+	public boolean isSupported(FileFormat fileFormat)
+	{
+		if(fileFormats == null)
+			return false;
+		else
+			return fileFormats.contains(fileFormat); 
+	}
+	
 	@Override
 	public String parse(String value) 
 	{
@@ -74,24 +82,30 @@ public class FileParameter extends Parameter {
 				return "must be a directory";
 		}
 		
-		
 		if(!fileFormats.isEmpty())
 		{
-			this.fileFormat = null;
-			String fileName = path.getName();
-			
-			for(FileFormat format : fileFormats)
+			if(path.isDirectory() && fileFormats.contains(FileFormat.DIRECTORY))
 			{
-				if(!format.isCaseSensitive())
-					fileName = fileName.toLowerCase();
-				for(String suffix : format.getSuffixes())
+				this.fileFormat = FileFormat.DIRECTORY;
+			}
+			else
+			{
+				this.fileFormat = null;
+				String fileName = path.getName();
+				
+				for(FileFormat format : fileFormats)
 				{
 					if(!format.isCaseSensitive())
-						suffix = suffix.toLowerCase();
-					if(fileName.endsWith(suffix))
+						fileName = fileName.toLowerCase();
+					for(String suffix : format.getSuffixes())
 					{
-						this.fileFormat = format;
-						break;
+						if(!format.isCaseSensitive())
+							suffix = suffix.toLowerCase();
+						if(fileName.endsWith(suffix))
+						{
+							this.fileFormat = format;
+							break;
+						}
 					}
 				}
 			}

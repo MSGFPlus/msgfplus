@@ -1,14 +1,11 @@
 package msutil;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import parser.MS2SpectrumParser;
 import parser.MgfSpectrumParser;
-import parser.MzXMLSpectraIterator;
 import parser.MzXMLSpectraMap;
-import parser.PNNLSpectraIterator;
 import parser.PNNLSpectraMap;
 import parser.PklSpectrumParser;
 import parser.SpectrumParser;

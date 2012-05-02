@@ -176,8 +176,9 @@ public class ParamManager {
 		specFileParam.addFileFormat(SpecFileFormat.MS2);
 		specFileParam.addFileFormat(SpecFileFormat.PKL);
 		specFileParam.addFileFormat(SpecFileFormat.DTA_TXT);
+		specFileParam.addFileFormat(FileFormat.DIRECTORY);
 		specFileParam.fileMustExist();
-		specFileParam.mustBeAFile();
+//		specFileParam.mustBeAFile();
 		addParameter(specFileParam);
 	}
 

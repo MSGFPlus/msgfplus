@@ -620,7 +620,7 @@ public class DBScanner {
 //				float theoMass = pep.getParentMass();
 				float peptideMass = match.getPeptideMass();
 				float pmError = Float.MAX_VALUE;
-				float theoMass = expMass;
+				float theoMass = peptideMass + (float)Composition.H2O;
 				
 				float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
 				int nC13 = tolDaRight >= 0.5f ? 0 : specScanner.getNumAllowedC13();
