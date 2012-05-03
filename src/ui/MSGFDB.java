@@ -50,8 +50,8 @@ import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
-	public static final String VERSION = "7703";
-	public static final String RELEASE_DATE = "05/01/2012";
+	public static final String VERSION = "7706";
+	public static final String RELEASE_DATE = "05/02/2012";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static void main(String argv[])
@@ -112,8 +112,13 @@ public class MSGFDB {
 				SpecFileFormat specFormat = SpecFileFormat.getSpecFileFormat(f.getName());
 				if(specParam.isSupported(specFormat))
 				{
-					System.out.println("\nProcessing " + f.getName());
-					String errMsg = runMSGFDB(f, specFormat, paramManager);
+					System.out.println("\nProcessing " + f.getPath());
+					String outputFileName = f.getName().substring(0, f.getName().lastIndexOf('.'))+".tsv";
+					File outputFile = new File(outputFileName);
+					if(outputFile.exists())
+						return outputFile.getPath() + " already exists!";
+					System.out.println("Writing results to " + outputFile.getPath());
+					String errMsg = runMSGFDB(f, specFormat, outputFile, paramManager);
 					if(errMsg != null)
 						return errMsg;
 				}

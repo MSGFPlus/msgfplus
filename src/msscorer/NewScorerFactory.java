@@ -101,6 +101,7 @@ public class NewScorerFactory {
 		{
 			System.out.println("Loading user param file: " + userParamFile.getName());
 			scorer = new NewRankScorer(userParamFile.getPath());
+			scorerTable.put(condition, scorer);
 			return scorer;
 		}
 		InputStream is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+condition+".param");
