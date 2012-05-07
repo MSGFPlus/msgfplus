@@ -7,6 +7,7 @@ import msgf.MassListComparator;
 import msgf.NominalMass;
 import msgf.Tolerance;
 import msgf.IntMassFactory.IntMass;
+import msutil.Modification.Location;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
@@ -44,6 +45,8 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
 		int index = 0;
 		
 		float nTermModMass = 0;
+		
+		// sequence has an N-term fixed mod
 		while(index < seqLen)
 		{
 			char c = sequence.charAt(index);
@@ -62,6 +65,7 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
 				break;
 		}
 		
+		boolean isNTerm = true;
 		for(;index < seqLen; index++) {
 			char c = sequence.charAt(index);
 			assert(Character.isLetter(c)):"Error in string at index "+index;
@@ -104,7 +108,17 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
 					index += 4;
 				}
 			}
-			AminoAcid aa = aaSet.getAminoAcid(c);
+			
+			AminoAcid aa;
+			if(isNTerm)
+			{
+				aa = aaSet.getAminoAcid(Location.N_Term, c);
+				isNTerm = false;
+			}
+			else
+				aa = aaSet.getAminoAcid(c);
+			
+			// TODO: how to deal C-term fixed mods
 			if(!Character.isUpperCase(c) || aa == null)	// not a valid amino acid
 			{
 				this.isInvalid = true;

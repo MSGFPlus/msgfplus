@@ -16,7 +16,6 @@ import params.FileListParameter;
 import params.FileParameter;
 import params.ObjectEnumParameter;
 import params.ParamManager;
-import params.StringParameter;
 
 public class ScoringParamGen {
 
@@ -66,10 +65,10 @@ public class ScoringParamGen {
 		
 		paramManager.addModFileParam();
 
-		StringParameter nlParam = new StringParameter("nl", "NeutralLosses", "Comma separated neutral losses. Specify compositions or masses");
-		nlParam.setAdditionalDescription("E.g. '-nl H3PO4', '-nl 97.995,64.064'");
-		
-		// TODO: neutral loss(?)
+//		StringParameter nlParam = new StringParameter("nl", "NeutralLosses", "Comma separated neutral losses to consider. Specify compositions or masses");
+//		nlParam.setAdditionalDescription("E.g. '-nl H3PO4', '-nl 97.995,64.064'");
+//		nlParam.defaultValue(null);
+//		paramManager.addParameter(nlParam);
 		
 		if(argv.length == 0)
 		{
@@ -119,7 +118,7 @@ public class ScoringParamGen {
 			else
 				aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
 		}
-
+		
 		AnnotatedSpectra annotatedSpec = new AnnotatedSpectra(resultFiles, specDir, aaSet);
 		System.out.print("Reading training PSMs...");
 		String errMsg = annotatedSpec.parse();

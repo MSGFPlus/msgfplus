@@ -132,6 +132,7 @@ public class TrainScoringParameters {
 						aaSet, 
 						new File(PARAM_DIR),
 						false, 
+						false,
 						false);
 			}
 		}

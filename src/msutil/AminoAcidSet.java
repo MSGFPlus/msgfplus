@@ -180,6 +180,21 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	 *                this method is case sensitive.
 	 * @return the amino acid object. null if no aa corresponding to the residue
 	 */
+	public AminoAcid getAminoAcid(Location location, char residue)	
+	{ 
+		AminoAcid[] aaArr = getAminoAcids(location, residue);
+		for(AminoAcid aa : aaArr)
+			if(!aa.isModified())
+				return aa;
+		return null; 
+	}
+
+	/**
+	 * Get the amino acid mass of the residue.
+	 * @param residue the amino acid mass. Use upper case for standard aa (convention).  
+	 *                this method is case sensitive.
+	 * @return the amino acid object. null if no aa corresponding to the residue
+	 */
 	public AminoAcid getAminoAcid(char residue)	{ return residueMap.get(residue); }
 	
 	/**

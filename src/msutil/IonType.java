@@ -188,17 +188,32 @@ public abstract class IonType {
     
     public static ArrayList<IonType> getAllKnownIonTypes(int maxCharge, boolean removeRedundancy, boolean addPhosphoNL)
     {
+    	return getAllKnownIonTypes(maxCharge, removeRedundancy, "H3PO4");
+    }
+    
+    public static ArrayList<IonType> getAllKnownIonTypes(int maxCharge, boolean removeRedundancy, String nlString)
+    {
         String[] base ={
                 "x","y","z","a","b","c", //"x2","y2","z2","a2","b2","c2",
             };
         String[] extension={
           "", "-H2O", "-H2O-H2O", "-NH3", "-NH3-NH3", "-NH3-H2O","+n", "+n2", "-H"
         	};
-        String[] phosphoExt;
-        if(addPhosphoNL)
-        	phosphoExt = new String[] {"", "-H3PO4"};
+        
+        String[] nlExt;
+        if(nlString != null)
+        {
+        	String[] token = nlString.split(",");
+        	nlExt = new String[token.length];
+        	for(int i=0; i<token.length; i++)
+        	{
+        		String nl = token[i].trim();
+        		
+        	}
+        	nlExt = new String[] {"", "-H3PO4"};
+        }
         else
-        	phosphoExt = new String[] {""};
+        	nlExt = new String[] {""};
         
         ArrayList<IonType> ionList = new ArrayList<IonType>();
         for(int charge=1; charge<=maxCharge; charge++)
@@ -207,10 +222,10 @@ public abstract class IonType {
                 for (int j = 0; j < extension.length; j++) {
                 	if(i==5 && j == 3)// c-NH3
                 		continue;
-               		for(int k=0; k<phosphoExt.length; k++)
+               		for(int k=0; k<nlExt.length; k++)
                 	{
-                    	IonType ion = IonType.getIonType(base[i]+(charge > 1 ? charge : "")+extension[j]+phosphoExt[k]);
-                    	assert(ion != null): base[i]+extension[j]+phosphoExt[k];
+                    	IonType ion = IonType.getIonType(base[i]+(charge > 1 ? charge : "")+extension[j]+nlExt[k]);
+                    	assert(ion != null): base[i]+extension[j]+nlExt[k];
                         ionList.add(ion);
                 	}
                 }
