@@ -42,8 +42,8 @@ public class CIDETDPairs {
 //		rescore();
 //		intersection();
 //		better();
-//		vennDiagram();
-		makeAnnotatedSpectra();
+		vennDiagram();
+//		makeAnnotatedSpectra();
 //		computeCoverage();
 //		computeCoveragePairs();
 //		testGappedPeptidePerformancePair(0.96f, 0.4f);

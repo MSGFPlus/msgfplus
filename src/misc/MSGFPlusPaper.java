@@ -2,10 +2,14 @@ package misc;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import parser.BufferedLineReader;
+import parser.TSVParser;
 
 import msdbsearch.CompactFastaSequence;
 import msdbsearch.CompactSuffixArray;
@@ -28,9 +32,101 @@ public class MSGFPlusPaper {
 //		checkPeptidesWithNominalMassErrors();
 //		countTotalNumberOfPartitions();
 //		aLPModel();
-		modInLib();
+//		modInLib();
+		vennDiagram();
 	}
 
+	public static void vennDiagram() throws Exception
+	{
+		String dataset = "ETD_FT";
+		File msgfdbFile = new File("/home/sangtaekim/Research/Data/Heck_DDDT/backup1229/"+dataset+"_7ppm.tsv");
+		File mascotDATFile = new File("/home/sangtaekim/Research/Data/Heck_DDDT/Mascot/Mascot_"+dataset+".dat");
+		File percolatorFile = new File("/home/sangtaekim/Research/Data/Heck_DDDT/Mascot/Percolator_"+dataset+".tsv");
+		
+		HashSet<Integer> msgfdbID = new HashSet<Integer>();
+		
+		BufferedLineReader in = new BufferedLineReader(msgfdbFile.getPath());
+		
+		int scanNumIndex = 2;
+		int fdrIndex = 13;
+		
+		String s;
+		while((s=in.readLine()) != null)
+		{
+			if(s.startsWith("#"))
+				continue;
+			String[] token = s.split("\t");
+			if(token.length < fdrIndex)
+				continue;
+			float fdr = Float.parseFloat(token[fdrIndex]);
+			if(fdr <= 0.01f)
+				msgfdbID.add(Integer.parseInt(token[scanNumIndex]));
+		}		
+		
+		in.close();
+		
+		HashMap<Integer,Integer> queryNumToScanNum = new HashMap<Integer,Integer>();
+		in = new BufferedLineReader(mascotDATFile.getPath());
+		String keyWord = "Content-Type: application/x-Mascot; name=\"query";
+		while((s=in.readLine()) != null)
+		{
+			if(s.startsWith(keyWord))
+			{
+				int queryNum = Integer.parseInt(s.substring(keyWord.length(), s.lastIndexOf('"')));
+				in.readLine();
+				in.readLine();
+				s = in.readLine();
+				assert(s.startsWith("scans="));
+				int scanNum = Integer.parseInt(s.substring(s.lastIndexOf('=')+1));
+				queryNumToScanNum.put(queryNum, scanNum);
+			}
+		}
+		in.close();
+		
+		HashSet<Integer> percolatorID = new HashSet<Integer>();
+		
+		in = new BufferedLineReader(percolatorFile.getPath());
+		
+		int qValueIndex = 2;
+		in.readLine();
+		while((s=in.readLine()) != null)
+		{
+			String[] token = s.split("\t");
+			if(token.length < 5)
+				continue;
+			float qValue = Float.parseFloat(token[qValueIndex]);
+			if(qValue <= 0.01f)
+			{
+				int queryNum = Integer.parseInt(token[0].substring(token[0].indexOf(':')+1, token[0].indexOf(';')));
+				int scanNum = queryNumToScanNum.get(queryNum);
+				percolatorID.add(scanNum);
+			}
+		}		
+		
+		int msgfdbOnly = 0;
+		int percolatorOnly = 0;
+		int both = 0;
+		for(int id : msgfdbID)
+		{
+			if(percolatorID.contains(id))
+				both++;
+			else
+				msgfdbOnly++;
+		}
+		for(int id : percolatorID)
+		{
+			if(!msgfdbID.contains(id))
+				percolatorOnly++;
+		}
+		
+		System.out.println("MS-GFDB all: " + msgfdbID.size());
+		System.out.println("Percolator all: " + percolatorID.size());
+		
+		System.out.println("Both: " + both);
+		System.out.println("MS-GFDB only: " + msgfdbOnly);
+		System.out.println("Percolator only: " + percolatorOnly);
+	}
+	
 	public static void modInLib() throws Exception
 	{
 		String fileName = "/home/sangtaekim/Research/Data/NISTLib/yeast_2011_05_24_it.pepidx";
