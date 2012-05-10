@@ -38,7 +38,7 @@ public class MSGFPlusPaper {
 
 	public static void vennDiagram() throws Exception
 	{
-		String dataset = "ETD_FT";
+		String dataset = "HCD_FT";
 		File msgfdbFile = new File("/home/sangtaekim/Research/Data/Heck_DDDT/backup1229/"+dataset+"_7ppm.tsv");
 		File mascotDATFile = new File("/home/sangtaekim/Research/Data/Heck_DDDT/Mascot/Mascot_"+dataset+".dat");
 		File percolatorFile = new File("/home/sangtaekim/Research/Data/Heck_DDDT/Mascot/Percolator_"+dataset+".tsv");
