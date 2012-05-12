@@ -32,8 +32,8 @@ public class MSGFPlusPaper {
 //		checkPeptidesWithNominalMassErrors();
 //		countTotalNumberOfPartitions();
 //		aLPModel();
-//		modInLib();
-		vennDiagram();
+		modInLib();
+//		vennDiagram();
 	}
 
 	public static void vennDiagram() throws Exception
