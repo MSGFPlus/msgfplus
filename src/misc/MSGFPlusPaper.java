@@ -30,9 +30,9 @@ public class MSGFPlusPaper {
 	{
 //		nominalMassTable();
 //		checkPeptidesWithNominalMassErrors();
-//		countTotalNumberOfPartitions();
+		countTotalNumberOfPartitions();
 //		aLPModel();
-		modInLib();
+//		modInLib();
 //		vennDiagram();
 	}
 
