@@ -6,20 +6,19 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 import msutil.DBFileFormat;
-import msutil.SpecFileFormat;
 import params.FileParameter;
 import params.IntParameter;
 import params.ParamManager;
 import parser.BufferedLineReader;
 
-public class ConvertFastaForNAcetyl {
-	public static final int VERSION = 7611;
-	public static final String DATE = "04/24/2012";
+public class MakePrefixDB {
+	public static final int VERSION = 7711;
+	public static final String DATE = "05/03/2012";
 	
 	public static void main(String argv[]) throws Exception
 	{
-		ParamManager paramManager = new ParamManager("ConvertFastaForNAcetyl", String.valueOf(VERSION), DATE,
-			"java -Xmx2000M -cp MSGFDB.jar misc.ConvertFastaForNAcetyl");
+		ParamManager paramManager = new ParamManager("MakePrefixDB", String.valueOf(VERSION), DATE,
+			"java -Xmx2000M -cp MSGFDB.jar misc.MakePrefixDB");
 
 		FileParameter inputDBParam = new FileParameter("i", "DatabaseFile", "Input fasta file (*.fa, *.fasta)");
 		inputDBParam.addFileFormat(DBFileFormat.FASTA);
@@ -32,10 +31,10 @@ public class ConvertFastaForNAcetyl {
 		outputDBParam.fileMustNotExist();
 		paramManager.addParameter(outputDBParam);
 		
-		IntParameter prefixLengthParam = new IntParameter("maxLength", "MaxPepLength", "Maximum peptide length to consider, Default: 40");
+		IntParameter prefixLengthParam = new IntParameter("l", "PrefixLength", "Prefix length, Default: 30");
 		prefixLengthParam.minValue(1);
-		prefixLengthParam.defaultValue(40);
-//		addParameter(prefixLengthParam);
+		prefixLengthParam.defaultValue(30);
+		paramManager.addParameter(prefixLengthParam);
 		
 		if(argv.length == 0)
 		{
@@ -64,39 +63,40 @@ public class ConvertFastaForNAcetyl {
 			System.out.println();
 		}
 		else
-			System.out.format("AnnotatedMgfToMSGFInput complete (total elapsed time: %.2f sec)\n", (System.currentTimeMillis()-time)/(float)1000);
+			System.out.format("MakePrefixDB complete (total elapsed time: %.2f sec)\n", (System.currentTimeMillis()-time)/(float)1000);
 		
 	}
 
 	public static String convert(ParamManager paramManager) throws Exception
 	{
-		File specFile = paramManager.getFile("i");
-		File outputFile = paramManager.getFile("o");
+		File inputDBFile = paramManager.getFile("i");
+		File outputDBFile = paramManager.getFile("o");
+		int prefixLength = paramManager.getIntValue("l");
 		
-//		SpectraIterator itr = new SpectraIterator(specFile.getPath(), new MgfSpectrumParser());
-		BufferedLineReader in = new BufferedLineReader(specFile.getPath());
+		BufferedLineReader in = new BufferedLineReader(inputDBFile.getPath());
 		
-		PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFile)));
-		out.println("#SpectrumFile\tSpecIndex\tAnnotation\tCharge");
+		PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputDBFile)));
 		String s;
-		int specIndex = 0;
-		int charge = 0;
+		int remaining = 0;
 		while((s=in.readLine()) != null)
 		{
-			if(s.startsWith("BEGIN"))
-				specIndex++;
-			else if(s.startsWith("END"))
+			if(s.startsWith(">"))
 			{
-				charge = 0;
+				out.println(s);
+				remaining = prefixLength;
 			}
-			else if(s.startsWith("CHARGE="))
+			else if(remaining > 0)
 			{
-				charge = Integer.parseInt(s.substring(s.indexOf('=')+1, s.lastIndexOf('+')));
-			}
-			else if(s.startsWith("SEQ="))
-			{
-				String pepSeq = s.substring(4);
-				out.println(specFile.getName()+"\t"+specIndex+"\t"+"."+pepSeq+"."+"\t"+charge);
+				if(s.length() >= remaining)
+				{
+					out.println(s.substring(0, remaining));
+					remaining = 0;
+				}
+				else
+				{
+					out.println(s);
+					remaining -= s.length();
+				}
 			}
 		}
 

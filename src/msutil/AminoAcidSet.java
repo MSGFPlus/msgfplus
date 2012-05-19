@@ -924,14 +924,24 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 					isFixedModification = false;
 					location = Location.Anywhere;
 				}
-				else if(type.equals("nterminal"))
+				else if(type.equals("opt_nterm"))
 				{
 					isFixedModification = false;
 					location = Location.N_Term;
 				}
-				else if(type.equals("cterminal"))
+				else if(type.equals("fix_nterm"))
+				{
+					isFixedModification = true;
+					location = Location.N_Term;
+				}
+				else if(type.equals("opt_cterm"))
 				{
 					isFixedModification = false;
+					location = Location.C_Term;
+				}
+				else if(type.equals("fix_cterm"))
+				{
+					isFixedModification = true;
 					location = Location.C_Term;
 				}
 				else

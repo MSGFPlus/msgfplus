@@ -50,8 +50,8 @@ import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
-	public static final String VERSION = "7739";
-	public static final String RELEASE_DATE = "05/11/2012";
+	public static final String VERSION = "7747";
+	public static final String RELEASE_DATE = "05/15/2012";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static void main(String argv[])
