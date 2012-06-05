@@ -83,7 +83,13 @@ public class Chores {
 //		s = s.replaceAll("\\(C,39\\.99\\)", "\\(C,-17\\.026549\\)");
 //		s = s.replaceAll("\\(C,57\\.02146\\)", "C");
 //		System.out.println(s);
-		System.out.println(msscorer.NewScorerFactory.get(ActivationMethod.HCD, InstrumentType.HIGH_RESOLUTION_LTQ, Enzyme.TRYPSIN, Protocol.PHOSPHORYLATION).getSpecDataType());
+		
+		String buf = "SCANS=953-939";
+		System.out.println(buf.matches(".+=\\d+-\\d+"));
+		int startScanNum = Integer.parseInt(buf.substring(buf.indexOf('=')+1, buf.lastIndexOf('-')));
+		int endScanNum = Integer.parseInt(buf.substring(buf.lastIndexOf('-')+1));
+		System.out.println(startScanNum + " " + endScanNum);
+
 	}
 
 	public static void recombCPReg() throws Exception
