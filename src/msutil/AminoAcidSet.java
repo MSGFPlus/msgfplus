@@ -1288,7 +1288,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 //		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile("/home/sangtaekim/Test/Matt/MSGFDB_Mods.txt");
 //		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile("/home/sangtaekim/Research/Data/IPRG2012/params.xml");
 //		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
-		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile("/home/sangtaekim/Test/Matt/Mods.txt");
+		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile("/home/sangtaekim/Test/June/params.xml");
 		
 		aaSet.printAASet();
 //		for(AminoAcid aa : aaSet.getAminoAcids(Location.N_Term, 'E'))

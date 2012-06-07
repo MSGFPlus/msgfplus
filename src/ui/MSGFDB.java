@@ -51,7 +51,7 @@ import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
 	public static final String VERSION = "7780";
-	public static final String RELEASE_DATE = "06/05/2012";
+	public static final String RELEASE_DATE = "06/07/2012";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static void main(String argv[])
@@ -131,7 +131,6 @@ public class MSGFDB {
     {
 		long time = System.currentTimeMillis();
 		
-		
 		// DB file
 		File databaseFile = paramManager.getDBFileParam().getFile();
 		
@@ -178,6 +177,10 @@ public class MSGFDB {
 				aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile(modFile.getPath());
 			else
 				aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
+			if(aaSet.containsPhosphorylation())
+			{
+				protocol = Protocol.PHOSPHORYLATION;
+			}
 		}
 		
 		int numMatchesPerSpec = paramManager.getIntValue("n");
