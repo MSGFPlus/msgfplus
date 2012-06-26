@@ -210,6 +210,7 @@ public class MSGFDB {
 		boolean useUniformAAProb = paramManager.getIntValue("uniformAAProb") == 1 ? true : false;
 		boolean replicateMergedResults = paramManager.getIntValue("replicate") == 1 ? true : false;
 		boolean doNotDseEdgeScore = paramManager.getIntValue("edgeScore") == 1 ? true : false;
+		boolean outputForPercolator = paramManager.getIntValue("percolator") == 1 ? true : false;
 		
 		System.out.println("Loading database files...");
 		File dbIndexDir = paramManager.getFile("dd");
@@ -404,7 +405,7 @@ public class MSGFDB {
 		
 		MSGFDBResultGenerator gen = new MSGFDBResultGenerator(header, resultList);
 		
-    	if(showFDR && !useTDA && numMatchesPerSpec == 1)
+		if(showFDR && !useTDA && numMatchesPerSpec == 1 && !outputForPercolator)
     	{
     		PrintStream out = null;
     		if(outputFile == null)
@@ -421,11 +422,11 @@ public class MSGFDB {
     		gen.computeEFDR();
     		System.out.print("Computing EFDRs finished");
     		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
-    		gen.writeResults(out, true);
+    		gen.writeResults(out, true, false);
     		if(out != System.out)
     			out.close();
     	}
-    	else if(!showFDR || !useTDA)
+    	else if(outputForPercolator || !showFDR || !useTDA)
     	{
     		PrintStream out = null;
     		if(outputFile == null)
@@ -438,7 +439,7 @@ public class MSGFDB {
     				e.printStackTrace();
     			}
     		}
-    		gen.writeResults(out, false);
+    		gen.writeResults(out, false, outputForPercolator);
     		if(out != System.out)
     			out.close();
     	}
@@ -455,7 +456,7 @@ public class MSGFDB {
 					tempFile.deleteOnExit();
 				}
 				PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(tempFile)));
-				gen.writeResults(out, false);
+				gen.writeResults(out, false, false);
 				out.flush();
 				out.close();
 				int specFileCol = 0;

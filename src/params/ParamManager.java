@@ -416,7 +416,14 @@ public class ParamManager {
 		edgeScoreParam.registerEntry("use edge scoring").setDefault();
 		edgeScoreParam.registerEntry("do not use edge scoring");
 		edgeScoreParam.setHidden();
-		addParameter(edgeScoreParam);		
+		addParameter(edgeScoreParam);
+		
+		EnumParameter precolatorParam = new EnumParameter("percolator");
+		edgeScoreParam.registerEntry("normal").setDefault();
+		edgeScoreParam.registerEntry("for MS-GF+Percolator");
+		edgeScoreParam.setHidden();
+		addParameter(precolatorParam);		
+		
 	}
 
 	public void addMSGFParams()

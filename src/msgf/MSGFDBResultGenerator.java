@@ -48,16 +48,22 @@ public class MSGFDBResultGenerator {
 		}
 	}
 	
-	public void writeResults(PrintStream out, boolean printEFDR)
+	public void writeResults(PrintStream out, boolean printEFDR, boolean outputForPercolator)
 	{
-		if(printEFDR)
+		if(outputForPercolator)
+			out.println(header+"\tExpIonCur\tNTermIonCur\tCTermIonCur\tMS2IonCur\tMS1IonCur\tIsoWinEff");
+		else if(printEFDR)
 			out.println(header+"\tEFDR");
 		else
 			out.println(header);
 		String eFDRStr;
 		for(MSGFDBResultGenerator.DBMatch m : resultList)
 		{
-			if(printEFDR)
+			if(outputForPercolator)
+			{
+				
+			}
+			else if(printEFDR)
 			{
 				double eFDR = m.getEFDR();
 				if(eFDR < Float.MIN_NORMAL)
