@@ -50,7 +50,7 @@ public class ProteinFastaSequences implements MassSequence {
    * @param randomAccess flag to indicate loading of all sequences into memory
    */
   public ProteinFastaSequences(String directory, boolean randomAccess) {
-    this(directory, Constants.AMINO_ACIDS_18, suffixtree.Constants.AA, randomAccess);
+    this(directory, Constants.AMINO_ACIDS_18, AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCysWithTerm(), randomAccess);
   }
 
   

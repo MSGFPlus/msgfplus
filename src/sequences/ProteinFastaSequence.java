@@ -13,7 +13,7 @@ import msutil.AminoAcidSet;
  */
 public class ProteinFastaSequence extends FastaSequence implements MassSequence {
 
-  private AminoAcidSet alpha = suffixtree.Constants.AA;
+  private AminoAcidSet alpha = Constants.AA;
   private byte[] masses;               // the translated masses 
   private HashSet<Long> invalids;      // positions that are invalid
   

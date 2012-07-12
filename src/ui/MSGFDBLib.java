@@ -259,7 +259,7 @@ public class MSGFDBLib {
 				e.printStackTrace();
 			}
 		}
-		gen.writeResults(out, false);
+		gen.writeResults(out, false, false);
 		if(out != System.out)
 			out.close();
 		

@@ -1,5 +1,7 @@
 package sequences;
 
+import msutil.AminoAcidSet;
+
 
 /**
  * This class contains the hardcode or preset values for the sequence classes
@@ -73,4 +75,5 @@ public class Constants {
    */
   public static final int MIN_NUM_PEAKS_PER_SPECTRUM = 20;
  
+  public static final AminoAcidSet AA = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCysWithTerm();
 }
