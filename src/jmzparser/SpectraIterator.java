@@ -101,17 +101,17 @@ public class SpectraIterator implements Iterator<msutil.Spectrum>, Iterable<msut
 			if(spec.getMsLevel() == 2)
 			{
 				System.out.println(spec.getId()+" "+spec.getMsLevel()+" "+spec.getPrecursorMZ()+" "+spec.getPrecursorIntensity()+" "+spec.getPrecursorCharge());
-//				ParamGroup params = spec.getAdditional();
-//				System.out.println("CVParams");
-//				for(CvParam param : params.getCvParams())
-//				{
-//					System.out.println(param.getValue()+"\t|\t"+param.getName());
-//				}
-//				System.out.println("UserParams");
-//				for(UserParam param : params.getUserParams())
-//				{
-//					System.out.println(param.getValue()+"\t|\t"+param.getName());
-//				}
+				ParamGroup params = spec.getAdditional();
+				System.out.println("CVParams");
+				for(CvParam param : params.getCvParams())
+				{
+					System.out.println(param.getValue()+"\t|\t"+param.getName());
+				}
+				System.out.println("UserParams");
+				for(UserParam param : params.getUserParams())
+				{
+					System.out.println(param.getValue()+"\t|\t"+param.getName());
+				}
 			}
 		}
 	}

@@ -2,7 +2,42 @@
 <classpath>
 	<classpathentry excluding="msgf/RankOffsetProbability.java|msgf/RankScoring.java|msgf/RankStatScoring.java|msscorer/RankScorer_new_backup.java" kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="extlib/ujmp-complete-0.2.4.jar"/>
+	<classpathentry kind="lib" path="extlib/activation-1.1.jar"/>
+	<classpathentry kind="lib" path="extlib/braf-1.0.1.jar"/>
+	<classpathentry kind="lib" path="extlib/chardet-1.0.jar"/>
+	<classpathentry kind="lib" path="extlib/com.springsource.antlr-2.7.7.jar"/>
+	<classpathentry kind="lib" path="extlib/com.springsource.org.apache.commons.io-1.4.0.jar"/>
+	<classpathentry kind="lib" path="extlib/com.springsource.org.apache.commons.logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="extlib/com.springsource.org.apache.log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="extlib/commons-codec-1.3.jar"/>
+	<classpathentry kind="lib" path="extlib/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="extlib/cpdetector-1.0.7.jar"/>
+	<classpathentry kind="lib" path="extlib/dta-parser-1.2.1.jar"/>
+	<classpathentry kind="lib" path="extlib/jargs-1.0.jar"/>
+	<classpathentry kind="lib" path="extlib/jaxb-api-2.1.jar"/>
+	<classpathentry kind="lib" path="extlib/jaxb-impl-2.1.7.jar"/>
+	<classpathentry kind="lib" path="extlib/jaxb-xjc-2.1.7.jar"/>
+	<classpathentry kind="lib" path="extlib/jcommon-1.0.16.jar"/>
+	<classpathentry kind="lib" path="extlib/jfreechart-1.0.13.jar"/>
+	<classpathentry kind="lib" path="extlib/jmzml-1.6.6.jar"/>
+	<classpathentry kind="lib" path="extlib/jmzreader-1.2.0.jar"/>
 	<classpathentry kind="lib" path="extlib/jrap_StAX_v5.2.jar"/>
+	<classpathentry kind="lib" path="extlib/log4j-1.2.13.jar"/>
+	<classpathentry kind="lib" path="extlib/logback-classic-0.9.24.jar"/>
+	<classpathentry kind="lib" path="extlib/logback-core-0.9.24.jar"/>
+	<classpathentry kind="lib" path="extlib/mgf-parser-1.2.2.jar"/>
+	<classpathentry kind="lib" path="extlib/ms2-parser-1.2.1.jar"/>
+	<classpathentry kind="lib" path="extlib/mzdata-parser-1.2.1.jar"/>
+	<classpathentry kind="lib" path="extlib/mzml-wrapper-1.1.jar"/>
+	<classpathentry kind="lib" path="extlib/mzxml-parser-1.3.2.jar"/>
+	<classpathentry kind="lib" path="extlib/pkl-parser-1.2.1.jar"/>
+	<classpathentry kind="lib" path="extlib/pride-jaxb-1.0.8.jar"/>
+	<classpathentry kind="lib" path="extlib/pride-mzgraph-browser-1.0.4.jar"/>
+	<classpathentry kind="lib" path="extlib/pride-utilities-0.0.9.jar"/>
+	<classpathentry kind="lib" path="extlib/pride-wrapper-1.2.0.jar"/>
+	<classpathentry kind="lib" path="extlib/slf4j-api-1.6.1.jar"/>
+	<classpathentry kind="lib" path="extlib/slf4j-log4j12-1.6.1.jar"/>
+	<classpathentry kind="lib" path="extlib/stax-api-1.0-2.jar"/>
+	<classpathentry kind="lib" path="extlib/xxindex-0.11.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
