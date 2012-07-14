@@ -45,7 +45,7 @@ public class MgfSpectrumParser implements SpectrumParser {
 		Spectrum spec = null;
 		String title = null;
 
-		float precursorMass = 0;
+		float precursorMz = 0;
 		float precursorIntensity = 0;
 		int precursorCharge = 0;
 		ActivationMethod activation = null;
@@ -104,7 +104,7 @@ public class MgfSpectrumParser implements SpectrumParser {
   			else if(buf.startsWith("PEPMASS"))
   			{
   				String[] token = buf.substring(buf.indexOf("=")+1).split("\\s+");
-  				precursorMass = Float.valueOf(token[0]);
+  				precursorMz = Float.valueOf(token[0]);
   			}
   			else if(buf.startsWith("SCANS"))
   			{
@@ -131,7 +131,7 @@ public class MgfSpectrumParser implements SpectrumParser {
   			else if(buf.startsWith("END IONS"))
   			{
   				assert(spec != null);
-  				spec.setPrecursor(new Peak(precursorMass, precursorIntensity, precursorCharge));
+  				spec.setPrecursor(new Peak(precursorMz, precursorIntensity, precursorCharge));
   				if(!sorted)
   					Collections.sort(spec);
   				return spec;

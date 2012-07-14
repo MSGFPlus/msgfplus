@@ -26,6 +26,7 @@ public class SpecFileFormat extends FileFormat {
 	public static final SpecFileFormat MZML;
 	public static final SpecFileFormat MS2;
 	public static final SpecFileFormat PKL;
+	public static final SpecFileFormat MZDATA;
 	public static final SpecFileFormat DTA_TXT;
 	
 	public static SpectrumAccessorBySpecIndex getSpecMap(File specFile)
@@ -75,6 +76,7 @@ public class SpecFileFormat extends FileFormat {
 		MZML = new SpecFileFormat(".mzML");
 		MS2 = new SpecFileFormat(".ms2");
 		PKL = new SpecFileFormat(".pkl");
+		MZDATA = new SpecFileFormat(".mzData");
 		DTA_TXT = new SpecFileFormat("_dta.txt");
 		
 		specFileFormatList = new ArrayList<SpecFileFormat>();
@@ -83,6 +85,7 @@ public class SpecFileFormat extends FileFormat {
 		specFileFormatList.add(MZML);
 		specFileFormatList.add(MS2);
 		specFileFormatList.add(PKL);
+		specFileFormatList.add(MZDATA);
 		specFileFormatList.add(DTA_TXT);
 	}
 }

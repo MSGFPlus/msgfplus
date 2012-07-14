@@ -24,6 +24,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	private Peak precursor = null;
 
 	// optional members
+	private String id;	// unique identifier of the spectrum
 	private int startScanNum = -1;
 	private int endScanNum = -1;
 	private int specIndex = -1;	// 
@@ -62,6 +63,12 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 
 
 	/***** GETTERS ****/
+	/**
+	 * Gets the unique identifier of this spectrum.
+	 * @return the unique identifier of this spectrum.
+	 */
+	public String getID()	{ return id; }
+	
 	/**
 	 * Gets the Peptide object of the annotation.
 	 * @return the Peptide object representing the annotation or null if not annotated.
@@ -153,6 +160,12 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 
 	/***** SETTERS *****/
 
+	/**
+	 * Sets the unique String id of this spectrum.
+	 * @param id unique string identifier.
+	 */
+	public void setID(String id)	{ this.id = id; }
+	
 	/**
 	 * Sets the annotation with a Peptide object.
 	 * @param annotation	annotation object
