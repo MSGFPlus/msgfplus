@@ -78,7 +78,6 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 	protected HashMap<T, ScoreDist> getFwdTable()	{ return fwdTable; }
 	protected BacktrackTable<T> getBacktrackTable()	{ return backtrackTable; }
 	
-	@Override
 	public int getScore(Annotation annotation)
 	{
 		return graph.getScore(annotation);
@@ -94,7 +93,6 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 	}
 	
 	// score: inclusive
-	@Override
 	public double getSpectralProbability(int score) {
 		if(!this.distribution.isProbSet())
 			return 100;
@@ -141,7 +139,6 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 		return getThresholdScore(specProb, distribution);
 	}
 	
-	@Override
 	public ScoreDist getScoreDist()
 	{
 		return distribution;
@@ -230,7 +227,6 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 	
 	public int getMinScore()	{ return this.distribution.getMinScore(); }
 	
-	@Override
 	public int getMaxScore()	{ return this.distribution.getMaxScore(); }
 	
 	public void setUpScoreThreshold(int score)
@@ -272,7 +268,6 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 		}
 	}
 	
-	@Override
 	public boolean computeGeneratingFunction()
 	{
 		ScoreDistFactory factory = new ScoreDistFactory(calcNumber, calcProb);

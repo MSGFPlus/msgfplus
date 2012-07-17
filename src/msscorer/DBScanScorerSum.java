@@ -20,7 +20,6 @@ public class DBScanScorerSum extends ScoredSpectrumSum<NominalMass> implements S
 		}
 	}
 
-	@Override
 	public int getScore(double[] prefixMassArr, int[] nominalPrefixMassArr,	int fromIndex, int toIndex, int numMods) {
 		int sum = 0;
 		for(DBScanScorer scorer : scorerArr)

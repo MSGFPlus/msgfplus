@@ -129,7 +129,6 @@ public class NewRankScorer implements NewAdditiveScorer {
 		return errorScalingFactor != 0;
 	}
 	
-	@Override
 	public float getNodeScore(Partition part, IonType ionType, int rank) {
 		// ion score
 		Hashtable<IonType,Float[]> rankTable = rankDistTable.get(part);	// rank -> probability
@@ -140,7 +139,6 @@ public class NewRankScorer implements NewAdditiveScorer {
 		return ionScore;
 	}
 
-	@Override
 	public float getMissingIonScore(Partition part, IonType ionType) {
 		Hashtable<IonType,Float[]> table = rankDistTable.get(part);
 		assert(table != null);
@@ -148,7 +146,6 @@ public class NewRankScorer implements NewAdditiveScorer {
 		return getScoreFromTable(rankIndex, table, ionType, false);
 	}
 	
-	@Override
 	public float getErrorScore(Partition part, float error) {
 		int errIndex = Math.round(error*errorScalingFactor);
 		if(errIndex > errorScalingFactor)
@@ -165,7 +162,6 @@ public class NewRankScorer implements NewAdditiveScorer {
 		return (float)Math.log(ionErrHist[errIndex]/noiseErrHist[errIndex]);
 	}	
 	
-	@Override
 	public float getIonExistenceScore(Partition part, int index, float probPeak)
 	{
 		Float[] ionExistenceProb = this.ionExistenceTable.get(part);

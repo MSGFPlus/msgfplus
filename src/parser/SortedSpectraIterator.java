@@ -87,7 +87,6 @@ public class SortedSpectraIterator implements Iterator<Spectrum> {
 		return map.getSpectrumBySpecIndex(specIndex);
 	}
 
-	@Override
 	public void remove() {
 		assert(false);
 	}	

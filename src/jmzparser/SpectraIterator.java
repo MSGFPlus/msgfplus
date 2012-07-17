@@ -24,22 +24,35 @@ public class SpectraIterator implements Iterator<msutil.Spectrum>, Iterable<msut
 	private JMzReader parser;
 	private Iterator<uk.ac.ebi.pride.tools.jmzreader.model.Spectrum> itr;
 	private int specIndex = 0;
+	private SpecFileFormat specFormat;
 	
 	public SpectraIterator(File specFile, SpecFileFormat specFormat) throws FileNotFoundException
 	{
 		try {
 			if(specFormat == SpecFileFormat.MZML)
+			{
 				parser = new MzMlWrapper(specFile);
+			}
 			else if(specFormat == SpecFileFormat.MZXML)
+			{
 				parser = new MzXMLFile(specFile);
+			}
 			else if(specFormat == SpecFileFormat.MGF)
+			{
 				parser = new MgfFile(specFile);
+			}
 			else if(specFormat == SpecFileFormat.MS2)
+			{
 				parser = new Ms2File(specFile);
+			}
 			else if(specFormat == SpecFileFormat.PKL)
+			{
 				parser = new PklFile(specFile);
+			}
 			else if(specFormat == SpecFileFormat.MZDATA)
+			{
 				parser = new MzDataFile(specFile);
+			}
 			else
 			{
 				parser = null;
@@ -51,15 +64,14 @@ public class SpectraIterator implements Iterator<msutil.Spectrum>, Iterable<msut
 		}
 		
 		itr = parser.getSpectrumIterator();
+		this.specFormat = specFormat;
 	}
 	
-	@Override
 	public boolean hasNext() 
 	{
 		return itr.hasNext();
 	}
 
-	@Override
 	public msutil.Spectrum next() 
 	{
 		uk.ac.ebi.pride.tools.jmzreader.model.Spectrum jmzSpec = itr.next();
@@ -69,13 +81,11 @@ public class SpectraIterator implements Iterator<msutil.Spectrum>, Iterable<msut
 		return spec;
 	}
 
-	@Override
 	public void remove() 
 	{
 		throw new UnsupportedOperationException("SpectraIterator.remove() not implemented");
 	}
 	
-	@Override
 	public Iterator<msutil.Spectrum> iterator() {
 		return this;
 	}
@@ -88,8 +98,15 @@ public class SpectraIterator implements Iterator<msutil.Spectrum>, Iterable<msut
 	
 	public static void test() throws Exception
 	{
-		File specFile = new File("/Users/kims336/Research/Data/JMzReader/tiny.pwiz.mzML");
+		File specFile = new File("/Users/kims336/Research/Data/JMzReader/example.mzML");
+		specFile = new File("/Users/kims336/Research/Data/JMzReader/small.pwiz.1.1.mzML");
+
 		JMzReader parser = new MzMlWrapper(specFile);
+		
+//		File specFile = new File("/Users/kims336/Research/Data/JMzReader/example.mzXML");
+//		JMzReader parser = new MzXMLFile(specFile);
+		
+//		JMzReader parser = new MzMlWrapper(specFile);
 		
 //		File specFile = new File("/Users/kims336/Research/Data/JMzReader/test.mgf");
 //		JMzReader parser = new MgfFile(specFile);
@@ -105,13 +122,14 @@ public class SpectraIterator implements Iterator<msutil.Spectrum>, Iterable<msut
 				System.out.println("CVParams");
 				for(CvParam param : params.getCvParams())
 				{
-					System.out.println(param.getValue()+"\t|\t"+param.getName());
+					System.out.println(param.getName()+"\t|\t"+param.getValue());
 				}
 				System.out.println("UserParams");
 				for(UserParam param : params.getUserParams())
 				{
-					System.out.println(param.getValue()+"\t|\t"+param.getName());
+					System.out.println(param.getName()+"\t|\t"+param.getValue());
 				}
+				System.exit(1);
 			}
 		}
 	}

@@ -20,7 +20,6 @@ public class FragmentOffsetFrequency implements Comparable<FragmentOffsetFrequen
 	public void setFrequency(float probability) {
 		this.frequency = probability;
 	}
-	@Override
 	public int compareTo(FragmentOffsetFrequency o) {
 		if(this.frequency > o.frequency)
 			return 1;

@@ -79,7 +79,6 @@ public class MS2SpectrumParser implements SpectrumParser {
 	 * @param lineReader A reader points to the start of the spectrum.
 	 * @return A Hashtable object maps a spectrum index into a file position.
 	 */
-	@Override
 	public Hashtable<Integer, Long> getSpecIndexMap(
 			BufferedRandomAccessLineReader lineReader) {
 		Hashtable<Integer, Long> specIndexMap = new Hashtable<Integer, Long>();

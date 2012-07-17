@@ -20,7 +20,6 @@ public class Protocol implements ParamObject {
 	public String getName()		{ return name; }
 	public String getDescription()	{ return description; }
 	
-	@Override
 	public String getParamDescription() {
 		return name;
 	}

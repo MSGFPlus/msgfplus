@@ -29,7 +29,6 @@ public class ScoredSpectrumSum<T extends Matter> implements ScoredSpectrum<T> {
 		}
 	}
 	
-	@Override
 	public int getNodeScore(T prefixResidueNode, T suffixResidueNode) {
 		int sum = 0;
 		for(ScoredSpectrum<T> scoredSpec : scoredSpecList)
@@ -37,7 +36,6 @@ public class ScoredSpectrumSum<T extends Matter> implements ScoredSpectrum<T> {
 		return sum;
 	}
 
-	@Override
 	public int getEdgeScore(T curNode, T prevNode, float theoMass) {
 		int sum = 0;
 		for(ScoredSpectrum<T> scoredSpec : scoredSpecList)
@@ -45,18 +43,15 @@ public class ScoredSpectrumSum<T extends Matter> implements ScoredSpectrum<T> {
 		return sum;
 	}
 
-	@Override
 	public boolean getMainIonDirection() {
 //		assert(false): "Not supported!";
 		return false;
 	}
 
-	@Override
 	public Peak getPrecursorPeak() {
 		return precursor;
 	}
 
-	@Override
 	public float getNodeScore(T node, boolean isPrefix) {
 		float sum = 0;
 		for(ScoredSpectrum<T> scoredSpec : scoredSpecList)
@@ -64,12 +59,10 @@ public class ScoredSpectrumSum<T extends Matter> implements ScoredSpectrum<T> {
 		return sum;
 	}
 
-	@Override
 	public ActivationMethod[] getActivationMethodArr() {
 		return this.activationMethodArr;
 	}
 
-	@Override
 	public int[] getScanNumArr() {
 		return this.scanNumArr;
 	}

@@ -12,7 +12,6 @@ import msutil.Spectrum;
 
 public class SPTxtParser implements SpectrumParserWithTitle {
 
-	@Override
 	public Spectrum readSpectrum(LineReader lineReader) 
 	{
 		Spectrum spec = null;
@@ -63,7 +62,6 @@ public class SPTxtParser implements SpectrumParserWithTitle {
 		return null;	
 	}
 
-	@Override
 	public Hashtable<Integer, Long> getSpecIndexMap(BufferedRandomAccessLineReader lineReader) 
 	{
 		Hashtable<Integer, Long> specIndexMap = new Hashtable<Integer, Long>();
@@ -84,7 +82,6 @@ public class SPTxtParser implements SpectrumParserWithTitle {
 		return specIndexMap;	
 	}
 	
-	@Override
 	public Hashtable<String, Integer> getTitleToSpecIndexMap(BufferedRandomAccessLineReader lineReader) 
 	{
 		Hashtable<String, Integer> titleToSpecIndexMap = new Hashtable<String, Integer>();

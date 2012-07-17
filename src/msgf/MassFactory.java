@@ -30,7 +30,6 @@ public abstract class MassFactory<T extends Matter> implements DeNovoNodeFactory
 	}
 
 	// true if this graph represents reverse peptides
-	@Override
 	public boolean isReverse()
 	{
 		return enzyme == null || enzyme.isCTerm();
@@ -40,17 +39,14 @@ public abstract class MassFactory<T extends Matter> implements DeNovoNodeFactory
 	
 	public ArrayList<T> getAllNodes()	{ return allNodes; }
 	
-	@Override
 	public int size() {
 		return allNodes.size(); 
 	}
 	
-	@Override
 	public AminoAcidSet getAASet() {
 		return aaSet;
 	}
 
-	@Override
 	public DeNovoGraph.Edge<T> getEdge(T curNode, T prevNode)
 	{
 		for(DeNovoGraph.Edge<T> edge : getEdges(curNode))
@@ -61,7 +57,6 @@ public abstract class MassFactory<T extends Matter> implements DeNovoNodeFactory
 		return null;
 	}
 	
-	@Override
 	public T getPreviousNode(T curNode, AminoAcid aa) 
 	{
 		int aaIndex = aaSet.getIndex(aa);
@@ -73,16 +68,13 @@ public abstract class MassFactory<T extends Matter> implements DeNovoNodeFactory
 		return null;
 	}
 	
-	@Override
 	public abstract T getZero();
 	
-	@Override
 	public Enzyme getEnzyme()
 	{
 		return enzyme;
 	}
 	
-	@Override
 	public ArrayList<T> getLinkedNodeList(Collection<T> destNodes) 
 	{
 		HashSet<T> effectiveNodeSet = new HashSet<T>(destNodes);
@@ -201,7 +193,6 @@ public abstract class MassFactory<T extends Matter> implements DeNovoNodeFactory
 		Collections.sort(allNodes);
 	}
 
-	@Override
 	public Sequence<T> toCumulativeSequence(boolean isPrefix, Peptide pep) 
 	{
 		Sequence<T> cumSeq = new Sequence<T>();

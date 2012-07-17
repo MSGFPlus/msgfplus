@@ -32,7 +32,6 @@ public class Partition implements Comparable<Partition> {
 	public void setPosIndex(int posIndex) {
 		this.segIndex = posIndex;
 	}
-	@Override
 	public int compareTo(Partition o) 
 	{
 		if(charge < o.charge)

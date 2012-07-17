@@ -17,7 +17,6 @@ public class GeneratingFunctionGroup<T extends Matter> extends HashMap<T, Genera
 		this.put(sink, gf);
 	}
 	
-	@Override
 	public boolean computeGeneratingFunction()
 	{
 		int minScore = Integer.MAX_VALUE;
@@ -49,7 +48,6 @@ public class GeneratingFunctionGroup<T extends Matter> extends HashMap<T, Genera
 		return true;
 	}
 	
-	@Override
 	public int getScore(Annotation annotation)
 	{
 		int score = Integer.MIN_VALUE;
@@ -64,13 +62,11 @@ public class GeneratingFunctionGroup<T extends Matter> extends HashMap<T, Genera
 		return score;
 	}
 	
-	@Override
 	public double getSpectralProbability(int score)
 	{
 		return mergedScoreDist.getSpectralProbability(score);
 	}
 	
-	@Override
 	public int getMaxScore()
 	{
 		if(mergedScoreDist == null)
@@ -78,7 +74,6 @@ public class GeneratingFunctionGroup<T extends Matter> extends HashMap<T, Genera
 		return mergedScoreDist.getMaxScore();
 	}
 	
-	@Override
 	public ScoreDist getScoreDist()
 	{
 		return mergedScoreDist;

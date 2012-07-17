@@ -167,7 +167,6 @@ public class MSGFDBResultGenerator {
 		public String getResultStr() {
 			return resultStr;
 		}
-		@Override
 		public int compareTo(DBMatch arg0) {
 			if(this.specProb < arg0.specProb)
 				return -1;

@@ -19,7 +19,6 @@ public class InstrumentType implements ParamObject {
 	public String getName()		{ return name; }
 	public String getDescription()	{ return description; }
 	
-	@Override
 	public String getParamDescription()	{ return description; }
 	public boolean isHighResolution()	{ return isHighResolution; }
 	

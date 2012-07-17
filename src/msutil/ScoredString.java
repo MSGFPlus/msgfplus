@@ -39,7 +39,6 @@ public class ScoredString extends Pair<String, Float> implements Comparable<Pair
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
-	@Override
 	public int compareTo(Pair<String, Float> o) {
 		int scoreComp = getSecond().compareTo(o.getSecond());
 		if(scoreComp != 0)

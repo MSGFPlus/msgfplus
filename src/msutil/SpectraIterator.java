@@ -42,13 +42,11 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
         if (!nextFile()) throw new FileNotFoundException("No files found.");
 	}
 	
-	@Override
 	public boolean hasNext() 
 	{
 		return hasNext;
 	}
 
-	@Override
 	public Spectrum next() 
 	{
 		Spectrum curSpecCopy = currentSpectrum;
@@ -63,13 +61,11 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
 		return curSpecCopy;
 	}
 
-	@Override
 	public void remove() 
 	{
 		throw new UnsupportedOperationException("SpectraIterator.remove() not implemented");
 	}
 	
-	@Override
 	public Iterator<Spectrum> iterator() {
 		return this;
 	}

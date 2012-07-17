@@ -21,7 +21,6 @@ public class ConcurrentMSGFDB {
 			this.toIndex = toIndex;
 		}
 		
-		@Override
 		public void run() 
 		{
 			specMap.preProcessSpectra(fromIndex, toIndex);
@@ -44,7 +43,6 @@ public class ConcurrentMSGFDB {
 			this.searchMode = searchMode;
 		}
 		
-		@Override
 		public void run() 
 		{
 			if(searchMode == 1)
@@ -72,7 +70,6 @@ public class ConcurrentMSGFDB {
 			this.storeScoreDist = storeScoreDist;
 		}
 		
-		@Override
 		public void run() 
 		{
 			scanner.computeSpecProb(storeScoreDist, fromIndex, toIndex);
@@ -128,7 +125,6 @@ public class ConcurrentMSGFDB {
 			
 		}
 		
-		@Override
 		public void run() 
 		{
 			String threadName = Thread.currentThread().getName();
@@ -189,7 +185,6 @@ public class ConcurrentMSGFDB {
 			this.libraryFileName = libraryFileName;
 		}
 		
-		@Override
 		public void run() 
 		{
 			String threadName = Thread.currentThread().getName();

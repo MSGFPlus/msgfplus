@@ -125,7 +125,6 @@ public class Enzyme implements ParamObject {
 	 * 
 	 * @return the description of the enzyme when it is showed in the usage info.
 	 */
-	@Override
 	public String getParamDescription()	{ return description; }
 	
 	/**

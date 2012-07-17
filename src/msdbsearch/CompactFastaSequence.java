@@ -96,12 +96,10 @@ public class CompactFastaSequence implements Sequence {
 	}
 
 	/***** CLASS METHODS *****/  
-	@Override
 	public Set<Byte> getAlphabetAsBytes() {
 		return this.byte2alpha.keySet();
 	}
 
-	@Override
 	public Collection<Character> getAlphabet() {
 		ArrayList<Character> results = new ArrayList<Character>();
 		for (char c : this.byte2alpha.values()) 
@@ -109,28 +107,23 @@ public class CompactFastaSequence implements Sequence {
 		return results;
 	}
 
-	@Override
 	public boolean isTerminator(long position) {
 		return getByteAt(position)==Constants.TERMINATOR;
 	}
 
-	@Override
 	public char toChar(byte b) {
 		if (byte2alpha.containsKey(b)) return byte2alpha.get(b);
 		return '?';
 	}
 
-	@Override
 	public int getAlphabetSize() {
 		return this.byte2alpha.size();
 	}
 
-	@Override
 	public long getSize() {
 		return this.size;
 	}
 
-	@Override
 	public byte getByteAt(long position) {
 		// forget boundary check for faster access
 //		if(position >= this.size) return Constants.TERMINATOR;
@@ -138,7 +131,6 @@ public class CompactFastaSequence implements Sequence {
 		return this.sequence[(int)position];
 	}
 
-	@Override
 	public String getSubsequence(long start, long end) {
 		if(start >= end || end > this.size)     return null;
 		char[] seq = new char[(int)(end-start)];
@@ -148,12 +140,10 @@ public class CompactFastaSequence implements Sequence {
 		return new String(seq);
 	}
 
-	@Override
 	public char getCharAt(long position) {
 		return toChar(this.sequence[(int)position]);
 	}
 
-	@Override
 	public String toString(byte[] sequence) {
 		String retVal = "";
 		for(byte item : sequence) {
@@ -164,12 +154,10 @@ public class CompactFastaSequence implements Sequence {
 		return retVal;
 	}
 
-	@Override
 	public byte toByte(char c) {
 		return alpha2byte.get(c);
 	}
 
-	@Override
 	public byte[] getBytes(int start, int end) {
 		byte[] result = new byte[end-start];
 		for (int i = start; i <end; i++) {
@@ -178,24 +166,20 @@ public class CompactFastaSequence implements Sequence {
 		return result;
 	}
 
-	@Override
 	public boolean isInAlphabet(char c) {
 		return alpha2byte.containsKey(c);
 	}
 
-	@Override
 	public boolean isValid(long position) {
 		if (isTerminator(position)) return false;
 		if (isInAlphabet(getCharAt(position))) return true;
 		return false;
 	}
 
-	@Override
 	public int getId() {
 		return this.id;
 	}
 
-	@Override
 	public String getAnnotation(long position) {
 		Entry<Integer, String> entry = annotations.higherEntry((int)position);
 		if(entry != null)
@@ -204,7 +188,6 @@ public class CompactFastaSequence implements Sequence {
 			return null;
 	}
 
-	@Override
 	public long getStartPosition(long position) {
 		Integer startPos = annotations.floorKey((int)position);
 		if (startPos==null) {
@@ -213,7 +196,6 @@ public class CompactFastaSequence implements Sequence {
 		return startPos;
 	}
 
-	@Override
 	public String getMatchingEntry(long position) {
 		Integer start = annotations.floorKey((int)position);	 // always "_" at start
 		Integer end = annotations.higherKey((int)position);	   // exclusive
@@ -223,7 +205,6 @@ public class CompactFastaSequence implements Sequence {
 		return this.getSubsequence(start+1, end);
 	}
 
-	@Override
 	public String getMatchingEntry(String name) {
 		return null;
 	}

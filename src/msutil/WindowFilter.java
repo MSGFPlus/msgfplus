@@ -41,7 +41,6 @@ public class WindowFilter implements Reshape {
    */
   public float getWindow() { return window; }
   
-  @Override
   public Spectrum apply(Spectrum s) {
     
     // select each peak if it is top n within window (-window,+window) around it

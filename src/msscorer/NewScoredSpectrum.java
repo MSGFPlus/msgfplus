@@ -65,13 +65,10 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 		this.spec = spec;
 	}
 	
-	@Override
 	public Peak getPrecursorPeak()	{ return precursor; }
 	
-	@Override
 	public ActivationMethod[] getActivationMethodArr()	{ return this.activationMethodArr; }
 	
-	@Override
 	public int getNodeScore(T prm, T srm) 
 	{
 		float prefScore = getNodeScore(prm, true);
@@ -79,7 +76,6 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 		return Math.round(prefScore+sufScore);	
 	}	
 	
-	@Override
 	public int getEdgeScore(T curNode, T prevNode, float theoMass) {
 		if(!scorer.supportEdgeScores())
 			return 0;
@@ -118,7 +114,6 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 		return mainIon;
 	}
 	
-	@Override
 	public boolean getMainIonDirection() {
 		return mainIon.isPrefixIon();
 	}
@@ -140,7 +135,6 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 			return -1;
 	}
 	
-	@Override
 	public float getNodeScore(T node, boolean isPrefix)
 	{
 		return getNodeScore(node.getMass(), isPrefix);
@@ -237,7 +231,6 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 		return new Pair<Float,Float>(nodeMass,nodeScore);
 	}
 
-	@Override
 	public int[] getScanNumArr() {
 		return scanNumArr;
 	}

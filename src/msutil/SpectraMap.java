@@ -36,7 +36,6 @@ public class SpectraMap implements SpectrumAccessorBySpecIndex {
 		}
 	}
 	
-	@Override
 	public synchronized ArrayList<Integer> getSpecIndexList()
 	{
 		if(specIndexList == null)

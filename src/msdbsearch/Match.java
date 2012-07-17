@@ -75,14 +75,12 @@ public class Match implements Comparable<Match> {
 		return scoreDist;
 	}
 	
-	@Override
 	public int compareTo(Match o) {
 		return score - o.score;
 	}
 	
 	public static class SpecProbComparator implements Comparator<Match>
 	{
-		@Override
 		public int compare(Match arg0, Match arg1) {
 			if(arg0.getSpecProb() < arg1.getSpecProb())
 				return 1;

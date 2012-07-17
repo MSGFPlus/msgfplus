@@ -180,36 +180,30 @@ public class FastaSequences implements Sequence {
     return (((long)sequenceIndex)<<32) | ((int)(position-offset));
   }
   
-  @Override
   public int getAlphabetSize() {
     return current.getAlphabetSize();
   }
 
-  @Override
   public String getAnnotation(long position) {
     long pair = translate(position);
     //System.out.println(this.files.get((int)(pair>>>32)) + " ");
     return getSequence((int)(pair>>>32)).getAnnotation((int)pair);
   }
 
-  @Override
   public byte getByteAt(long position) {
     long pair = translate(position);
     return getSequence((int)(pair>>>32)).getByteAt((int)pair);
   }
 
-  @Override
   public int getId() {
     return this.id;
   }
 
-  @Override
   public String getMatchingEntry(long position) {
     long pair = translate(position);
     return getSequence((int)(pair>>>32)).getMatchingEntry((int)pair);
   }
 
-  @Override
   public String getMatchingEntry(String name) {
     for (FastaSequence sequence : this.sequences) {
       String match = sequence.getMatchingEntry(name);
@@ -218,22 +212,18 @@ public class FastaSequences implements Sequence {
     return null;
   }
   
-  @Override
   public long getSize() {
     return this.positions.get(this.positions.size()-1);
   }
 
-  @Override
   public char toChar(byte b) {
     return current.toChar(b);
   }
   
-  @Override
   public String toString(byte[] sequence) {
     return current.toString(sequence);
   }
 
-  @Override
   public char getCharAt(long position) {
     long pair = translate(position);
     return getSequence((int)(pair>>>32)).getCharAt((int)pair);
@@ -254,7 +244,6 @@ public class FastaSequences implements Sequence {
     }
   }
 
-  @Override
   public byte[] getBytes(int start, int end) {
     long pair1 = translate(start);
     long pair2 = translate(end);
@@ -262,39 +251,32 @@ public class FastaSequences implements Sequence {
     return getSequence(seqIndex).getBytes((int)pair1, (int)pair2);
   }
 
-  @Override
   public boolean isInAlphabet(char c) {
     return current.isInAlphabet(c);
   }
 
-  @Override
   public boolean isTerminator(long position) {
     long pair = translate(position);
     return getSequence((int)(pair>>>32)).isTerminator((int)pair);
   }
 
-  @Override
   public boolean isValid(long position) {
     long pair = translate(position);
     return getSequence((int)(pair>>>32)).isValid((int)pair);
   }
 
-  @Override
   public byte toByte(char c) {
     return current.toByte(c);
   }
 
-  @Override
   public Collection<Character> getAlphabet() {
     return current.getAlphabet();
   }
 
-  @Override
   public Set<Byte> getAlphabetAsBytes() {
     return current.getAlphabetAsBytes();
   }
 
-  @Override
   public String getSubsequence(long start, long end) {
     long pair1 = translate(start);
     long pair2 = translate(end);
@@ -302,7 +284,6 @@ public class FastaSequences implements Sequence {
     return getSequence(seqIndex).getSubsequence((int)pair1, (int)pair2);
   }
 
-  @Override
   public long getStartPosition(long position) {
     long pair = translate(position);
     long subStart = getSequence((int)(pair>>>32)).getStartPosition((int)pair);

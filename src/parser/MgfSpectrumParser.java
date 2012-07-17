@@ -147,7 +147,6 @@ public class MgfSpectrumParser implements SpectrumParser {
 	 * @param lineReader a LineReader object that points to the start of a file.
 	 * @return A hashtable maps spectrum indexes to spectral positions in the file.
 	 */
-	@Override
 	public Hashtable<Integer, Long> getSpecIndexMap(BufferedRandomAccessLineReader lineReader)
 	{
 		Hashtable<Integer, Long> specIndexMap = new Hashtable<Integer, Long>();

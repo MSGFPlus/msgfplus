@@ -71,7 +71,6 @@ public class ProteinFastaSequence extends FastaSequence implements MassSequence 
    
    
 /***** Member methods *****/
-   @Override
    public int getIntegerMass(long index) {
      return this.masses[(int)index]+100;
      /*
@@ -80,14 +79,12 @@ public class ProteinFastaSequence extends FastaSequence implements MassSequence 
      return 0;*/
    }
    
-   @Override
    public int getIntegerMass(long start, long end) {
      int cumMass = 0;
      for (long i=start; i<end; i++) cumMass += getIntegerMass(i);
      return cumMass;
    }
    
-   @Override
    public boolean hasMass(long position) {
      return !invalids.contains(position) && position<this.getSize() && position>=0;
    }

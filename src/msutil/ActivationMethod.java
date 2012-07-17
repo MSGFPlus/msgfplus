@@ -26,7 +26,6 @@ public class ActivationMethod implements ParamObject {
 	
 	public String getName()		{ return name; }
 	public String getFullName()	{ return fullName; }
-	@Override
 	public String getParamDescription()	{ return name; }
 	public boolean isElectronBased() { return electronBased; }
 	
@@ -42,6 +41,11 @@ public class ActivationMethod implements ParamObject {
 		return table.get(name);
 	}
 
+	public static ActivationMethod getByCV(String cvAccession)
+	{
+		return cvTable.get(cvAccession);
+	}
+	
 	public static ActivationMethod register(String name, String fullName)
 	{
 		ActivationMethod m = table.get(name);
@@ -80,6 +84,7 @@ public class ActivationMethod implements ParamObject {
 	}
 	
 	private static HashMap<String, ActivationMethod> table;
+	private static HashMap<String, ActivationMethod> cvTable;
 	private static ArrayList<ActivationMethod> registeredActMethods;
 	
 	private static void add(ActivationMethod actMethod)
@@ -109,6 +114,7 @@ public class ActivationMethod implements ParamObject {
 		PQD = new ActivationMethod("PQD", "pulsed q dissociation");
 
 		table = new HashMap<String, ActivationMethod>();
+		
 		registeredActMethods = new ArrayList<ActivationMethod>();
 		
 		addToList(ASWRITTEN);
@@ -133,5 +139,10 @@ public class ActivationMethod implements ParamObject {
 				add(newMethod);
 			}
 		}
+		
+		cvTable = new HashMap<String, ActivationMethod>();
+		cvTable.put("MS:1000133", CID);
+		cvTable.put("MS:1000598", ETD);
+		cvTable.put("MS:1000422", HCD);
 	}
 }

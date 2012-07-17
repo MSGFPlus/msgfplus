@@ -36,10 +36,8 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 		this.scanNumArr = scoredSpec.getScanNumArr();
 	}
 
-	@Override
 	public Peak getPrecursorPeak()	{ return precursor; }
 	
-	@Override
 	public ActivationMethod[] getActivationMethodArr()	{ return activationMethodArr; }
 	
 	public float getParentMass()	{ return precursor.getMass(); }
@@ -48,7 +46,6 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 	
 	
 	// fromIndex: inclusive, toIndex: exclusive
-	@Override
 	public int getScore(double[] prefixMassArr, int[] nominalPrefixMassArr, int fromIndex, int toIndex, int numMods)
 	{
 		int score = 0;
@@ -69,7 +66,6 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 		return score;
 	}
 
-	@Override
 	public int getNodeScore(NominalMass prefixMass, NominalMass suffixMass) {
 		if(prefixMass.getNominalMass() >= prefixScore.length ||
 				suffixMass.getNominalMass() >= suffixScore.length)
@@ -77,17 +73,14 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 		return Math.round(prefixScore[prefixMass.getNominalMass()]+suffixScore[suffixMass.getNominalMass()]);
 	}
 
-	@Override
 	public int getEdgeScore(NominalMass curNode, NominalMass prevNode, float theoMass) {
 		return 0;
 	}
 	
-	@Override
 	public boolean getMainIonDirection() {
 		return mainIonDirection;
 	}
 
-	@Override
 	public float getNodeScore(NominalMass node, boolean isPrefix) {
 		if(isPrefix)
 			return prefixScore[node.getNominalMass()];
@@ -95,7 +88,6 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 			return suffixScore[node.getNominalMass()];
 	}
 
-	@Override
 	public int[] getScanNumArr() {
 		return scanNumArr;
 	}

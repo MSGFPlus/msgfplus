@@ -47,7 +47,6 @@ public class PrecursorOffsetFrequency implements Comparable<PrecursorOffsetFrequ
 	private float frequency;
 	private Tolerance tolerance;
 	
-	@Override
 	public int compareTo(PrecursorOffsetFrequency o) {
 		return new Float(this.frequency).compareTo(new Float(o.frequency));
 	}

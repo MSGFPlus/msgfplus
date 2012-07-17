@@ -73,7 +73,6 @@ public class MzXMLSpectraIterator implements Iterator<Spectrum> {
 		return spec;
 	}
 
-	@Override
 	public void remove() {
 		assert(false);
 	}	

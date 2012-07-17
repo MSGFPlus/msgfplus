@@ -57,7 +57,6 @@ public class NominalMassFactory extends MassFactory<NominalMass> {
 		return massIndex/rescalingConstant;
 	}
 	
-	@Override
 	public ArrayList<DeNovoGraph.Edge<NominalMass>> getEdges(NominalMass curNode)
 	{
 		return edgeMap.get(curNode);
@@ -72,7 +71,6 @@ public class NominalMassFactory extends MassFactory<NominalMass> {
 		return factory[index];
 	}
 	
-	@Override
 	public NominalMass getNextNode(NominalMass curNode, AminoAcid aa) {
 		int index = curNode.getNominalMass() + aa.getNominalMass();
 		if(factory[index] == null)
@@ -80,7 +78,6 @@ public class NominalMassFactory extends MassFactory<NominalMass> {
 		return factory[index];
 	}
 
-	@Override
 	public NominalMass getComplementNode(NominalMass srm, NominalMass pmNode) {
 		int index = pmNode.getNominalMass() - srm.getNominalMass();
 		if(factory[index] != null)
@@ -89,7 +86,6 @@ public class NominalMassFactory extends MassFactory<NominalMass> {
 			return new NominalMass(index);
 	}
 
-	@Override
 	public ArrayList<NominalMass> getNodes(float peptideMass, Tolerance tolerance) {
 		ArrayList<NominalMass> nodes = new ArrayList<NominalMass>();
 		float tolDa = tolerance.getToleranceAsDa(peptideMass);
@@ -105,7 +101,6 @@ public class NominalMassFactory extends MassFactory<NominalMass> {
 		return nodes;
 	}
 
-	@Override
 	public NominalMass getNode(float peptideMass) {
 		int index = getMassIndex(peptideMass);
 		if(factory[index] != null)
@@ -119,7 +114,6 @@ public class NominalMassFactory extends MassFactory<NominalMass> {
 		return zero;
 	}
 	
-	@Override
 	public boolean contains(NominalMass node) {
 		int index = node.getNominalMass();
 		if(index < 0 || index >= factory.length)

@@ -82,7 +82,6 @@ public class PNNLSpectrumParser implements SpectrumParser {
 		return spec;
 	}
 
-	@Override
 	public Hashtable<Integer, Long> getSpecIndexMap(BufferedRandomAccessLineReader lineReader)
 	{
 		Hashtable<Integer, Long> specIndexMap = new Hashtable<Integer, Long>();

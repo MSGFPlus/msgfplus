@@ -45,18 +45,15 @@ public class CompositionFactory extends MassFactory<Composition>{
 		return Composition.NIL;
 	}
 
-	@Override
 	public Composition getNextNode(Composition curNode, AminoAcid aa) {
 		int num = curNode.number + aa.getComposition().number;
 		return new Composition(num);
 	}
 
-	@Override
 	public Composition getComplementNode(Composition srm, Composition pmNode) {
 		return pmNode.getSubtraction(srm);
 	}
 	
-	@Override
 	public ArrayList<DeNovoGraph.Edge<Composition>> getEdges(Composition curNode) {
 		// prevNode, score, prob, index
 		int curNum = curNode.number;
@@ -93,7 +90,6 @@ public class CompositionFactory extends MassFactory<Composition>{
 	
 	public int[] getData()	{ return data; }
 	
-	@Override
 	public ArrayList<Composition> getNodes(float mass, Tolerance tolerance)
 	{
 		ArrayList<Composition> compositions = new ArrayList<Composition>();
@@ -136,7 +132,6 @@ public class CompositionFactory extends MassFactory<Composition>{
 		return compositions;
 	}
 
-	@Override
 	public Composition getNode(float mass) {
 		// binary search
 		int minIndex=0, maxIndex=data.length, i=-1;
@@ -211,7 +206,6 @@ public class CompositionFactory extends MassFactory<Composition>{
 		return intermediateCompositions.tempData;
 	}
 	
-	@Override
 	public boolean contains(Composition node) {
 		return isSet(node.number);
 	}

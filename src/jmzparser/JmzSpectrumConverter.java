@@ -50,8 +50,8 @@ public class JmzSpectrumConverter {
 		return spec;
 	}
 	
-	public static msutil.Spectrum convert(uk.ac.ebi.jmzml.model.mzml.Spectrum jmzSpec)
-	{
+//	public static msutil.Spectrum convert(uk.ac.ebi.jmzml.model.mzml.Spectrum jmzSpec)
+//	{
 //		msutil.Spectrum spec = new msutil.Spectrum();
 //		
 //		Double precursorMz = jmzSpec.getPrecursorMZ();
@@ -90,7 +90,7 @@ public class JmzSpectrumConverter {
 //		Collections.sort(spec);
 //		
 //		return spec;
-		return null;
-	}
+//		return null;
+//	}
 	
 }

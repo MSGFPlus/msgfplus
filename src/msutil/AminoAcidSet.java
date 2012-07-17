@@ -107,7 +107,6 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	/**
 	 * Returns the iterator of anywhere amino acids 
 	 */
-	@Override
 	public Iterator<AminoAcid> iterator() {
 		return aaListMap.get(Location.Anywhere).iterator();
 	}

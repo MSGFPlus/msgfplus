@@ -118,7 +118,6 @@ public class MzXMLSpectraMap implements SpectrumAccessorBySpecIndex {
 		return spec;
 	}
 
-	@Override
 	public Spectrum getSpectrumBySpecIndex(int specIndex)
 	{
 		return getSpectrumByScanNum(specIndex);
@@ -134,7 +133,6 @@ public class MzXMLSpectraMap implements SpectrumAccessorBySpecIndex {
 
 	private ArrayList<Integer> specIndexList = null;
 	
-	@Override
 	public ArrayList<Integer> getSpecIndexList() {
 		if(specIndexList == null)
 		{

@@ -1250,7 +1250,6 @@ public class Zubarev {
 			return rev.toString();
 		}
 
-		@Override
 		public int compareTo(Tag arg0) {
 			return score - arg0.score;
 		}

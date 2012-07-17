@@ -16,7 +16,6 @@ public class SpectraMapByTitle extends SpectraMap implements SpectrumAccessorByT
 		titleToSpecIndex = parser.getTitleToSpecIndexMap(super.lineReader);
 	}
 	
-	@Override
 	public Spectrum getSpectrumByTitle(String title)
 	{
 		Integer specIndex = titleToSpecIndex.get(title);
