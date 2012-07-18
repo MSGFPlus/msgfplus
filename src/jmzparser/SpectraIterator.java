@@ -20,6 +20,7 @@ import uk.ac.ebi.pride.tools.mzml_wrapper.MzMlWrapper;
 import uk.ac.ebi.pride.tools.mzxml_parser.MzXMLFile;
 import uk.ac.ebi.pride.tools.pkl_parser.PklFile;
 
+// Not active because currently jmzreader does not retrive activation method information.
 public class SpectraIterator implements Iterator<msutil.Spectrum>, Iterable<msutil.Spectrum> {
 	private JMzReader parser;
 	private Iterator<uk.ac.ebi.pride.tools.jmzreader.model.Spectrum> itr;

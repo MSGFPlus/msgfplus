@@ -1,0 +1,96 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>edu.ucsd.msgf</groupId>
+  <artifactId>msjava-dev</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>MS-Java</name>
+  <description>MS-Java for MS Java projects</description>
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+    <resources>
+      <resource>
+        <directory>src</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <source/>
+          <target/>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+<dependency>
+        <groupId>uk.ac.ebi.pride.tools</groupId>
+        <artifactId>jmzreader</artifactId>
+        <version>1.2.0</version>
+        <type>jar</type>
+</dependency>
+<dependency>
+        <groupId>uk.ac.ebi.pride.tools</groupId>
+        <artifactId>pkl-parser</artifactId>
+        <version>1.2.1</version>
+        <type>jar</type>
+</dependency>
+<dependency>
+        <groupId>uk.ac.ebi.pride.tools</groupId>
+        <artifactId>dta-parser</artifactId>
+        <version>1.2.1</version>
+        <type>jar</type>
+</dependency>
+<dependency>
+        <groupId>uk.ac.ebi.pride.tools</groupId>
+        <artifactId>ms2-parser</artifactId>
+        <version>1.2.1</version>
+        <type>jar</type>
+</dependency>
+<dependency>
+        <groupId>uk.ac.ebi.pride.tools</groupId>
+        <artifactId>mgf-parser</artifactId>
+        <version>1.2.2</version>
+        <type>jar</type>
+</dependency>
+<dependency>
+        <groupId>uk.ac.ebi.pride.tools</groupId>
+        <artifactId>mzdata-parser</artifactId>
+        <version>1.2.1</version>
+        <type>jar</type>
+</dependency>
+<dependency>
+        <groupId>uk.ac.ebi.pride.tools</groupId>
+        <artifactId>mzml-wrapper</artifactId>
+        <version>1.2</version>
+        <type>jar</type>
+</dependency>
+<dependency>
+        <groupId>uk.ac.ebi.pride.tools</groupId>
+        <artifactId>pride-wrapper</artifactId>
+        <version>1.2.0</version>
+        <type>jar</type>
+</dependency>
+  	<dependency>
+  		<groupId>uk.ac.ebi.pride.tools</groupId>
+  		<artifactId>mzxml-parser</artifactId>
+  		<version>1.3.4-SNAPSHOT</version>
+  	</dependency>
+  </dependencies>
+  
+<repositories>
+    <repository>
+        <id>ebi-repo</id>
+        <name>The EBI internal repository</name>
+        <url>http://www.ebi.ac.uk/~maven/m2repo</url>
+    </repository>
+</repositories>  
+	<organization>
+		<name>University of California, San Diego</name>
+		<url>http://www.ucsd.edu</url>
+	</organization>
+</project>
