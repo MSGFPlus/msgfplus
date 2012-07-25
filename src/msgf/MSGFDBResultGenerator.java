@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import uk.ac.ebi.jmzidml.xml.io.MzIdentMLMarshaller;
+
 public class MSGFDBResultGenerator {
 	/**
 	 * 
@@ -75,6 +77,11 @@ public class MSGFDBResultGenerator {
 			else
 				out.println(m.getResultStr());
 		}
+	}
+
+	public void writeMzIdentML(PrintStream out)
+	{
+		MzIdentMLMarshaller m = new MzIdentMLMarshaller();		
 	}
 	
 	public static class DBMatch implements Comparable<DBMatch>
