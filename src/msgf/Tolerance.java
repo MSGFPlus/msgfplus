@@ -44,13 +44,11 @@ public class Tolerance implements Serializable { // Serializable is needed in or
 	public Unit getUnit()			{ return unit; }
 	
 	/**
-	 * @deprecated
 	 * @return
 	 */
 	public boolean isTolerancePPM()	{ return unit == Unit.PPM; }
 	
 	/**
-	 * @deprecated
 	 * @param mass
 	 * @return
 	 */

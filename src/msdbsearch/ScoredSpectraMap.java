@@ -36,7 +36,8 @@ public class ScoredSpectraMap {
 	private final List<SpecKey> specKeyList;
 	private final Tolerance leftParentMassTolerance;
 	private final Tolerance rightParentMassTolerance;
-	private final int numAllowedC13;
+	private final int minNum13C;
+	private final int maxNum13C;
 	private final SpecDataType specDataType;
 	
 	private SortedMap<Double,SpecKey> pepMassSpecKeyMap;
@@ -50,7 +51,8 @@ public class ScoredSpectraMap {
 			List<SpecKey> specKeyList,			
     		Tolerance leftParentMassTolerance, 
     		Tolerance rightParentMassTolerance, 
-			int numAllowedC13,
+			int minNum13C,
+			int maxNum13C,
 			SpecDataType specDataType
 			)
 	{
@@ -58,7 +60,30 @@ public class ScoredSpectraMap {
 		this.specKeyList = specKeyList;
 		this.leftParentMassTolerance = leftParentMassTolerance;
 		this.rightParentMassTolerance = rightParentMassTolerance;
-		this.numAllowedC13 = numAllowedC13;
+		this.minNum13C = minNum13C;
+		this.maxNum13C = maxNum13C;
+		this.specDataType = specDataType;
+		
+		pepMassSpecKeyMap = Collections.synchronizedSortedMap((new TreeMap<Double,SpecKey>()));
+		specKeyScorerMap = Collections.synchronizedMap(new HashMap<SpecKey,SimpleDBSearchScorer<NominalMass>>());
+		specIndexChargeToSpecKeyMap = Collections.synchronizedMap(new HashMap<Pair<Integer,Integer>,SpecKey>());
+	}
+
+	public ScoredSpectraMap(
+			SpectrumAccessorBySpecIndex specMap,
+			List<SpecKey> specKeyList,			
+    		Tolerance leftParentMassTolerance, 
+    		Tolerance rightParentMassTolerance, 
+			int maxNum13C,
+			SpecDataType specDataType
+			)
+	{
+		this.specMap = specMap;
+		this.specKeyList = specKeyList;
+		this.leftParentMassTolerance = leftParentMassTolerance;
+		this.rightParentMassTolerance = rightParentMassTolerance;
+		this.minNum13C = 0;
+		this.maxNum13C = maxNum13C;
 		this.specDataType = specDataType;
 		
 		pepMassSpecKeyMap = Collections.synchronizedSortedMap((new TreeMap<Double,SpecKey>()));
@@ -76,7 +101,10 @@ public class ScoredSpectraMap {
 	public Map<SpecKey,SimpleDBSearchScorer<NominalMass>> getSpecKeyScorerMap()	{ return specKeyScorerMap; }
 	public Tolerance getLeftParentMassTolerance()				{ return leftParentMassTolerance; }
 	public Tolerance getRightParentMassTolerance()				{ return rightParentMassTolerance; }
-	public int getNumAllowedC13()								{ return numAllowedC13; }
+//	public int getNumAllowedC13()								{ return numAllowedC13; }
+	public int getMaxNum13C()										{ return maxNum13C; }
+	public int getMinNum13C()										{ return minNum13C; }
+	
 	public List<SpecKey> getSpecKeyList()	{ return specKeyList; }
 	public SpecKey getSpecKey(int specIndex, int charge)
 	{
@@ -95,27 +123,14 @@ public class ScoredSpectraMap {
 				peptideMassKey = Math.nextUp(peptideMassKey);
 			pepMassSpecKeyMap.put(peptideMassKey, specKey);
 			
-			float tolDaRight = rightParentMassTolerance.getToleranceAsDa(peptideMass);
-			if(numAllowedC13 > 0 && tolDaRight < 0.5f)
+			for(int delta = this.minNum13C; delta<=maxNum13C; delta++)
 			{
-				if(numAllowedC13 >= 1)
-				{
-					float mass1 = peptideMass-(float)Composition.ISOTOPE;
-					double mass1Key = (double)mass1;
-					while(pepMassSpecKeyMap.get(mass1Key) != null)
-						mass1Key = Math.nextUp(mass1Key);
-					pepMassSpecKeyMap.put(mass1Key, specKey);
-				}
-				
-				if(numAllowedC13 >= 2)
-				{
-					float mass2 = peptideMass-2*(float)Composition.ISOTOPE;
-					double mass2Key = (double)mass2;
-					while(pepMassSpecKeyMap.get(mass2Key) != null)
-						mass2Key = Math.nextUp(mass2Key);
-					pepMassSpecKeyMap.put(mass2Key, specKey);
-				}
-			}			
+				float mass1 = peptideMass-delta*(float)Composition.ISOTOPE;
+				double mass1Key = (double)mass1;
+				while(pepMassSpecKeyMap.get(mass1Key) != null)
+					mass1Key = Math.nextUp(mass1Key);
+				pepMassSpecKeyMap.put(mass1Key, specKey);
+			}
 			specIndexChargeToSpecKeyMap.put(new Pair<Integer,Integer>(specKey.getSpecIndex(), specKey.getCharge()), specKey);
 		}
 		return this;

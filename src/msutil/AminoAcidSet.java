@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import parser.BufferedLineReader;
 
@@ -371,8 +372,12 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		}
 	}
 	
+	private List<Modification.Instance> modifications;
+	
 	private void applyModifications(ArrayList<Modification.Instance> mods)
 	{
+		this.modifications = mods;
+		
 		// partition modification instances into different types
 		HashMap<Modification.Location,ArrayList<Modification.Instance>> fixedMods = new HashMap<Modification.Location,ArrayList<Modification.Instance>>();
 		HashMap<Modification.Location,ArrayList<Modification.Instance>> variableMods = new HashMap<Modification.Location,ArrayList<Modification.Instance>>();
@@ -1032,6 +1037,11 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSet(mods);
 		aaSet.setMaxNumberOfVariableModificationsPerPeptide(numMods);
 		return aaSet;
+	}
+	
+	public List<Modification.Instance> getModifications()
+	{
+		return 	modifications;
 	}
 	
 	/**

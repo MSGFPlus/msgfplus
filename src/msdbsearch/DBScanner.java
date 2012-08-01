@@ -23,7 +23,6 @@ import msgf.MSGFDBResultGenerator;
 import msgf.GeneratingFunction;
 import msgf.GeneratingFunctionGroup;
 import msgf.NominalMass;
-import msgf.Tolerance;
 import msscorer.SimpleDBSearchScorer;
 import msutil.AminoAcid;
 import msutil.AminoAcidSet;
@@ -493,15 +492,16 @@ public class DBScanner {
 			SimpleDBSearchScorer<NominalMass> scoredSpec = specScanner.getSpecKeyScorerMap().get(specKey);
 			float peptideMass = scoredSpec.getPrecursorPeak().getMass() - (float)Composition.H2O;
 			int nominalPeptideMass = NominalMass.toNominalMass(peptideMass);
+			int minNominalPeptideMass = nominalPeptideMass + specScanner.getMinNum13C();
+			int maxNominalPeptideMass = nominalPeptideMass + specScanner.getMaxNum13C();
+			
 			float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
 			float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
 			int maxPeptideMassIndex, minPeptideMassIndex;
-			maxPeptideMassIndex = nominalPeptideMass + Math.round(tolDaLeft-0.4999f);
-			minPeptideMassIndex = nominalPeptideMass - Math.round(tolDaRight-0.4999f);
 			
-			if(tolDaRight < 0.5f)
-				minPeptideMassIndex -= specScanner.getNumAllowedC13();
-
+			maxPeptideMassIndex = minNominalPeptideMass + Math.round(tolDaLeft-0.4999f);
+			minPeptideMassIndex = maxNominalPeptideMass - Math.round(tolDaRight-0.4999f);
+			
 			for(int peptideMassIndex = minPeptideMassIndex; peptideMassIndex<=maxPeptideMassIndex; peptideMassIndex++)
 			{
 				DeNovoGraph<NominalMass> graph = new FlexAminoAcidGraph(
@@ -621,14 +621,16 @@ public class DBScanner {
 				float peptideMass = match.getPeptideMass();
 				float pmError = Float.MAX_VALUE;
 				float theoMass = peptideMass + (float)Composition.H2O;
-				
-				float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
-				int nC13 = tolDaRight >= 0.5f ? 0 : specScanner.getNumAllowedC13();
-				for(int numC13=0; numC13<=nC13; numC13++)
+
+				int deltaNominalMass = 0;
+				for(int delta=specScanner.getMinNum13C(); delta<=specScanner.getMaxNum13C(); delta++)
 				{
-					float error = expMass-theoMass-(float)(Composition.ISOTOPE)*numC13; 
+					float error = expMass-theoMass-(float)(Composition.ISOTOPE)*delta; 
 					if(Math.abs(error) < Math.abs(pmError))
+					{
 						pmError = error;
+						deltaNominalMass = delta;
+					}
 				}
 				if(specScanner.getRightParentMassTolerance().isTolerancePPM())
 					pmError = pmError/theoMass*1e6f;

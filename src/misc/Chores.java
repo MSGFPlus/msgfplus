@@ -84,12 +84,15 @@ public class Chores {
 //		s = s.replaceAll("\\(C,57\\.02146\\)", "C");
 //		System.out.println(s);
 		
-		String buf = "SCANS=953-939";
-		System.out.println(buf.matches(".+=\\d+-\\d+"));
-		int startScanNum = Integer.parseInt(buf.substring(buf.indexOf('=')+1, buf.lastIndexOf('-')));
-		int endScanNum = Integer.parseInt(buf.substring(buf.lastIndexOf('-')+1));
-		System.out.println(startScanNum + " " + endScanNum);
+//		String buf = "SCANS=953-939";
+//		System.out.println(buf.matches(".+=\\d+-\\d+"));
+//		int startScanNum = Integer.parseInt(buf.substring(buf.indexOf('=')+1, buf.lastIndexOf('-')));
+//		int endScanNum = Integer.parseInt(buf.substring(buf.lastIndexOf('-')+1));
+//		System.out.println(startScanNum + " " + endScanNum);
 
+		System.out.println(Composition.C13 - Composition.C);
+		System.out.println(Composition.N15 - Composition.N);
+		System.out.println(System.getProperty("user.home"));
 	}
 
 	public static void recombCPReg() throws Exception

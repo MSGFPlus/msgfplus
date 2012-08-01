@@ -91,7 +91,6 @@ public class MSGFDB {
 	
     public static String runMSGFDB(ParamManager paramManager)
 	{
-    	
 		// Spectrum file
 		FileParameter specParam = paramManager.getSpecFileParam();
 		File specPath = specParam.getFile();
@@ -235,7 +234,7 @@ public class MSGFDB {
 			if(!concatTargetDecoyDBFile.exists())
 			{
 				System.out.println("Creating " + concatTargetDecoyDBFile.getPath() + ".");
-				if(ReverseDB.reverseDB(databaseFile.getPath(), concatTargetDecoyDBFile.getPath(), true) == false)
+				if(ReverseDB.reverseDB(databaseFile.getPath(), concatTargetDecoyDBFile.getPath(), true, "XXX") == false)
 				{
 					return "Cannot create a decoy database file!";
 				}

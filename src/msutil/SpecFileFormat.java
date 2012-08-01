@@ -3,6 +3,8 @@ package msutil;
 import java.io.File;
 import java.util.ArrayList;
 
+import jmzparser.MzMLSpectraMap;
+
 import parser.MS2SpectrumParser;
 import parser.MgfSpectrumParser;
 import parser.MzXMLSpectraMap;
@@ -36,8 +38,10 @@ public class SpecFileFormat extends FileFormat {
 		if(specFormat == null)
 			return null;
 		
-		if(specFormat == MZXML || specFormat == MZML)
+		if(specFormat == MZXML)
 			specMap = new MzXMLSpectraMap(specFile.getPath());
+		else if(specFormat == MZML)
+			specMap = new MzMLSpectraMap(specFile.getPath());
 		else if(specFormat == SpecFileFormat.DTA_TXT)
 			specMap = new PNNLSpectraMap(specFile.getPath());
 		else

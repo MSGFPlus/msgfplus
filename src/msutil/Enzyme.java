@@ -44,6 +44,8 @@ public class Enzyme implements ParamObject {
 	// E.g. for trypsin, probability that the preceding amino acid is K or R
 	private float neighboringAACleavageEfficiency = 0;
 	
+	private String psiCvAccession;
+	
 	/**
 	 * Instantiates a new enzyme.
 	 * 
@@ -51,7 +53,7 @@ public class Enzyme implements ParamObject {
 	 * @param residues the residues cleaved by the enzyme (String)
 	 * @param isNTerm N term or C term (true if it cleaves N-term)
 	 */
-	private Enzyme(String name, String residues, boolean isNTerm, String description) 
+	private Enzyme(String name, String residues, boolean isNTerm, String description, String psiCvAccession) 
 	{
 		this.name = name;
 		this.description = description;
@@ -72,6 +74,7 @@ public class Enzyme implements ParamObject {
 			}
 		}
 		this.isNTerm = isNTerm;
+		this.psiCvAccession = psiCvAccession; 
 	}
 
 	/**
@@ -188,6 +191,15 @@ public class Enzyme implements ParamObject {
 	}
 	
 	/**
+	 * Returns PSI CV accession.
+	 * @return HUPO PSI CV accession of this enzyme. null if unknown.
+	 */
+	public String getPSICvAccession()
+	{
+		return this.psiCvAccession;
+	}
+	
+	/**
 	 * Returns the number of cleavaged termini
 	 * @param annotation annotation (e.g. K.DLFGEK.I)
 	 * @return the number of cleavaged termini
@@ -283,8 +295,8 @@ public class Enzyme implements ParamObject {
 	}
 	
 	static {
-		NOENZYME = new Enzyme("NoEnzyme", null, false, "No enzyme");
-		TRYPSIN = new Enzyme("Tryp", "KR", false, "Trypsin");
+		NOENZYME = new Enzyme("NoEnzyme", null, false, "No enzyme", null);
+		TRYPSIN = new Enzyme("Tryp", "KR", false, "Trypsin", "MS:1001251");
 //		TRYPSIN.setNeighboringAAEfficiency(0.9148273f);
 //		TRYPSIN.setPeptideCleavageEffiency(0.98173124f);
 		
@@ -295,25 +307,25 @@ public class Enzyme implements ParamObject {
 		TRYPSIN.setNeighboringAAEfficiency(0.99999f);
 		TRYPSIN.setPeptideCleavageEffiency(0.99999f);
 
-		CHYMOTRYPSIN = new Enzyme("CHYMOTRYPSIN", "FYWL", false, "Chymotrypsin");
+		CHYMOTRYPSIN = new Enzyme("CHYMOTRYPSIN", "FYWL", false, "Chymotrypsin", "MS:1001306");
 		
-		LysC = new Enzyme("LysC", "K", false, "Lys-C");
+		LysC = new Enzyme("LysC", "K", false, "Lys-C", "MS:1001309");
 //		LysC.setNeighboringAAEfficiency(0.79f);
 //		LysC.setPeptideCleavageEffiency(0.89f);
 		LysC.setNeighboringAAEfficiency(0.999f);
 		LysC.setPeptideCleavageEffiency(0.999f);
 		
-		LysN = new Enzyme("LysN", "K", true, "Lys-N");
+		LysN = new Enzyme("LysN", "K", true, "Lys-N", null);
 		LysN.setNeighboringAAEfficiency(0.79f);
 		LysN.setPeptideCleavageEffiency(0.89f);
 		
-		GluC = new Enzyme("GluC","E",false, "Glu-C");
-		ArgC = new Enzyme("ArgC","R",false, "Arg-C");
-		AspN = new Enzyme("AspN","D",true, "Asp-N");
+		GluC = new Enzyme("GluC","E",false, "Glu-C", "MS:1001917");
+		ArgC = new Enzyme("ArgC","R",false, "Arg-C", "MS:1001303");
+		AspN = new Enzyme("AspN","D",true, "Asp-N", "MS:1001304");
 		
-		ALP = new Enzyme("aLP", null, false, "alphaLP");
+		ALP = new Enzyme("aLP", null, false, "alphaLP", null);
 		
-		Peptidomics = new Enzyme("Peptidomics", null, false, "Endogenous peptides");
+		Peptidomics = new Enzyme("Peptidomics", null, false, "Endogenous peptides", null);
 		
 		enzymeTable = new HashMap<String,Enzyme>();
 		registeredEnzymeList = new ArrayList<Enzyme>();
@@ -367,7 +379,7 @@ public class Enzyme implements ParamObject {
 				}
 				String description = token[3];
 
-				Enzyme userEnzyme = new Enzyme(shortName, cleaveAt, isNTerm, description);
+				Enzyme userEnzyme = new Enzyme(shortName, cleaveAt, isNTerm, description, null);
 				register(shortName, userEnzyme);
 			}
 		}

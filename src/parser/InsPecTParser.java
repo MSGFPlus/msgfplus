@@ -168,7 +168,11 @@ public class InsPecTParser {
 			if(specFilePosColumn >= 0)
 				specFilePos = Long.parseLong(token[specFilePosColumn]);
 			if(specProbColumn >= 0)
+			{
+				if(token[specProbColumn].startsWith("N/A"))
+					continue;
 				specProb = Float.parseFloat(token[specProbColumn]);
+			}
 			if(specIndexColumn >= 0)
 				specIndex = Integer.parseInt(token[specIndexColumn]);
 			// parse specIndex

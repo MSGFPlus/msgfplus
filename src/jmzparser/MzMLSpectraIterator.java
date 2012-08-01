@@ -157,14 +157,14 @@ public class MzMLSpectraIterator implements Iterator<msutil.Spectrum>, Iterable<
 	
 	public static void main(String argv[]) throws Exception
 	{
-		Logger.getRootLogger().setLevel(Level.FATAL);
+		Logger.getRootLogger().setLevel(Level.OFF);
 		test();
 	}
 	
 	public static void test() throws Exception
 	{
-		File xmlFile = new File("/Users/kims336/Research/Data/JMzReader/example.mzML");
-		xmlFile = new File("/Users/kims336/Research/Data/JMzReader/small.pwiz.1.1.mzML");
+		File xmlFile = new File("/cygwin/home/kims336/Research/Data/JMzReader/example.mzML");
+		xmlFile = new File("/cygwin/home/kims336/Research/Data/JMzReader/small.pwiz.1.1.mzML");
 		
 		MzMLSpectraIterator itr = new MzMLSpectraIterator(xmlFile);
 		while(itr.hasNext())

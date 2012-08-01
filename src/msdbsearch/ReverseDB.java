@@ -23,7 +23,7 @@ public class ReverseDB {
 			System.out.println(ext1 + "," + ext2);
 			printUsageAndExit();
 		}
-		reverseDB(argv[0], argv[1], false);
+		reverseDB(argv[0], argv[1], false, "XXX");
 		
 	}
 	
@@ -33,7 +33,7 @@ public class ReverseDB {
 		System.exit(0);
 	}
 	
-	public static boolean reverseDB(String inFileName, String outFileName, boolean concat)
+	public static boolean reverseDB(String inFileName, String outFileName, boolean concat, String revPrefix)
 	{
 		BufferedReader in = null;
 		PrintStream out = null;
@@ -78,7 +78,7 @@ public class ReverseDB {
 						StringBuffer rev = new StringBuffer();
 						for(int i=protein.length()-1; i>=0; i--)
 							rev.append(protein.charAt(i));
-						out.println(">REV_" + annotation);
+						out.println(">"+revPrefix+"_" + annotation);
 						out.println(rev.toString().trim());
 					}
 					annotation = s.substring(1);
@@ -95,7 +95,7 @@ public class ReverseDB {
 			StringBuffer rev = new StringBuffer();
 			for(int i=protein.length()-1; i>=0; i--)
 				rev.append(protein.charAt(i));
-			out.println(">REV_" + annotation);
+			out.println(">"+revPrefix+"_" + annotation);
 			out.println(rev.toString().trim());
 		}
 		try {

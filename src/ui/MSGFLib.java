@@ -310,6 +310,8 @@ public class MSGFLib {
 				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, Protocol.NOPROTOCOL);
 
 			Spectrum processedSpec = new ProcessedSpectrum(spec, libSpec).getSpectrum();
+
+			processedSpec = libSpec;
 			NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(processedSpec);
 			
 //			ArrayList<ScoredSpectrum<NominalMass>> scoredSpecList = new ArrayList<ScoredSpectrum<NominalMass>>();

@@ -17,9 +17,10 @@ public class FileFormat {
 		suffixes[0] = suffix;
 	}
 	
-	protected void setCaseSensitive()
+	public FileFormat setCaseSensitive()
 	{
 		this.isCaseSensitive = true;
+		return this;
 	}
 	
 	public boolean isCaseSensitive() {
