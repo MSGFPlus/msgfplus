@@ -219,39 +219,12 @@ public class MSGFPlus {
 		
 		System.out.println("Reading spectra...");
     	Iterator<Spectrum> specItr = null;
-		SpectrumAccessorBySpecIndex specMap = null;
-		
-		if(specFormat == SpecFileFormat.MZXML || specFormat == SpecFileFormat.MZML)
-		{
-			specItr = new MzXMLSpectraIterator(specFile.getPath());
-			specMap = new MzXMLSpectraMap(specFile.getPath());
+    	try {
+			specItr = SpecFileFormat.getSpecItr(specFile, specFormat);
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
 		}
-		else if(specFormat == SpecFileFormat.DTA_TXT)
-		{
-			try {
-				specItr = new PNNLSpectraIterator(specFile.getPath());
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-			specMap = new PNNLSpectraMap(specFile.getPath());
-		}
-		else
-		{
-			SpectrumParser parser = null;
-			if(specFormat == SpecFileFormat.MGF)
-				parser = new MgfSpectrumParser();
-			else if(specFormat == SpecFileFormat.MS2)
-				parser = new MS2SpectrumParser();
-			else if(specFormat == SpecFileFormat.PKL)
-				parser = new PklSpectrumParser();
-			
-			try {
-				specItr = new SpectraIterator(specFile.getPath(), parser);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-			specMap = new SpectraMap(specFile.getPath(), parser);
-		}
+		SpectrumAccessorBySpecIndex specMap = SpecFileFormat.getSpecMap(specFile, specFormat);
 		
 		if(specItr == null || specMap == null)
 		{

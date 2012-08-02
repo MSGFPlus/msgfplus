@@ -1,13 +1,18 @@
 package msutil;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
+import jmzparser.MzMLSpectraIterator;
 import jmzparser.MzMLSpectraMap;
 
 import parser.MS2SpectrumParser;
 import parser.MgfSpectrumParser;
+import parser.MzXMLSpectraIterator;
 import parser.MzXMLSpectraMap;
+import parser.PNNLSpectraIterator;
 import parser.PNNLSpectraMap;
 import parser.PklSpectrumParser;
 import parser.SpectrumParser;
@@ -33,15 +38,20 @@ public class SpecFileFormat extends FileFormat {
 	
 	public static SpectrumAccessorBySpecIndex getSpecMap(File specFile)
 	{
-		SpectrumAccessorBySpecIndex specMap = null;
 		SpecFileFormat specFormat = getSpecFileFormat(specFile.getName());
 		if(specFormat == null)
 			return null;
-		
+		else
+			return getSpecMap(specFile, specFormat);
+	}
+
+	public static SpectrumAccessorBySpecIndex getSpecMap(File specFile, SpecFileFormat specFormat)
+	{
+		SpectrumAccessorBySpecIndex specMap = null;
 		if(specFormat == MZXML)
 			specMap = new MzXMLSpectraMap(specFile.getPath());
 		else if(specFormat == MZML)
-			specMap = new MzMLSpectraMap(specFile.getPath());
+			specMap = new MzMLSpectraMap(specFile);
 		else if(specFormat == SpecFileFormat.DTA_TXT)
 			specMap = new PNNLSpectraMap(specFile.getPath());
 		else
@@ -57,6 +67,40 @@ public class SpecFileFormat extends FileFormat {
 		}
 		
 		return specMap;
+	}
+			
+	public static Iterator<Spectrum> getSpecItr(File specFile) throws FileNotFoundException
+	{
+		SpecFileFormat specFormat = getSpecFileFormat(specFile.getName());
+		if(specFormat == null)
+			return null;
+		else
+			return getSpecItr(specFile, specFormat);
+	}
+	
+	public static Iterator<Spectrum> getSpecItr(File specFile, SpecFileFormat specFormat) throws FileNotFoundException
+	{
+		Iterator<Spectrum> specItr = null;
+		
+		if(specFormat == MZXML)
+			specItr = new MzXMLSpectraIterator(specFile.getPath());
+		else if(specFormat == MZML)
+			specItr = new MzMLSpectraIterator(specFile);
+		else if(specFormat == SpecFileFormat.DTA_TXT)
+			specItr = new PNNLSpectraIterator(specFile.getPath());
+		else
+		{
+			SpectrumParser parser = null;
+			if(specFormat == SpecFileFormat.MGF)
+				parser = new MgfSpectrumParser();
+			else if(specFormat == SpecFileFormat.MS2)
+				parser = new MS2SpectrumParser();
+			else if(specFormat == SpecFileFormat.PKL)
+				parser = new PklSpectrumParser();
+			specItr = new SpectraIterator(specFile.getPath(), parser);
+		}
+		
+		return specItr;
 	}
 	
 	public static SpecFileFormat getSpecFileFormat(String specFileName)

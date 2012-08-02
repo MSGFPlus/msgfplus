@@ -5,9 +5,6 @@ import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.Iterator;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
 import msutil.ActivationMethod;
 import msutil.Peak;
 
@@ -42,7 +39,8 @@ public class MzMLSpectraIterator implements Iterator<msutil.Spectrum>, Iterable<
 		throw new UnsupportedOperationException("SpectraIterator.remove() not implemented");
 	}
 	
-	public Iterator<msutil.Spectrum> iterator() {
+	public Iterator<msutil.Spectrum> iterator() 
+	{
 		return this;
 	}
 	
@@ -157,7 +155,11 @@ public class MzMLSpectraIterator implements Iterator<msutil.Spectrum>, Iterable<
 	
 	public static void main(String argv[]) throws Exception
 	{
-		Logger.getRootLogger().setLevel(Level.OFF);
+//		List<Logger> loggers = Collections.<Logger>list(LogManager.getCurrentLoggers());
+//		loggers.add(LogManager.getRootLogger());
+//		for ( Logger logger : loggers ) {
+//		    logger.setLevel(Level.OFF);
+//		}		
 		test();
 	}
 	
