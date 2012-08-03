@@ -6,10 +6,10 @@
   <name>MS-Java</name>
   <description>MS-Java for MS Java projects</description>
   <build>
-    <sourceDirectory>src</sourceDirectory>
+    <sourceDirectory>src/main/java</sourceDirectory>
     <resources>
       <resource>
-        <directory>src</directory>
+        <directory>src/main/resources</directory>
         <excludes>
           <exclude>**/*.java</exclude>
         </excludes>
@@ -17,11 +17,12 @@
     </resources>
     <plugins>
       <plugin>
+      	<groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.3.2</version>
         <configuration>
-          <source/>
-          <target/>
+        	<source>1.7</source>
+        	<target>1.7</target>
         </configuration>
       </plugin>
     </plugins>
@@ -95,7 +96,7 @@
     </repository>
 </repositories>  
 	<organization>
-		<name>University of California, San Diego</name>
-		<url>http://www.ucsd.edu</url>
+		<name>Center for Computational Mass Spectrometry, University of California, San Diego</name>
+		<url>http://proteomics.ucsd.edu</url>
 	</organization>
 </project>
