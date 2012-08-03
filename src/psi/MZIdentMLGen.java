@@ -1,50 +1,50 @@
-//package psi;
-//
-//import java.io.PrintStream;
-//import java.util.List;
-//import java.util.Vector;
-//
-//import uk.ac.ebi.jmzidml.model.mzidml.AbstractContact;
-//import uk.ac.ebi.jmzidml.model.mzidml.Affiliation;
-//import uk.ac.ebi.jmzidml.model.mzidml.AnalysisCollection;
-//import uk.ac.ebi.jmzidml.model.mzidml.AnalysisProtocolCollection;
-//import uk.ac.ebi.jmzidml.model.mzidml.AnalysisSoftware;
-//import uk.ac.ebi.jmzidml.model.mzidml.AnalysisSoftwareList;
-//import uk.ac.ebi.jmzidml.model.mzidml.AuditCollection;
-//import uk.ac.ebi.jmzidml.model.mzidml.ContactRole;
-//import uk.ac.ebi.jmzidml.model.mzidml.Cv;
-//import uk.ac.ebi.jmzidml.model.mzidml.CvList;
-//import uk.ac.ebi.jmzidml.model.mzidml.CvParam;
-//import uk.ac.ebi.jmzidml.model.mzidml.DBSequence;
-//import uk.ac.ebi.jmzidml.model.mzidml.DataCollection;
-//import uk.ac.ebi.jmzidml.model.mzidml.Enzyme;
-//import uk.ac.ebi.jmzidml.model.mzidml.Enzymes;
-//import uk.ac.ebi.jmzidml.model.mzidml.FileFormat;
-//import uk.ac.ebi.jmzidml.model.mzidml.FragmentationTable;
-//import uk.ac.ebi.jmzidml.model.mzidml.InputSpectra;
-//import uk.ac.ebi.jmzidml.model.mzidml.Measure;
-//import uk.ac.ebi.jmzidml.model.mzidml.Modification;
-//import uk.ac.ebi.jmzidml.model.mzidml.ModificationParams;
-//import uk.ac.ebi.jmzidml.model.mzidml.Organization;
-//import uk.ac.ebi.jmzidml.model.mzidml.Param;
-//import uk.ac.ebi.jmzidml.model.mzidml.ParamList;
-//import uk.ac.ebi.jmzidml.model.mzidml.Peptide;
-//import uk.ac.ebi.jmzidml.model.mzidml.PeptideEvidence;
-//import uk.ac.ebi.jmzidml.model.mzidml.Person;
-//import uk.ac.ebi.jmzidml.model.mzidml.Provider;
-//import uk.ac.ebi.jmzidml.model.mzidml.Role;
-//import uk.ac.ebi.jmzidml.model.mzidml.SearchDatabase;
-//import uk.ac.ebi.jmzidml.model.mzidml.SearchDatabaseRef;
-//import uk.ac.ebi.jmzidml.model.mzidml.SearchModification;
-//import uk.ac.ebi.jmzidml.model.mzidml.SequenceCollection;
-//import uk.ac.ebi.jmzidml.model.mzidml.SpectrumIdentification;
-//import uk.ac.ebi.jmzidml.model.mzidml.SpectrumIdentificationList;
-//import uk.ac.ebi.jmzidml.model.mzidml.SpectrumIdentificationProtocol;
-//import uk.ac.ebi.jmzidml.model.mzidml.Tolerance;
-//import uk.ac.ebi.jmzidml.model.mzidml.UserParam;
-//import uk.ac.ebi.jmzidml.xml.io.MzIdentMLMarshaller;
-//
-//public class MZIdentMLGen {
+package psi;
+
+import java.io.PrintStream;
+import java.util.List;
+import java.util.Vector;
+
+import uk.ac.ebi.jmzidml.model.mzidml.AbstractContact;
+import uk.ac.ebi.jmzidml.model.mzidml.Affiliation;
+import uk.ac.ebi.jmzidml.model.mzidml.AnalysisCollection;
+import uk.ac.ebi.jmzidml.model.mzidml.AnalysisProtocolCollection;
+import uk.ac.ebi.jmzidml.model.mzidml.AnalysisSoftware;
+import uk.ac.ebi.jmzidml.model.mzidml.AnalysisSoftwareList;
+import uk.ac.ebi.jmzidml.model.mzidml.AuditCollection;
+import uk.ac.ebi.jmzidml.model.mzidml.ContactRole;
+import uk.ac.ebi.jmzidml.model.mzidml.Cv;
+import uk.ac.ebi.jmzidml.model.mzidml.CvList;
+import uk.ac.ebi.jmzidml.model.mzidml.CvParam;
+import uk.ac.ebi.jmzidml.model.mzidml.DBSequence;
+import uk.ac.ebi.jmzidml.model.mzidml.DataCollection;
+import uk.ac.ebi.jmzidml.model.mzidml.Enzyme;
+import uk.ac.ebi.jmzidml.model.mzidml.Enzymes;
+import uk.ac.ebi.jmzidml.model.mzidml.FileFormat;
+import uk.ac.ebi.jmzidml.model.mzidml.FragmentationTable;
+import uk.ac.ebi.jmzidml.model.mzidml.InputSpectra;
+import uk.ac.ebi.jmzidml.model.mzidml.Measure;
+import uk.ac.ebi.jmzidml.model.mzidml.Modification;
+import uk.ac.ebi.jmzidml.model.mzidml.ModificationParams;
+import uk.ac.ebi.jmzidml.model.mzidml.Organization;
+import uk.ac.ebi.jmzidml.model.mzidml.Param;
+import uk.ac.ebi.jmzidml.model.mzidml.ParamList;
+import uk.ac.ebi.jmzidml.model.mzidml.Peptide;
+import uk.ac.ebi.jmzidml.model.mzidml.PeptideEvidence;
+import uk.ac.ebi.jmzidml.model.mzidml.Person;
+import uk.ac.ebi.jmzidml.model.mzidml.Provider;
+import uk.ac.ebi.jmzidml.model.mzidml.Role;
+import uk.ac.ebi.jmzidml.model.mzidml.SearchDatabase;
+import uk.ac.ebi.jmzidml.model.mzidml.SearchDatabaseRef;
+import uk.ac.ebi.jmzidml.model.mzidml.SearchModification;
+import uk.ac.ebi.jmzidml.model.mzidml.SequenceCollection;
+import uk.ac.ebi.jmzidml.model.mzidml.SpectrumIdentification;
+import uk.ac.ebi.jmzidml.model.mzidml.SpectrumIdentificationList;
+import uk.ac.ebi.jmzidml.model.mzidml.SpectrumIdentificationProtocol;
+import uk.ac.ebi.jmzidml.model.mzidml.Tolerance;
+import uk.ac.ebi.jmzidml.model.mzidml.UserParam;
+import uk.ac.ebi.jmzidml.xml.io.MzIdentMLMarshaller;
+
+public class MZIdentMLGen {
 //	private MzIdentMLMarshaller m;
 //	private Person docOwner;
 //	private Organization org;
@@ -564,4 +564,4 @@
 //		gen.setPersonalInfo("Sangtae", "Kim", "PNNL");
 //		gen.writeResults(System.out);
 //	}
-//}
+}

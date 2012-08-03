@@ -18,14 +18,6 @@ import params.FileParameter;
 import params.IntRangeParameter;
 import params.ParamManager;
 import params.ToleranceParameter;
-import parser.MS2SpectrumParser;
-import parser.MgfSpectrumParser;
-import parser.MzXMLSpectraIterator;
-import parser.MzXMLSpectraMap;
-import parser.PNNLSpectraIterator;
-import parser.PNNLSpectraMap;
-import parser.PklSpectrumParser;
-import parser.SpectrumParser;
 
 import msdbsearch.CompactFastaSequence;
 import msdbsearch.CompactSuffixArray;
@@ -44,13 +36,11 @@ import msutil.InstrumentType;
 import msutil.Protocol;
 import msutil.SpecFileFormat;
 import msutil.SpecKey;
-import msutil.SpectraIterator;
-import msutil.SpectraMap;
 import msutil.Spectrum;
 import msutil.SpectrumAccessorBySpecIndex;
 
 public class MSGFDB {
-	public static final String VERSION = "8067";
+	public static final String VERSION = "8071";
 	public static final String RELEASE_DATE = "08/01/2012";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
@@ -209,7 +199,6 @@ public class MSGFDB {
 		boolean useUniformAAProb = paramManager.getIntValue("uniformAAProb") == 1 ? true : false;
 		boolean replicateMergedResults = paramManager.getIntValue("replicate") == 1 ? true : false;
 		boolean doNotDseEdgeScore = paramManager.getIntValue("edgeScore") == 1 ? true : false;
-		boolean outputForPercolator = paramManager.getIntValue("percolator") == 1 ? true : false;
 		
 		System.out.println("Loading database files...");
 		File dbIndexDir = paramManager.getFile("dd");
@@ -378,7 +367,7 @@ public class MSGFDB {
 		
 		MSGFDBResultGenerator gen = new MSGFDBResultGenerator(header, resultList);
 		
-		if(showFDR && !useTDA && numMatchesPerSpec == 1 && !outputForPercolator)
+		if(showFDR && !useTDA && numMatchesPerSpec == 1)
     	{
     		PrintStream out = null;
     		if(outputFile == null)
@@ -399,7 +388,7 @@ public class MSGFDB {
     		if(out != System.out)
     			out.close();
     	}
-    	else if(outputForPercolator || !showFDR || !useTDA)
+    	else if(!showFDR || !useTDA)
     	{
     		PrintStream out = null;
     		if(outputFile == null)
@@ -412,7 +401,7 @@ public class MSGFDB {
     				e.printStackTrace();
     			}
     		}
-    		gen.writeResults(out, false, outputForPercolator);
+    		gen.writeResults(out, false, false);
     		if(out != System.out)
     			out.close();
     	}

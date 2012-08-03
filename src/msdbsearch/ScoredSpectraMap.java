@@ -115,6 +115,8 @@ public class ScoredSpectraMap {
 	{
 		for(SpecKey specKey : specKeyList)
 		{
+			if(specKey == null)
+				System.out.println("Debug");
 			Spectrum spec = specMap.getSpectrumBySpecIndex(specKey.getSpecIndex());
 			spec.setCharge(specKey.getCharge());
 			float peptideMass = spec.getParentMass() - (float)Composition.H2O;

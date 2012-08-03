@@ -571,11 +571,16 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 			out.println("TITLE=" + getTitle());
 		else
 		{
-			out.print("TITLE=PrecursorMz: " + precursor.getMz());
-			if(startScanNum > 0)
-				out.println(" scan: " + startScanNum);
+			if(id != null)
+				out.println("TITLE=" + id);
 			else
-				out.println(" specIndex: " + specIndex);
+			{
+				out.print("TITLE=PrecursorMz: " + precursor.getMz());
+				if(startScanNum > 0)
+					out.println(" scan: " + startScanNum);
+				else
+					out.println(" specIndex: " + specIndex);
+			}
 		}
 		if(this.annotation != null)
 			out.println("SEQ=" + getAnnotationStr());

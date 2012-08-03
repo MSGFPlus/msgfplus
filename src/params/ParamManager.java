@@ -542,12 +542,11 @@ public class ParamManager {
 		edgeScoreParam.setHidden();
 		addParameter(edgeScoreParam);
 		
-		EnumParameter precolatorParam = new EnumParameter("percolator");
-		edgeScoreParam.registerEntry("normal").setDefault();
-		edgeScoreParam.registerEntry("for MS-GF+Percolator");
-		edgeScoreParam.setHidden();
-		addParameter(precolatorParam);		
-		
+//		EnumParameter precolatorParam = new EnumParameter("percolator");
+//		edgeScoreParam.registerEntry("normal").setDefault();
+//		edgeScoreParam.registerEntry("for MS-GF+Percolator");
+//		edgeScoreParam.setHidden();
+//		addParameter(precolatorParam);		
 	}
 
 	public void addMSGFParams()

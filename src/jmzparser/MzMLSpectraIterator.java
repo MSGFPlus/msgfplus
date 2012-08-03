@@ -4,9 +4,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import msutil.ActivationMethod;
 import msutil.Peak;
+import msutil.Spectrum;
 
 import uk.ac.ebi.jmzml.model.mzml.*;
 import uk.ac.ebi.jmzml.xml.io.MzMLObjectIterator;
@@ -16,22 +22,67 @@ import uk.ac.ebi.jmzml.xml.io.MzMLUnmarshaller;
 public class MzMLSpectraIterator implements Iterator<msutil.Spectrum>, Iterable<msutil.Spectrum> {
 	private MzMLUnmarshaller unmarshaller;
 	private MzMLObjectIterator<uk.ac.ebi.jmzml.model.mzml.Spectrum> itr;
+	private int minMSLevel = 2;		// inclusive
+	private int maxMSLevel = Integer.MAX_VALUE;		// exclusive
+	private boolean hasNext;
+	private msutil.Spectrum currentSpectrum = null;
 	
 	public MzMLSpectraIterator(File specFile) throws FileNotFoundException
 	{
+		turnOffLogs();
 		unmarshaller = new MzMLUnmarshaller(specFile);
 		itr = unmarshaller.unmarshalCollectionFromXpath("/run/spectrumList/spectrum", uk.ac.ebi.jmzml.model.mzml.Spectrum.class);
+		currentSpectrum = parseNextSpectrum();
+		if(currentSpectrum != null)        hasNext = true;
+		else                               hasNext = false;
+	}
+	
+	/**
+	 * Setter to set msLevel.
+	 * @param minMSLevel minimum msLevel to be considered (inclusive).
+	 * @param maxMSLevel maximum msLevel to be considered (inclusive).
+	 * @return this object.
+	 */
+	public MzMLSpectraIterator msLevel(int minMSLevel, int maxMSLevel) 
+	{ 
+		this.minMSLevel = minMSLevel; 
+		this.maxMSLevel = maxMSLevel; 
+		return this; 
 	}
 	
 	public boolean hasNext() 
 	{
-		return itr.hasNext();
+		return hasNext;
 	}
 
-	public msutil.Spectrum next() 
+	/**
+	 * Get next spectrum.
+	 * @return the next spectrum.
+	 */
+	public msutil.Spectrum next() {
+		Spectrum curSpecCopy = currentSpectrum;
+		currentSpectrum = parseNextSpectrum();
+		if(currentSpectrum == null)
+			hasNext = false;
+		return curSpecCopy;
+	}
+	
+	public msutil.Spectrum parseNextSpectrum() 
 	{
-		uk.ac.ebi.jmzml.model.mzml.Spectrum jmzSpec = itr.next();
-		return getSpectrumFromJMzMLSpec(jmzSpec);
+		msutil.Spectrum spec = null;
+		uk.ac.ebi.jmzml.model.mzml.Spectrum jmzSpec = null;
+
+		while(itr.hasNext())
+		{
+			jmzSpec = itr.next();
+			spec = getSpectrumFromJMzMLSpec(jmzSpec);
+			if(spec.getMSLevel() < minMSLevel || spec.getMSLevel() > maxMSLevel)
+				continue;
+			else
+				return spec; 
+		}
+		
+		return null;
 	}
 
 	public void remove() 
@@ -52,6 +103,19 @@ public class MzMLSpectraIterator implements Iterator<msutil.Spectrum>, Iterable<
 		String id = jmzMLSpec.getId();
 		spec.setID(id);
 
+        // MS Level
+		CVParam msLevelParam = null;
+		for(CVParam cvParam : jmzMLSpec.getCvParam())
+		{
+			if(cvParam.getAccession().equals("MS:1000511"))	// MS level
+			{
+				msLevelParam = cvParam;
+				break;
+			}
+		}
+		int msLevel = msLevelParam != null ? Integer.parseInt(msLevelParam.getValue()) : 0;
+		spec.setMsLevel(msLevel);
+		
 		// Precursor
 		PrecursorList precursorList = jmzMLSpec.getPrecursorList();
 		if(precursorList != null && precursorList.getCount().intValue() > 0 && precursorList.getPrecursor().get(0).getSelectedIonList() != null)
@@ -69,7 +133,6 @@ public class MzMLSpectraIterator implements Iterator<msutil.Spectrum>, Iterable<
 				if(param.getAccession().equals("MS:1000744"))	// selected ion m/z
 				{
 					precursorMz = Float.parseFloat(param.getValue());	// assume that unit is m/z (MS:1000040)
-					break;
 				}
 				else if(param.getAccession().equals("MS:1000041"))	// charge state
 				{
@@ -130,19 +193,6 @@ public class MzMLSpectraIterator implements Iterator<msutil.Spectrum>, Iterable<
             	spec.add(new Peak(mzNumbers[i].floatValue(), intenNumbers[i].floatValue(), 1));
         }
 		
-        // MS Level
-		CVParam msLevelParam = null;
-		for(CVParam cvParam : jmzMLSpec.getCvParam())
-		{
-			if(cvParam.getAccession().equals("MS:1000511"))	// MS level
-			{
-				msLevelParam = cvParam;
-				break;
-			}
-		}
-		int msLevel = msLevelParam != null ? Integer.parseInt(msLevelParam.getValue()) : 0;
-		spec.setMsLevel(msLevel);
-
 		// SpecIndex
 		spec.setSpecIndex(jmzMLSpec.getIndex()+1);	// 1-based spectrum index
 		
@@ -153,6 +203,15 @@ public class MzMLSpectraIterator implements Iterator<msutil.Spectrum>, Iterable<
 		return spec;
 	}
 	
+	static void turnOffLogs()
+	{
+		List<Logger> loggers = Collections.<Logger>list(LogManager.getCurrentLoggers());
+		loggers.add(LogManager.getRootLogger());
+		for ( Logger logger : loggers ) {
+		    logger.setLevel(Level.OFF);
+		}		
+	}
+
 	public static void main(String argv[]) throws Exception
 	{
 //		List<Logger> loggers = Collections.<Logger>list(LogManager.getCurrentLoggers());

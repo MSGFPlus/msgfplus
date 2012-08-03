@@ -11,9 +11,12 @@ import msutil.SpectrumAccessorBySpecIndex;
 public class MzMLSpectraMap implements SpectrumAccessorBySpecIndex 
 {
 	private MzMLUnmarshaller unmarshaller;
+	private int minMSLevel = 2;		// inclusive
+	private int maxMSLevel = Integer.MAX_VALUE;		// exclusive
 	
 	public MzMLSpectraMap(File specFile)
 	{
+		MzMLSpectraIterator.turnOffLogs();
 		unmarshaller = new MzMLUnmarshaller(specFile);
 	}
 
@@ -22,10 +25,22 @@ public class MzMLSpectraMap implements SpectrumAccessorBySpecIndex
 		unmarshaller = new MzMLUnmarshaller(new File(specFileName));
 	}
 	
+	/**
+	 * Setter to set msLevel.
+	 * @param minMSLevel minimum msLevel to be considered (inclusive).
+	 * @param maxMSLevel maximum msLevel to be considered (inclusive).
+	 * @return this object.
+	 */
+	public MzMLSpectraMap msLevel(int minMSLevel, int maxMSLevel) 
+	{ 
+		this.minMSLevel = minMSLevel; 
+		this.maxMSLevel = maxMSLevel; 
+		return this; 
+	}
+	
 	public msutil.Spectrum getSpectrumBySpecIndex(int specIndex) 
 	{
-		
-		String specID = unmarshaller.getSpectrumIDFromSpectrumIndex(specIndex);
+		String specID = unmarshaller.getSpectrumIDFromSpectrumIndex(specIndex-1);
 		if(specID != null)
 		{
 			uk.ac.ebi.jmzml.model.mzml.Spectrum jmzSpec = null;
@@ -35,7 +50,13 @@ public class MzMLSpectraMap implements SpectrumAccessorBySpecIndex
 				e.printStackTrace();
 			}
 			if(jmzSpec != null)
-				return MzMLSpectraIterator.getSpectrumFromJMzMLSpec(jmzSpec);
+			{
+				msutil.Spectrum spec = MzMLSpectraIterator.getSpectrumFromJMzMLSpec(jmzSpec);
+				if(spec.getMSLevel() < minMSLevel || spec.getMSLevel() > maxMSLevel)
+					return null;
+				else
+					return spec; 
+			}
 		}
 		return null;
 	}
