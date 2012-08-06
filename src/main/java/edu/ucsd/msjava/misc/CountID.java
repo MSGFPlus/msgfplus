@@ -5,6 +5,7 @@ import java.io.File;
 import edu.ucsd.msjava.fdr.TargetDecoyPSMSet;
 import edu.ucsd.msjava.parser.BufferedLineReader;
 import edu.ucsd.msjava.parser.InsPecTParser;
+import edu.ucsd.msjava.ui.MSGFPlus;
 
 
 
@@ -125,7 +126,7 @@ public class CountID {
 				pepCol,
 				null,
 				dbCol, 
-				(decoyPrefix == null ? "REV" : decoyPrefix));
+				(decoyPrefix == null ? MSGFPlus.DECOY_PROTEIN_PREFIX : decoyPrefix));
 
 		System.out.println("Score: " + scoreName);
 		System.out.println("Threshold: " + threshold);

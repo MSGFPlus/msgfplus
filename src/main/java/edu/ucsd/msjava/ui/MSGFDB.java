@@ -43,6 +43,7 @@ public class MSGFDB {
 	public static final String VERSION = "8071";
 	public static final String RELEASE_DATE = "08/01/2012";
 	
+	public static final String DECOY_PROTEIN_PREFIX = "XXX";
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static void main(String argv[])
 	{
@@ -101,12 +102,12 @@ public class MSGFDB {
 				SpecFileFormat specFormat = SpecFileFormat.getSpecFileFormat(f.getName());
 				if(specParam.isSupported(specFormat))
 				{
-					System.out.println("\nProcessing " + f.getPath());
+					System.out.println("\nProcessing " + f.getAbsolutePath());
 					String outputFileName = f.getName().substring(0, f.getName().lastIndexOf('.'))+".tsv";
 					File outputFile = new File(outputFileName);
 					if(outputFile.exists())
-						return outputFile.getPath() + " already exists!";
-					System.out.println("Writing results to " + outputFile.getPath());
+						return outputFile.getAbsolutePath() + " already exists!";
+					System.out.println("Writing results to " + outputFile.getAbsolutePath());
 					String errMsg = runMSGFDB(f, specFormat, outputFile, paramManager);
 					if(errMsg != null)
 						return errMsg;
@@ -163,9 +164,9 @@ public class MSGFDB {
 			String modFileName = modFile.getName();
 			String ext = modFileName.substring(modFileName.lastIndexOf('.')+1);
 			if(ext.equalsIgnoreCase("xml"))
-				aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile(modFile.getPath());
+				aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile(modFile.getAbsolutePath());
 			else
-				aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
+				aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getAbsolutePath());
 			if(aaSet.containsPhosphorylation())
 			{
 				protocol = Protocol.PHOSPHORYLATION;
@@ -204,13 +205,13 @@ public class MSGFDB {
 		File dbIndexDir = paramManager.getFile("dd");
 		if(dbIndexDir != null)
 		{
-			File newDBFile = new File(dbIndexDir.getPath()+File.separator+databaseFile.getName());
+			File newDBFile = new File(dbIndexDir.getAbsolutePath()+File.separator+databaseFile.getName());
 			if(!useTDA)
 			{
 				if(!newDBFile.exists())
 				{
-					System.out.println("Creating " + newDBFile.getPath() + ".");
-					ReverseDB.copyDB(databaseFile.getPath(), newDBFile.getPath());
+					System.out.println("Creating " + newDBFile.getAbsolutePath() + ".");
+					ReverseDB.copyDB(databaseFile.getAbsolutePath(), newDBFile.getAbsolutePath());
 				}
 			}
 			databaseFile = newDBFile;
@@ -222,8 +223,8 @@ public class MSGFDB {
 			File concatTargetDecoyDBFile = new File(databaseFile.getAbsoluteFile().getParent()+File.separator+concatDBFileName);
 			if(!concatTargetDecoyDBFile.exists())
 			{
-				System.out.println("Creating " + concatTargetDecoyDBFile.getPath() + ".");
-				if(ReverseDB.reverseDB(databaseFile.getPath(), concatTargetDecoyDBFile.getPath(), true, "XXX") == false)
+				System.out.println("Creating " + concatTargetDecoyDBFile.getAbsolutePath() + ".");
+				if(ReverseDB.reverseDB(databaseFile.getAbsolutePath(), concatTargetDecoyDBFile.getAbsolutePath(), true, DECOY_PROTEIN_PREFIX) == false)
 				{
 					return "Cannot create a decoy database file!";
 				}
@@ -232,11 +233,11 @@ public class MSGFDB {
 		}
 		
 		if(!useUniformAAProb)
-			DBScanner.setAminoAcidProbabilities(databaseFile.getPath(), aaSet);
+			DBScanner.setAminoAcidProbabilities(databaseFile.getAbsolutePath(), aaSet);
 		
 		aaSet.registerEnzyme(enzyme);
 		
-		CompactFastaSequence fastaSequence = new CompactFastaSequence(databaseFile.getPath());
+		CompactFastaSequence fastaSequence = new CompactFastaSequence(databaseFile.getAbsolutePath());
 		if(useTDA)
 		{
 			float ratioUniqueProteins = fastaSequence.getRatioUniqueProteins();
@@ -264,7 +265,7 @@ public class MSGFDB {
 
 		if(specItr == null || specMap == null)
 		{
-			return "Error while parsing spectrum file: " + specFile.getPath();
+			return "Error while parsing spectrum file: " + specFile.getAbsolutePath();
 		}
 
 		if(enzyme == null)
@@ -409,9 +410,11 @@ public class MSGFDB {
     	{
     		System.out.println("Computing FDRs...");
     		try {
-				File tempFile;
+				File tempFile = null;
 				if(outputFile != null)
-					tempFile = new File(outputFile.getPath()+".temp.tsv");
+				{
+					tempFile = new File(outputFile.getAbsolutePath()+".temp.tsv");
+				}
 				else
 				{
 					tempFile = File.createTempFile("MSGFDB", "tempResult");
@@ -428,7 +431,7 @@ public class MSGFDB {
 				int scoreCol = 11;
 				edu.ucsd.msjava.fdr.ComputeFDR.computeFDR(tempFile, null, scoreCol, false, "\t", 
 						specFileCol, specIndexCol, pepCol, null, true, showDecoy, 
-						true, dbCol, "REV_",
+						true, dbCol, DECOY_PROTEIN_PREFIX,
 						1, 1, outputFile);
 				
 			} catch (IOException e) {

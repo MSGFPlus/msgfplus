@@ -225,7 +225,7 @@ public class DBScanner {
 				if(bufferIndex == 0)
 					lcp = 0;
 
-//				// For debugging
+				// For debugging
 //				System.out.println(sequence.getSubsequence(index, sequence.getSize()));
 //				if(index == 1)
 //					System.out.println("Debug");
@@ -349,7 +349,7 @@ public class DBScanner {
 						continue;
 					
 //					System.out.println(sequence.getSubsequence(index+1, index+i+1));
-//					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("CGLYAVCVAAGYLYVVGVNAVALQTAAAVTTAVWKYVAKYSS"))
+//					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("IGAYLFVDMAHVAGLIAAGVYPNPVPHAHVVTSTTHK"))
 //						System.out.println("Debug");
 					
 					int cTermCleavageScore = 0;
@@ -492,15 +492,15 @@ public class DBScanner {
 			SimpleDBSearchScorer<NominalMass> scoredSpec = specScanner.getSpecKeyScorerMap().get(specKey);
 			float peptideMass = scoredSpec.getPrecursorPeak().getMass() - (float)Composition.H2O;
 			int nominalPeptideMass = NominalMass.toNominalMass(peptideMass);
-			int minNominalPeptideMass = nominalPeptideMass + specScanner.getMinNum13C();
-			int maxNominalPeptideMass = nominalPeptideMass + specScanner.getMaxNum13C();
+			int minNominalPeptideMass = nominalPeptideMass - specScanner.getMaxNum13C();
+			int maxNominalPeptideMass = nominalPeptideMass + specScanner.getMinNum13C();
 			
 			float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
 			float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
 			int maxPeptideMassIndex, minPeptideMassIndex;
 			
-			maxPeptideMassIndex = minNominalPeptideMass + Math.round(tolDaLeft-0.4999f);
-			minPeptideMassIndex = maxNominalPeptideMass - Math.round(tolDaRight-0.4999f);
+			maxPeptideMassIndex = maxNominalPeptideMass + Math.round(tolDaLeft-0.4999f);
+			minPeptideMassIndex = minNominalPeptideMass - Math.round(tolDaRight-0.4999f);
 			
 			for(int peptideMassIndex = minPeptideMassIndex; peptideMassIndex<=maxPeptideMassIndex; peptideMassIndex++)
 			{

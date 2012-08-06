@@ -115,15 +115,9 @@ public class ScoredSpectraMap {
 	{
 		for(SpecKey specKey : specKeyList)
 		{
-			if(specKey == null)
-				System.out.println("Debug");
 			Spectrum spec = specMap.getSpectrumBySpecIndex(specKey.getSpecIndex());
 			spec.setCharge(specKey.getCharge());
 			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
-			double peptideMassKey = (double)peptideMass;
-			while(pepMassSpecKeyMap.get(peptideMassKey) != null)	// for speeding up
-				peptideMassKey = Math.nextUp(peptideMassKey);
-			pepMassSpecKeyMap.put(peptideMassKey, specKey);
 			
 			for(int delta = this.minNum13C; delta<=maxNum13C; delta++)
 			{
