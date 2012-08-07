@@ -171,7 +171,7 @@ public class DBScanner {
 		dbSearch(2, 0, size, verbose);
 	}
 
-	public void dbSearch(int numberOfAllowableNonEnzymaticTermini, int fromIndex, int toIndex, boolean verbose)
+	public void dbSearch(int numberOfTolerableTermini, int fromIndex, int toIndex, boolean verbose)
 	{
 		Map<SpecKey,PriorityQueue<DatabaseMatch>> curSpecKeyDBMatchMap = new HashMap<SpecKey,PriorityQueue<DatabaseMatch>>();
 		
@@ -184,7 +184,7 @@ public class DBScanner {
 		int i = Integer.MAX_VALUE - 1000;
 		
 		boolean enzymaticSearch;
-		if(numberOfAllowableNonEnzymaticTermini == 2)
+		if(numberOfTolerableTermini == 2)
 			enzymaticSearch = false;
 		else
 			enzymaticSearch = true;
@@ -210,9 +210,9 @@ public class DBScanner {
 			boolean isExtensionAtTheSameIndex;
 			int numNonEnzTermini = 0;	// number of non-enzymatic termini
 			int numIndices = toIndex-fromIndex;
+			
 			for(int bufferIndex=0; bufferIndex<numIndices; bufferIndex++)
 			{
-				
 				// Print out the progress
 				if(verbose && bufferIndex % 2000000 == 0)
 				{
@@ -230,11 +230,11 @@ public class DBScanner {
 //				if(index == 1)
 //					System.out.println("Debug");
 				// skip redundant peptides
-				if(lcp > i+1)		
+				if(lcp > i+1 ||
+						lcp == i+1 && (enzyme == null || enzyme.isCTerm()))		
+				{
 					continue;
-				if(lcp == i+1 && (enzyme == null || enzyme.isCTerm()))
-					continue;
-						
+				}
 				else if(lcp == 0)	// preceding aa is changed
 				{
 					char precedingAA = sequence.getCharAt(index);
@@ -262,7 +262,7 @@ public class DBScanner {
 							if(enzymaticSearch)
 							{
 								numNonEnzTermini = 1;
-								if(numNonEnzTermini > numberOfAllowableNonEnzymaticTermini)
+								if(numNonEnzTermini > numberOfTolerableTermini)
 								{
 									i=0;
 									continue;
@@ -297,7 +297,7 @@ public class DBScanner {
 								if(enzymaticSearch)
 								{
 									numNonEnzTermini = 1;
-									if(numNonEnzTermini > numberOfAllowableNonEnzymaticTermini)
+									if(numNonEnzTermini > numberOfTolerableTermini)
 										break;
 								}
 							}
@@ -365,7 +365,7 @@ public class DBScanner {
 							else
 							{
 								cTermCleavageScore = peptideCleavagePenalty;
-								if(!isProteinCTerm && numNonEnzTermini+1 > numberOfAllowableNonEnzymaticTermini)
+								if(!isProteinCTerm && numNonEnzTermini+1 > numberOfTolerableTermini)
 								{
 									isExtensionAtTheSameIndex = true;
 									continue;
@@ -379,7 +379,7 @@ public class DBScanner {
 							else
 							{
 								cTermCleavageScore = neighboringAACleavagePenalty;
-								if(numNonEnzTermini+1 > numberOfAllowableNonEnzymaticTermini)
+								if(numNonEnzTermini+1 > numberOfTolerableTermini)
 								{
 									isExtensionAtTheSameIndex = true;
 									continue;
@@ -396,6 +396,7 @@ public class DBScanner {
 						int nominalPeptideMass = candidatePepGrid.getNominalPeptideMass(j);
 						float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
 						float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
+
 						
 						double leftThr = (double)(peptideMass - tolDaRight);
 						double rightThr = (double)(peptideMass + tolDaLeft);
@@ -421,16 +422,19 @@ public class DBScanner {
 									prevMatchQueue = new PriorityQueue<DatabaseMatch>();
 									curSpecKeyDBMatchMap.put(specKey, prevMatchQueue);
 								}
+								
 								if(prevMatchQueue.size() < this.numPeptidesPerSpec)
 								{
-									prevMatchQueue.add(new DatabaseMatch(index, (byte)(i+2), score, peptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
+									DatabaseMatch dbMatch = new DatabaseMatch(index, (byte)(i+2), score, peptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm);
+									prevMatchQueue.add(dbMatch);
 								}
 								else if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
 								{
 									if(score > prevMatchQueue.peek().getScore())
 									{
 										prevMatchQueue.poll();
-										prevMatchQueue.add(new DatabaseMatch(index, (byte)(i+2), score, peptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm));
+										DatabaseMatch dbMatch = new DatabaseMatch(index, (byte)(i+2), score, peptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm);
+										prevMatchQueue.add(dbMatch);
 									}
 								}
 							}
@@ -543,6 +547,7 @@ public class DBScanner {
 		}
 	}
 	
+	// for MS-GFDB
 	public synchronized void addDBSearchResults(List<MSGFDBResultGenerator.DBMatch> gen, String specFileName, boolean replicateMergedResults)
 	{
 		Iterator<Entry<SpecKey, PriorityQueue<DatabaseMatch>>> itr = specKeyDBMatchMap.entrySet().iterator();

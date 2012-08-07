@@ -79,11 +79,6 @@ public class MSGFDBResultGenerator {
 		}
 	}
 
-	public void writeMzIdentML(PrintStream out)
-	{
-		MzIdentMLMarshaller m = new MzIdentMLMarshaller();		
-	}
-	
 	public static class DBMatch implements Comparable<DBMatch>
 	{
 		private double specProb;

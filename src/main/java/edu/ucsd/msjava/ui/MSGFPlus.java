@@ -33,22 +33,9 @@ import edu.ucsd.msjava.msutil.InstrumentType;
 import edu.ucsd.msjava.msutil.Protocol;
 import edu.ucsd.msjava.msutil.SpecFileFormat;
 import edu.ucsd.msjava.msutil.SpecKey;
-import edu.ucsd.msjava.msutil.SpectraIterator;
-import edu.ucsd.msjava.msutil.SpectraMap;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.msutil.SpectrumAccessorBySpecIndex;
-import edu.ucsd.msjava.params.FileParameter;
-import edu.ucsd.msjava.params.IntRangeParameter;
 import edu.ucsd.msjava.params.ParamManager;
-import edu.ucsd.msjava.params.ToleranceParameter;
-import edu.ucsd.msjava.parser.MS2SpectrumParser;
-import edu.ucsd.msjava.parser.MgfSpectrumParser;
-import edu.ucsd.msjava.parser.MzXMLSpectraIterator;
-import edu.ucsd.msjava.parser.MzXMLSpectraMap;
-import edu.ucsd.msjava.parser.PNNLSpectraIterator;
-import edu.ucsd.msjava.parser.PNNLSpectraMap;
-import edu.ucsd.msjava.parser.PklSpectrumParser;
-import edu.ucsd.msjava.parser.SpectrumParser;
 
 
 public class MSGFPlus {
@@ -62,7 +49,7 @@ public class MSGFPlus {
 	{
 		long time = System.currentTimeMillis();
 
-		ParamManager paramManager = new ParamManager("MSGF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
 		paramManager.addMSGFPlusParams();
 		
 		if(argv.length == 0)
@@ -393,7 +380,7 @@ public class MSGFPlus {
 				int scoreCol = 11;
 				edu.ucsd.msjava.fdr.ComputeFDR.computeFDR(tempFile, null, scoreCol, false, "\t", 
 						specFileCol, specIndexCol, pepCol, null, true, showDecoy, 
-						true, dbCol, "REV_",
+						true, dbCol, DECOY_PROTEIN_PREFIX,
 						1, 1, outputFile);
 				
 			} catch (IOException e) {

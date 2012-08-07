@@ -40,8 +40,8 @@ import edu.ucsd.msjava.params.ToleranceParameter;
 
 
 public class MSGFDB {
-	public static final String VERSION = "8071";
-	public static final String RELEASE_DATE = "08/01/2012";
+	public static final String VERSION = "8091";
+	public static final String RELEASE_DATE = "08/06/2012";
 	
 	public static final String DECOY_PROTEIN_PREFIX = "XXX";
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
@@ -144,7 +144,6 @@ public class MSGFDB {
 		int numAllowedC13 = paramManager.getIntValue("c13");
 		if(rightParentMassTolerance.getToleranceAsDa(1000, 2) >= 0.5f)
 			numAllowedC13 = 0;
-		
 		
 		Enzyme enzyme = paramManager.getEnzyme();
 		int numAllowedNonEnzymaticTermini = paramManager.getIntValue("nnet");
