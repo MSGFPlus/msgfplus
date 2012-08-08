@@ -53,7 +53,7 @@ public class DBScanner {
 	
 	// DB search results
 	private Map<SpecKey,PriorityQueue<DatabaseMatch>> specKeyDBMatchMap;
-	private Map<Integer,PriorityQueue<DatabaseMatch>> specIndexDBMatchMap;
+//	private Map<Integer,PriorityQueue<DatabaseMatch>> specIndexDBMatchMap;
 
 	// For output
 	private String threadName = "";
@@ -91,7 +91,7 @@ public class DBScanner {
 		}
 		
 		specKeyDBMatchMap = Collections.synchronizedMap(new HashMap<SpecKey,PriorityQueue<DatabaseMatch>>());
-		specIndexDBMatchMap = Collections.synchronizedMap(new HashMap<Integer,PriorityQueue<DatabaseMatch>>());
+//		specIndexDBMatchMap = Collections.synchronizedMap(new HashMap<Integer,PriorityQueue<DatabaseMatch>>());
 	}
 
 	// builder
@@ -550,6 +550,8 @@ public class DBScanner {
 	// for MS-GFDB
 	public synchronized void addDBSearchResults(List<MSGFDBResultGenerator.DBMatch> gen, String specFileName, boolean replicateMergedResults)
 	{
+		Map<Integer,PriorityQueue<DatabaseMatch>> specIndexDBMatchMap = new HashMap<Integer,PriorityQueue<DatabaseMatch>>();
+		
 		Iterator<Entry<SpecKey, PriorityQueue<DatabaseMatch>>> itr = specKeyDBMatchMap.entrySet().iterator();
 		while(itr.hasNext())
 		{
@@ -575,7 +577,7 @@ public class DBScanner {
 				}
 				else if(existingQueue.size() >= this.numPeptidesPerSpec)
 				{
-					if(match.getSpecProb() < existingQueue.peek().getSpecProb())
+					if(match.getSpecEValue() < existingQueue.peek().getSpecEValue())
 					{
 						existingQueue.poll();
 						existingQueue.add(match);
@@ -643,7 +645,7 @@ public class DBScanner {
 				String protein = sa.getAnnotation(index+1);
 				
 				int score = match.getScore();
-				double specProb = match.getSpecProb();
+				double specProb = match.getSpecEValue();
 				int numPeptides = sa.getNumDistinctPeptides(peptideStr.length()+1);
 				double pValue = MSGFDBResultGenerator.DBMatch.getPValue(specProb, numPeptides);
 				String specProbStr;

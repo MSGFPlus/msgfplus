@@ -546,7 +546,7 @@ public class LibraryScanner {
 				}
 				else if(existingQueue.size() >= this.numPeptidesPerSpec)
 				{
-					if(match.getSpecProb() < existingQueue.peek().getSpecProb())
+					if(match.getSpecEValue() < existingQueue.peek().getSpecEValue())
 					{
 						existingQueue.poll();
 						existingQueue.add(match);
@@ -607,7 +607,7 @@ public class LibraryScanner {
 				String protein = match.getProtein();	// current no protein id is assigned
 
 				int score = match.getScore();
-				double specProb = match.getSpecProb();
+				double specProb = match.getSpecEValue();
 				double pValue = MSGFDBResultGenerator.DBMatch.getPValue(specProb, numPeptidesInLib);
 				String specProbStr;
 				if(specProb < Float.MIN_NORMAL)

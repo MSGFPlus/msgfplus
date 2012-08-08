@@ -61,7 +61,7 @@ public class Match implements Comparable<Match> {
 		this.specProb = specProb;
 	}
 	
-	public double getSpecProb() {
+	public double getSpecEValue() {
 		return specProb;
 	}
 	
@@ -82,9 +82,9 @@ public class Match implements Comparable<Match> {
 	public static class SpecProbComparator implements Comparator<Match>
 	{
 		public int compare(Match arg0, Match arg1) {
-			if(arg0.getSpecProb() < arg1.getSpecProb())
+			if(arg0.getSpecEValue() < arg1.getSpecEValue())
 				return 1;
-			else if(arg0.getSpecProb() > arg1.getSpecProb())
+			else if(arg0.getSpecEValue() > arg1.getSpecEValue())
 				return -1;
 			else
 				return 0;

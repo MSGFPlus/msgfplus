@@ -52,7 +52,7 @@ public class Peak implements Comparable<Peak> {
    * @return (m/z - H) * charge.
    */
   public float getMass() {
-    return  (mz - (float)Composition.PROTON) * (float)charge; 
+    return  (mz - (float)Composition.H) * (float)charge; 
   }
   
   

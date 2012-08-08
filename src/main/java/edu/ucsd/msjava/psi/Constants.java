@@ -6,6 +6,8 @@ import uk.ac.ebi.jmzidml.model.mzidml.UserParam;
 
 public class Constants {
     static String siiListID = "SII_LIST_1";
+    static String sirID = "SIR_";
+    static String siiID = "SII_";
     static String spectraDataID = "SID_1";
     static String psiCvID = "PSI-MS";
     static String siProtocolID = "SearchProtocol_1";
@@ -52,6 +54,15 @@ public class Constants {
 	 *
 	 * @return CvParam
 	 */
+	public static CvParam makeCvParam(String accession, String name){
+		return makeCvParam(accession, name, psiCV);
+	}
+	
+	/**
+	 * Helper method to create and return a CvParam from accession, name and CV
+	 *
+	 * @return CvParam
+	 */
 	public static CvParam makeCvParam(String accession, String name, Cv cv){
 		CvParam cvParam = new CvParam();
 		cvParam.setAccession(accession);
@@ -66,10 +77,7 @@ public class Constants {
 	 * @return CvParam
 	 */
 	public CvParam makeCvParam(String accession, String name, Cv cv, String unitAccession, String unitName, Cv alternateUnitCV){
-		CvParam cvParam = new CvParam();
-		cvParam.setAccession(accession);
-		cvParam.setName(name);
-		cvParam.setCv(cv);
+		CvParam cvParam = makeCvParam(accession, name, cv);
 		cvParam.setUnitAccession(unitAccession);
 		cvParam.setUnitCv(alternateUnitCV);
 		cvParam.setUnitName(unitName);

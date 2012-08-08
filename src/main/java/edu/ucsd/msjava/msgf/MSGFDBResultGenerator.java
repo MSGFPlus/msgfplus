@@ -119,6 +119,11 @@ public class MSGFDBResultGenerator {
 				pValue = specProb*numPeptides;
 			return pValue;
 		}
+
+		public static double getEValue(double specProb, int numPeptides)
+		{
+			return specProb*numPeptides;
+		}
 		
 		public void setEFDR(double eFDR)	{ this.eFDR = eFDR; }
 		
