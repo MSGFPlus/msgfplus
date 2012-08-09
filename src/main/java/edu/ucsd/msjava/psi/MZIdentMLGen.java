@@ -16,12 +16,14 @@ import java.util.Map.Entry;
 
 import edu.ucsd.msjava.msdbsearch.CompactSuffixArray;
 import edu.ucsd.msjava.msdbsearch.DatabaseMatch;
+import edu.ucsd.msjava.msdbsearch.ScoredSpectraMap;
 import edu.ucsd.msjava.msdbsearch.SearchParams;
 import edu.ucsd.msjava.msgf.MSGFDBResultGenerator;
 import edu.ucsd.msjava.msgf.NominalMass;
 import edu.ucsd.msjava.msscorer.SimpleDBSearchScorer;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Composition;
+import edu.ucsd.msjava.msutil.ModifiedAminoAcid;
 import edu.ucsd.msjava.msutil.SpecKey;
 
 import uk.ac.ebi.jmzidml.model.mzidml.AbstractContact;
@@ -73,11 +75,14 @@ public class MZIdentMLGen {
 	private Person docOwner;
 	private Organization org;
 	private SearchDatabase searchDB;
+	private ScoredSpectraMap specScanner;
 	
 	private final SearchParams params;
 	private AminoAcidSet aaSet;
 	private CompactSuffixArray sa;
 	 
+	private Map<edu.ucsd.msjava.msutil.Modification, Modification> modMap;
+	
 	private float eValueThreshold = Float.MAX_VALUE;
 	private SpectrumIdentificationList siList;	// set of PSMs
 	private SequenceCollection seqCollection;
@@ -88,13 +93,19 @@ public class MZIdentMLGen {
 	private Map<String, Peptide> pepMap;
 	private Map<String, DBSequence> dbSeqMap;
 	
+	private SpectraData spectraData;
+	private SearchDatabase searchDatabase;
 	
-	public MZIdentMLGen(SearchParams params, AminoAcidSet aaSet, CompactSuffixArray sa)
+	public MZIdentMLGen(SearchParams params, AminoAcidSet aaSet, CompactSuffixArray sa, ScoredSpectraMap specScanner)
 	{
 		m = new MzIdentMLMarshaller();
 		this.params = params;
 		this.aaSet = aaSet;
 		this.sa = sa;
+		this.specScanner = specScanner;
+
+		modMap = new HashMap<edu.ucsd.msjava.msutil.Modification, Modification>();
+		// TODO set-up modMap, SearchModification
 		
 		siList = new SpectrumIdentificationList();
 		siList.setId(Constants.siiListID);
@@ -106,8 +117,15 @@ public class MZIdentMLGen {
 		
 		pepMap = new LinkedHashMap<String, Peptide>();
 		dbSeqMap = new LinkedHashMap<String, DBSequence>();
+		
 	}
 
+	public void setInputs()
+	{
+		searchDatabase = new SearchDatabase();
+		spectraData = new SpectraData();
+	}
+	
 	public MZIdentMLGen setEValueThreshold(float eValueThreshold)
 	{
 		this.eValueThreshold = eValueThreshold;
@@ -116,51 +134,45 @@ public class MZIdentMLGen {
 	
 	public Peptide addPeptide(int index, int length, String pepStr)
 	{
-		char pre = sa.getSequence().getCharAt(index);
-		char post = sa.getSequence().getCharAt(index+length-1);
-		String pvID = pre+pepStr+post;
+//		char pre = sa.getSequence().getCharAt(index);
+//		char post = sa.getSequence().getCharAt(index+length-1);
+//		String pvID = pre+pepStr+post;
 		
-		Peptide mzidPeptide = pepMap.get(pvID);
+		Peptide mzidPeptide = pepMap.get(pepStr);
 		
 		if(mzidPeptide != null)
 			return mzidPeptide;
 				
 		// new peptide variant
 		mzidPeptide = new Peptide();
-		edu.ucsd.msjava.msutil.Peptide peptide = aaSet.getPeptide(pepStr);  
+		List<Modification> modList = mzidPeptide.getModification();
+		edu.ucsd.msjava.msutil.Peptide peptide = aaSet.getPeptide(pepStr); 
+		StringBuffer unmodPepStr = new StringBuffer();
+		int location = 0;
 		for(edu.ucsd.msjava.msutil.AminoAcid aa : peptide)
 		{
+			unmodPepStr.append(aa.getUnmodResidue());
 			if(aa.isModified())
 			{
-				
+				Modification mod = new Modification();
+				mod.setLocation(location);
+				ModifiedAminoAcid modAA = (ModifiedAminoAcid)aa;
+				mod.setMonoisotopicMassDelta(modAA.getModification().getAccurateMass());
+				modList.add(mod);
 			}
+			location++;
 		}
-				
-				
-				
+
+		mzidPeptide.setId(pepStr);
+		pepMap.put(pepStr, mzidPeptide);
 		
-		String peptideStr = sa.getSequence().getSubsequence(index+1, index+length-1);
-		
-		Peptide mzidPep = new Peptide();
-		mzidPep.setId();
-		mzidPep.setPeptideSequence(peptideStr);
-		
-		
-		
-//		String annotationStr = sa.getSequence().getCharAt(index)+"."+pep+"."+sa.getSequence().getCharAt(index+length-1);
-		
-		return mzidPep;
+		return mzidPeptide;
 	}
 	
-	public SpectraData getSpectraData()
-	{
-		return null;
-	}
-	
-	public edu.ucsd.msjava.msutil.Spectrum getSpectrum(int specIndex)
-	{
-		return null;
-	}
+//	public edu.ucsd.msjava.msutil.Spectrum getSpectrum(int specIndex)
+//	{
+//		return this.specScanner.ge;
+//	}
 	
 	public int getNumUniquePeptidesInDB(int peptideLength)
 	{
@@ -219,12 +231,15 @@ public class MZIdentMLGen {
 			ArrayList<DatabaseMatch> matchList = new ArrayList<DatabaseMatch>(matchQueue);
 			SpectrumIdentificationResult sir = new SpectrumIdentificationResult();
 			sir.setId(Constants.sirID+specIndex);
-			sir.setSpectraData(getSpectraData());
+			sir.setSpectraData(spectraData);
 			
-			edu.ucsd.msjava.msutil.Spectrum spec = getSpectrum(specIndex);
+//			SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(new SpecKey(specIndex, charge));
 			
-			sir.setSpectrumID(spec.getID());
-			float precursorMz = spec.getPrecursorPeak().getMz();
+//			sir.setSpectrumID(spec.getID());
+//			float precursorMz = spec.getPrecursorPeak().getMz();
+			
+			// TODO: precursorMz and id
+			float precursorMz = 0;
 			
 			int rank = 0;
 			
