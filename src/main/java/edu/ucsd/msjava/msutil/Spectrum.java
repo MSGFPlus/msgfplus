@@ -70,10 +70,8 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	{ 
 		if(id != null)
 			return id;
-		else if(title != null)
-			return title;
 		else
-			return "specIndex=" + specIndex;
+			return String.valueOf(specIndex);
 	}
 	
 	/**

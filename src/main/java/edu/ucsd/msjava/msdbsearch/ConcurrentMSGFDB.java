@@ -6,7 +6,6 @@ import java.util.List;
 import edu.ucsd.msjava.msgf.MSGFDBResultGenerator;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.parser.BufferedLineReader;
 
 public class ConcurrentMSGFDB {
 	public static class PreProcessSpectra implements Runnable {

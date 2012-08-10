@@ -2,12 +2,14 @@ package edu.ucsd.msjava.parser;
 
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Map;
 
 import edu.ucsd.msjava.msutil.Composition;
 import edu.ucsd.msjava.msutil.Peak;
 import edu.ucsd.msjava.msutil.SpectraIterator;
 import edu.ucsd.msjava.msutil.SpectraMap;
 import edu.ucsd.msjava.msutil.Spectrum;
+import edu.ucsd.msjava.msutil.SpectrumMetaInfo;
 
 /**
  * A class that parses MS2 format
@@ -79,9 +81,9 @@ public class MS2SpectrumParser implements SpectrumParser {
 	 * @param lineReader A reader points to the start of the spectrum.
 	 * @return A Hashtable object maps a spectrum index into a file position.
 	 */
-	public Hashtable<Integer, Long> getSpecIndexMap(
+	public Map<Integer, SpectrumMetaInfo> getSpecIndexMap(
 			BufferedRandomAccessLineReader lineReader) {
-		Hashtable<Integer, Long> specIndexMap = new Hashtable<Integer, Long>();
+		Hashtable<Integer, SpectrumMetaInfo> specIndexMap = new Hashtable<Integer, SpectrumMetaInfo>();
 		String buf;
 		long offset = 0;
 		int specIndex = 0;
@@ -90,10 +92,23 @@ public class MS2SpectrumParser implements SpectrumParser {
 			if(buf.startsWith(":"))
 			{
 				specIndex++;
-				specIndexMap.put(specIndex, offset);
-//				String[] token = buf.substring(1).split("\\.");
-//				int startScanNum = Integer.parseInt(token[0]);
-//                scanNumMap.put(startScanNum, offset);
+				
+				SpectrumMetaInfo metaInfo = new SpectrumMetaInfo();
+				metaInfo.setPosition(offset);
+				metaInfo.setID("specIndex=" + specIndex);
+				
+				buf = lineReader.readLine();
+				if(buf != null)
+				{
+					String[] token = buf.split("\\s+");
+					float MH = Float.parseFloat(token[0]);
+					int charge = Integer.parseInt(token[1]);
+					float precursorMz = ((MH-(float)Composition.PROTON)+charge*(float)Composition.PROTON)/charge;
+					metaInfo.setPrecursorMz(precursorMz);
+				}
+
+				specIndexMap.put(specIndex, metaInfo);
+				
 			}
 			
 			offset = lineReader.getPosition();

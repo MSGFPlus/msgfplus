@@ -1,10 +1,11 @@
 package edu.ucsd.msjava.parser;
 
-import java.util.Hashtable;
+import java.util.Map;
 
 import edu.ucsd.msjava.msutil.Spectrum;
+import edu.ucsd.msjava.msutil.SpectrumMetaInfo;
 
 public interface SpectrumParser {
 	public Spectrum readSpectrum(LineReader lineReader);
-	Hashtable<Integer, Long> getSpecIndexMap(BufferedRandomAccessLineReader lineReader);	// specIndex -> filePos
+	Map<Integer, SpectrumMetaInfo> getSpecIndexMap(BufferedRandomAccessLineReader lineReader);	// specIndex -> filePos
 }

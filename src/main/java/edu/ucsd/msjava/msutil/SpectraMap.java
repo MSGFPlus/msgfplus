@@ -2,14 +2,14 @@ package edu.ucsd.msjava.msutil;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Hashtable;
+import java.util.Map;
 
 import edu.ucsd.msjava.parser.BufferedRandomAccessLineReader;
 import edu.ucsd.msjava.parser.SpectrumParser;
 
-
 public class SpectraMap implements SpectrumAccessorBySpecIndex {
-	private Hashtable<Integer, Long> specIndexMap = null; 	// key: specIndex, value: filePos
+	private Map<Integer, SpectrumMetaInfo> specIndexMap = null; 	// key: specIndex, value: metaInfo
+
 	private SpectrumParser parser;
 	protected BufferedRandomAccessLineReader lineReader;
 	private ArrayList<Integer> specIndexList = null;
@@ -23,9 +23,10 @@ public class SpectraMap implements SpectrumAccessorBySpecIndex {
 	    specIndexMap = parser.getSpecIndexMap(lineReader);
 	}
 	
+	@Override
 	public synchronized Spectrum getSpectrumBySpecIndex(int specIndex)
 	{
-		Long filePos = specIndexMap.get(specIndex);
+		Long filePos = getFileOffset(specIndex);
 		if(filePos == null)
 			return null;
 		else
@@ -33,8 +34,38 @@ public class SpectraMap implements SpectrumAccessorBySpecIndex {
 			lineReader.seek(filePos);
 			Spectrum spec = parser.readSpectrum(lineReader);
 			spec.setSpecIndex(specIndex);
+			spec.setID(String.valueOf(specIndex));
 			return spec;
 		}
+	}
+
+	@Override
+	public Float getPrecursorMz(int specIndex)
+	{
+		SpectrumMetaInfo metaInfo = specIndexMap.get(specIndex);
+		if(metaInfo == null)
+			return null;
+		else
+			return metaInfo.getPrecursorMz();
+	}
+	
+	@Override
+	public String getID(int specIndex)
+	{
+		SpectrumMetaInfo metaInfo = specIndexMap.get(specIndex);
+		if(metaInfo == null)
+			return null;
+		else
+			return metaInfo.getID();
+	}
+
+	public Long getFileOffset(int specIndex)
+	{
+		SpectrumMetaInfo metaInfo = specIndexMap.get(specIndex);
+		if(metaInfo == null)
+			return null;
+		else
+			return metaInfo.getPosition();
 	}
 	
 	public synchronized ArrayList<Integer> getSpecIndexList()

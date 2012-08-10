@@ -41,7 +41,6 @@ public class ScoredSpectraMap {
 	private SortedMap<Double,SpecKey> pepMassSpecKeyMap;
 	private Map<SpecKey,SimpleDBSearchScorer<NominalMass>> specKeyScorerMap;
 	private Map<Pair<Integer,Integer>, SpecKey> specIndexChargeToSpecKeyMap;
-	private Map<Integer,Pair<String,Float>> specIndexToIDPrecursorMap;
 	
 	private boolean turnOffEdgeScoring = false;
 
@@ -66,8 +65,6 @@ public class ScoredSpectraMap {
 		pepMassSpecKeyMap = Collections.synchronizedSortedMap((new TreeMap<Double,SpecKey>()));
 		specKeyScorerMap = Collections.synchronizedMap(new HashMap<SpecKey,SimpleDBSearchScorer<NominalMass>>());
 		specIndexChargeToSpecKeyMap = Collections.synchronizedMap(new HashMap<Pair<Integer,Integer>,SpecKey>());
-		
-		specIndexToIDPrecursorMap = Collections.synchronizedMap(new HashMap<Integer,Pair<String,Float>>());
 	}
 
 	public ScoredSpectraMap(
@@ -102,11 +99,6 @@ public class ScoredSpectraMap {
 		return specIndexChargeToSpecKeyMap.get(new Pair<Integer,Integer>(specIndex, charge));
 	}
 	
-	public Pair<String,Float> getIDAndPrecursorMzPair(int specIndex)
-	{
-		return specIndexToIDPrecursorMap.get(specIndex);
-	}
-	
 	public ScoredSpectraMap makePepMassSpecKeyMap()
 	{
 		for(SpecKey specKey : specKeyList)
@@ -125,12 +117,6 @@ public class ScoredSpectraMap {
 				pepMassSpecKeyMap.put(mass1Key, specKey);
 			}
 			specIndexChargeToSpecKeyMap.put(new Pair<Integer,Integer>(specIndex, specKey.getCharge()), specKey);
-			if(specIndexToIDPrecursorMap.get(specIndex) == null)
-			{
-				String id = spec.getID();
-				float precursorMz = spec.getPrecursorPeak().getMz();
-				specIndexToIDPrecursorMap.put(specIndex, new Pair<String,Float>(id,precursorMz));
-			}
 		}
 		return this;
 	}

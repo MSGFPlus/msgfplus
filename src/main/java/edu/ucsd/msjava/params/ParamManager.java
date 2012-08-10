@@ -406,12 +406,6 @@ public class ParamManager {
 		showDecoyParam.setHidden();
 		addParameter(showDecoyParam);
 		
-		EnumParameter replicateMergedResParam = new EnumParameter("replicate");
-		replicateMergedResParam.registerEntry("show merged spectra").setDefault();
-		replicateMergedResParam.registerEntry("show individual spectra");
-		replicateMergedResParam.setHidden();
-		addParameter(replicateMergedResParam);
-
 		EnumParameter edgeScoreParam = new EnumParameter("edgeScore");
 		edgeScoreParam.registerEntry("use edge scoring").setDefault();
 		edgeScoreParam.registerEntry("do not use edge scoring");

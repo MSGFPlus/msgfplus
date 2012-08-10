@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Map;
 
 import edu.ucsd.msjava.msutil.ActivationMethod;
 import edu.ucsd.msjava.msutil.Composition;
@@ -12,6 +13,7 @@ import edu.ucsd.msjava.msutil.Peak;
 import edu.ucsd.msjava.msutil.SpectraIterator;
 import edu.ucsd.msjava.msutil.SpectraMap;
 import edu.ucsd.msjava.msutil.Spectrum;
+import edu.ucsd.msjava.msutil.SpectrumMetaInfo;
 
 public class PNNLSpectrumParser implements SpectrumParser {
 
@@ -82,9 +84,10 @@ public class PNNLSpectrumParser implements SpectrumParser {
 		return spec;
 	}
 
-	public Hashtable<Integer, Long> getSpecIndexMap(BufferedRandomAccessLineReader lineReader)
+	@Override
+	public Map<Integer, SpectrumMetaInfo> getSpecIndexMap(BufferedRandomAccessLineReader lineReader)
 	{
-		Hashtable<Integer, Long> specIndexMap = new Hashtable<Integer, Long>();
+		Hashtable<Integer, SpectrumMetaInfo> specIndexMap = new Hashtable<Integer, SpectrumMetaInfo>();
 		String buf;
 		long offset = 0;
 		int specIndex = 0;
@@ -92,7 +95,33 @@ public class PNNLSpectrumParser implements SpectrumParser {
 		{
 			if(buf.startsWith("=="))
 			{
-				specIndexMap.put(++specIndex, offset);
+//				specIndexMap.put(++specIndex, offset);
+				++specIndex;
+				int lastDotIndex = buf.lastIndexOf('.');
+				int secondLastDotIndex = buf.lastIndexOf('.', lastDotIndex-1);
+				int thirdLastDotIndex = buf.lastIndexOf('.', secondLastDotIndex-1);
+				int fourthLastDotIndex = buf.lastIndexOf('.', thirdLastDotIndex-1);
+				
+				String annotation = buf;
+				// first line of a spectrum
+				buf = lineReader.readLine();
+				if(buf == null || buf.trim().length() == 0)
+				{
+					System.out.println("Error while parsing _Dta.txt file: " + annotation);
+					System.out.println("No spectrum!");
+					System.exit(-1);
+				}
+				
+				String[] token = buf.split("\\s+");
+				float mPlusH = Float.parseFloat(token[0]);
+				int charge = Integer.parseInt(token[1].substring(token[1].indexOf('=')+1));
+				float precursorMz = (mPlusH-(float)Composition.PROTON)/charge+(float)Composition.PROTON;
+				
+				SpectrumMetaInfo metaInfo = new SpectrumMetaInfo();
+				metaInfo.setID("specIndex="+specIndex);
+				metaInfo.setPrecursorMz(precursorMz);
+				metaInfo.setPosition(offset);
+				specIndexMap.put(specIndex, metaInfo);
 			}
 			offset = lineReader.getPosition();
 		}

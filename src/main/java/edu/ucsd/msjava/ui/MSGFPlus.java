@@ -17,12 +17,11 @@ import java.util.concurrent.Executors;
 
 import edu.ucsd.msjava.msdbsearch.CompactFastaSequence;
 import edu.ucsd.msjava.msdbsearch.CompactSuffixArray;
-import edu.ucsd.msjava.msdbsearch.ConcurrentMSGFDB;
+import edu.ucsd.msjava.msdbsearch.ConcurrentMSGFPlus;
 import edu.ucsd.msjava.msdbsearch.DBScanner;
 import edu.ucsd.msjava.msdbsearch.ReverseDB;
 import edu.ucsd.msjava.msdbsearch.ScoredSpectraMap;
 import edu.ucsd.msjava.msdbsearch.SearchParams;
-import edu.ucsd.msjava.msgf.MSGFDBResultGenerator;
 import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msscorer.NewScorerFactory.SpecDataType;
 import edu.ucsd.msjava.msutil.ActivationMethod;
@@ -36,6 +35,7 @@ import edu.ucsd.msjava.msutil.SpecKey;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.msutil.SpectrumAccessorBySpecIndex;
 import edu.ucsd.msjava.params.ParamManager;
+import edu.ucsd.msjava.psi.MZIdentMLGen;
 
 
 public class MSGFPlus {
@@ -68,7 +68,7 @@ public class MSGFPlus {
 			return;
 		}
 		
-		// Running MS-GFDB
+		// Running MS-GF+
 		paramManager.printToolInfo();
 		String errorMessage = runMSGFPlus(paramManager);
 		if(errorMessage != null)
@@ -126,30 +126,22 @@ public class MSGFPlus {
 		int max13C = params.getMax13C();	// inclusive
 		
 		Enzyme enzyme = params.getEnzyme();
-		int ntt = params.getNumTolerableTermini();
 		
 		ActivationMethod activationMethod = params.getActivationMethod();
 		InstrumentType instType = params.getInstType();
 		Protocol protocol = params.getProtocol();
 		
 		AminoAcidSet aaSet = params.getAASet();
-		int numMatchesPerSpec = params.getNumMatchesPerSpec();
 		
 		int startSpecIndex = params.getStartSpecIndex();
 		int endSpecIndex = params.getEndSpecIndex();
 		
 		boolean useTDA = params.useTDA();
-		boolean showFDR = params.showFDR();
-		boolean showDecoy = params.showDecoy();
-		
-		int minPeptideLength = params.getMinPeptideLength();
-		int maxPeptideLength = params.getMaxPeptideLength();
 		
 		int minCharge = params.getMinCharge();
 		int maxCharge = params.getMaxCharge();
 		
 		int numThreads = params.getNumThreads();
-		boolean replicateMergedResults = params.replicateMergedResults();
 		boolean doNotDseEdgeScore = params.doNotDseEdgeScore();
 		
 		System.out.println("Loading database files...");
@@ -200,7 +192,7 @@ public class MSGFPlus {
 			}
 		}
 		
-		CompactSuffixArray sa = new CompactSuffixArray(fastaSequence, maxPeptideLength);
+		CompactSuffixArray sa = new CompactSuffixArray(fastaSequence, params.getMaxPeptideLength());
 		System.out.print("Loading database finished ");
 		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
 		
@@ -218,9 +210,6 @@ public class MSGFPlus {
 			return "Error while parsing spectrum file: " + specFile.getPath();
 		}
 
-		if(enzyme == null)
-			ntt = 2;
-		
 		// determine the number of spectra to be scanned together 
 		long maxMemory = Runtime.getRuntime().maxMemory() - sa.getSize() - 1<<28;
 		
@@ -241,7 +230,7 @@ public class MSGFPlus {
 		SpecDataType specDataType = new SpecDataType(activationMethod, instType, enzyme, protocol);
 		int fromIndexGlobal = 0;
 		
-		List<MSGFDBResultGenerator.DBMatch> resultList = Collections.synchronizedList(new ArrayList<MSGFDBResultGenerator.DBMatch>());
+		MZIdentMLGen mzidGen = new MZIdentMLGen(params, aaSet, sa, specMap);
 		
 		while(true)
 		{
@@ -281,19 +270,11 @@ public class MSGFPlus {
 		    	if(doNotDseEdgeScore)
 		    		specScanner.turnOffEdgeScoring();
 		    	
-				ConcurrentMSGFDB.RunMSGFDB msgfdbExecutor = new ConcurrentMSGFDB.RunMSGFDB(
+				ConcurrentMSGFPlus.RunMSGFPlus msgfdbExecutor = new ConcurrentMSGFPlus.RunMSGFPlus(
 							specScanner,
 							sa,
-							enzyme,
-							aaSet,
-							numMatchesPerSpec,
-							minPeptideLength,
-							maxPeptideLength,
-							ntt, 
-							!useTDA,
-							resultList, 
-							specFile.getName(),
-							replicateMergedResults
+							params,
+							mzidGen
 							);
 				executor.execute(msgfdbExecutor);
 			}
@@ -305,90 +286,23 @@ public class MSGFPlus {
 		}
 		
     	time = System.currentTimeMillis();
-		// Sort search results by spectral probabilities
-		Collections.sort(resultList);
-
-		// Write results
-		
-		String header = 
-			"#SpecFile\tSpecIndex\tScan#\t"
-			+"FragMethod\t"
-			+"Precursor\tPMError("
-			+(rightParentMassTolerance.isTolerancePPM() ? "ppm" : "Da")
-			+")\tCharge\tPeptide\tProtein\tDeNovoScore\tMSGFScore\tSpecProb\tP-value";
-		
-		MSGFDBResultGenerator gen = new MSGFDBResultGenerator(header, resultList);
-		
-		if(showFDR && !useTDA && numMatchesPerSpec == 1)
-    	{
-    		PrintStream out = null;
-    		if(outputFile == null)
-    			out = System.out;
-    		else
-    		{
-    			try {
-    				out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFile)));
-    			} catch (IOException e) {
-    				e.printStackTrace();
-    			}
-    		}
-    		System.out.println("Computing EFDRs...");
-    		gen.computeEFDR();
-    		System.out.print("Computing EFDRs finished");
-    		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
-    		gen.writeResults(out, true, false);
-    		if(out != System.out)
-    			out.close();
-    	}
-    	else if(!showFDR || !useTDA)
-    	{
-    		PrintStream out = null;
-    		if(outputFile == null)
-    			out = System.out;
-    		else
-    		{
-    			try {
-    				out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFile)));
-    			} catch (IOException e) {
-    				e.printStackTrace();
-    			}
-    		}
-    		gen.writeResults(out, false, false);
-    		if(out != System.out)
-    			out.close();
-    	}
-    	else
-    	{
-    		System.out.println("Computing FDRs...");
-    		try {
-				File tempFile;
-				if(outputFile != null)
-					tempFile = new File(outputFile.getPath()+".temp.tsv");
-				else
-				{
-					tempFile = File.createTempFile("MSGFDB", "tempResult");
-					tempFile.deleteOnExit();
-				}
-				PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(tempFile)));
-				gen.writeResults(out, false, false);
-				out.flush();
-				out.close();
-				int specFileCol = 0;
-				int specIndexCol = 1;
-				int pepCol = 7;
-				int dbCol = 8;
-				int scoreCol = 11;
-				edu.ucsd.msjava.fdr.ComputeFDR.computeFDR(tempFile, null, scoreCol, false, "\t", 
-						specFileCol, specIndexCol, pepCol, null, true, showDecoy, 
-						true, dbCol, DECOY_PROTEIN_PREFIX,
-						1, 1, outputFile);
-				
+    	
+		PrintStream out = null;
+		if(outputFile == null)
+			out = System.out;
+		else
+		{
+			try {
+				out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFile)));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-    		System.out.print("Computing FDRs finished");
-    		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
-    	}
+		}
+
+    	mzidGen.writeResults(out);
+
+    	out.close();
+    	
     	return null;
 	}	    
 }

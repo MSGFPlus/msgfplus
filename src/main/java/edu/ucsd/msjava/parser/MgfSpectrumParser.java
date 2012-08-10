@@ -3,6 +3,7 @@ package edu.ucsd.msjava.parser;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Map;
 
 import edu.ucsd.msjava.msutil.ActivationMethod;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
@@ -10,6 +11,7 @@ import edu.ucsd.msjava.msutil.Peak;
 import edu.ucsd.msjava.msutil.Peptide;
 import edu.ucsd.msjava.msutil.SpectraIterator;
 import edu.ucsd.msjava.msutil.Spectrum;
+import edu.ucsd.msjava.msutil.SpectrumMetaInfo;
 
 /**
  * This class enables to parse spectrum file with mgf format.
@@ -82,6 +84,7 @@ public class MgfSpectrumParser implements SpectrumParser {
   			{
   				title = buf.substring(buf.indexOf('=')+1);
   				spec.setTitle(title);
+//  				spec.setID(title);
   			}
   			else if(buf.startsWith("CHARGE"))
   			{
@@ -145,23 +148,35 @@ public class MgfSpectrumParser implements SpectrumParser {
 	 * Implementation of getSpecIndexMap object. Reads the entire spectrum file and
 	 * generates a map from a spectrum index of a spectrum and the position of the spectrum.
 	 * @param lineReader a LineReader object that points to the start of a file.
-	 * @return A hashtable maps spectrum indexes to spectral positions in the file.
+	 * @return A map from spectrum indexes to the spectrum meta information.
 	 */
-	public Hashtable<Integer, Long> getSpecIndexMap(BufferedRandomAccessLineReader lineReader)
+	public Map<Integer, SpectrumMetaInfo> getSpecIndexMap(BufferedRandomAccessLineReader lineReader)
 	{
-		Hashtable<Integer, Long> specIndexMap = new Hashtable<Integer, Long>();
+		Hashtable<Integer, SpectrumMetaInfo> specIndexMap = new Hashtable<Integer, SpectrumMetaInfo>();
 		String buf;
 		long offset = 0;
-		long specOffset = 0;
 		int specIndex = 0;
+		SpectrumMetaInfo metaInfo = null;
 		while((buf = lineReader.readLine()) != null)
 		{
 			if(buf.startsWith("BEGIN IONS"))
 			{
 				specIndex++;
-				specOffset = offset;
-				specIndexMap.put(specIndex, specOffset);
+				metaInfo = new SpectrumMetaInfo();
+				metaInfo.setPosition(offset);
+				specIndexMap.put(specIndex, metaInfo);
 			}
+			else if(buf.startsWith("TITLE"))
+			{
+				metaInfo.setID(buf.substring(buf.indexOf('=')+1));
+			}
+  			else if(buf.startsWith("PEPMASS"))
+  			{
+  				String[] token = buf.substring(buf.indexOf("=")+1).split("\\s+");
+  				float precursorMz = Float.valueOf(token[0]);
+  				metaInfo.setPrecursorMz(precursorMz);
+  			}
+			
 			offset = lineReader.getPosition();
 		}
 		return specIndexMap;

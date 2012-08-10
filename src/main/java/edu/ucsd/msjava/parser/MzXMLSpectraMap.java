@@ -10,6 +10,7 @@ import edu.ucsd.msjava.msutil.ActivationMethod;
 import edu.ucsd.msjava.msutil.Peak;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.msutil.SpectrumAccessorBySpecIndex;
+import edu.ucsd.msjava.msutil.SpectrumMetaInfo;
 
 import org.systemsbiology.jrap.stax.MSXMLParser;
 import org.systemsbiology.jrap.stax.Scan;
@@ -69,7 +70,9 @@ public class MzXMLSpectraMap implements SpectrumAccessorBySpecIndex {
 		precursorCharge = (precursorCharge < 0) ? 0 : precursorCharge; 
 
 		Spectrum spec = new Spectrum(header.getPrecursorMz(), precursorCharge, header.getPrecursorIntensity());
-		spec.setScanNum(header.getNum());
+		int scanNum = header.getNum();
+		spec.setScanNum(scanNum);
+		spec.setID(String.valueOf(scanNum));
 		spec.setSpecIndex(header.getNum());
 
 		// parse retention time. Note that retention time is a required field
@@ -117,7 +120,7 @@ public class MzXMLSpectraMap implements SpectrumAccessorBySpecIndex {
 
 		return spec;
 	}
-
+	
 	public Spectrum getSpectrumBySpecIndex(int specIndex)
 	{
 		return getSpectrumByScanNum(specIndex);
@@ -146,5 +149,31 @@ public class MzXMLSpectraMap implements SpectrumAccessorBySpecIndex {
 			}
 		}
 		return specIndexList;
+	}
+
+	@Override
+	public String getID(int specIndex) {
+		Scan scanObj = parser.rap(specIndex);
+
+		if (scanObj==null)  return null;
+		int msLevel = scanObj.getHeader().getMsLevel();
+		if (msLevel < minMSLevel || msLevel >= maxMSLevel)
+			return null;
+		return String.valueOf(specIndex);
+	}
+
+	@Override
+	public Float getPrecursorMz(int specIndex) {
+		Scan scanObj = parser.rap(specIndex);
+
+		if (scanObj==null)  return null;
+		int msLevel = scanObj.getHeader().getMsLevel();
+		if (msLevel < minMSLevel || msLevel >= maxMSLevel)
+			return null;
+
+		ScanHeader header = scanObj.getHeader();
+		float precursorMz = header.getPrecursorMz();
+
+		return precursorMz;
 	}
 }

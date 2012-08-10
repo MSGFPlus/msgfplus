@@ -2,11 +2,13 @@ package edu.ucsd.msjava.parser;
 
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Map;
 
 import edu.ucsd.msjava.msutil.Peak;
 import edu.ucsd.msjava.msutil.SpectraIterator;
 import edu.ucsd.msjava.msutil.SpectraMap;
 import edu.ucsd.msjava.msutil.Spectrum;
+import edu.ucsd.msjava.msutil.SpectrumMetaInfo;
 
 /**
  * A class that parses Pkl format
@@ -23,7 +25,6 @@ public class PklSpectrumParser implements SpectrumParser {
 	public Spectrum readSpectrum(LineReader lineReader) 
 	{
 		Spectrum spec = null;
-		int specIndex = 0;
 
 		boolean sorted = true;
 		float prevMass = 0;
@@ -38,7 +39,6 @@ public class PklSpectrumParser implements SpectrumParser {
 				float precursorIntensity = Float.parseFloat(token[1]);
 				int charge = Integer.parseInt(token[2]);
                 spec = new Spectrum(precursorMz, charge, precursorIntensity);
-                spec.setSpecIndex(++specIndex);
             }
 			else if(token.length == 2)	// a peak
 			{
@@ -71,9 +71,9 @@ public class PklSpectrumParser implements SpectrumParser {
 	 * @param lineReader A reader points to the start of the spectrum.
 	 * @return A Hashtable object maps a spectrum index into a file position.
 	 */
-	public Hashtable<Integer, Long> getSpecIndexMap(
+	public Map<Integer, SpectrumMetaInfo> getSpecIndexMap(
 			BufferedRandomAccessLineReader lineReader) {
-		Hashtable<Integer, Long> specIndexMap = new Hashtable<Integer, Long>();
+		Hashtable<Integer, SpectrumMetaInfo> specIndexMap = new Hashtable<Integer, SpectrumMetaInfo>();
 		String buf;
 		long offset = 0;
 		int specIndex = 0;
@@ -81,7 +81,15 @@ public class PklSpectrumParser implements SpectrumParser {
 		{
 			String[] token = buf.split("\\s+");
 			if(token.length == 3)	// start of a spectrum
-                specIndexMap.put(++specIndex, offset);
+			{
+//                specIndexMap.put(++specIndex, offset);
+				float precursorMz = Float.parseFloat(token[0]);
+				SpectrumMetaInfo metaInfo = new SpectrumMetaInfo();
+				metaInfo.setID("specIndex="+(++specIndex));
+				metaInfo.setPrecursorMz(precursorMz);
+				metaInfo.setPosition(offset);
+				specIndexMap.put(specIndex, metaInfo);
+			}
 			
 			offset = lineReader.getPosition();
 		}

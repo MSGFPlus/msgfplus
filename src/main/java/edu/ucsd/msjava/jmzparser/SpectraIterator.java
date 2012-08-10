@@ -99,18 +99,19 @@ public class SpectraIterator implements Iterator<edu.ucsd.msjava.msutil.Spectrum
 	
 	public static void test() throws Exception
 	{
-		File specFile = new File("/Users/kims336/Research/Data/JMzReader/example.mzML");
-		specFile = new File("/Users/kims336/Research/Data/JMzReader/small.pwiz.1.1.mzML");
+//		File specFile = new File("/Users/kims336/Research/Data/JMzReader/example.mzML");
+//		specFile = new File("/Users/kims336/Research/Data/JMzReader/small.pwiz.1.1.mzML");
 
-		JMzReader parser = new MzMlWrapper(specFile);
+//		JMzReader parser = new MzMlWrapper(specFile);
 		
 //		File specFile = new File("/Users/kims336/Research/Data/JMzReader/example.mzXML");
 //		JMzReader parser = new MzXMLFile(specFile);
 		
 //		JMzReader parser = new MzMlWrapper(specFile);
 		
-//		File specFile = new File("/Users/kims336/Research/Data/JMzReader/test.mgf");
-//		JMzReader parser = new MgfFile(specFile);
+		File specFile = new File(System.getProperty("user.home")+"/Research/Data/JMzReader/example.mgf");
+		System.out.println(specFile.getAbsolutePath());
+		JMzReader parser = new MgfFile(specFile);
 		
 		Iterator<uk.ac.ebi.pride.tools.jmzreader.model.Spectrum> itr = parser.getSpectrumIterator();
 		while(itr.hasNext())
@@ -118,6 +119,7 @@ public class SpectraIterator implements Iterator<edu.ucsd.msjava.msutil.Spectrum
 			uk.ac.ebi.pride.tools.jmzreader.model.Spectrum spec = itr.next();
 			if(spec.getMsLevel() == 2)
 			{
+				System.out.println("ID=" + spec.getId());
 				System.out.println(spec.getId()+" "+spec.getMsLevel()+" "+spec.getPrecursorMZ()+" "+spec.getPrecursorIntensity()+" "+spec.getPrecursorCharge());
 				ParamGroup params = spec.getAdditional();
 				System.out.println("CVParams");

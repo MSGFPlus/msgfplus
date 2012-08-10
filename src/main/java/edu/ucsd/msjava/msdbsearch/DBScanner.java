@@ -150,6 +150,10 @@ public class DBScanner {
 		}
 	}
 	
+	public Map<SpecKey,PriorityQueue<DatabaseMatch>> getSpecKeyDBMatchMap()
+	{
+		return specKeyDBMatchMap;
+	}
 	
 	public void dbSearchCTermEnzymeNoMod(int numberOfAllowableNonEnzymaticTermini, boolean verbose)
 	{
@@ -171,6 +175,11 @@ public class DBScanner {
 		dbSearch(2, 0, size, verbose);
 	}
 
+	public void dbSearch(int numberOfTolerableTermini)
+	{
+		dbSearch(numberOfTolerableTermini, 0, size, true);
+	}
+	
 	public void dbSearch(int numberOfTolerableTermini, int fromIndex, int toIndex, boolean verbose)
 	{
 		Map<SpecKey,PriorityQueue<DatabaseMatch>> curSpecKeyDBMatchMap = new HashMap<SpecKey,PriorityQueue<DatabaseMatch>>();

@@ -1,6 +1,7 @@
 package edu.ucsd.msjava.parser;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Pair;
@@ -9,6 +10,7 @@ import edu.ucsd.msjava.msutil.Peptide;
 import edu.ucsd.msjava.msutil.SpectraMap;
 import edu.ucsd.msjava.msutil.SpectraMapByTitle;
 import edu.ucsd.msjava.msutil.Spectrum;
+import edu.ucsd.msjava.msutil.SpectrumMetaInfo;
 
 public class SPTxtParser implements SpectrumParserWithTitle {
 
@@ -62,21 +64,29 @@ public class SPTxtParser implements SpectrumParserWithTitle {
 		return null;	
 	}
 
-	public Hashtable<Integer, Long> getSpecIndexMap(BufferedRandomAccessLineReader lineReader) 
+	public Map<Integer, SpectrumMetaInfo> getSpecIndexMap(BufferedRandomAccessLineReader lineReader) 
 	{
-		Hashtable<Integer, Long> specIndexMap = new Hashtable<Integer, Long>();
+		Hashtable<Integer, SpectrumMetaInfo> specIndexMap = new Hashtable<Integer, SpectrumMetaInfo>();
 		String buf;
 		long offset = 0;
-		long specOffset = 0;
 		int specIndex = 0;
+		SpectrumMetaInfo metaInfo = null;
 		while((buf = lineReader.readLine()) != null)
 		{
 			if(buf.startsWith("Name:"))
 			{
 				specIndex++;
-				specOffset = offset;
-				specIndexMap.put(specIndex, specOffset);
+				metaInfo = new SpectrumMetaInfo();
+				metaInfo.setID("specIndex="+specIndex);
+				metaInfo.setPosition(offset);
+				specIndexMap.put(specIndex, metaInfo);
 			}
+			else if(buf.startsWith("PrecursorMZ"))
+			{
+				String[] token = buf.split("\\s+");
+				float precursorMz = Float.parseFloat(token[1]);
+				metaInfo.setPrecursorMz(precursorMz);
+			}	
 			offset = lineReader.getPosition();
 		}
 		return specIndexMap;	

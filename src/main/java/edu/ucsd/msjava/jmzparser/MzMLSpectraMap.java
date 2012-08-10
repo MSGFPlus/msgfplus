@@ -51,7 +51,7 @@ public class MzMLSpectraMap implements SpectrumAccessorBySpecIndex
 			}
 			if(jmzSpec != null)
 			{
-				edu.ucsd.msjava.msutil.Spectrum spec = MzMLSpectraIterator.getSpectrumFromJMzMLSpec(jmzSpec);
+				edu.ucsd.msjava.msutil.Spectrum spec = SpectrumConverter.getSpectrumFromJMzMLSpec(jmzSpec);
 				if(spec.getMSLevel() < minMSLevel || spec.getMSLevel() > maxMSLevel)
 					return null;
 				else
@@ -64,5 +64,27 @@ public class MzMLSpectraMap implements SpectrumAccessorBySpecIndex
 	public ArrayList<Integer> getSpecIndexList() 
 	{
 		return new ArrayList<Integer>(unmarshaller.getSpectrumIndexes());
+	}
+
+	@Override
+	public String getID(int specIndex) {
+		return unmarshaller.getSpectrumIDFromSpectrumIndex(specIndex-1);	
+	}
+
+	@Override
+	public Float getPrecursorMz(int specIndex) {
+		String specID = unmarshaller.getSpectrumIDFromSpectrumIndex(specIndex-1);
+		if(specID != null)
+		{
+			uk.ac.ebi.jmzml.model.mzml.Spectrum jmzSpec = null;
+			try {
+				jmzSpec = unmarshaller.getSpectrumById(specID);
+			} catch (MzMLUnmarshallerException e) {
+				e.printStackTrace();
+			}
+			if(jmzSpec != null)
+				SpectrumConverter.getPrecursorMzFromJMzMLSpec(jmzSpec);
+		}
+		return null;
 	}
 }
