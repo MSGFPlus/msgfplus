@@ -142,6 +142,41 @@ public class MZIdentMLGen {
 		initDataCollection();
 	}
 
+	public void writeResults(PrintStream out)
+	{
+		out.println(m.createXmlHeader());
+//		out.println(m.createMzIdentMLStartTag("12345"));
+//		m.marshal(generateCvList(), out);
+//		out.println();
+//		m.marshal(generateAnalysisSoftwareList(), out);
+//		out.println();
+//
+//		Provider provider = generateProvider();
+//		if(provider != null)
+//		{
+//			m.marshal(generateProvider(), out);
+//			out.println();
+//		}
+//		AuditCollection auditCollection = generateAuditCollection();
+//		if(auditCollection != null)
+//		{
+//			m.marshal(generateAuditCollection(), out);
+//			out.println();
+//		}
+//
+//		m.marshal(generateSequenceCollection(), out);
+//		out.println();
+//
+//		m.marshal(generateAnalysisCollection(), out);
+//		out.println();
+//
+//		m.marshal(generateAnalysisProtocolCollection(), out);
+//		out.println();
+//
+//		m.marshal(generateDataCollection(), out);
+//		out.println();
+	}	
+	
 	public MZIdentMLGen setEValueThreshold(float eValueThreshold)
 	{
 		this.eValueThreshold = eValueThreshold;
@@ -321,40 +356,6 @@ public class MZIdentMLGen {
 		}
 	}	
 	
-	public void writeResults(PrintStream out)
-	{
-		out.println(m.createXmlHeader());
-//		out.println(m.createMzIdentMLStartTag("12345"));
-//		m.marshal(generateCvList(), out);
-//		out.println();
-//		m.marshal(generateAnalysisSoftwareList(), out);
-//		out.println();
-//
-//		Provider provider = generateProvider();
-//		if(provider != null)
-//		{
-//			m.marshal(generateProvider(), out);
-//			out.println();
-//		}
-//		AuditCollection auditCollection = generateAuditCollection();
-//		if(auditCollection != null)
-//		{
-//			m.marshal(generateAuditCollection(), out);
-//			out.println();
-//		}
-//
-//		m.marshal(generateSequenceCollection(), out);
-//		out.println();
-//
-//		m.marshal(generateAnalysisCollection(), out);
-//		out.println();
-//
-//		m.marshal(generateAnalysisProtocolCollection(), out);
-//		out.println();
-//
-//		m.marshal(generateDataCollection(), out);
-//		out.println();
-	}	
 	private void generateCvList()
 	{
 		cvList = new CvList();
