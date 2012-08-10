@@ -1,10 +1,18 @@
 package edu.ucsd.msjava.psi;
 
+import edu.ucsd.msjava.ui.MSGFPlus;
+import uk.ac.ebi.jmzidml.model.mzidml.Affiliation;
+import uk.ac.ebi.jmzidml.model.mzidml.AnalysisSoftware;
 import uk.ac.ebi.jmzidml.model.mzidml.Cv;
 import uk.ac.ebi.jmzidml.model.mzidml.CvParam;
+import uk.ac.ebi.jmzidml.model.mzidml.Organization;
+import uk.ac.ebi.jmzidml.model.mzidml.Param;
+import uk.ac.ebi.jmzidml.model.mzidml.Person;
 import uk.ac.ebi.jmzidml.model.mzidml.UserParam;
 
 public class Constants {
+    static String analysisSoftID = "ID_software";
+    static String providerID = "ID_provider";
     static String siiListID = "SII_LIST_1";
     static String sirID = "SIR_";
     static String siiID = "SII_";
@@ -13,7 +21,6 @@ public class Constants {
     static String siProtocolID = "SearchProtocol_1";
     static String searchDBID = "SearchDB_1";
     static String pepEvidenceListID = "PepEvidList_1";
-    static String analysisSoftID = "ID_software";
     static String specIdentID = "SpecIdent_1";
     static String unimodID = "UNIMOD";
     static String unitCvID = "UO";
@@ -27,7 +34,11 @@ public class Constants {
     static Cv unitCV;
     
 	static Unimod unimod;
-    
+    static AnalysisSoftware msgfPlus;
+
+//    static Person docOwner;
+//    static Organization org;
+//    static Affiliation aff;
     
     static {
 		psiCV = new Cv();
@@ -46,7 +57,27 @@ public class Constants {
 		unitCV.setId(unitCvID);
 		unitCV.setFullName("UNIT-ONTOLOGY");
 		
-		// TODO: setup unimod
+		msgfPlus = new AnalysisSoftware();
+		msgfPlus.setName("MS-GF+");
+		Param tempParam = new Param();
+		tempParam.setParam(makeCvParam("MS:1002048","MS-GF+"));
+		msgfPlus.setSoftwareName(tempParam);
+		msgfPlus.setId(analysisSoftID);
+		msgfPlus.setVersion(MSGFPlus.VERSION);
+		
+//		docOwner = new Person();
+//		docOwner.setId("PERSON_DOC_OWNER");
+//		docOwner.setFirstName("Sangtae");
+//		docOwner.setLastName("Kim");
+//
+//		org = new Organization();
+//		org.setId("ORG_DOC_OWNER");
+//		org.setName("UCSD");
+//
+//		Affiliation aff = new Affiliation();
+//		aff.setOrganization(org);
+//		docOwner.getAffiliation().add(aff);
+		
     }
     
 	/**

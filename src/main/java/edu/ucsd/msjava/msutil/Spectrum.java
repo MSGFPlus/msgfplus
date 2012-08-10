@@ -66,7 +66,15 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	 * Gets the unique identifier of this spectrum.
 	 * @return the unique identifier of this spectrum.
 	 */
-	public String getID()	{ return id; }
+	public String getID()	
+	{ 
+		if(id != null)
+			return id;
+		else if(title != null)
+			return title;
+		else
+			return "specIndex=" + specIndex;
+	}
 	
 	/**
 	 * Gets the Peptide object of the annotation.
