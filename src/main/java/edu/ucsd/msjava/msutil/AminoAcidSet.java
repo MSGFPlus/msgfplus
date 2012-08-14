@@ -1297,10 +1297,19 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 //		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile("/home/sangtaekim/Test/Matt/MSGFDB_Mods.txt");
 //		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile("/home/sangtaekim/Research/Data/IPRG2012/params.xml");
 //		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
-		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile("/home/sangtaekim/Test/June/params.xml");
+//		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile("/home/sangtaekim/Test/June/params.xml");
 		
-		aaSet.printAASet();
+//		aaSet.printAASet();
 //		for(AminoAcid aa : aaSet.getAminoAcids(Location.N_Term, 'E'))
 //			System.out.println(aa.getResidueStr()+"\t"+aa.getMass());
+
+//		System.out.println((int)Character.MAX_VALUE);
+		
+//		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
+//		for(int i=0; i<100000; i++)
+//		{
+//			char c = aaSet.getModifiedResidue('M');
+//			System.out.println(c + "\t" + (int)c);
+//		}
 	}
 }

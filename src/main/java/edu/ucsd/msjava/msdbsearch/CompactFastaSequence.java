@@ -46,6 +46,8 @@ public class CompactFastaSequence implements Sequence {
 	// the identifier for this sequence
 	private int id;
 
+	private boolean truncateAnnotation = false;	// if true, store annotations only before first blank
+	
 	/***** CONSTRUCTORS *****/
 	/**
 	 * Constructor. The alphabet will be created dynamically according from the 
@@ -96,6 +98,12 @@ public class CompactFastaSequence implements Sequence {
 		}
 	}
 
+	public CompactFastaSequence truncateAnnotation()
+	{
+		truncateAnnotation = true;
+		return this;
+	}
+	
 	/***** CLASS METHODS *****/  
 	public Set<Byte> getAlphabetAsBytes() {
 		return this.byte2alpha.keySet();
@@ -289,7 +297,10 @@ public class CompactFastaSequence implements Sequence {
 						metaOut.println(offset+":"+annotation);
 					// remember for the next annotation
 					offset++;
-					annotation = s.substring(1).split("\\s+")[0];
+					if(this.truncateAnnotation)
+						annotation = s.substring(1).split("\\s+")[0];
+					else
+						annotation = s.substring(1);
 				}
 			}
 			

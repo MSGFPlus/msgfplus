@@ -209,7 +209,7 @@ public class ParamManager {
 		FileParameter outputParam = new FileParameter("o", "OutputFile (*.mzid)", "Default: SpectrumFileName.mzid");
 		outputParam.addFileFormat(new FileFormat(".mzid").setCaseSensitive());
 		outputParam.setAsOptional();
-		outputParam.fileMustNotExist();
+//		outputParam.fileMustNotExist();
 		addParameter(outputParam);
 	}
 	

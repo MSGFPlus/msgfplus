@@ -1,5 +1,6 @@
 package edu.ucsd.msjava.psi;
 
+import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +15,7 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.Map.Entry;
 
+import edu.ucsd.msjava.msdbsearch.CompactFastaSequence;
 import edu.ucsd.msjava.msdbsearch.CompactSuffixArray;
 import edu.ucsd.msjava.msdbsearch.DatabaseMatch;
 import edu.ucsd.msjava.msdbsearch.ScoredSpectraMap;
@@ -25,6 +27,7 @@ import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Composition;
 import edu.ucsd.msjava.msutil.ModifiedAminoAcid;
 import edu.ucsd.msjava.msutil.Pair;
+import edu.ucsd.msjava.msutil.SpecFileFormat;
 import edu.ucsd.msjava.msutil.SpecKey;
 import edu.ucsd.msjava.msutil.SpectrumAccessorBySpecIndex;
 
@@ -56,6 +59,7 @@ import uk.ac.ebi.jmzidml.model.mzidml.Param;
 import uk.ac.ebi.jmzidml.model.mzidml.ParamList;
 import uk.ac.ebi.jmzidml.model.mzidml.Peptide;
 import uk.ac.ebi.jmzidml.model.mzidml.PeptideEvidence;
+import uk.ac.ebi.jmzidml.model.mzidml.PeptideEvidenceRef;
 import uk.ac.ebi.jmzidml.model.mzidml.Person;
 import uk.ac.ebi.jmzidml.model.mzidml.Provider;
 import uk.ac.ebi.jmzidml.model.mzidml.Role;
@@ -65,12 +69,12 @@ import uk.ac.ebi.jmzidml.model.mzidml.SearchModification;
 import uk.ac.ebi.jmzidml.model.mzidml.SequenceCollection;
 import uk.ac.ebi.jmzidml.model.mzidml.SourceFile;
 import uk.ac.ebi.jmzidml.model.mzidml.SpectraData;
+import uk.ac.ebi.jmzidml.model.mzidml.SpectrumIDFormat;
 import uk.ac.ebi.jmzidml.model.mzidml.SpectrumIdentification;
 import uk.ac.ebi.jmzidml.model.mzidml.SpectrumIdentificationItem;
 import uk.ac.ebi.jmzidml.model.mzidml.SpectrumIdentificationList;
 import uk.ac.ebi.jmzidml.model.mzidml.SpectrumIdentificationProtocol;
 import uk.ac.ebi.jmzidml.model.mzidml.SpectrumIdentificationResult;
-import uk.ac.ebi.jmzidml.model.mzidml.Tolerance;
 import uk.ac.ebi.jmzidml.model.mzidml.UserParam;
 import uk.ac.ebi.jmzidml.xml.io.MzIdentMLMarshaller;
 
@@ -79,12 +83,12 @@ public class MZIdentMLGen {
 	
 	private Person docOwner;
 	private Organization org;
-	private SearchDatabase searchDB;
 	
 	private final SearchParams params;
 	private AminoAcidSet aaSet;
 	private CompactSuffixArray sa;
 	private SpectrumAccessorBySpecIndex specMap;
+	private final int ioIndex;
 	 
 	private Map<edu.ucsd.msjava.msutil.Modification, Modification> modMap;
 	
@@ -111,23 +115,27 @@ public class MZIdentMLGen {
 	private DataCollection dataCollection;
 	private SpectraData spectraData;
 	private SpectrumIdentificationList siList;	// set of PSMs
+	private SearchDatabase searchDatabase;
 	
+	private Map<Integer, DBSequence> dbSeqMap;
 	private Map<String, Peptide> pepMap;
-	private Map<String, DBSequence> dbSeqMap;
+	private Map<String, List<PeptideEvidenceRef>> evRefListMap;
 	
 	
-	public MZIdentMLGen(SearchParams params, AminoAcidSet aaSet, CompactSuffixArray sa, SpectrumAccessorBySpecIndex specMap)
+	public MZIdentMLGen(SearchParams params, AminoAcidSet aaSet, CompactSuffixArray sa, SpectrumAccessorBySpecIndex specMap, int ioIndex)
 	{
 		m = new MzIdentMLMarshaller();
 		this.params = params;
 		this.aaSet = aaSet;
 		this.sa = sa;
 		this.specMap = specMap;
+		this.ioIndex = ioIndex;
 
 		// TODO set-up modMap, SearchModification
 		modMap = new HashMap<edu.ucsd.msjava.msutil.Modification, Modification>();
+		dbSeqMap = new HashMap<Integer, DBSequence>();
 		pepMap = new LinkedHashMap<String, Peptide>();
-		dbSeqMap = new LinkedHashMap<String, DBSequence>();
+		evRefListMap = new HashMap<String, List<PeptideEvidenceRef>>();
 
 		init();
 	}
@@ -146,7 +154,7 @@ public class MZIdentMLGen {
 	public void writeResults(PrintStream out)
 	{
 		out.println(m.createXmlHeader());
-//		out.println(m.createMzIdentMLStartTag("12345"));
+		out.println(m.createMzIdentMLStartTag("MS-GF+"));
 		m.marshal(cvList, out);
 		out.println();
 		m.marshal(analysisSoftwareList, out);
@@ -163,6 +171,8 @@ public class MZIdentMLGen {
 
 		m.marshal(dataCollection, out);
 		out.println();
+		
+		out.println(m.createMzIdentMLClosingTag());
 	}	
 	
 	public MZIdentMLGen setEValueThreshold(float eValueThreshold)
@@ -195,11 +205,11 @@ public class MZIdentMLGen {
 			
 			for(DatabaseMatch match : matchQueue)
 			{
-				if(existingQueue.size() < numPeptidesPerSpec)
+				if(existingQueue.size() < numPeptidesPerSpec || match.getSpecEValue() == existingQueue.peek().getSpecEValue())
 				{
 					existingQueue.add(match);
 				}
-				else if(existingQueue.size() >= numPeptidesPerSpec)
+				else
 				{
 					if(match.getSpecEValue() < existingQueue.peek().getSpecEValue())
 					{
@@ -221,12 +231,13 @@ public class MZIdentMLGen {
 				continue;
 
 			
-			String id = specMap.getID(specIndex);
+			String specID = specMap.getID(specIndex);
 			float precursorMz = specMap.getPrecursorMz(specIndex);
 
 			SpectrumIdentificationResult sir = new SpectrumIdentificationResult();
-			sir.setId(id);
+			sir.setId(Constants.sirID+specIndex);
 			sir.setSpectraData(spectraData);
+			sir.setSpectrumID(specID);
 			
 			ArrayList<DatabaseMatch> matchList = new ArrayList<DatabaseMatch>(matchQueue);
 			int rank = 0;
@@ -239,10 +250,9 @@ public class MZIdentMLGen {
 				if(match.getDeNovoScore() < 0)
 					break;
 				
-				int pepIndex = match.getIndex();	// Position of preAA
+//				int pepIndex = match.getIndex();	// Position of preAA
 				int length = match.getLength();		// Peptide length + 2
 				int charge = match.getCharge();
-				String peptideStr = match.getPepSeq();
 
 				float peptideMass = match.getPeptideMass();
 				float theoMass = peptideMass + (float)Composition.H2O;
@@ -270,11 +280,16 @@ public class MZIdentMLGen {
 				sii.setChargeState(charge);
 				sii.setExperimentalMassToCharge(precursorMz);
 				sii.setCalculatedMassToCharge((double) theoMz);
-				sii.setPeptide(addPeptide(pepIndex, length, peptideStr));
+				
+				Peptide pep = getPeptide(match);
+				sii.setPeptide(pep);
+				
 				sii.setRank(rank);
 				sii.setPassThreshold(eValue <= eValueThreshold);
 				sii.setId(Constants.siiID+specIndex+"_"+rank);
 					
+				sii.getPeptideEvidenceRef().addAll(getPeptideEvidenceList(match, pep));
+				
 				List<CvParam> cvList = sii.getCvParam();
 				List<UserParam> userList = sii.getUserParam();
 
@@ -306,41 +321,123 @@ public class MZIdentMLGen {
 		}
 	}	
 	
-	private Peptide addPeptide(int index, int length, String pepStr)
+	// index: peptide index in sarr
+	// length: peptide length including pre/post
+	// pepStr
+	private Peptide getPeptide(DatabaseMatch match)
 	{
-//		char pre = sa.getSequence().getCharAt(index);
-//		char post = sa.getSequence().getCharAt(index+length-1);
 //		String pvID = pre+pepStr+post;
 		
+		String pepStr = match.getPepSeq();
 		Peptide mzidPeptide = pepMap.get(pepStr);
 		
-		if(mzidPeptide != null)
-			return mzidPeptide;
-				
-		// new peptide variant
-		mzidPeptide = new Peptide();
-		List<Modification> modList = mzidPeptide.getModification();
-		edu.ucsd.msjava.msutil.Peptide peptide = aaSet.getPeptide(pepStr); 
-		StringBuffer unmodPepStr = new StringBuffer();
-		int location = 0;
-		for(edu.ucsd.msjava.msutil.AminoAcid aa : peptide)
+		if(mzidPeptide == null)
 		{
-			unmodPepStr.append(aa.getUnmodResidue());
-			if(aa.isModified())
+			// new peptide variant
+			mzidPeptide = new Peptide();
+			List<Modification> modList = mzidPeptide.getModification();
+			edu.ucsd.msjava.msutil.Peptide peptide = aaSet.getPeptide(pepStr); 
+			StringBuffer unmodPepStr = new StringBuffer();
+			int location = 0;
+			for(edu.ucsd.msjava.msutil.AminoAcid aa : peptide)
 			{
-				Modification mod = new Modification();
-				mod.setLocation(location);
-				ModifiedAminoAcid modAA = (ModifiedAminoAcid)aa;
-				mod.setMonoisotopicMassDelta(modAA.getModification().getAccurateMass());
-				modList.add(mod);
+				unmodPepStr.append(aa.getUnmodResidue());
+				if(aa.isModified())
+				{
+					Modification mod = new Modification();
+					mod.setLocation(location);
+					ModifiedAminoAcid modAA = (ModifiedAminoAcid)aa;
+					mod.setMonoisotopicMassDelta(modAA.getModification().getAccurateMass());
+					modList.add(mod);
+				}
+				location++;
 			}
-			location++;
-		}
 
-		mzidPeptide.setId(pepStr);
-		pepMap.put(pepStr, mzidPeptide);
+			mzidPeptide.setPeptideSequence(unmodPepStr.toString());
+			pepMap.put(pepStr, mzidPeptide);
+			mzidPeptide.setId("Pep"+pepMap.size());
+			peptideList.add(mzidPeptide);
+		}
 		
 		return mzidPeptide;
+	}
+	
+	public List<PeptideEvidenceRef> getPeptideEvidenceList(DatabaseMatch match, Peptide peptide)
+	{
+		
+		List<Integer> indices = match.getIndices();
+		int length = match.getLength();
+		
+		String annotationKey = indices.get(0)+"_"+length;
+		List<PeptideEvidenceRef> evRefList = evRefListMap.get(annotationKey);
+		
+		if(evRefList == null)
+		{
+			evRefList = new ArrayList<PeptideEvidenceRef>();
+			
+			CompactFastaSequence seq = sa.getSequence();
+			for(int index : indices)
+			{
+				PeptideEvidence pepEv = new PeptideEvidence();
+				
+				pepEv.setId("PepEv"+(index+1)+"_"+length);
+				char pre = sa.getSequence().getCharAt(index);
+				if(pre == '_')
+					pre = '-';
+				char post = sa.getSequence().getCharAt(index+length-1);
+				if(post == '_')
+					post = '-';
+				pepEv.setPre(String.valueOf(pre));
+				pepEv.setPost(String.valueOf(post));
+				
+				int protStartIndex = (int)seq.getStartPosition(index);
+				pepEv.setDBSequence(getDBSequence(protStartIndex));
+				pepEv.setPeptide(peptide);
+				
+				int start = index-protStartIndex+1;
+				int end = start+length-1;
+				pepEv.setStart(start);
+				pepEv.setEnd(end);
+				
+				peptideEvidenceList.add(pepEv);
+				
+				PeptideEvidenceRef pepEvRef = new PeptideEvidenceRef();
+				pepEvRef.setPeptideEvidence(pepEv);
+				evRefList.add(pepEvRef);
+			}
+			evRefListMap.put(annotationKey, evRefList);
+		}
+		
+		return evRefList;
+	}
+	
+	// TODO: setup decoy
+	public DBSequence getDBSequence(int protStartIndex)
+	{
+		DBSequence dbSeq = dbSeqMap.get(protStartIndex);
+		if(dbSeq == null)
+		{
+			dbSeq = new DBSequence();
+			
+			CompactFastaSequence seq = sa.getSequence();
+			String annotation = seq.getAnnotation(protStartIndex);
+			String proteinSeq = seq.getMatchingEntry(protStartIndex);
+			String accession = annotation.split("\\s+")[0];
+			
+			dbSeq.setLength(proteinSeq.length());
+			dbSeq.setSearchDatabase(searchDatabase);
+			dbSeq.setAccession(accession);
+			dbSeq.setId("DBSeq"+(protStartIndex+1));
+			
+			CvParam protDescCV = Constants.makeCvParam("MS:1001088", "protein description");
+			protDescCV.setValue(annotation);
+			dbSeq.getCvParam().add(protDescCV);
+			
+			this.dbSequenceList.add(dbSeq);
+			dbSeqMap.put(protStartIndex, dbSeq);
+		}
+		
+		return dbSeq;
 	}
 	
 	private void generateCvList()
@@ -369,14 +466,22 @@ public class MZIdentMLGen {
 	
 	private void generateAnalysisCollection()
 	{
+		
 		analysisCollection = new AnalysisCollection();
-//		List<SpectrumIdentification> specIdentList = analysisCollection.getSpectrumIdentification();
-//		SpectrumIdentification specIdent = new SpectrumIdentification();
-//		specIdent.setId(Constants.specIdentID);
-//
-//		List<SpectrumIdentification> siList = analysisCollection.getSpectrumIdentification();
-//		siList.setId(siiListID);
-//
+		
+		List<SpectrumIdentification> specIdentList = analysisCollection.getSpectrumIdentification();
+		
+		SpectrumIdentification specIdent = new SpectrumIdentification();
+		specIdent.setId(Constants.specIdentID);
+		specIdent.setSpectrumIdentificationList(siList);
+//		specIdent.setSpectrumIdentificationProtocol(analysisProtocolCollection.getSpectrumIdentificationProtocol().get(0));
+		
+		List<InputSpectra> inputSpecList = specIdent.getInputSpectra();
+		InputSpectra inputSpec = new InputSpectra();
+		inputSpec.setSpectraData(spectraData);
+		inputSpecList.add(inputSpec);
+		
+		specIdentList.add(specIdent);
 //		
 //		FragmentationTable fragTable = new FragmentationTable();
 //		List<Measure> measureList = fragTable.getMeasure();
@@ -406,10 +511,6 @@ public class MZIdentMLGen {
 //		searchDBRef.setSearchDatabase(searchDB);
 //		searchDBRefList.add(searchDBRef);
 //
-//		List<InputSpectra> inputSpecList = specIdent.getInputSpectra();
-//		InputSpectra inputSpec = new InputSpectra();
-//		inputSpec.setSpectraData(spectraData);
-//		inputSpecList.add(inputSpec);
 //
 //		specIdentList.add(specIdent);
 	}	
@@ -426,22 +527,69 @@ public class MZIdentMLGen {
 
 		// Inputs
 		Inputs inputs = new Inputs();
-		// source file
+		// source file: skip
+		
 		// search database
+		searchDatabase = new SearchDatabase();
+		searchDatabase.setId(Constants.searchDBID);
+		searchDatabase.setNumDatabaseSequences((long)sa.getSequence().getNumProteins());
+		searchDatabase.setLocation(params.getDatabaseFile().getAbsolutePath());
+		
+		UserParam param = new UserParam();
+		param.setName(params.getDatabaseFile().getName());
+		Param tempParam = new Param();
+		tempParam.setParam(param);
+		searchDatabase.setDatabaseName(tempParam);
+
+		FileFormat ffDB = new FileFormat();
+		ffDB.setCvParam(Constants.makeCvParam("MS:1001348","FASTA format"));
+		searchDatabase.setFileFormat(ffDB);   
+		
+		inputs.getSearchDatabase().add(searchDatabase);
+		
 		// spectra data
 		spectraData = new SpectraData();
 		spectraData.setId(Constants.spectraDataID);
-		spectraData.setName("SpectrumName");	// TODO: set up name
-		// TODO: set up file format
+		
+		File specFile = params.getDBSearchIOList().get(ioIndex).getSpecFile();
+		spectraData.setLocation(specFile.getAbsolutePath());
+		spectraData.setName(specFile.getName());
+		
+		// spectrum file format, TODO: add _dta.txt to the PSI CV
+		SpecFileFormat specFileFormat = params.getDBSearchIOList().get(ioIndex).getSpecFileFormat();
+		FileFormat ffSpec = new FileFormat();
+		ffSpec.setCvParam(Constants.makeCvParam(specFileFormat.getPSIAccession(),specFileFormat.getPSIName()));
+		spectraData.setFileFormat(ffSpec);
+		
+		SpectrumIDFormat sidFormat = new SpectrumIDFormat();
+		if(specFileFormat == SpecFileFormat.DTA_TXT 
+				|| specFileFormat == SpecFileFormat.MGF
+				|| specFileFormat == SpecFileFormat.PKL
+				|| specFileFormat == SpecFileFormat.MS2
+				)
+			sidFormat.setCvParam(Constants.makeCvParam("MS:1000774", "multiple peak list nativeID format"));
+		else if(specFileFormat == SpecFileFormat.MZXML)
+			sidFormat.setCvParam(Constants.makeCvParam("MS:1000776", "scan number only nativeID format"));
+		else if(specFileFormat == SpecFileFormat.MZDATA || specFileFormat == SpecFileFormat.MZML)
+			sidFormat.setCvParam(Constants.makeCvParam("MS:1000777", "spectrum identifier nativeID format"));
+		else if(specFileFormat == SpecFileFormat.MZML)
+		{
+			// TODO: for mzML, get this from mzML input
+		}
+			
+		
+		spectraData.setSpectrumIDFormat(sidFormat);
+		
 		inputs.getSpectraData().add(spectraData);
 		dataCollection.setInputs(inputs);
 		
+
 		// AnalysisData
 		AnalysisData analysisData = new AnalysisData();
 		dataCollection.setAnalysisData(analysisData);
 		
 		siList = new SpectrumIdentificationList();
-		siList.setId(Constants.siiListID);
+		siList.setId(Constants.siListID);
 		
 		analysisData.getSpectrumIdentificationList().add(siList);
 	}

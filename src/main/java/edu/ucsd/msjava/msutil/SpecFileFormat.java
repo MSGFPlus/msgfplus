@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import uk.ac.ebi.jmzidml.model.mzidml.SpectrumIDFormat;
+
 import edu.ucsd.msjava.jmzparser.MzMLSpectraIterator;
 import edu.ucsd.msjava.jmzparser.MzMLSpectraMap;
 import edu.ucsd.msjava.parser.MS2SpectrumParser;
@@ -15,18 +17,29 @@ import edu.ucsd.msjava.parser.PNNLSpectraIterator;
 import edu.ucsd.msjava.parser.PNNLSpectraMap;
 import edu.ucsd.msjava.parser.PklSpectrumParser;
 import edu.ucsd.msjava.parser.SpectrumParser;
+import edu.ucsd.msjava.psi.Constants;
 
 
 
 public class SpecFileFormat extends FileFormat {
-	private SpecFileFormat(String[] suffixes)
-	{
-		super(suffixes);
-	}
+	private final String psiAccession;
+	private final String psiName;
 	
-	private SpecFileFormat(String suffix)
+	private SpecFileFormat(String suffix, String psiAccession, String psiName)
 	{
 		super(suffix);
+		this.psiAccession = psiAccession;
+		this.psiName = psiName;
+	}
+	
+	public String getPSIAccession()	
+	{
+		return psiAccession;
+	}
+	
+	public String getPSIName()
+	{
+		return psiName;
 	}
 	
 	public static final SpecFileFormat MGF;
@@ -120,13 +133,13 @@ public class SpecFileFormat extends FileFormat {
 	
 	private static ArrayList<SpecFileFormat> specFileFormatList;
 	static {
-		MGF = new SpecFileFormat(".mgf");
-		MZXML = new SpecFileFormat(".mzXML");
-		MZML = new SpecFileFormat(".mzML");
-		MS2 = new SpecFileFormat(".ms2");
-		PKL = new SpecFileFormat(".pkl");
-		MZDATA = new SpecFileFormat(".mzData");
-		DTA_TXT = new SpecFileFormat("_dta.txt");
+		MGF = new SpecFileFormat(".mgf", "MS:1001062", "Mascot MGF file");
+		MZXML = new SpecFileFormat(".mzXML", "MS:1000566", "ISB mzXML file");
+		MZML = new SpecFileFormat(".mzML", "MS:1000584", "mzML file");
+		MS2 = new SpecFileFormat(".ms2", "MS:1001466", "MS2 file");
+		PKL = new SpecFileFormat(".pkl", "MS:1000565", "Micromass PKL file");
+		MZDATA = new SpecFileFormat(".mzData", "MS:1000564", "PSI mzData file");
+		DTA_TXT = new SpecFileFormat("_dta.txt", "MS:XXXXXXX", "PNNL dta.txt file");
 		
 		specFileFormatList = new ArrayList<SpecFileFormat>();
 		specFileFormatList.add(MGF);

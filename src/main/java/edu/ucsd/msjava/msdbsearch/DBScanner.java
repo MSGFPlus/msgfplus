@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Map.Entry;
+import java.util.TreeSet;
 
 
 import edu.ucsd.msjava.msgf.DeNovoGraph;
@@ -126,27 +127,15 @@ public class DBScanner {
 		{
 			Entry<SpecKey, PriorityQueue<DatabaseMatch>> entry = itr.next();
 			SpecKey specKey = entry.getKey(); 
-			PriorityQueue<DatabaseMatch> queue = specKeyDBMatchMap.get(entry.getKey());
-			if(queue == null)
+			PriorityQueue<DatabaseMatch> queue = entry.getValue();
+			
+			PriorityQueue<DatabaseMatch> existingQueue = specKeyDBMatchMap.get(entry.getKey());
+			if(existingQueue == null)
 			{
-				queue = new PriorityQueue<DatabaseMatch>();
-				specKeyDBMatchMap.put(specKey, queue);
+				existingQueue = new PriorityQueue<DatabaseMatch>();
+				specKeyDBMatchMap.put(specKey, existingQueue);
 			}
-			for(DatabaseMatch match : entry.getValue())
-			{
-				if(queue.size() < this.numPeptidesPerSpec)
-				{
-					queue.add(match);
-				}
-				else if(queue.size() >= this.numPeptidesPerSpec)
-				{
-					if(match.getScore() > queue.peek().getScore())
-					{
-						queue.poll();
-						queue.add(match);
-					}
-				}
-			}
+			existingQueue.addAll(queue);
 		}
 	}
 	
@@ -220,6 +209,8 @@ public class DBScanner {
 			int numNonEnzTermini = 0;	// number of non-enzymatic termini
 			int numIndices = toIndex-fromIndex;
 			
+			DatabaseMatch[] prevMatch = new DatabaseMatch[maxPeptideLength+2];
+			
 			for(int bufferIndex=0; bufferIndex<numIndices; bufferIndex++)
 			{
 				// Print out the progress
@@ -239,6 +230,19 @@ public class DBScanner {
 //				if(index == 1)
 //					System.out.println("Debug");
 				// skip redundant peptides
+				
+				for(int prevMatchIndex=minPeptideLength; prevMatchIndex<prevMatch.length; prevMatchIndex++)
+				{
+					if(prevMatchIndex<lcp)
+					{
+						if(prevMatch[prevMatchIndex] != null)
+							prevMatch[prevMatchIndex].addIndex(index);
+					}
+					else
+						prevMatch[prevMatchIndex] = null;
+					
+				}
+
 				if(lcp > i+1 ||
 						lcp == i+1 && (enzyme == null || enzyme.isCTerm()))		
 				{
@@ -358,7 +362,7 @@ public class DBScanner {
 						continue;
 					
 //					System.out.println(sequence.getSubsequence(index+1, index+i+1));
-//					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("IGAYLFVDMAHVAGLIAAGVYPNPVPHAHVVTSTTHK"))
+//					if(sequence.getSubsequence(index, index+i+1).equalsIgnoreCase("RIGAYLFVDMAHVAGLIAAGVYPNPVPHAHVVTSTTHK"))
 //						System.out.println("Debug");
 					
 					int cTermCleavageScore = 0;
@@ -432,18 +436,21 @@ public class DBScanner {
 									curSpecKeyDBMatchMap.put(specKey, prevMatchQueue);
 								}
 								
-								if(prevMatchQueue.size() < this.numPeptidesPerSpec)
+								if(prevMatchQueue.size() < this.numPeptidesPerSpec || score == prevMatchQueue.peek().getScore())
 								{
 									DatabaseMatch dbMatch = new DatabaseMatch(index, (byte)(i+2), score, peptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm);
 									prevMatchQueue.add(dbMatch);
+									prevMatch[i] = dbMatch;
 								}
 								else if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
 								{
 									if(score > prevMatchQueue.peek().getScore())
 									{
-										prevMatchQueue.poll();
+										while(!prevMatchQueue.isEmpty() && prevMatchQueue.peek().getScore() < score)
+											prevMatchQueue.poll();
 										DatabaseMatch dbMatch = new DatabaseMatch(index, (byte)(i+2), score, peptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm);
 										prevMatchQueue.add(dbMatch);
+										prevMatch[i] = dbMatch;
 									}
 								}
 							}

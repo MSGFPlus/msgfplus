@@ -40,7 +40,7 @@ import edu.ucsd.msjava.psi.MZIdentMLGen;
 
 public class MSGFPlus {
 	public static final String VERSION = "1.0";
-	public static final String RELEASE_DATE = "2012";
+	public static final String RELEASE_DATE = "08/13/2012";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static final String DECOY_PROTEIN_PREFIX = "XXX";
@@ -92,8 +92,11 @@ public class MSGFPlus {
     		boolean multFiles = false;
     		if(ioList.size() > 2)
     			multFiles = true;
+    		
+    		int ioIndex = -1;
     		for(DBSearchIOFiles ioFiles : ioList)
     		{
+    			++ioIndex;
     			File specFile = ioFiles.getSpecFile();
     			SpecFileFormat specFormat = ioFiles.getSpecFileFormat();
     			File outputFile = ioFiles.getOutputFile();
@@ -102,16 +105,16 @@ public class MSGFPlus {
     			{
     				System.out.println("\nProcessing " + specFile.getPath());
     				System.out.println("Writing results to " + outputFile.getPath());
-					String errMsg = runMSGFPlus(specFile, specFormat, outputFile, params);
-					if(errMsg != null)
-						return errMsg;
     			}
+				String errMsg = runMSGFPlus(ioIndex, specFormat, outputFile, params);
+				if(errMsg != null)
+					return errMsg;
     		}
     	}
     	return null;
 	}
     
-    private static String runMSGFPlus(File specFile, SpecFileFormat specFormat, File outputFile, SearchParams params)
+    private static String runMSGFPlus(int ioIndex, SpecFileFormat specFormat, File outputFile, SearchParams params)
     {
 		long time = System.currentTimeMillis();
 		
@@ -197,6 +200,9 @@ public class MSGFPlus {
 		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
 		
 		System.out.println("Reading spectra...");
+		
+		File specFile = params.getDBSearchIOList().get(ioIndex).getSpecFile();
+		
     	Iterator<Spectrum> specItr = null;
     	try {
 			specItr = SpecFileFormat.getSpecItr(specFile, specFormat);
@@ -230,7 +236,7 @@ public class MSGFPlus {
 		SpecDataType specDataType = new SpecDataType(activationMethod, instType, enzyme, protocol);
 		int fromIndexGlobal = 0;
 		
-		MZIdentMLGen mzidGen = new MZIdentMLGen(params, aaSet, sa, specMap);
+		MZIdentMLGen mzidGen = new MZIdentMLGen(params, aaSet, sa, specMap, ioIndex);
 		
 		while(true)
 		{

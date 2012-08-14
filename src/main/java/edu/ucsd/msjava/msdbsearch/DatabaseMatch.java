@@ -1,5 +1,8 @@
 package edu.ucsd.msjava.msdbsearch;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DatabaseMatch extends Match {
 	private int		index;
 	private byte 	length;
@@ -7,6 +10,9 @@ public class DatabaseMatch extends Match {
 	// optional
 	private boolean isProteinNTerm;
 	private boolean isProteinCTerm;
+	
+	// for degenerate peptides
+	private List<Integer> indices;
 
 	public DatabaseMatch(
 			int index, 
@@ -37,6 +43,27 @@ public class DatabaseMatch extends Match {
 		return this;
 	}
 
+	public void addIndex(int index)
+	{
+		if(indices == null)
+		{
+			indices = new ArrayList<Integer>();
+			indices.add(this.index);
+		}
+		indices.add(index);
+	}
+	
+	public List<Integer> getIndices()
+	{
+		if(indices == null)
+		{
+			List<Integer> temp = new ArrayList<Integer>();
+			temp.add(index);
+			return temp;
+		}
+		return indices;
+	}
+	
 	public int getIndex() {
 		return index;
 	}

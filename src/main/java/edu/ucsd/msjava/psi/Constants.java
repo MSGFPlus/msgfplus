@@ -13,7 +13,7 @@ import uk.ac.ebi.jmzidml.model.mzidml.UserParam;
 public class Constants {
     static String analysisSoftID = "ID_software";
     static String providerID = "ID_provider";
-    static String siiListID = "SII_LIST_1";
+    static String siListID = "SI_LIST_1";
     static String sirID = "SIR_";
     static String siiID = "SII_";
     static String spectraDataID = "SID_1";
@@ -44,7 +44,7 @@ public class Constants {
 		psiCV = new Cv();
 		psiCV.setUri("http://psidev.cvs.sourceforge.net/viewvc/*checkout*/psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo");
 		psiCV.setId(psiCvID);
-		psiCV.setVersion("3.29.0");
+		psiCV.setVersion("3.30.0");
 		psiCV.setFullName("PSI-MS");
 
 		unimodCV = new Cv();

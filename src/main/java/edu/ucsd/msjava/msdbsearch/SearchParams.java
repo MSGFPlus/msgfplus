@@ -266,7 +266,6 @@ public class SearchParams {
 		}
 		
 		numThreads = paramManager.getIntValue("thread");
-		replicateMergedResults = paramManager.getIntValue("replicate") == 1 ? true : false;
 		doNotDseEdgeScore = paramManager.getIntValue("edgeScore") == 1 ? true : false;
 		
 		dbIndexDir = paramManager.getFile("dd");

@@ -48,6 +48,7 @@ public class CompactSuffixArray {
 	private int maxPeptideLength;
 	private int[] numDisinctPeptides;
 	
+	
 	/**
 	 * Constructor that attempts to read the suffix array from the provided file.
 	 * @param sequence the sequence object.

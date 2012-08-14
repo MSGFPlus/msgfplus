@@ -236,7 +236,7 @@ public class MSGFDB {
 		
 		aaSet.registerEnzyme(enzyme);
 		
-		CompactFastaSequence fastaSequence = new CompactFastaSequence(databaseFile.getAbsolutePath());
+		CompactFastaSequence fastaSequence = new CompactFastaSequence(databaseFile.getAbsolutePath()).truncateAnnotation();
 		if(useTDA)
 		{
 			float ratioUniqueProteins = fastaSequence.getRatioUniqueProteins();

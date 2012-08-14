@@ -75,7 +75,7 @@ public class MzMLSpectraIterator implements Iterator<edu.ucsd.msjava.msutil.Spec
 		while(itr.hasNext())
 		{
 			jmzSpec = itr.next();
-			spec = getSpectrumFromJMzMLSpec(jmzSpec);
+			spec = SpectrumConverter.getSpectrumFromJMzMLSpec(jmzSpec);
 			if(spec.getMSLevel() < minMSLevel || spec.getMSLevel() > maxMSLevel)
 				continue;
 			else

@@ -5,6 +5,7 @@ import java.nio.*;
 import java.nio.channels.FileChannel;
 import java.util.*;
 
+import edu.ucsd.msjava.msdbsearch.CompactSuffixArray;
 import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msutil.AminoAcid;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
@@ -252,6 +253,15 @@ public class SuffixArray {
 		this(sequence, sequence.getBaseFilepath() + SUFFIX_EXTENSION);
 	}
 
+	/** Constructor that reads the suffix array information from CompactSuffixArray
+	 * @param
+	 * @return
+	 */
+	public SuffixArray(CompactSuffixArray sa) {
+		
+	}
+	
+	
 	public int getSize()
 	{
 		return size;
