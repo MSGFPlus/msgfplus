@@ -118,7 +118,7 @@ public class PNNLSpectrumParser implements SpectrumParser {
 				float precursorMz = (mPlusH-(float)Composition.PROTON)/charge+(float)Composition.PROTON;
 				
 				SpectrumMetaInfo metaInfo = new SpectrumMetaInfo();
-				metaInfo.setID("specIndex="+specIndex);
+				metaInfo.setID("index="+(specIndex-1));
 				metaInfo.setPrecursorMz(precursorMz);
 				metaInfo.setPosition(offset);
 				specIndexMap.put(specIndex, metaInfo);

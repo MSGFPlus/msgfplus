@@ -72,7 +72,7 @@ public class MzXMLSpectraMap implements SpectrumAccessorBySpecIndex {
 		Spectrum spec = new Spectrum(header.getPrecursorMz(), precursorCharge, header.getPrecursorIntensity());
 		int scanNum = header.getNum();
 		spec.setScanNum(scanNum);
-		spec.setID(String.valueOf(scanNum));
+		spec.setID("scan="+String.valueOf(scanNum));
 		spec.setSpecIndex(header.getNum());
 
 		// parse retention time. Note that retention time is a required field

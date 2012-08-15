@@ -67,11 +67,8 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	 * @return the unique identifier of this spectrum.
 	 */
 	public String getID()	
-	{ 
-		if(id != null)
-			return id;
-		else
-			return String.valueOf(specIndex);
+	{
+		return id;
 	}
 	
 	/**
@@ -576,16 +573,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 			out.println("TITLE=" + getTitle());
 		else
 		{
-			if(id != null)
-				out.println("TITLE=" + id);
-			else
-			{
-				out.print("TITLE=PrecursorMz: " + precursor.getMz());
-				if(startScanNum > 0)
-					out.println(" scan: " + startScanNum);
-				else
-					out.println(" specIndex: " + specIndex);
-			}
+			out.println("TITLE=" + id);
 		}
 		if(this.annotation != null)
 			out.println("SEQ=" + getAnnotationStr());

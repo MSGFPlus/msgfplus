@@ -83,9 +83,10 @@ public class PklSpectrumParser implements SpectrumParser {
 			if(token.length == 3)	// start of a spectrum
 			{
 //                specIndexMap.put(++specIndex, offset);
+				++specIndex;
 				float precursorMz = Float.parseFloat(token[0]);
 				SpectrumMetaInfo metaInfo = new SpectrumMetaInfo();
-				metaInfo.setID("specIndex="+(++specIndex));
+				metaInfo.setID("index="+(specIndex-1));
 				metaInfo.setPrecursorMz(precursorMz);
 				metaInfo.setPosition(offset);
 				specIndexMap.put(specIndex, metaInfo);

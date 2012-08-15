@@ -77,7 +77,7 @@ public class SPTxtParser implements SpectrumParserWithTitle {
 			{
 				specIndex++;
 				metaInfo = new SpectrumMetaInfo();
-				metaInfo.setID("specIndex="+specIndex);
+				metaInfo.setID("index="+(specIndex-1));
 				metaInfo.setPosition(offset);
 				specIndexMap.put(specIndex, metaInfo);
 			}

@@ -69,8 +69,6 @@ public class MZIdentMLGen {
 	private SpectraAccessor specAcc;
 	private final int ioIndex;
 	 
-	private Map<edu.ucsd.msjava.msutil.Modification, Modification> modMap;
-	
 	private float eValueThreshold = Float.MAX_VALUE;
 
 	// highest level objects
@@ -102,6 +100,7 @@ public class MZIdentMLGen {
 	private Map<String, Peptide> pepMap;
 	private Map<String, List<PeptideEvidenceRef>> evRefListMap;
 	
+	private AnalysisProtocolCollectionGen apcGen;
 	
 	public MZIdentMLGen(SearchParams params, AminoAcidSet aaSet, CompactSuffixArray sa, SpectraAccessor specAcc, int ioIndex)
 	{
@@ -112,8 +111,6 @@ public class MZIdentMLGen {
 		this.specAcc = specAcc;
 		this.ioIndex = ioIndex;
 
-		// TODO set-up modMap, SearchModification
-		modMap = new HashMap<edu.ucsd.msjava.msutil.Modification, Modification>();
 		dbSeqMap = new HashMap<Integer, DBSequence>();
 		isDecoyMap = new HashMap<Integer, Boolean>();
 		pepMap = new LinkedHashMap<String, Peptide>();
@@ -213,7 +210,7 @@ public class MZIdentMLGen {
 				continue;
 
 			String specID = specAcc.getID(specIndex);
-			float precursorMz = specAcc.getPrecursorMz(specIndex);
+			float precursorMz = specAcc.getPrecursorMz(specIndex) - (float)Composition.H;
 
 			SpectrumIdentificationResult sir = new SpectrumIdentificationResult();
 			sir.setId(Constants.sirID+specIndex);
@@ -237,7 +234,7 @@ public class MZIdentMLGen {
 
 				float peptideMass = match.getPeptideMass();
 				float theoMass = peptideMass + (float)Composition.H2O;
-				float theoMz = theoMass/charge + (float)Composition.H;
+				float theoMz = theoMass/charge;
 				
 				int score = match.getScore();
 				double specEValue = match.getSpecEValue();
@@ -319,16 +316,23 @@ public class MZIdentMLGen {
 			List<Modification> modList = mzidPeptide.getModification();
 			edu.ucsd.msjava.msutil.Peptide peptide = aaSet.getPeptide(pepStr); 
 			StringBuffer unmodPepStr = new StringBuffer();
-			int location = 0;
+			int location = 1;
 			for(edu.ucsd.msjava.msutil.AminoAcid aa : peptide)
 			{
 				unmodPepStr.append(aa.getUnmodResidue());
 				if(aa.isModified())
 				{
 					Modification mod = new Modification();
-					mod.setLocation(location);
 					ModifiedAminoAcid modAA = (ModifiedAminoAcid)aa;
+					if(location == 0 && modAA.isNTermVariableMod())
+						mod.setLocation(location-1);
+					else if(location == peptide.size() && modAA.isCTermVariableMod())
+						mod.setLocation(location+1);
+					else
+						mod.setLocation(location);
 					mod.setMonoisotopicMassDelta(modAA.getModification().getAccurateMass());
+					
+					mod.getCvParam().addAll(apcGen.getSearchModification(modAA.getModification()).getCvParam());
 					modList.add(mod);
 				}
 				location++;
@@ -482,7 +486,7 @@ public class MZIdentMLGen {
 	
 	private void generateAnalysisProtocolCollection()
 	{
-		AnalysisProtocolCollectionGen apcGen = new AnalysisProtocolCollectionGen(params, aaSet);
+		apcGen = new AnalysisProtocolCollectionGen(params, aaSet);
 		analysisProtocolCollection = apcGen.getAnalysisProtocolCollection();
 		siProtocol = apcGen.getSpectrumIdentificationProtocol();
 	}

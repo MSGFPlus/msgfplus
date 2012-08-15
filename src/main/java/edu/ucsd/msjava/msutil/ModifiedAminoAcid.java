@@ -7,6 +7,7 @@ public class ModifiedAminoAcid extends AminoAcid {
 	private Modification mod;
 	private AminoAcid targetAA;
 	private boolean isNTermVariableMod = false;
+	private boolean isCTermVariableMod = false;
 	private boolean hasTerminalVariableMod = false;
 	private boolean hasAnywhereVariableMod = false;
 	private boolean isFixedModification = false;
@@ -29,6 +30,8 @@ public class ModifiedAminoAcid extends AminoAcid {
 			this.hasTerminalVariableMod = true;
 			if(mod.getLocation() == Location.N_Term || mod.getLocation() == Location.Protein_N_Term)
 				isNTermVariableMod = true;
+			if(mod.getLocation() == Location.C_Term || mod.getLocation() == Location.Protein_C_Term)
+				isCTermVariableMod = true;
 		}
 		if(this.hasAnywhereVariableMod)
 		{
@@ -90,6 +93,16 @@ public class ModifiedAminoAcid extends AminoAcid {
 	public boolean hasAnywhereVariableMod()
 	{
 		return this.hasAnywhereVariableMod;
+	}
+	
+	public boolean isNTermVariableMod()
+	{
+		return isNTermVariableMod;
+	}
+
+	public boolean isCTermVariableMod()
+	{
+		return isCTermVariableMod;
 	}
 	
 	/**

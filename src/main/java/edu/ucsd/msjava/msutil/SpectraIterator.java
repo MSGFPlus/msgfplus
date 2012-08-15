@@ -58,7 +58,7 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
 		else
 		{
 			currentSpectrum.setSpecIndex(++specIndex);
-			currentSpectrum.setID(String.valueOf(specIndex));
+			currentSpectrum.setID("index="+String.valueOf(specIndex-1));
 		}
 		return curSpecCopy;
 	}
@@ -108,7 +108,7 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
 		{
 			hasNext = true;
 			currentSpectrum.setSpecIndex(++specIndex);
-			currentSpectrum.setID(String.valueOf(specIndex));
+			currentSpectrum.setID("index="+String.valueOf(specIndex-1));
 		}
 		else
 			hasNext = false;

@@ -164,7 +164,7 @@ public class MgfSpectrumParser implements SpectrumParser {
 				specIndex++;
 				metaInfo = new SpectrumMetaInfo();
 				metaInfo.setPosition(offset);
-				metaInfo.setID(String.valueOf(specIndex));
+				metaInfo.setID("index="+String.valueOf(specIndex-1));
 				specIndexMap.put(specIndex, metaInfo);
 			}
 //			else if(buf.startsWith("TITLE"))

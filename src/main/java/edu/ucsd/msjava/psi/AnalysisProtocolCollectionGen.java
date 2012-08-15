@@ -1,6 +1,8 @@
 package edu.ucsd.msjava.psi;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.ucsd.msjava.msdbsearch.SearchParams;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
@@ -13,6 +15,8 @@ public class AnalysisProtocolCollectionGen {
 	
 	private AnalysisProtocolCollection analysisProtocolCollection;
 	private SpectrumIdentificationProtocol spectrumIdentificationProtocol;
+	
+	private Map<edu.ucsd.msjava.msutil.Modification, SearchModification> modMap;
 	
 	public AnalysisProtocolCollectionGen(SearchParams params, AminoAcidSet aaSet)
 	{
@@ -30,6 +34,11 @@ public class AnalysisProtocolCollectionGen {
 	public SpectrumIdentificationProtocol getSpectrumIdentificationProtocol()
 	{
 		return spectrumIdentificationProtocol;
+	}
+	
+	public SearchModification getSearchModification(edu.ucsd.msjava.msutil.Modification mod)
+	{
+		return modMap.get(mod);
 	}
 	
 	private void generateSpectrumIdentificationProtocol()
@@ -126,6 +135,8 @@ public class AnalysisProtocolCollectionGen {
 	
 	public ModificationParams getModificationParam()
 	{
+		modMap = new HashMap<edu.ucsd.msjava.msutil.Modification, uk.ac.ebi.jmzidml.model.mzidml.SearchModification>();
+		
         ModificationParams modParams = new ModificationParams();
         List<SearchModification> searchModList = modParams.getSearchModification();
 
@@ -142,10 +153,10 @@ public class AnalysisProtocolCollectionGen {
     		// set modification CV params
     		List<CvParam> modCvParamList = searchMod.getCvParam();
     		CvParam cvParam = new CvParam();
-    		int unimodRecordID = Constants.unimod.getRecordID(modName);
-    		if(unimodRecordID > 0)	// exist in unimod
+    		String unimodRecordID = Constants.unimod.getRecordID(modName);
+    		if(unimodRecordID != null)	// exist in unimod
     		{
-        		cvParam.setAccession("UNIMOD:" + unimodRecordID);
+        		cvParam.setAccession(unimodRecordID);
         		cvParam.setCv(Constants.unimodCV);
         		cvParam.setName(modName);
     		}
@@ -158,7 +169,10 @@ public class AnalysisProtocolCollectionGen {
 
     		// residue
             List<String> residueList = searchMod.getResidues();
-            residueList.add(String.valueOf(mod.getResidue()));	// TODO: what if residue='*'
+            if(mod.getResidue() == '*')
+            	residueList.add(".");
+            else
+            	residueList.add(String.valueOf(mod.getResidue()));
 
             // specificity rules
             SpecificityRules specificityRules = new SpecificityRules();
@@ -169,6 +183,8 @@ public class AnalysisProtocolCollectionGen {
             if(mod.getLocation() == edu.ucsd.msjava.msutil.Modification.Location.C_Term || mod.getLocation() == edu.ucsd.msjava.msutil.Modification.Location.Protein_C_Term)
             	rules.add(Constants.makeCvParam("MS:1001190", "modification specificity C-term", Constants.psiCV));
             searchModList.add(searchMod);
+            
+            modMap.put(mod.getModification(), searchMod);
         }
 
         return modParams;

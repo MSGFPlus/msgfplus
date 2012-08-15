@@ -95,7 +95,7 @@ public class MS2SpectrumParser implements SpectrumParser {
 				
 				SpectrumMetaInfo metaInfo = new SpectrumMetaInfo();
 				metaInfo.setPosition(offset);
-				metaInfo.setID("specIndex=" + specIndex);
+				metaInfo.setID("index=" + (specIndex-1));
 				
 				buf = lineReader.readLine();
 				if(buf != null)

@@ -32,9 +32,8 @@ public class Constants {
     static Cv psiCV;
     static Cv unimodCV;
     static Cv unitCV;
-    
-    // TODO: input Unimod
-	static Unimod unimod = new Unimod();
+
+	static Unimod unimod;
     static AnalysisSoftware msgfPlus;
 
 //    static Person docOwner;
@@ -65,6 +64,8 @@ public class Constants {
 		msgfPlus.setSoftwareName(tempParam);
 		msgfPlus.setId(analysisSoftID);
 		msgfPlus.setVersion(MSGFPlus.VERSION);
+		
+		unimod = new Unimod(ClassLoader.getSystemResourceAsStream("unimod.obo"));
 		
 //		docOwner = new Person();
 //		docOwner.setId("PERSON_DOC_OWNER");

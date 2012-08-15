@@ -34,7 +34,7 @@ public class SpectraMap implements SpectrumAccessorBySpecIndex {
 			lineReader.seek(filePos);
 			Spectrum spec = parser.readSpectrum(lineReader);
 			spec.setSpecIndex(specIndex);
-			spec.setID(String.valueOf(specIndex));
+			spec.setID("index="+String.valueOf(specIndex-1));
 			return spec;
 		}
 	}
