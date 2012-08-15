@@ -1,53 +1,33 @@
 package edu.ucsd.msjava.jmzparser;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.Peak;
 import edu.ucsd.msjava.msutil.Spectrum;
 
-import uk.ac.ebi.jmzml.model.mzml.*;
 import uk.ac.ebi.jmzml.xml.io.MzMLObjectIterator;
 import uk.ac.ebi.jmzml.xml.io.MzMLUnmarshaller;
 
 
 public class MzMLSpectraIterator implements Iterator<edu.ucsd.msjava.msutil.Spectrum>, Iterable<edu.ucsd.msjava.msutil.Spectrum> {
-	private MzMLUnmarshaller unmarshaller;
+	private final MzMLUnmarshaller unmarshaller;
+	private final int minMSLevel;		// inclusive
+	private final int maxMSLevel;		// exclusive
+	
 	private MzMLObjectIterator<uk.ac.ebi.jmzml.model.mzml.Spectrum> itr;
-	private int minMSLevel = 2;		// inclusive
-	private int maxMSLevel = Integer.MAX_VALUE;		// exclusive
 	private boolean hasNext;
 	private edu.ucsd.msjava.msutil.Spectrum currentSpectrum = null;
 	
-	public MzMLSpectraIterator(File specFile) throws FileNotFoundException
+	public MzMLSpectraIterator(MzMLAdapter mzmlAdapter)
 	{
-		turnOffLogs();
-		unmarshaller = new MzMLUnmarshaller(specFile);
+		unmarshaller = mzmlAdapter.getUnmarshaller();
+		minMSLevel = mzmlAdapter.getMinMSLevel();
+		maxMSLevel = mzmlAdapter.getMaxMSLevel();
+		
 		itr = unmarshaller.unmarshalCollectionFromXpath("/run/spectrumList/spectrum", uk.ac.ebi.jmzml.model.mzml.Spectrum.class);
 		currentSpectrum = parseNextSpectrum();
 		if(currentSpectrum != null)        hasNext = true;
 		else                               hasNext = false;
-	}
-	
-	/**
-	 * Setter to set msLevel.
-	 * @param minMSLevel minimum msLevel to be considered (inclusive).
-	 * @param maxMSLevel maximum msLevel to be considered (inclusive).
-	 * @return this object.
-	 */
-	public MzMLSpectraIterator msLevel(int minMSLevel, int maxMSLevel) 
-	{ 
-		this.minMSLevel = minMSLevel; 
-		this.maxMSLevel = maxMSLevel; 
-		return this; 
 	}
 	
 	public boolean hasNext() 
@@ -96,16 +76,6 @@ public class MzMLSpectraIterator implements Iterator<edu.ucsd.msjava.msutil.Spec
 	}
 	
 
-	
-	static void turnOffLogs()
-	{
-		List<Logger> loggers = Collections.<Logger>list(LogManager.getCurrentLoggers());
-		loggers.add(LogManager.getRootLogger());
-		for ( Logger logger : loggers ) {
-		    logger.setLevel(Level.OFF);
-		}		
-	}
-
 	public static void main(String argv[]) throws Exception
 	{
 //		List<Logger> loggers = Collections.<Logger>list(LogManager.getCurrentLoggers());
@@ -121,7 +91,8 @@ public class MzMLSpectraIterator implements Iterator<edu.ucsd.msjava.msutil.Spec
 		File xmlFile = new File("/cygwin/home/kims336/Research/Data/JMzReader/example.mzML");
 		xmlFile = new File("/cygwin/home/kims336/Research/Data/JMzReader/small.pwiz.1.1.mzML");
 		
-		MzMLSpectraIterator itr = new MzMLSpectraIterator(xmlFile);
+		MzMLAdapter adapter = new MzMLAdapter(xmlFile);
+		MzMLSpectraIterator itr = new MzMLSpectraIterator(adapter);
 		while(itr.hasNext())
 		{
 			edu.ucsd.msjava.msutil.Spectrum spec = itr.next();

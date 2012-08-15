@@ -32,6 +32,7 @@ import edu.ucsd.msjava.msutil.InstrumentType;
 import edu.ucsd.msjava.msutil.Protocol;
 import edu.ucsd.msjava.msutil.SpecFileFormat;
 import edu.ucsd.msjava.msutil.SpecKey;
+import edu.ucsd.msjava.msutil.SpectraAccessor;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.msutil.SpectrumAccessorBySpecIndex;
 import edu.ucsd.msjava.params.ParamManager;
@@ -190,7 +191,7 @@ public class MSGFPlus {
 			if(ratioUniqueProteins < 0.5f)
 			{
 				System.err.println("Error while indexing: " + databaseFile.getName() + " (too many redundant proteins)");
-				System.err.println("If the database contains forward and reverse proteins, run MS-GFDB (or BuildSA) again with \"-tda 0\"");
+				System.err.println("If the database contains forward and reverse proteins, run MS-GF+ (or BuildSA) again with \"-tda 0\"");
 				System.exit(-1);
 			}
 		}
@@ -203,13 +204,15 @@ public class MSGFPlus {
 		
 		File specFile = params.getDBSearchIOList().get(ioIndex).getSpecFile();
 		
+		SpectraAccessor specAcc = new SpectraAccessor(specFile, specFormat);
+
     	Iterator<Spectrum> specItr = null;
     	try {
-			specItr = SpecFileFormat.getSpecItr(specFile, specFormat);
+			specItr = specAcc.getSpecItr();
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		}
-		SpectrumAccessorBySpecIndex specMap = SpecFileFormat.getSpecMap(specFile, specFormat);
+		SpectrumAccessorBySpecIndex specMap = specAcc.getSpecMap();
 		
 		if(specItr == null || specMap == null)
 		{
@@ -236,7 +239,7 @@ public class MSGFPlus {
 		SpecDataType specDataType = new SpecDataType(activationMethod, instType, enzyme, protocol);
 		int fromIndexGlobal = 0;
 		
-		MZIdentMLGen mzidGen = new MZIdentMLGen(params, aaSet, sa, specMap, ioIndex);
+		MZIdentMLGen mzidGen = new MZIdentMLGen(params, aaSet, sa, specAcc, ioIndex);
 		
 		while(true)
 		{

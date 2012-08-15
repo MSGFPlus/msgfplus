@@ -33,7 +33,8 @@ public class Constants {
     static Cv unimodCV;
     static Cv unitCV;
     
-	static Unimod unimod;
+    // TODO: input Unimod
+	static Unimod unimod = new Unimod();
     static AnalysisSoftware msgfPlus;
 
 //    static Person docOwner;
@@ -107,7 +108,7 @@ public class Constants {
 	 *
 	 * @return CvParam
 	 */
-	public CvParam makeCvParam(String accession, String name, Cv cv, String unitAccession, String unitName, Cv alternateUnitCV){
+	public static CvParam makeCvParam(String accession, String name, Cv cv, String unitAccession, String unitName, Cv alternateUnitCV){
 		CvParam cvParam = makeCvParam(accession, name, cv);
 		cvParam.setUnitAccession(unitAccession);
 		cvParam.setUnitCv(alternateUnitCV);

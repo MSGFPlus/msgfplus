@@ -10,6 +10,7 @@ import java.util.Iterator;
 
 import edu.ucsd.msjava.msutil.ActivationMethod;
 import edu.ucsd.msjava.msutil.SpecFileFormat;
+import edu.ucsd.msjava.msutil.SpectraAccessor;
 import edu.ucsd.msjava.msutil.SpectraIterator;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.parser.MS2SpectrumParser;
@@ -117,8 +118,7 @@ public class ConvertToMgf {
 		int numFileConverted = 0;
 		for(File sourceFile : fileList)
 		{
-			
-			Iterator<Spectrum> specItr = SpecFileFormat.getSpecItr(sourceFile);
+			Iterator<Spectrum> specItr = new SpectraAccessor(sourceFile).getSpecItr();
 			if(specItr != null)
 			{
 				System.out.print(sourceFile.getName() + ": ");

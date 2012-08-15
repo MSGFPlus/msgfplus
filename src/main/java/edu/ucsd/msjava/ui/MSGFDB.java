@@ -31,6 +31,7 @@ import edu.ucsd.msjava.msutil.InstrumentType;
 import edu.ucsd.msjava.msutil.Protocol;
 import edu.ucsd.msjava.msutil.SpecFileFormat;
 import edu.ucsd.msjava.msutil.SpecKey;
+import edu.ucsd.msjava.msutil.SpectraAccessor;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.msutil.SpectrumAccessorBySpecIndex;
 import edu.ucsd.msjava.params.FileParameter;
@@ -253,14 +254,17 @@ public class MSGFDB {
 		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
 		
 		System.out.println("Reading spectra...");
+
+		SpectraAccessor specAcc = new SpectraAccessor(specFile, specFormat);
+		
     	Iterator<Spectrum> specItr = null;
     	try {
-			specItr = SpecFileFormat.getSpecItr(specFile, specFormat);
+			specItr = specAcc.getSpecItr();
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		}
     	
-		SpectrumAccessorBySpecIndex specMap = SpecFileFormat.getSpecMap(specFile, specFormat);
+		SpectrumAccessorBySpecIndex specMap = specAcc.getSpecMap();
 
 		if(specItr == null || specMap == null)
 		{

@@ -10,34 +10,17 @@ import edu.ucsd.msjava.msutil.SpectrumAccessorBySpecIndex;
 
 public class MzMLSpectraMap implements SpectrumAccessorBySpecIndex 
 {
-	private MzMLUnmarshaller unmarshaller;
-	private int minMSLevel = 2;		// inclusive
-	private int maxMSLevel = Integer.MAX_VALUE;		// exclusive
+	private final MzMLUnmarshaller unmarshaller;
+	private final int minMSLevel;		// inclusive
+	private final int maxMSLevel;		// exclusive
 	
-	public MzMLSpectraMap(File specFile)
+	public MzMLSpectraMap(MzMLAdapter mzmlAdapter)
 	{
-		MzMLSpectraIterator.turnOffLogs();
-		unmarshaller = new MzMLUnmarshaller(specFile);
+		unmarshaller = mzmlAdapter.getUnmarshaller();
+		minMSLevel = mzmlAdapter.getMinMSLevel();
+		maxMSLevel = mzmlAdapter.getMaxMSLevel();
 	}
 
-	public MzMLSpectraMap(String specFileName)
-	{
-		unmarshaller = new MzMLUnmarshaller(new File(specFileName));
-	}
-	
-	/**
-	 * Setter to set msLevel.
-	 * @param minMSLevel minimum msLevel to be considered (inclusive).
-	 * @param maxMSLevel maximum msLevel to be considered (inclusive).
-	 * @return this object.
-	 */
-	public MzMLSpectraMap msLevel(int minMSLevel, int maxMSLevel) 
-	{ 
-		this.minMSLevel = minMSLevel; 
-		this.maxMSLevel = maxMSLevel; 
-		return this; 
-	}
-	
 	public edu.ucsd.msjava.msutil.Spectrum getSpectrumBySpecIndex(int specIndex) 
 	{
 		String specID = unmarshaller.getSpectrumIDFromSpectrumIndex(specIndex-1);

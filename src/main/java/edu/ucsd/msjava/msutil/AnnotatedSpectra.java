@@ -120,7 +120,7 @@ public class AnnotatedSpectra {
 			if(specMap == null)
 			{
 				File specFile = new File(specDir.getPath()+File.separator+specFileName);
-				specMap = SpecFileFormat.getSpecMap(specFile);
+				specMap = new SpectraAccessor(specFile).getSpecMap();
 				if(specMap == null)
 					return "Unrecognized spectrum format";
 				specAccessorMap.put(specFileName, specMap);
