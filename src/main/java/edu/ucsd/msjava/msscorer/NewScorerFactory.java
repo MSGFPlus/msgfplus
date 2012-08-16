@@ -25,7 +25,7 @@ public class NewScorerFactory {
 			this.protocol = protocol;
 		}
 		
-		@Override
+		@Override 
 		public boolean equals(Object obj) {
 			if(obj instanceof SpecDataType)
 			{
@@ -133,7 +133,7 @@ public class NewScorerFactory {
 				else
 					alternativeEnzyme = Enzyme.LysN;
 				SpecDataType newCond = new SpecDataType(method, instType, alternativeEnzyme);
-				is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+newCond+".param");
+				is = ClassLoader.getSystemResourceAsStream("ionstat/"+newCond+".param");
 				
 				if(is == null)	// if all the above failed, try to use CIDorETD-LowRes-Tryp, CIDorETD-LowRes-LysN, or CID-TOF-Tryp
 				{
@@ -149,7 +149,7 @@ public class NewScorerFactory {
 						newCond = new SpecDataType(ActivationMethod.CID, InstrumentType.LOW_RESOLUTION_LTQ, Enzyme.LysN);
 					else
 						newCond = new SpecDataType(ActivationMethod.CID, InstrumentType.LOW_RESOLUTION_LTQ, Enzyme.TRYPSIN);
-					is = ClassLoader.getSystemResourceAsStream("resources/ionstat/"+newCond+".param");						
+					is = ClassLoader.getSystemResourceAsStream("ionstat/"+newCond+".param");						
 				}
 			}
 			assert(is != null): "param file is missing!: " + method.getName()+" "+enzyme.getName();

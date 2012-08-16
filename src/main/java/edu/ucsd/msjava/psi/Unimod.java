@@ -9,20 +9,40 @@ import java.util.Map;
 
 public class Unimod {
 	private Map<String, String> recordIDMap;	// name -> record id
-	
-	public Unimod(InputStream is)
+	private final String UNIMOD_FILE_NAME = "resources/unimod.obo";
+	public Unimod()
 	{
-		BufferedReader in = new BufferedReader(new InputStreamReader(is));
-		readUnimodOBOFile(in);
+//		System.out.println("**********" + ClassLoader.getSystemResource("").toString());
+//		System.out.println("**********" + getClass().getResource("").toString());
+//		System.out.println("**********" + getClass().getResource("/").toString());
+//		System.out.println("**********" + Unimod.class.getClassLoader().getResource("").toString());
+//		InputStream is = Unimod.class.getClassLoader().getResourceAsStream("unimod.obo");
+//		if(is == null)
+//		{
+//			System.err.println("Unable to access \"unimod.obo\".");
+//			System.exit(-1);
+//		}
+//		BufferedReader in = new BufferedReader(new InputStreamReader(is));
+		readUnimodOBOFile();
 	}
 	
 	public String getRecordID(String name)
 	{
+//		return "UNIMOD";
 		return recordIDMap.get(name);
 	}
 	
-	private void readUnimodOBOFile(BufferedReader in)
+	private void readUnimodOBOFile()
 	{
+//		InputStream is = ClassLoader.getSystemResourceAsStream(UNIMOD_FILE_NAME);
+		InputStream is = Unimod.class.getResourceAsStream("/unimod.obo");
+		if(is == null)
+		{
+			System.err.println("Unable to access \"unimod.obo\".");
+			System.exit(-1);
+		}
+		BufferedReader in = new BufferedReader(new InputStreamReader(is));
+		
 		recordIDMap = new HashMap<String, String>();
 		String s;
 		try {

@@ -12,7 +12,7 @@ import uk.ac.ebi.jmzidml.model.mzidml.*;
 public class AnalysisProtocolCollectionGen {
 	private final SearchParams params;
 	private final AminoAcidSet aaSet;
-	
+	private final Unimod unimod;
 	private AnalysisProtocolCollection analysisProtocolCollection;
 	private SpectrumIdentificationProtocol spectrumIdentificationProtocol;
 	
@@ -22,6 +22,7 @@ public class AnalysisProtocolCollectionGen {
 	{
 		this.params = params;
 		this.aaSet = aaSet;
+		this.unimod = new Unimod();
 		analysisProtocolCollection = new AnalysisProtocolCollection();
 		generateSpectrumIdentificationProtocol();
 	}
@@ -153,7 +154,7 @@ public class AnalysisProtocolCollectionGen {
     		// set modification CV params
     		List<CvParam> modCvParamList = searchMod.getCvParam();
     		CvParam cvParam = new CvParam();
-    		String unimodRecordID = Constants.unimod.getRecordID(modName);
+    		String unimodRecordID = unimod.getRecordID(modName);
     		if(unimodRecordID != null)	// exist in unimod
     		{
         		cvParam.setAccession(unimodRecordID);

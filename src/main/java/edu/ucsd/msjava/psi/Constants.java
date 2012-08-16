@@ -1,13 +1,10 @@
 package edu.ucsd.msjava.psi;
 
 import edu.ucsd.msjava.ui.MSGFPlus;
-import uk.ac.ebi.jmzidml.model.mzidml.Affiliation;
 import uk.ac.ebi.jmzidml.model.mzidml.AnalysisSoftware;
 import uk.ac.ebi.jmzidml.model.mzidml.Cv;
 import uk.ac.ebi.jmzidml.model.mzidml.CvParam;
-import uk.ac.ebi.jmzidml.model.mzidml.Organization;
 import uk.ac.ebi.jmzidml.model.mzidml.Param;
-import uk.ac.ebi.jmzidml.model.mzidml.Person;
 import uk.ac.ebi.jmzidml.model.mzidml.UserParam;
 
 public class Constants {
@@ -33,7 +30,6 @@ public class Constants {
     static Cv unimodCV;
     static Cv unitCV;
 
-	static Unimod unimod;
     static AnalysisSoftware msgfPlus;
 
 //    static Person docOwner;
@@ -64,8 +60,6 @@ public class Constants {
 		msgfPlus.setSoftwareName(tempParam);
 		msgfPlus.setId(analysisSoftID);
 		msgfPlus.setVersion(MSGFPlus.VERSION);
-		
-		unimod = new Unimod(ClassLoader.getSystemResourceAsStream("unimod.obo"));
 		
 //		docOwner = new Person();
 //		docOwner.setId("PERSON_DOC_OWNER");
