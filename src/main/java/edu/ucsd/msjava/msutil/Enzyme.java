@@ -296,7 +296,7 @@ public class Enzyme implements ParamObject {
 	}
 	
 	static {
-		NOENZYME = new Enzyme("NoEnzyme", null, false, "No enzyme", null);
+		NOENZYME = new Enzyme("NoEnzyme", null, false, "NoEnzyme", "MS:1001045");
 		TRYPSIN = new Enzyme("Tryp", "KR", false, "Trypsin", "MS:1001251");
 //		TRYPSIN.setNeighboringAAEfficiency(0.9148273f);
 //		TRYPSIN.setPeptideCleavageEffiency(0.98173124f);
@@ -308,7 +308,7 @@ public class Enzyme implements ParamObject {
 		TRYPSIN.setNeighboringAAEfficiency(0.99999f);
 		TRYPSIN.setPeptideCleavageEffiency(0.99999f);
 
-		CHYMOTRYPSIN = new Enzyme("CHYMOTRYPSIN", "FYWL", false, "Chymotrypsin", "MS:1001306");
+		CHYMOTRYPSIN = new Enzyme("Chymotrypsin", "FYWL", false, "Chymotrypsin", "MS:1001306");
 		
 		LysC = new Enzyme("LysC", "K", false, "Lys-C", "MS:1001309");
 //		LysC.setNeighboringAAEfficiency(0.79f);
@@ -320,13 +320,13 @@ public class Enzyme implements ParamObject {
 		LysN.setNeighboringAAEfficiency(0.79f);
 		LysN.setPeptideCleavageEffiency(0.89f);
 		
-		GluC = new Enzyme("GluC","E",false, "Glu-C", "MS:1001917");
+		GluC = new Enzyme("GluC","E",false, "glutamyl endopeptidase", "MS:1001917");
 		ArgC = new Enzyme("ArgC","R",false, "Arg-C", "MS:1001303");
 		AspN = new Enzyme("AspN","D",true, "Asp-N", "MS:1001304");
 		
 		ALP = new Enzyme("aLP", null, false, "alphaLP", null);
 		
-		Peptidomics = new Enzyme("Peptidomics", null, false, "Endogenous peptides", null);
+		Peptidomics = new Enzyme("Peptidomics", null, false, "NoEnzyme", "MS:1001045");
 		
 		enzymeTable = new HashMap<String,Enzyme>();
 		registeredEnzymeList = new ArrayList<Enzyme>();

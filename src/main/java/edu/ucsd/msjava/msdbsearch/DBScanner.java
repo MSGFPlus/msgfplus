@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Map.Entry;
-import java.util.TreeSet;
-
 
 import edu.ucsd.msjava.msgf.DeNovoGraph;
 import edu.ucsd.msjava.msgf.FlexAminoAcidGraph;
@@ -485,7 +483,7 @@ public class DBScanner {
 			numProcessedSpecs++;
 			if(numProcessedSpecs % 1000 == 0)
 			{
-				System.out.print(threadName + ": Computing spectral probabilities... "); 
+				System.out.print(threadName + ": Computing spectral E-values... "); 
 				System.out.format("%.1f%% complete\n", numProcessedSpecs/(float)numSpecs*100);
 			}
 			

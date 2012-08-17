@@ -11,6 +11,7 @@ import edu.ucsd.msjava.msutil.InstrumentType;
 import edu.ucsd.msjava.msutil.Protocol;
 
 public class NewScorerFactory {
+	private static final String IONSTAT_RESOURCE_DIR = "ionstat/";
 	private NewScorerFactory() {}
 	
 	public static class SpecDataType {
@@ -104,7 +105,7 @@ public class NewScorerFactory {
 			scorerTable.put(condition, scorer);
 			return scorer;
 		}
-		InputStream is = ClassLoader.getSystemResourceAsStream("ionstat/"+condition+".param");
+		InputStream is = ClassLoader.getSystemResourceAsStream(IONSTAT_RESOURCE_DIR+condition+".param");
 		if(is != null)
 		{
 			scorer = new NewRankScorer(new BufferedInputStream(is));
@@ -123,7 +124,7 @@ public class NewScorerFactory {
 		NewRankScorer scorer = scorerTable.get(condition);
 		if(scorer == null)
 		{
-			InputStream is = ClassLoader.getSystemResourceAsStream("ionstat/"+condition+".param");
+			InputStream is = ClassLoader.getSystemResourceAsStream(IONSTAT_RESOURCE_DIR+condition+".param");
 			if(is == null)	// param file does not exist. Change enzyme.
 			{
 				// change enzyme
@@ -133,7 +134,7 @@ public class NewScorerFactory {
 				else
 					alternativeEnzyme = Enzyme.LysN;
 				SpecDataType newCond = new SpecDataType(method, instType, alternativeEnzyme);
-				is = ClassLoader.getSystemResourceAsStream("ionstat/"+newCond+".param");
+				is = ClassLoader.getSystemResourceAsStream(IONSTAT_RESOURCE_DIR+newCond+".param");
 				
 				if(is == null)	// if all the above failed, try to use CIDorETD-LowRes-Tryp, CIDorETD-LowRes-LysN, or CID-TOF-Tryp
 				{
@@ -149,7 +150,7 @@ public class NewScorerFactory {
 						newCond = new SpecDataType(ActivationMethod.CID, InstrumentType.LOW_RESOLUTION_LTQ, Enzyme.LysN);
 					else
 						newCond = new SpecDataType(ActivationMethod.CID, InstrumentType.LOW_RESOLUTION_LTQ, Enzyme.TRYPSIN);
-					is = ClassLoader.getSystemResourceAsStream("ionstat/"+newCond+".param");						
+					is = ClassLoader.getSystemResourceAsStream(IONSTAT_RESOURCE_DIR+newCond+".param");						
 				}
 			}
 			assert(is != null): "param file is missing!: " + method.getName()+" "+enzyme.getName();

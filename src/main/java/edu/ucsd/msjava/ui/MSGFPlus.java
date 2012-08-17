@@ -15,6 +15,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
+import edu.ucsd.msjava.jmzparser.MzMLAdapter;
 import edu.ucsd.msjava.msdbsearch.CompactFastaSequence;
 import edu.ucsd.msjava.msdbsearch.CompactSuffixArray;
 import edu.ucsd.msjava.msdbsearch.ConcurrentMSGFPlus;
@@ -35,8 +36,8 @@ import edu.ucsd.msjava.msutil.SpecKey;
 import edu.ucsd.msjava.msutil.SpectraAccessor;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.msutil.SpectrumAccessorBySpecIndex;
+import edu.ucsd.msjava.mzid.MZIdentMLGen;
 import edu.ucsd.msjava.params.ParamManager;
-import edu.ucsd.msjava.psi.MZIdentMLGen;
 
 
 public class MSGFPlus {
@@ -58,6 +59,8 @@ public class MSGFPlus {
 			paramManager.printUsageInfo();
 			return;
 		}
+		
+		MzMLAdapter.turnOffLogs();
 		
 		// Parse parameters
 		String errMessage = paramManager.parseParams(argv); 

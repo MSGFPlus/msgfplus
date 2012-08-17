@@ -3,7 +3,7 @@ package edu.ucsd.msjava.msdbsearch;
 import java.util.List;
 
 
-import edu.ucsd.msjava.psi.MZIdentMLGen;
+import edu.ucsd.msjava.mzid.MZIdentMLGen;
 
 public class ConcurrentMSGFPlus {
 	public static class RunMSGFPlus implements Runnable {

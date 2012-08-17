@@ -9,6 +9,7 @@
     <sourceDirectory>src/main/java</sourceDirectory>
     <resources>
       <resource>
+        <targetPath>.</targetPath>
         <directory>src/main/resources</directory>
         <excludes>
           <exclude>**/*.java</exclude>
@@ -25,6 +26,31 @@
         	<target>1.7</target>
         </configuration>
       </plugin>
+      <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+                <descriptorRefs>
+                    <descriptorRef>jar-with-dependencies</descriptorRef>
+                </descriptorRefs>
+                <archive>
+                  <manifest>
+                    <addClasspath>true</addClasspath>
+                  </manifest>
+      			<manifest>
+      				<mainClass>edu.ucsd.msjava.ui.MSGFPlus</mainClass>
+      			</manifest>
+                </archive>
+            </configuration>
+            <executions>
+                <execution>
+                    <id>make-assembly</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>single</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
     </plugins>
   </build>
   <dependencies>

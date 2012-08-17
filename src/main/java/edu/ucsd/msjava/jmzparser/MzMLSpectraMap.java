@@ -1,6 +1,5 @@
 package edu.ucsd.msjava.jmzparser;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import uk.ac.ebi.jmzml.xml.io.MzMLUnmarshaller;
@@ -66,7 +65,10 @@ public class MzMLSpectraMap implements SpectrumAccessorBySpecIndex
 				e.printStackTrace();
 			}
 			if(jmzSpec != null)
-				SpectrumConverter.getPrecursorMzFromJMzMLSpec(jmzSpec);
+			{
+				float precursorMz = SpectrumConverter.getPrecursorMzFromJMzMLSpec(jmzSpec);
+				return precursorMz;
+			}
 		}
 		return null;
 	}

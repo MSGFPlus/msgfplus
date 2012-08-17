@@ -8,7 +8,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import edu.ucsd.msjava.psi.Constants;
+import edu.ucsd.msjava.mzid.Constants;
 
 import uk.ac.ebi.jmzidml.model.mzidml.CvParam;
 import uk.ac.ebi.jmzml.model.mzml.CVParam;
@@ -86,7 +86,7 @@ public class MzMLAdapter {
 		return null;
 	}
 	
-	private static void turnOffLogs()
+	public static void turnOffLogs()
 	{
 		@SuppressWarnings("unchecked")
 		List<Logger> loggers = Collections.<Logger>list(LogManager.getCurrentLoggers());

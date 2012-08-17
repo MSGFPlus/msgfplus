@@ -9,6 +9,7 @@ import uk.ac.ebi.jmzidml.model.mzidml.CvParam;
 import edu.ucsd.msjava.jmzparser.MzMLAdapter;
 import edu.ucsd.msjava.jmzparser.MzMLSpectraIterator;
 import edu.ucsd.msjava.jmzparser.MzMLSpectraMap;
+import edu.ucsd.msjava.mzid.Constants;
 import edu.ucsd.msjava.parser.MS2SpectrumParser;
 import edu.ucsd.msjava.parser.MgfSpectrumParser;
 import edu.ucsd.msjava.parser.MzXMLSpectraIterator;
@@ -17,7 +18,6 @@ import edu.ucsd.msjava.parser.PNNLSpectraIterator;
 import edu.ucsd.msjava.parser.PNNLSpectraMap;
 import edu.ucsd.msjava.parser.PklSpectrumParser;
 import edu.ucsd.msjava.parser.SpectrumParser;
-import edu.ucsd.msjava.psi.Constants;
 
 public class SpectraAccessor {
 	private final File specFile;
@@ -68,6 +68,11 @@ public class SpectraAccessor {
 			}			
 		}
 		
+		if(specMap == null)
+		{
+			System.out.println("File: " + specFile.getAbsolutePath());
+			System.out.println("Format: " + specFormat.getPSIName());
+		}
 		return specMap;
 	}
 	
@@ -124,7 +129,7 @@ public class SpectraAccessor {
 			cvParam = Constants.makeCvParam("MS:1000774", "multiple peak list nativeID format");
 		else if(specFormat == SpecFileFormat.MZXML)
 			cvParam = Constants.makeCvParam("MS:1000776", "scan number only nativeID format");
-		else if(specFormat == SpecFileFormat.MZDATA || specFormat == SpecFileFormat.MZML)
+		else if(specFormat == SpecFileFormat.MZDATA)
 			cvParam = Constants.makeCvParam("MS:1000777", "spectrum identifier nativeID format");
 		else if(specFormat == SpecFileFormat.MZML)
 		{
