@@ -23,8 +23,8 @@ public class SearchParams {
 	private File databaseFile;
 	private Tolerance leftParentMassTolerance; 
 	private Tolerance rightParentMassTolerance; 
-	private int min13C;
-	private int max13C;
+	private int minIsotope;
+	private int maxIsotope;
 	private Enzyme enzyme;
 	private int numTolerableTermini;
 	private ActivationMethod activationMethod;
@@ -65,11 +65,11 @@ public class SearchParams {
 	}
 
 	public int getMin13C() {
-		return min13C;
+		return minIsotope;
 	}
 
 	public int getMax13C() {
-		return max13C;
+		return maxIsotope;
 	}
 	
 	public Enzyme getEnzyme() {
@@ -166,6 +166,13 @@ public class SearchParams {
 			SpecFileFormat specFormat = (SpecFileFormat)specParam.getFileFormat();
 			// Output file
 			File outputFile = paramManager.getOutputFileParam().getFile();
+			if(outputFile == null)
+			{
+				String outputFileName = specPath.getName().substring(0, specPath.getName().lastIndexOf('.'))+".mzid";
+				outputFile = new File(outputFileName);
+				if(outputFile.exists())
+					return outputFile.getPath() + " already exists!";
+			}
 			
 			dbSearchIOList = new ArrayList<DBSearchIOFiles>();
 			dbSearchIOList.add(new DBSearchIOFiles(specPath, specFormat, outputFile));
@@ -178,7 +185,7 @@ public class SearchParams {
 				SpecFileFormat specFormat = SpecFileFormat.getSpecFileFormat(f.getName());
 				if(specParam.isSupported(specFormat))
 				{
-					String outputFileName = f.getName().substring(0, f.getName().lastIndexOf('.'))+".tsv";
+					String outputFileName = f.getName().substring(0, f.getName().lastIndexOf('.'))+".mzid";
 					File outputFile = new File(outputFileName);
 					if(outputFile.exists())
 						return outputFile.getPath() + " already exists!";
@@ -208,12 +215,12 @@ public class SearchParams {
 			rightParentMassTolerance = new Tolerance(rightParentMassTolerance.getValue(), isTolerancePPM);
 		}
 		
-		IntRangeParameter c13Param = (IntRangeParameter)paramManager.getParameter("c13");
-		this.min13C = c13Param.getMin();
-		this.max13C = c13Param.getMax();
+		IntRangeParameter isotopeParam = (IntRangeParameter)paramManager.getParameter("ti");
+		this.minIsotope = isotopeParam.getMin();
+		this.maxIsotope = isotopeParam.getMax();
 		
 		if(rightParentMassTolerance.getToleranceAsDa(1000, 2) >= 0.5f || leftParentMassTolerance.getToleranceAsDa(1000, 2) >= 0.5f)
-			min13C = max13C = 0;
+			minIsotope = maxIsotope = 0;
 		
 		enzyme = paramManager.getEnzyme();
 		numTolerableTermini = paramManager.getIntValue("ntt");

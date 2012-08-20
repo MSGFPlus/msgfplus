@@ -176,4 +176,9 @@ public class MzXMLSpectraMap implements SpectrumAccessorBySpecIndex {
 
 		return precursorMz;
 	}
+
+	@Override
+	public String getTitle(int specIndex) {
+		return null;
+	}
 }

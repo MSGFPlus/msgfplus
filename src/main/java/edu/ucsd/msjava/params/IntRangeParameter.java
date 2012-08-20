@@ -32,10 +32,19 @@ public class IntRangeParameter extends RangeParameter<Integer> {
 			return "not a valid integer or integer range";
 		} 
 		
-		if(min >= max || !isValueValid(min) || !isValueValid(max))
+		int minNumber = isMinInclusive ? min : min+1;
+		int maxNumber = isMaxInclusive ? max : max-1;
+		
+		if(minNumber > maxNumber)
 		{
 			return "not a valid range";
 		}
+		
+//		if(value.compareTo(minValue) < 0 || value.compareTo(maxValue) > 0
+//				|| !isMinInclusive && value.equals(minValue)
+//				|| !isMaxInclusive && value.equals(maxValue))
+//			return false;
+		
 		return null;
 	}
 }

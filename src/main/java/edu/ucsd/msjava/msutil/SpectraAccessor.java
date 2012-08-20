@@ -118,6 +118,11 @@ public class SpectraAccessor {
 		return getSpecMap().getPrecursorMz(specIndex);
 	}
 	
+	public String getTitle(int specIndex)
+	{
+		return getSpecMap().getTitle(specIndex);
+	}
+	
 	public CvParam getSpectrumIDFormatCvParam()
 	{
 		CvParam cvParam = null;

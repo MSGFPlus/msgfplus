@@ -326,7 +326,7 @@ public class Enzyme implements ParamObject {
 		
 		ALP = new Enzyme("aLP", null, false, "alphaLP", null);
 		
-		Peptidomics = new Enzyme("Peptidomics", null, false, "NoEnzyme", "MS:1001045");
+		Peptidomics = new Enzyme("Peptidomics", null, false, "No Enzyme (for peptidomics)", null);
 		
 		enzymeTable = new HashMap<String,Enzyme>();
 		registeredEnzymeList = new ArrayList<Enzyme>();

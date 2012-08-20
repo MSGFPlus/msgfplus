@@ -309,16 +309,18 @@ public class ParamManager {
 		addDBFileParam();
 		addMzIdOutputFileParam();
 
-		ToleranceParameter pmTolParam = new ToleranceParameter("t", "PrecursorMassTolerance", "e.g. 2.5Da, 30ppm or 0.5Da,2.5Da, Default: 20ppm");
+		ToleranceParameter pmTolParam = new ToleranceParameter("t", "PrecursorMassTolerance", "e.g. 2.5Da, 20ppm or 0.5Da,2.5Da, Default: 20ppm");
 		pmTolParam.defaultValue("20ppm");
 		pmTolParam.setAdditionalDescription("Use comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the minus (expMass<theoMass) and 2.5Da to plus (expMass>theoMass)");
 		addParameter(pmTolParam);
 
-		IntRangeParameter c13Range = new IntRangeParameter("c13", "Range13CError", "Range of allowed (13C-12C) mass error, Default:-1,2");
-		c13Range.setAdditionalDescription("The combination of -t and -13c determins the precursor mass tolerance.\n" +
-				"\t   E.g. \"-t 20ppm -nt -1,2\" tests abs(exp-calc-n*1.00335Da)<20ppm for n=-1, 0, 1, 2.");
-		c13Range.defaultValue("-1,2");
-		addParameter(c13Range);
+		IntRangeParameter isotopeRange = new IntRangeParameter("ti", "IsotopeErrorRange", "Range of allowed isotope peak errors, Default:0,1");
+		isotopeRange.setAdditionalDescription("Takes into account of the error introduced by chooosing a non-monoisotopic peak for fragmentation.\n" +
+				"\t   The combination of -t and -ti determins the precursor mass tolerance.\n" +
+				"\t   E.g. \"-t 20ppm -ti -1,2\" tests abs(exp-calc-n*1.00335Da)<20ppm for n=-1, 0, 1, 2.");
+		isotopeRange.setMaxInclusive();
+		isotopeRange.defaultValue("0,1");
+		addParameter(isotopeRange);
 		
 		IntParameter numThreadParam = new IntParameter("thread", "NumThreads", "Number of concurrent threads to be executed, Default: Number of available cores");
 		numThreadParam.defaultValue(Runtime.getRuntime().availableProcessors());
@@ -369,8 +371,8 @@ public class ParamManager {
 		numMatchesParam.defaultValue(1);
 		addParameter(numMatchesParam);
 		
-		addExample("Example (high-precision): java -Xmx2000M -jar MSGFPlus.jar -s test.mzXML -d IPI_human_3.79.fasta -t 20ppm -c13 -1,2 -ntt 0 -tda 1 -o testMSGFDB.mzid");
-		addExample("Example (low-precision): java -Xmx2000M -jar MSGFPlus.jar -s test.mzXML -d IPI_human_3.79.fasta -t 0.5Da,2.5Da -ntt 0 -tda 1 -o testMSGFDB.mzid");
+		addExample("Example (high-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzXML -d IPI_human_3.79.fasta -t 20ppm -ti -1,2 -ntt 0 -tda 1 -o testMSGFDB.mzid");
+		addExample("Example (low-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzXML -d IPI_human_3.79.fasta -t 0.5Da,2.5Da -ntt 0 -tda 1 -o testMSGFDB.mzid");
 		
 		// Hidden parameters
 		FileParameter dbIndexDirParam = new FileParameter("dd", "DBIndexDir", "Path to the directory containing database index files");

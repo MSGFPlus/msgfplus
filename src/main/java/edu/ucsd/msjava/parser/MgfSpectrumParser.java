@@ -167,10 +167,11 @@ public class MgfSpectrumParser implements SpectrumParser {
 				metaInfo.setID("index="+String.valueOf(specIndex-1));
 				specIndexMap.put(specIndex, metaInfo);
 			}
-//			else if(buf.startsWith("TITLE"))
-//			{
-//				metaInfo.setID(buf.substring(buf.indexOf('=')+1));
-//			}
+			else if(buf.startsWith("TITLE"))
+			{
+				String title = buf.substring(buf.indexOf('=')+1); 
+				metaInfo.setAdditionalInfo("title", title);
+			}
   			else if(buf.startsWith("PEPMASS"))
   			{
   				String[] token = buf.substring(buf.indexOf("=")+1).split("\\s+");

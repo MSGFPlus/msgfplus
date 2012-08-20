@@ -2,6 +2,7 @@ package edu.ucsd.msjava.msutil;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import edu.ucsd.msjava.parser.BufferedRandomAccessLineReader;
@@ -9,7 +10,6 @@ import edu.ucsd.msjava.parser.SpectrumParser;
 
 public class SpectraMap implements SpectrumAccessorBySpecIndex {
 	private Map<Integer, SpectrumMetaInfo> specIndexMap = null; 	// key: specIndex, value: metaInfo
-
 	private SpectrumParser parser;
 	protected BufferedRandomAccessLineReader lineReader;
 	private ArrayList<Integer> specIndexList = null;
@@ -59,6 +59,15 @@ public class SpectraMap implements SpectrumAccessorBySpecIndex {
 			return metaInfo.getID();
 	}
 
+	@Override
+	public String getTitle(int specIndex) {
+		SpectrumMetaInfo metaInfo = specIndexMap.get(specIndex);
+		if(metaInfo == null)
+			return null;
+		else
+			return metaInfo.getAdditionalInfo("title");
+	}
+	
 	public Long getFileOffset(int specIndex)
 	{
 		SpectrumMetaInfo metaInfo = specIndexMap.get(specIndex);

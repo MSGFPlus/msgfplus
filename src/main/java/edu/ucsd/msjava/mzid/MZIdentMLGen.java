@@ -217,6 +217,15 @@ public class MZIdentMLGen {
 			sir.setSpectraData(spectraData);
 			sir.setSpectrumID(specID);
 			
+			// add title
+			String title = specAcc.getTitle(specIndex);
+			if(title != null)
+			{
+				CvParam cvParam = Constants.makeCvParam("MS:1000796", "spectrum title");
+				cvParam.setValue(title);
+				sir.getCvParam().add(cvParam);
+			}
+			
 			ArrayList<DatabaseMatch> matchList = new ArrayList<DatabaseMatch>(matchQueue);
 			int rank = 0;
 			
@@ -288,7 +297,7 @@ public class MZIdentMLGen {
 				cvList.add(eValueCV);
 				
 				UserParam isotopeErrorParam = Constants.makeUserParam("IsotopeError");
-				float expMass = (precursorMz - (float)Composition.H)*charge;
+				float expMass = precursorMz*charge;
 				int isotopeError = NominalMass.toNominalMass(expMass) - NominalMass.toNominalMass(theoMass);
 				isotopeErrorParam.setValue(String.valueOf(isotopeError));
 				userList.add(isotopeErrorParam);

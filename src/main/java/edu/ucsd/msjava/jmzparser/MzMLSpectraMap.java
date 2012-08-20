@@ -72,4 +72,9 @@ public class MzMLSpectraMap implements SpectrumAccessorBySpecIndex
 		}
 		return null;
 	}
+
+	@Override
+	public String getTitle(int specIndex) {
+		return null;
+	}
 }

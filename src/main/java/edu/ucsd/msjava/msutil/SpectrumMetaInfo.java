@@ -1,10 +1,14 @@
 package edu.ucsd.msjava.msutil;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class SpectrumMetaInfo {
 	
 	private float precursorMz;
 	private String id;
 	private long position;	// position in file
+	private Map<String,String> additionalMap;
 	
 	public SpectrumMetaInfo(String id, float precursorMz, long position)
 	{
@@ -32,5 +36,20 @@ public class SpectrumMetaInfo {
 	public long getPosition()
 	{
 		return position;
+	}
+	
+	public void setAdditionalInfo(String key, String value)
+	{
+		if(additionalMap == null)
+			additionalMap = new HashMap<String, String>();
+		additionalMap.put(key, value);
+	}
+	
+	public String getAdditionalInfo(String key)
+	{
+		if(additionalMap == null)
+			return null;
+		else
+			return additionalMap.get(key);
 	}
 }
