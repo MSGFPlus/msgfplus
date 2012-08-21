@@ -2,7 +2,8 @@ package edu.ucsd.msjava.misc;
 
 import java.io.File;
 
-import edu.ucsd.msjava.fdr.TargetDecoyPSMSet;
+import edu.ucsd.msjava.fdr.TSVPSMSet;
+import edu.ucsd.msjava.fdr.TargetDecoyAnalysis;
 import edu.ucsd.msjava.parser.BufferedLineReader;
 import edu.ucsd.msjava.parser.InsPecTParser;
 import edu.ucsd.msjava.ui.MSGFPlus;
@@ -18,19 +19,19 @@ public class CountID {
 		float threshold = 0.01f;
 		if(argv.length >= 2)
 			threshold = Float.parseFloat(argv[1]);
-		String decoyPrefix = null;
+		String decoyPrefix = MSGFPlus.DECOY_PROTEIN_PREFIX;
 		if(argv.length == 3)
 			decoyPrefix = argv[2];
-		countPeptide(argv[0], threshold, decoyPrefix);
+		countID(argv[0], threshold, decoyPrefix);
 	}
 	
 	public static void printUsageAndExit()
 	{
-		System.out.println("usage: java CountPeptide MSGFDBORInsPecTResult [FDRThreshold] (0: PSMLevel, 1: PeptideLevel) [DecoyPrefix]");
+		System.out.println("usage: java CountID MSGFDBORInsPecTResult [FDRThreshold] (0: PSMLevel, 1: PeptideLevel) [DecoyPrefix]");
 		System.exit(-1);
 	}
 	
-	public static void countPeptide(String fileName, float threshold, String decoyPrefix) throws Exception
+	public static void countID(String fileName, float threshold, String decoyPrefix) throws Exception
 	{
 		File tempFile = File.createTempFile("MSGFDB", "tempResult");
 		tempFile.deleteOnExit();
@@ -115,7 +116,7 @@ public class CountID {
 		int pepCol = annotationColumn;
 		int dbCol = proteinColumn;
 		
-		TargetDecoyPSMSet psmSet = new TargetDecoyPSMSet(
+		TSVPSMSet target = new TSVPSMSet(
 				new File(fileName), 
 				"\t", 
 				true,
@@ -124,13 +125,25 @@ public class CountID {
 				specFileCol,
 				specIndexCol, 
 				pepCol,
-				null,
-				dbCol, 
-				(decoyPrefix == null ? MSGFPlus.DECOY_PROTEIN_PREFIX : decoyPrefix));
+				null
+				).decoy(dbCol, decoyPrefix, true).read();
+		TSVPSMSet decoy = new TSVPSMSet(
+				new File(fileName), 
+				"\t", 
+				true,
+				scoreCol, 
+				isGreaterBetter, 
+				specFileCol,
+				specIndexCol, 
+				pepCol,
+				null
+				).decoy(dbCol, decoyPrefix, false).read();
+
+		TargetDecoyAnalysis tda = new TargetDecoyAnalysis(target, decoy);
 
 		System.out.println("Score: " + scoreName);
 		System.out.println("Threshold: " + threshold);
-		System.out.println("#PSMs: " + psmSet.getNumIdentifiedPSMs(threshold));
-		System.out.println("#Peptides: " + psmSet.getNumIdentifiedPeptides(threshold));
+		System.out.println("#PSMs: " + target.getNumIdentifiedPSMs(tda, threshold));
+		System.out.println("#Peptides: " + target.getNumIdentifiedPeptides(tda, threshold));
 	}
 }

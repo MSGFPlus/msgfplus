@@ -233,36 +233,20 @@ public class ComputeFDR {
 			boolean hasHeader, int dbCol, String decoyPrefix,
 			float fdrThreshold, float pepFDRThreshold, File outputFile)
 	{
-		TargetDecoyPSMSet psmSet;
+		TargetDecoyAnalysis tda;
+		TSVPSMSet target, decoy;
 		if(dbCol >= 0)	// both target and decoy are in the same file
 		{
-			psmSet = new TargetDecoyPSMSet(
-					targetFile, 
-					delimeter, 
-					hasHeader,
-					scoreCol, 
-					isGreaterBetter, 
-					specFileCol,
-					specIndexCol, 
-					pepCol,
-					reqStrList,
-					dbCol, decoyPrefix);
+			target = new TSVPSMSet(targetFile, delimeter, hasHeader, scoreCol, isGreaterBetter, specFileCol, specIndexCol, pepCol, reqStrList).decoy(dbCol, decoyPrefix, true).read();
+			decoy = new TSVPSMSet(targetFile, delimeter, hasHeader, scoreCol, isGreaterBetter, specFileCol, specIndexCol, pepCol, reqStrList).decoy(dbCol, decoyPrefix, false).read();
 		}
 		else
 		{
-			psmSet = new TargetDecoyPSMSet(
-					targetFile,
-					decoyFile,
-					delimeter, 
-					hasHeader,
-					scoreCol, 
-					isGreaterBetter, 
-					specFileCol,
-					specIndexCol, 
-					pepCol,
-					reqStrList
-					);
+			target = new TSVPSMSet(targetFile, delimeter, hasHeader, scoreCol, isGreaterBetter, specFileCol, specIndexCol, pepCol, reqStrList).read();
+			decoy = new TSVPSMSet(decoyFile, delimeter, hasHeader, scoreCol, isGreaterBetter, specFileCol, specIndexCol, pepCol, reqStrList).read();
 		}
+		tda = new TargetDecoyAnalysis(target, decoy);
+
 		
 		PrintStream out = null;
 		if(outputFile != null)
@@ -274,7 +258,10 @@ public class ComputeFDR {
 		else
 			out = System.out;
 		
-		psmSet.writeResults(out, fdrThreshold, pepFDRThreshold, includeDecoy);
+		target.writeResults(tda, out, fdrThreshold, pepFDRThreshold);
+		if(includeDecoy)
+			decoy.writeResults(tda, out, fdrThreshold, pepFDRThreshold);
+		
 		if(out != System.out)
 			out.close();
 	}
