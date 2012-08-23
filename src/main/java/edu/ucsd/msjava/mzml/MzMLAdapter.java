@@ -1,4 +1,4 @@
-package edu.ucsd.msjava.jmzparser;
+package edu.ucsd.msjava.mzml;
 
 import java.io.File;
 import java.util.Collections;
@@ -72,7 +72,6 @@ public class MzMLAdapter {
 			{
 				String tempAcc = param.getAccession();
 				long accNum = Long.parseLong(tempAcc.substring(tempAcc.lastIndexOf(':')+1));
-//				System.out.println(tempAcc+" "+accNum);
 				if(accNum >= 1000768 && accNum <= 1000777)
 				{
 					spectrumIDFormatCvParam = Constants.makeCvParam(param.getAccession(), param.getName());

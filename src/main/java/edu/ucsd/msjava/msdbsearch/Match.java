@@ -1,6 +1,8 @@
 package edu.ucsd.msjava.msdbsearch;
 
 import java.util.Comparator;
+import java.util.Map;
+import java.util.HashMap;
 
 import edu.ucsd.msjava.msgf.ScoreDist;
 
@@ -15,6 +17,8 @@ public class Match implements Comparable<Match> {
 	private int			deNovoScore;	
 	private double		specProb = 1;
 	private ScoreDist	scoreDist;
+	
+	private Map<String, String> additionalFeatureMap = null;
 	
 	public Match(int score, float peptideMass, int nominalPeptideMass, int charge, String pepSeq) {
 		this.score = score;
@@ -63,6 +67,21 @@ public class Match implements Comparable<Match> {
 	
 	public double getSpecEValue() {
 		return specProb;
+	}
+	
+	public void putAdditionalFeature(String key, String value)
+	{
+		if(additionalFeatureMap == null)
+			additionalFeatureMap = new HashMap<String, String>();
+		additionalFeatureMap.put(key, value);
+	}
+	
+	public String getAdditionalFeature(String key)
+	{
+		if(additionalFeatureMap == null)
+			return null;
+		else
+			return additionalFeatureMap.get(key);
 	}
 	
 	public void setScoreDist(ScoreDist scoreDist)

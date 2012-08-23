@@ -6,10 +6,10 @@ import java.util.Iterator;
 
 import uk.ac.ebi.jmzidml.model.mzidml.CvParam;
 
-import edu.ucsd.msjava.jmzparser.MzMLAdapter;
-import edu.ucsd.msjava.jmzparser.MzMLSpectraIterator;
-import edu.ucsd.msjava.jmzparser.MzMLSpectraMap;
 import edu.ucsd.msjava.mzid.Constants;
+import edu.ucsd.msjava.mzml.MzMLAdapter;
+import edu.ucsd.msjava.mzml.MzMLSpectraIterator;
+import edu.ucsd.msjava.mzml.MzMLSpectraMap;
 import edu.ucsd.msjava.parser.MS2SpectrumParser;
 import edu.ucsd.msjava.parser.MgfSpectrumParser;
 import edu.ucsd.msjava.parser.MzXMLSpectraIterator;

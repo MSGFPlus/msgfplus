@@ -237,13 +237,17 @@ public class ComputeFDR {
 		TSVPSMSet target, decoy;
 		if(dbCol >= 0)	// both target and decoy are in the same file
 		{
-			target = new TSVPSMSet(targetFile, delimeter, hasHeader, scoreCol, isGreaterBetter, specFileCol, specIndexCol, pepCol, reqStrList).decoy(dbCol, decoyPrefix, true).read();
-			decoy = new TSVPSMSet(targetFile, delimeter, hasHeader, scoreCol, isGreaterBetter, specFileCol, specIndexCol, pepCol, reqStrList).decoy(dbCol, decoyPrefix, false).read();
+			target = new TSVPSMSet(targetFile, delimeter, hasHeader, scoreCol, isGreaterBetter, specFileCol, specIndexCol, pepCol, reqStrList).decoy(dbCol, decoyPrefix, true);
+			target.read();
+			decoy = new TSVPSMSet(targetFile, delimeter, hasHeader, scoreCol, isGreaterBetter, specFileCol, specIndexCol, pepCol, reqStrList).decoy(dbCol, decoyPrefix, false);
+			decoy.read();
 		}
 		else
 		{
-			target = new TSVPSMSet(targetFile, delimeter, hasHeader, scoreCol, isGreaterBetter, specFileCol, specIndexCol, pepCol, reqStrList).read();
-			decoy = new TSVPSMSet(decoyFile, delimeter, hasHeader, scoreCol, isGreaterBetter, specFileCol, specIndexCol, pepCol, reqStrList).read();
+			target = new TSVPSMSet(targetFile, delimeter, hasHeader, scoreCol, isGreaterBetter, specFileCol, specIndexCol, pepCol, reqStrList);
+			target.read();
+			decoy = new TSVPSMSet(decoyFile, delimeter, hasHeader, scoreCol, isGreaterBetter, specFileCol, specIndexCol, pepCol, reqStrList);
+			decoy.read();
 		}
 		tda = new TargetDecoyAnalysis(target, decoy);
 

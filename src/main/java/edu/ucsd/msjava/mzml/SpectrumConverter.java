@@ -1,4 +1,4 @@
-package edu.ucsd.msjava.jmzparser;
+package edu.ucsd.msjava.mzml;
 
 import java.util.Collections;
 

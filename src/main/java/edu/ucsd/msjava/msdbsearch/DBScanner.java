@@ -467,12 +467,12 @@ public class DBScanner {
 		}
 	}  		
 	
-	public void computeSpecProb(boolean storeScoreDist)
+	public void computeSpecEValue(boolean storeScoreDist)
 	{
-		computeSpecProb(storeScoreDist, 0, specScanner.getSpecKeyList().size());
+		computeSpecEValue(storeScoreDist, 0, specScanner.getSpecKeyList().size());
 	}
 	
-	public void computeSpecProb(boolean storeScoreDist, int fromIndex, int toIndex)
+	public void computeSpecEValue(boolean storeScoreDist, int fromIndex, int toIndex)
 	{
 		List<SpecKey> specKeyList = specScanner.getSpecKeyList().subList(fromIndex, toIndex);
 		

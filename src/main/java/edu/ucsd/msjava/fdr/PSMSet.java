@@ -68,4 +68,5 @@ public abstract class PSMSet {
 	}
 	
 	public abstract void writeResults(TargetDecoyAnalysis tda, PrintStream out, float fdrThreshold, float pepFDRThreshold, float scoreThreshold);
+	public abstract void read();
 }

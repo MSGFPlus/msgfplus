@@ -71,7 +71,7 @@ public class ConcurrentMSGFDB {
 		
 		public void run() 
 		{
-			scanner.computeSpecProb(storeScoreDist, fromIndex, toIndex);
+			scanner.computeSpecEValue(storeScoreDist, fromIndex, toIndex);
 		}
 	}
 	
@@ -154,7 +154,7 @@ public class ConcurrentMSGFDB {
 			
 			time = System.currentTimeMillis();
 			System.out.println(threadName+": Computing spectral probabilities...");
-			scanner.computeSpecProb(storeScoreDist);
+			scanner.computeSpecEValue(storeScoreDist);
 			System.out.print(threadName+": Computing spectral probabilities finished ");
 			System.out.format("(elapsed time: %.2f sec)\n", (float)((System.currentTimeMillis()-time)/1000));
 			

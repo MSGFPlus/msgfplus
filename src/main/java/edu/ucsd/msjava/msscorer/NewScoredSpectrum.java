@@ -179,6 +179,42 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 		return score;
 	}	
 	
+	public float getExplainedIonCurrent(float residueMass, boolean isPrefix)
+	{
+		float explainedIonCurrent = 0;
+		for(int segIndex=0; segIndex<scorer.getNumSegments(); segIndex++)
+		{
+			for(IonType ion : ionTypes[segIndex])
+			{
+				float theoMass;
+				if(isPrefix)	// prefix
+				{
+					if(ion instanceof IonType.PrefixIon)
+						theoMass = ion.getMz(residueMass);
+					else
+						continue;
+				}
+				else
+				{
+					if(ion instanceof IonType.SuffixIon)
+						theoMass = ion.getMz(residueMass);
+					else
+						continue;
+				}
+				
+				int segNum = scorer.getSegmentNum(theoMass, parentMass);
+				if(segNum != segIndex)
+					continue;
+				
+				Peak p = spec.getPeakByMass(theoMass, mme);
+				
+				if(p != null)	// peak exists
+					explainedIonCurrent += p.getIntensity();
+			}			
+		}
+		return explainedIonCurrent;
+	}
+	
 	public Pair<Float,Float> getNodeMassAndScore(float residueMass, boolean isPrefix)
 	{
 		Float nodeMass = null;

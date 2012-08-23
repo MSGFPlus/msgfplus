@@ -45,6 +45,8 @@ public class SearchParams {
 	private boolean replicateMergedResults;
 	private boolean doNotDseEdgeScore;
 	private File dbIndexDir;
+	private boolean outputAdditionalFeatures;
+	
 	
 	public SearchParams()	{}
 	
@@ -152,6 +154,11 @@ public class SearchParams {
 		return dbIndexDir;
 	}
 	
+	public boolean outputAdditionalFeatures()
+	{
+		return outputAdditionalFeatures;
+	}
+	
 	public String parse(ParamManager paramManager)
 	{
 		// Spectrum file
@@ -257,6 +264,7 @@ public class SearchParams {
 		useTDA = paramManager.getIntValue("tda") == 1 ? true : false;
 		showFDR = paramManager.getIntValue("showFDR") == 1 ? true : false;
 		showDecoy = paramManager.getIntValue("showDecoy") == 1 ? true : false;
+		outputAdditionalFeatures = paramManager.getIntValue("addFeatures") == 1 ? true : false;
 		
 		minPeptideLength = paramManager.getIntValue("minLength");
 		maxPeptideLength = paramManager.getIntValue("maxLength");
@@ -276,6 +284,7 @@ public class SearchParams {
 		doNotDseEdgeScore = paramManager.getIntValue("edgeScore") == 1 ? true : false;
 		
 		dbIndexDir = paramManager.getFile("dd");
+		
 		
 		return null;
 	}

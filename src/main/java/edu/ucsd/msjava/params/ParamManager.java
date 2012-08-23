@@ -371,6 +371,11 @@ public class ParamManager {
 		numMatchesParam.defaultValue(1);
 		addParameter(numMatchesParam);
 		
+		EnumParameter addFeatureParam = new EnumParameter("addFeatures");
+		addFeatureParam.registerEntry("output basic scores only").setDefault();
+		addFeatureParam.registerEntry("output additional features");
+		addParameter(addFeatureParam);
+		
 		addExample("Example (high-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzXML -d IPI_human_3.79.fasta -t 20ppm -ti -1,2 -ntt 0 -tda 1 -o testMSGFDB.mzid");
 		addExample("Example (low-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzXML -d IPI_human_3.79.fasta -t 0.5Da,2.5Da -ntt 0 -tda 1 -o testMSGFDB.mzid");
 		

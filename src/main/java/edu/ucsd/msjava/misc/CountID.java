@@ -126,7 +126,8 @@ public class CountID {
 				specIndexCol, 
 				pepCol,
 				null
-				).decoy(dbCol, decoyPrefix, true).read();
+				).decoy(dbCol, decoyPrefix, true);
+		target.read();
 		TSVPSMSet decoy = new TSVPSMSet(
 				new File(fileName), 
 				"\t", 
@@ -137,7 +138,8 @@ public class CountID {
 				specIndexCol, 
 				pepCol,
 				null
-				).decoy(dbCol, decoyPrefix, false).read();
+				).decoy(dbCol, decoyPrefix, false);
+		decoy.read();
 
 		TargetDecoyAnalysis tda = new TargetDecoyAnalysis(target, decoy);
 

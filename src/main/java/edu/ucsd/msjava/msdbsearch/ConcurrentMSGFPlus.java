@@ -1,8 +1,5 @@
 package edu.ucsd.msjava.msdbsearch;
 
-import java.util.List;
-
-
 import edu.ucsd.msjava.mzid.MZIdentMLGen;
 
 public class ConcurrentMSGFPlus {
@@ -59,7 +56,7 @@ public class ConcurrentMSGFPlus {
 			
 			time = System.currentTimeMillis();
 			System.out.println(threadName+": Computing spectral E-values...");
-			scanner.computeSpecProb(false);
+			scanner.computeSpecEValue(false);
 			System.out.print(threadName+": Computing spectral E-values finished ");
 			System.out.format("(elapsed time: %.2f sec)\n", (float)((System.currentTimeMillis()-time)/1000));
 			

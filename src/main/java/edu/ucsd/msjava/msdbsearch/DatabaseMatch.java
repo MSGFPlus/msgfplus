@@ -13,7 +13,7 @@ public class DatabaseMatch extends Match {
 	
 	// for degenerate peptides
 	private List<Integer> indices;
-
+	
 	public DatabaseMatch(
 			int index, 
 			byte length,

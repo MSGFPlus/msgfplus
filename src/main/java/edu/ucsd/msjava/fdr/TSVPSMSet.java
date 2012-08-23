@@ -65,12 +65,11 @@ public class TSVPSMSet extends PSMSet {
 
 	String header;
 
-	public TSVPSMSet read()
+	public void read()
 	{
 		psmList = new ArrayList<ScoredString>();		
 		peptideScoreTable = new HashMap<String,Float>();
 
-		int lineNum = 0;
 		BufferedReader in = null;
 		try {
 			in = new BufferedReader(new FileReader(file));
@@ -81,7 +80,6 @@ public class TSVPSMSet extends PSMSet {
 			if(hasHeader)
 			{
 				header = in.readLine();
-				lineNum++;
 			}
 			
 			String s;
@@ -89,8 +87,6 @@ public class TSVPSMSet extends PSMSet {
 
 			while((s=in.readLine()) != null)
 			{
-				lineNum++;
-				
 				if(s.startsWith("#"))
 					continue;
 				String[] token = s.split(delimeter);
@@ -165,7 +161,13 @@ public class TSVPSMSet extends PSMSet {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return this;
+		
+		if(in != null)
+			try {
+				in.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 	}
 
 	public void writeResults(TargetDecoyAnalysis tda, PrintStream out, float fdrThreshold, float pepFDRThreshold, float scoreThreshold)
