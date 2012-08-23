@@ -76,7 +76,7 @@ public class SpectraAccessor {
 		return specMap;
 	}
 	
-	public Iterator<Spectrum> getSpecItr() throws FileNotFoundException
+	public Iterator<Spectrum> getSpecItr()
 	{
 		if(specItr == null)
 		{
@@ -89,7 +89,11 @@ public class SpectraAccessor {
 				specItr = new MzMLSpectraIterator(mzmlAdapter);
 			}
 			else if(specFormat == SpecFileFormat.DTA_TXT)
-				specItr = new PNNLSpectraIterator(specFile.getPath());
+				try {
+					specItr = new PNNLSpectraIterator(specFile.getPath());
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
 			else
 			{
 				SpectrumParser parser = null;
@@ -101,11 +105,20 @@ public class SpectraAccessor {
 					parser = new PklSpectrumParser();
 				else
 					return null;
-				specItr = new SpectraIterator(specFile.getPath(), parser);
+				try {
+					specItr = new SpectraIterator(specFile.getPath(), parser);
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		
 		return specItr;
+	}
+	
+	public Spectrum getSpectrumBySpecIndex(int specIndex)
+	{
+		return getSpecMap().getSpectrumBySpecIndex(specIndex);
 	}
 	
 	public String getID(int specIndex)

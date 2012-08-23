@@ -33,16 +33,14 @@ import edu.ucsd.msjava.msutil.Protocol;
 import edu.ucsd.msjava.msutil.SpecFileFormat;
 import edu.ucsd.msjava.msutil.SpecKey;
 import edu.ucsd.msjava.msutil.SpectraAccessor;
-import edu.ucsd.msjava.msutil.Spectrum;
-import edu.ucsd.msjava.msutil.SpectrumAccessorBySpecIndex;
 import edu.ucsd.msjava.mzid.MZIdentMLGen;
 import edu.ucsd.msjava.mzml.MzMLAdapter;
 import edu.ucsd.msjava.params.ParamManager;
 
 
 public class MSGFPlus {
-	public static final String VERSION = "1.0 (v8226)";
-	public static final String RELEASE_DATE = "08/20/2012";
+	public static final String VERSION = "1.0 (v8250)";
+	public static final String RELEASE_DATE = "08/23/2012";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static final String DECOY_PROTEIN_PREFIX = "XXX";
@@ -209,26 +207,16 @@ public class MSGFPlus {
 		
 		SpectraAccessor specAcc = new SpectraAccessor(specFile, specFormat);
 
-    	Iterator<Spectrum> specItr = null;
-    	try {
-			specItr = specAcc.getSpecItr();
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		}
-		SpectrumAccessorBySpecIndex specMap = specAcc.getSpecMap();
-		
-		if(specItr == null || specMap == null)
-		{
+		if(specAcc.getSpecMap() == null || specAcc.getSpecItr() == null)
 			return "Error while parsing spectrum file: " + specFile.getPath();
-		}
-
+		
 		// determine the number of spectra to be scanned together 
 		long maxMemory = Runtime.getRuntime().maxMemory() - sa.getSize() - 1<<28;
 		
 		int avgPeptideMass = 2000;
 		int numBytesPerMass = 12;
 		int numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
-		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specItr, startSpecIndex, endSpecIndex, minCharge, maxCharge, activationMethod);
+		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specAcc.getSpecItr(), startSpecIndex, endSpecIndex, minCharge, maxCharge, activationMethod);
 		int specSize = specKeyList.size();
 		
 		System.out.print("Reading spectra finished ");
@@ -271,7 +259,7 @@ public class MSGFPlus {
 			for(int i=0; i<numThreads; i++)
 			{
 		    	ScoredSpectraMap specScanner = new ScoredSpectraMap(
-		    			specMap,
+		    			specAcc,
 		    			Collections.synchronizedList(specKeyList.subList(startIndex[i], endIndex[i])),
 		    			leftParentMassTolerance,
 		    			rightParentMassTolerance,

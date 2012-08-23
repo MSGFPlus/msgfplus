@@ -26,6 +26,7 @@ import edu.ucsd.msjava.msutil.InstrumentType;
 import edu.ucsd.msjava.msutil.Protocol;
 import edu.ucsd.msjava.msutil.SpecFileFormat;
 import edu.ucsd.msjava.msutil.SpecKey;
+import edu.ucsd.msjava.msutil.SpectraAccessor;
 import edu.ucsd.msjava.msutil.SpectraIterator;
 import edu.ucsd.msjava.msutil.SpectraMap;
 import edu.ucsd.msjava.msutil.Spectrum;
@@ -122,45 +123,10 @@ public class MSGFDBLib {
 //		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
 		
 		System.out.println("Reading spectra...");
-    	Iterator<Spectrum> specItr = null;
-		SpectrumAccessorBySpecIndex specMap = null;
-		
-		if(specFormat == SpecFileFormat.MZXML)
-		{
-			specItr = new MzXMLSpectraIterator(specFile.getPath());
-			specMap = new MzXMLSpectraMap(specFile.getPath());
-		}
-		else if(specFormat == SpecFileFormat.DTA_TXT)
-		{
-			try {
-				specItr = new PNNLSpectraIterator(specFile.getPath());
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-			specMap = new PNNLSpectraMap(specFile.getPath());
-		}
-		else
-		{
-			SpectrumParser parser = null;
-			if(specFormat == SpecFileFormat.MGF)
-				parser = new MgfSpectrumParser();
-			else if(specFormat == SpecFileFormat.MS2)
-				parser = new MS2SpectrumParser();
-			else if(specFormat == SpecFileFormat.PKL)
-				parser = new PklSpectrumParser();
-			
-			try {
-				specItr = new SpectraIterator(specFile.getPath(), parser);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-			specMap = new SpectraMap(specFile.getPath(), parser);
-		}
-		
-		if(specItr == null || specMap == null)
-		{
+		SpectraAccessor specAcc = new SpectraAccessor(specFile, specFormat);
+
+		if(specAcc.getSpecMap() == null || specAcc.getSpecItr() == null)
 			return "Error while parsing spectrum file: " + specFile.getPath();
-		}
 
 		// determine the number of spectra to be scanned together 
 		long maxMemory = Runtime.getRuntime().maxMemory() - 1<<28;
@@ -168,7 +134,7 @@ public class MSGFDBLib {
 		int avgPeptideMass = 2000;
 		int numBytesPerMass = 12;
 		int numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
-		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specItr, 0, Integer.MAX_VALUE, 0, Integer.MAX_VALUE, activationMethod);
+		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specAcc.getSpecItr(), 0, Integer.MAX_VALUE, 0, Integer.MAX_VALUE, activationMethod);
 		int specSize = specKeyList.size();
 		
 		System.out.print("Reading spectra finished ");
@@ -211,7 +177,7 @@ public class MSGFDBLib {
 			for(int i=0; i<numThreads; i++)
 			{
 		    	ScoredSpectraMap specScanner = new ScoredSpectraMap(
-		    			specMap,
+		    			specAcc,
 		    			Collections.synchronizedList(specKeyList.subList(startIndex[i], endIndex[i])),
 		    			leftParentMassTolerance,
 		    			rightParentMassTolerance,

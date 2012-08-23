@@ -19,6 +19,7 @@ import edu.ucsd.msjava.msgf.NominalMass;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Composition;
 import edu.ucsd.msjava.msutil.ModifiedAminoAcid;
+import edu.ucsd.msjava.msutil.Pair;
 import edu.ucsd.msjava.msutil.SpecFileFormat;
 import edu.ucsd.msjava.msutil.SpecKey;
 import edu.ucsd.msjava.msutil.SpectraAccessor;
@@ -160,49 +161,12 @@ public class MZIdentMLGen {
 		return this;
 	}
 	
-	public synchronized void addSpectrumIdentificationResults(Map<SpecKey,PriorityQueue<DatabaseMatch>> specKeyDBMatchMap)
+	public synchronized void addSpectrumIdentificationResults(Map<Integer,PriorityQueue<DatabaseMatch>> specIndexDBMatchMap)
 	{
-		Map<Integer,PriorityQueue<DatabaseMatch>> specIndexDBMatchMap = new HashMap<Integer,PriorityQueue<DatabaseMatch>>();
-		
-		Iterator<Entry<SpecKey, PriorityQueue<DatabaseMatch>>> itr = specKeyDBMatchMap.entrySet().iterator();
-		int numPeptidesPerSpec = params.getNumMatchesPerSpec();
+		Iterator<Entry<Integer, PriorityQueue<DatabaseMatch>>> itr = specIndexDBMatchMap.entrySet().iterator();
 		while(itr.hasNext())
 		{
-			Entry<SpecKey, PriorityQueue<DatabaseMatch>> entry = itr.next();
-			SpecKey specKey = entry.getKey();
-			PriorityQueue<DatabaseMatch> matchQueue = entry.getValue();
-			if(matchQueue == null || matchQueue.size() == 0)
-				continue;
-			
-			int specIndex = specKey.getSpecIndex();
-			PriorityQueue<DatabaseMatch> existingQueue = specIndexDBMatchMap.get(specIndex);
-			if(existingQueue == null)
-			{
-				existingQueue = new PriorityQueue<DatabaseMatch>(numPeptidesPerSpec, new DatabaseMatch.SpecProbComparator());
-				specIndexDBMatchMap.put(specIndex, existingQueue);
-			}
-			
-			for(DatabaseMatch match : matchQueue)
-			{
-				if(existingQueue.size() < numPeptidesPerSpec || match.getSpecEValue() == existingQueue.peek().getSpecEValue())
-				{
-					existingQueue.add(match);
-				}
-				else
-				{
-					if(match.getSpecEValue() < existingQueue.peek().getSpecEValue())
-					{
-						existingQueue.poll();
-						existingQueue.add(match);
-					}
-				}
-			}
-		}		
-		
-		Iterator<Entry<Integer, PriorityQueue<DatabaseMatch>>> itr2 = specIndexDBMatchMap.entrySet().iterator();
-		while(itr2.hasNext())
-		{
-			Entry<Integer, PriorityQueue<DatabaseMatch>> entry = itr2.next();
+			Entry<Integer, PriorityQueue<DatabaseMatch>> entry = itr.next();
 			int specIndex = entry.getKey();
 			
 			PriorityQueue<DatabaseMatch> matchQueue = entry.getValue();
@@ -301,6 +265,18 @@ public class MZIdentMLGen {
 				int isotopeError = NominalMass.toNominalMass(expMass) - NominalMass.toNominalMass(theoMass);
 				isotopeErrorParam.setValue(String.valueOf(isotopeError));
 				userList.add(isotopeErrorParam);
+
+				if(match.getAdditionalFeatureList() != null)
+				{
+					for(Pair<String,String> feature : match.getAdditionalFeatureList())
+					{
+						String name = feature.getFirst();
+						String value = feature.getSecond();
+						UserParam addParam = Constants.makeUserParam(name);
+						addParam.setValue(value);
+						userList.add(addParam);
+					}
+				}
 				
 				sir.getSpectrumIdentificationItem().add(sii);
 			}

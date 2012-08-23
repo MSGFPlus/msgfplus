@@ -21,14 +21,17 @@ import edu.ucsd.msjava.msgf.GeneratingFunction;
 import edu.ucsd.msjava.msgf.GeneratingFunctionGroup;
 import edu.ucsd.msjava.msgf.MSGFDBResultGenerator;
 import edu.ucsd.msjava.msgf.NominalMass;
+import edu.ucsd.msjava.msscorer.NewScorerFactory.SpecDataType;
 import edu.ucsd.msjava.msscorer.SimpleDBSearchScorer;
 import edu.ucsd.msjava.msutil.AminoAcid;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Composition;
 import edu.ucsd.msjava.msutil.Enzyme;
+import edu.ucsd.msjava.msutil.Pair;
 import edu.ucsd.msjava.msutil.Peptide;
 import edu.ucsd.msjava.msutil.SpecKey;
 import edu.ucsd.msjava.msutil.Modification.Location;
+import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.parser.BufferedLineReader;
 import edu.ucsd.msjava.sequences.Constants;
 
@@ -52,7 +55,7 @@ public class DBScanner {
 	
 	// DB search results
 	private Map<SpecKey,PriorityQueue<DatabaseMatch>> specKeyDBMatchMap;
-//	private Map<Integer,PriorityQueue<DatabaseMatch>> specIndexDBMatchMap;
+	private Map<Integer,PriorityQueue<DatabaseMatch>> specIndexDBMatchMap;
 
 	// For output
 	private String threadName = "";
@@ -140,6 +143,11 @@ public class DBScanner {
 	public Map<SpecKey,PriorityQueue<DatabaseMatch>> getSpecKeyDBMatchMap()
 	{
 		return specKeyDBMatchMap;
+	}
+	
+	public Map<Integer,PriorityQueue<DatabaseMatch>> getSpecIndexDBMatchMap()
+	{
+		return specIndexDBMatchMap;
 	}
 	
 	public void dbSearchCTermEnzymeNoMod(int numberOfAllowableNonEnzymaticTermini, boolean verbose)
@@ -561,6 +569,70 @@ public class DBScanner {
 		}
 	}
 	
+	public synchronized void generateSpecIndexDBMatchMap()
+	{
+		specIndexDBMatchMap = new HashMap<Integer,PriorityQueue<DatabaseMatch>>();
+		
+		Iterator<Entry<SpecKey, PriorityQueue<DatabaseMatch>>> itr = specKeyDBMatchMap.entrySet().iterator();
+		int numPeptidesPerSpec = this.numPeptidesPerSpec;
+		while(itr.hasNext())
+		{
+			Entry<SpecKey, PriorityQueue<DatabaseMatch>> entry = itr.next();
+			SpecKey specKey = entry.getKey();
+			PriorityQueue<DatabaseMatch> matchQueue = entry.getValue();
+			if(matchQueue == null || matchQueue.size() == 0)
+				continue;
+			
+			int specIndex = specKey.getSpecIndex();
+			PriorityQueue<DatabaseMatch> existingQueue = specIndexDBMatchMap.get(specIndex);
+			if(existingQueue == null)
+			{
+				existingQueue = new PriorityQueue<DatabaseMatch>(numPeptidesPerSpec, new DatabaseMatch.SpecProbComparator());
+				specIndexDBMatchMap.put(specIndex, existingQueue);
+			}
+			
+			for(DatabaseMatch match : matchQueue)
+			{
+				if(existingQueue.size() < numPeptidesPerSpec || match.getSpecEValue() == existingQueue.peek().getSpecEValue())
+				{
+					existingQueue.add(match);
+				}
+				else
+				{
+					if(match.getSpecEValue() < existingQueue.peek().getSpecEValue())
+					{
+						existingQueue.poll();
+						existingQueue.add(match);
+					}
+				}
+			}
+		}	
+	}
+	
+	public void addAdditionalFeatures()
+	{
+		SpecDataType specType = specScanner.getSpecDataType();
+		Iterator<Entry<Integer, PriorityQueue<DatabaseMatch>>> itr = specIndexDBMatchMap.entrySet().iterator();
+		while(itr.hasNext())
+		{
+			Entry<Integer, PriorityQueue<DatabaseMatch>> entry = itr.next();
+			int specIndex = entry.getKey();
+			
+			PriorityQueue<DatabaseMatch> matchQueue = entry.getValue();
+			if(matchQueue == null || matchQueue.size() == 0)
+				continue;
+			
+			Spectrum spec = specScanner.getSpectraAccessor().getSpectrumBySpecIndex(specIndex);
+			
+			for(DatabaseMatch match : matchQueue)
+			{
+				PSMFeatureFinder addFeatures = new PSMFeatureFinder(spec, aaSet.getPeptide(match.getPepSeq()), specType);
+				for(Pair<String, String> feature : addFeatures.getAllFeatures())
+					match.addAdditionalFeature(feature.getFirst(), feature.getSecond());
+			}
+		}		
+	}
+	
 	// for MS-GFDB
 	public synchronized void addDBSearchResults(List<MSGFDBResultGenerator.DBMatch> gen, String specFileName, boolean replicateMergedResults)
 	{
@@ -643,14 +715,12 @@ public class DBScanner {
 				float pmError = Float.MAX_VALUE;
 				float theoMass = peptideMass + (float)Composition.H2O;
 
-				int deltaNominalMass = 0;
 				for(int delta=specScanner.getMinNum13C(); delta<=specScanner.getMaxNum13C(); delta++)
 				{
 					float error = expMass-theoMass-(float)(Composition.ISOTOPE)*delta; 
 					if(Math.abs(error) < Math.abs(pmError))
 					{
 						pmError = error;
-						deltaNominalMass = delta;
 					}
 				}
 				if(specScanner.getRightParentMassTolerance().isTolerancePPM())

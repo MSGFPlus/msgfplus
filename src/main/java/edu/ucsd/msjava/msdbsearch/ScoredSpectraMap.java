@@ -26,11 +26,11 @@ import edu.ucsd.msjava.msutil.InstrumentType;
 import edu.ucsd.msjava.msutil.Pair;
 import edu.ucsd.msjava.msutil.Protocol;
 import edu.ucsd.msjava.msutil.SpecKey;
+import edu.ucsd.msjava.msutil.SpectraAccessor;
 import edu.ucsd.msjava.msutil.Spectrum;
-import edu.ucsd.msjava.msutil.SpectrumAccessorBySpecIndex;
 
 public class ScoredSpectraMap {
-	private final SpectrumAccessorBySpecIndex specMap;
+	private final SpectraAccessor specAcc;
 	private final List<SpecKey> specKeyList;
 	private final Tolerance leftParentMassTolerance;
 	private final Tolerance rightParentMassTolerance;
@@ -45,7 +45,7 @@ public class ScoredSpectraMap {
 	private boolean turnOffEdgeScoring = false;
 
 	public ScoredSpectraMap(
-			SpectrumAccessorBySpecIndex specMap,
+			SpectraAccessor specAcc,
 			List<SpecKey> specKeyList,			
     		Tolerance leftParentMassTolerance, 
     		Tolerance rightParentMassTolerance, 
@@ -54,7 +54,7 @@ public class ScoredSpectraMap {
 			SpecDataType specDataType
 			)
 	{
-		this.specMap = specMap;
+		this.specAcc = specAcc;
 		this.specKeyList = specKeyList;
 		this.leftParentMassTolerance = leftParentMassTolerance;
 		this.rightParentMassTolerance = rightParentMassTolerance;
@@ -68,7 +68,7 @@ public class ScoredSpectraMap {
 	}
 
 	public ScoredSpectraMap(
-			SpectrumAccessorBySpecIndex specMap,
+			SpectraAccessor specAcc,
 			List<SpecKey> specKeyList,			
     		Tolerance leftParentMassTolerance, 
     		Tolerance rightParentMassTolerance, 
@@ -76,7 +76,7 @@ public class ScoredSpectraMap {
 			SpecDataType specDataType
 			)
 	{
-		this(specMap, specKeyList, leftParentMassTolerance, rightParentMassTolerance, 0, maxNum13C, specDataType);
+		this(specAcc, specKeyList, leftParentMassTolerance, rightParentMassTolerance, 0, maxNum13C, specDataType);
 	}
 	
 	public ScoredSpectraMap turnOffEdgeScoring()
@@ -87,6 +87,8 @@ public class ScoredSpectraMap {
 	
 	public SortedMap<Double,SpecKey> getPepMassSpecKeyMap()		{ return pepMassSpecKeyMap; }
 	public Map<SpecKey,SimpleDBSearchScorer<NominalMass>> getSpecKeyScorerMap()	{ return specKeyScorerMap; }
+	public SpectraAccessor	getSpectraAccessor()				{ return specAcc; }
+	public SpecDataType getSpecDataType()						{ return specDataType; }
 	public Tolerance getLeftParentMassTolerance()				{ return leftParentMassTolerance; }
 	public Tolerance getRightParentMassTolerance()				{ return rightParentMassTolerance; }
 //	public int getNumAllowedC13()								{ return numAllowedC13; }
@@ -104,7 +106,7 @@ public class ScoredSpectraMap {
 		for(SpecKey specKey : specKeyList)
 		{
 			int specIndex = specKey.getSpecIndex();
-			Spectrum spec = specMap.getSpectrumBySpecIndex(specIndex);
+			Spectrum spec = specAcc.getSpectrumBySpecIndex(specIndex);
 			spec.setCharge(specKey.getCharge());
 			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
 			
@@ -152,7 +154,7 @@ public class ScoredSpectraMap {
 		for(SpecKey specKey : specKeyList.subList(fromIndex, toIndex))
 		{
 			int specIndex = specKey.getSpecIndex();
-			Spectrum spec = specMap.getSpectrumBySpecIndex(specIndex);
+			Spectrum spec = specAcc.getSpectrumBySpecIndex(specIndex);
 			if(activationMethod == ActivationMethod.ASWRITTEN || activationMethod == ActivationMethod.FUSION)
 			{
 				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, protocol);
@@ -192,7 +194,7 @@ public class ScoredSpectraMap {
 			boolean supportEdgeScore = true;
 			for(int specIndex : specIndexList)
 			{
-				Spectrum spec = specMap.getSpectrumBySpecIndex(specIndex);
+				Spectrum spec = specAcc.getSpectrumBySpecIndex(specIndex);
 				
 				NewRankScorer scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, protocol);
 				if(!scorer.supportEdgeScores())

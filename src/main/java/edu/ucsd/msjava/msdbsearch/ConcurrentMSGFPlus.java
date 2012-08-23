@@ -60,7 +60,11 @@ public class ConcurrentMSGFPlus {
 			System.out.print(threadName+": Computing spectral E-values finished ");
 			System.out.format("(elapsed time: %.2f sec)\n", (float)((System.currentTimeMillis()-time)/1000));
 			
-			gen.addSpectrumIdentificationResults(scanner.getSpecKeyDBMatchMap());
+			scanner.generateSpecIndexDBMatchMap();
+			if(params.outputAdditionalFeatures())
+				scanner.addAdditionalFeatures();
+			
+			gen.addSpectrumIdentificationResults(scanner.getSpecIndexDBMatchMap());
 		}
 	}	
 }

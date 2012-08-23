@@ -1,10 +1,11 @@
 package edu.ucsd.msjava.msdbsearch;
 
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.List;
 
 import edu.ucsd.msjava.msgf.ScoreDist;
+import edu.ucsd.msjava.msutil.Pair;
 
 public class Match implements Comparable<Match> {
 	private final int 		score;
@@ -18,7 +19,7 @@ public class Match implements Comparable<Match> {
 	private double		specProb = 1;
 	private ScoreDist	scoreDist;
 	
-	private Map<String, String> additionalFeatureMap = null;
+	private List<Pair<String, String>> additionalFeatureList = null;
 	
 	public Match(int score, float peptideMass, int nominalPeptideMass, int charge, String pepSeq) {
 		this.score = score;
@@ -69,19 +70,16 @@ public class Match implements Comparable<Match> {
 		return specProb;
 	}
 	
-	public void putAdditionalFeature(String key, String value)
+	public void addAdditionalFeature(String key, String value)
 	{
-		if(additionalFeatureMap == null)
-			additionalFeatureMap = new HashMap<String, String>();
-		additionalFeatureMap.put(key, value);
+		if(additionalFeatureList == null)
+			additionalFeatureList = new ArrayList<Pair<String, String>>();
+		additionalFeatureList.add(new Pair<String,String>(key, value));
 	}
 	
-	public String getAdditionalFeature(String key)
+	public List<Pair<String, String>> getAdditionalFeatureList()
 	{
-		if(additionalFeatureMap == null)
-			return null;
-		else
-			return additionalFeatureMap.get(key);
+		return additionalFeatureList;
 	}
 	
 	public void setScoreDist(ScoreDist scoreDist)

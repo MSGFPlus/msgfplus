@@ -256,20 +256,10 @@ public class MSGFDB {
 		System.out.println("Reading spectra...");
 
 		SpectraAccessor specAcc = new SpectraAccessor(specFile, specFormat);
-		
-    	Iterator<Spectrum> specItr = null;
-    	try {
-			specItr = specAcc.getSpecItr();
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		}
-    	
-		SpectrumAccessorBySpecIndex specMap = specAcc.getSpecMap();
 
-		if(specItr == null || specMap == null)
-		{
-			return "Error while parsing spectrum file: " + specFile.getAbsolutePath();
-		}
+		if(specAcc.getSpecMap() == null || specAcc.getSpecItr() == null)
+			return "Error while parsing spectrum file: " + specFile.getPath();
+		
 
 		if(enzyme == null)
 			numAllowedNonEnzymaticTermini = 2;
@@ -280,7 +270,7 @@ public class MSGFDB {
 		int avgPeptideMass = 2000;
 		int numBytesPerMass = 12;
 		int numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
-		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specItr, startSpecIndex, endSpecIndex, minCharge, maxCharge, activationMethod);
+		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specAcc.getSpecItr(), startSpecIndex, endSpecIndex, minCharge, maxCharge, activationMethod);
 		int specSize = specKeyList.size();
 		
 		System.out.print("Reading spectra finished ");
@@ -323,7 +313,7 @@ public class MSGFDB {
 			for(int i=0; i<numThreads; i++)
 			{
 		    	ScoredSpectraMap specScanner = new ScoredSpectraMap(
-		    			specMap,
+		    			specAcc,
 		    			Collections.synchronizedList(specKeyList.subList(startIndex[i], endIndex[i])),
 		    			leftParentMassTolerance,
 		    			rightParentMassTolerance,
