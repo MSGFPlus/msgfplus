@@ -16,6 +16,11 @@ public class Composition extends Matter
 	public static final double O = 15.99491463;
 	public static final double S = 31.9720707;
 	public static final double P = 30.973762;
+	public static final double Br = 78.9183361;
+	public static final double Cl = 34.96885272;
+	public static final double Fe = 55.9349393;
+	public static final double Se = 79.9165196;
+	
 	public static final double H2 = H*2;
 	public static final double NH = N+H;
 	public static final double NH2 = N+2*H;
@@ -192,68 +197,71 @@ public class Composition extends Matter
 		return false;
 	}
 
-	// TODO: Composition must be extended to include P
-	public static double getMass(String compositionStr)
+	public static Double getMass(String compositionStr)
 	{
-		Hashtable<Character, Integer> compTable = new Hashtable<Character, Integer>();
-		compTable.put('C', 0);
-		compTable.put('H', 0);
-		compTable.put('N', 0);
-		compTable.put('O', 0);
-		compTable.put('S', 0);
-		compTable.put('P', 0);
+		if(!compositionStr.matches("(([A-Z][a-z]?([+-]\\d+|\\d*)))+"))
+			return null;
+		
+		HashMap<String, Integer> compTable = new HashMap<String, Integer>();
+		compTable.put("C", 0);
+		compTable.put("H", 0);
+		compTable.put("N", 0);
+		compTable.put("O", 0);
+		compTable.put("S", 0);
+		compTable.put("P", 0);
+		compTable.put("Br", 0);
+		compTable.put("Cl", 0);
+		compTable.put("Fe", 0);
+		compTable.put("Se", 0);
 
-		int sign = 1;
-		int number = 0;
-		char atom = '*';
 		int i=0;
-		boolean numberExists = false;
 		while(i<compositionStr.length())
 		{
-			char c = compositionStr.charAt(i);
-			if(Character.isLetter(c))
-			{
-				if(atom != '*')
-				{
-					if(numberExists)
-						compTable.put(atom, sign*number);
-					else
-						compTable.put(atom, 1);
-				}
-				atom = c;
-				number = 0;
-				sign = 1;
-				numberExists = false;
-			}
-			else if(c=='+')
-			{
-				sign = 1;
-			}
-			else if(c=='-')
-			{
-				sign = -1;
-			}
-			else if(Character.isDigit(c))
-			{
-				numberExists = true;
-				number = 10*number + Integer.parseInt(String.valueOf(c));
-			}
-			i++;
-		}
-		if(atom != '*')
-		{
-			if(numberExists)
-				compTable.put(atom, sign*number);
+			int j = i;
+			String atom;
+			if(i+1<compositionStr.length() && Character.isLowerCase(compositionStr.charAt(i+1)))
+				j += 2;
 			else
-				compTable.put(atom, 1);
+				j += 1;
+			
+			atom = compositionStr.substring(i, j);
+			
+			i = j;
+			
+			Integer number = compTable.get(atom);
+			if(number == null || !number.equals(0))
+				return null;
+			
+			while(j < compositionStr.length())
+			{
+				char c = compositionStr.charAt(j);
+				if(c != '+' && c != '-' && !Character.isDigit(c))
+					break;
+				else
+					j++;
+			}
+			
+			int n;
+			if(j == i)
+				n = 1;
+			else
+				n = Integer.parseInt(compositionStr.substring(i, j));
+					
+			compTable.put(atom, n);
+			i = j;
 		}
+		
 		double modMass = 
-			compTable.get('C')*Composition.C
-			+ compTable.get('H')*Composition.H
-			+ compTable.get('N')*Composition.N
-			+ compTable.get('O')*Composition.O
-			+ compTable.get('S')*Composition.S
-			+ compTable.get('P')*Composition.P;
+			compTable.get("C")*Composition.C
+			+ compTable.get("H")*Composition.H
+			+ compTable.get("N")*Composition.N
+			+ compTable.get("O")*Composition.O
+			+ compTable.get("S")*Composition.S
+			+ compTable.get("P")*Composition.P
+			+ compTable.get("Br")*Composition.Br
+			+ compTable.get("Cl")*Composition.Cl
+			+ compTable.get("Fe")*Composition.Fe
+			+ compTable.get("Se")*Composition.Se;
 		return modMass;
 	}
 	

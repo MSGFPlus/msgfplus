@@ -23,7 +23,6 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
 	private static final AminoAcid[] EMPTY_AA_ARRAY = new AminoAcid[0];
 
 	private HashMap<Location, ArrayList<AminoAcid>> aaListMap;
@@ -696,10 +695,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 				// Mass or Composition
 				double modMass = 0;
 				String compStr = token[0].trim();
-				if(compStr.matches("(C[+-]?\\d*)*(H[+-]?\\d*)*(N[+-]?\\d*)*(O[+-]?\\d*)*(S[+-]?\\d*)*(P[+-]?\\d*)*"))
-				{
-					modMass = Composition.getMass(compStr);
-				}
+				Double mass = Composition.getMass(compStr);
+				if(mass != null)
+					modMass = mass;
 				else
 				{
 					try {
@@ -786,6 +784,12 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		
 		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSet(mods);
 		aaSet.setMaxNumberOfVariableModificationsPerPeptide(numMods);
+		
+		try {
+			in.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return aaSet;
 	}
 	
@@ -1036,6 +1040,12 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		}
 		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSet(mods);
 		aaSet.setMaxNumberOfVariableModificationsPerPeptide(numMods);
+		
+		try {
+			in.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return aaSet;
 	}
 	
@@ -1294,22 +1304,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
 	public static void main(String argv[])
 	{
-//		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile("/home/sangtaekim/Test/Matt/MSGFDB_Mods.txt");
-//		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile("/home/sangtaekim/Research/Data/IPRG2012/params.xml");
-//		DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
-//		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile("/home/sangtaekim/Test/June/params.xml");
-		
-//		aaSet.printAASet();
-//		for(AminoAcid aa : aaSet.getAminoAcids(Location.N_Term, 'E'))
-//			System.out.println(aa.getResidueStr()+"\t"+aa.getMass());
-
-//		System.out.println((int)Character.MAX_VALUE);
-		
-//		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
-//		for(int i=0; i<100000; i++)
-//		{
-//			char c = aaSet.getModifiedResidue('M');
-//			System.out.println(c + "\t" + (int)c);
-//		}
+		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(System.getProperty("user.home")+"/Research/Data/QCShew/Mods.txt");
+		aaSet.printAASet();
 	}
 }

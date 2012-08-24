@@ -15,6 +15,8 @@ import edu.ucsd.msjava.suffixarray.SuffixFactory;
  */
 public class CompactSuffixArray {
 
+	public static final int COMPACT_SUFFIX_ARRAY_FILE_FORMAT_ID = 8252;
+	
 	/***** CONSTANTS *****/
 	// The default extension of a suffix array file.
 	protected static final String EXTENSION_INDICES = ".csarr";
@@ -62,7 +64,7 @@ public class CompactSuffixArray {
 		nlcpFile = new File(sequence.getBaseFilepath() + EXTENSION_NLCPS);
 
 		// create the file if it doesn't exist.
-		if(!indexFile.exists() || !nlcpFile.exists()) {           
+		if(!indexFile.exists() || !nlcpFile.exists() || !isCompactSuffixArrayValid()) {           
 			createSuffixArrayFiles(sequence, indexFile, nlcpFile);
 		}
 
@@ -106,6 +108,30 @@ public class CompactSuffixArray {
 	{
 		return sequence.getAnnotation(index);
 	}	
+	
+	private boolean isCompactSuffixArrayValid()
+	{
+		File[] files = {indexFile, nlcpFile};
+		
+		for(File f : files)
+		{
+			try {
+				RandomAccessFile raf = new RandomAccessFile(f, "r");
+				raf.seek(raf.length()-Integer.SIZE/8);
+				int id = raf.readInt();
+				raf.close();
+				
+				if(id != COMPACT_SUFFIX_ARRAY_FILE_FORMAT_ID)
+					return false;
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return true;
+	}
 	
 	//TODO: this method has a bug
 	private void computeNumDistinctPeptides()
@@ -319,9 +345,11 @@ public class CompactSuffixArray {
 
 			bucketSuffixes = null;
 			
+			indexOut.writeInt(CompactSuffixArray.COMPACT_SUFFIX_ARRAY_FILE_FORMAT_ID);
 			indexOut.flush();
 			indexOut.close();
 			
+			nLcpOut.writeInt(CompactSuffixArray.COMPACT_SUFFIX_ARRAY_FILE_FORMAT_ID);
 			nLcpOut.flush();
 			nLcpOut.close();
 			

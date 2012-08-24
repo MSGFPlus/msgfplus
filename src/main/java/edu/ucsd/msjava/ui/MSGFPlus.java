@@ -2,13 +2,11 @@ package edu.ucsd.msjava.ui;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import java.util.concurrent.ExecutorService;
@@ -39,7 +37,7 @@ import edu.ucsd.msjava.params.ParamManager;
 
 
 public class MSGFPlus {
-	public static final String VERSION = "1.0 (v8250)";
+	public static final String VERSION = "1.0 (v8252)";
 	public static final String RELEASE_DATE = "08/23/2012";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
@@ -63,6 +61,7 @@ public class MSGFPlus {
 		// Parse parameters
 		String errMessage = paramManager.parseParams(argv); 
 		if(errMessage != null)
+			
 		{
 			System.err.println("[Error] " + errMessage);
 			System.out.println();

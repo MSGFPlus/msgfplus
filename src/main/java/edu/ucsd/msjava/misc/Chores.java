@@ -90,9 +90,12 @@ public class Chores {
 //		int endScanNum = Integer.parseInt(buf.substring(buf.lastIndexOf('-')+1));
 //		System.out.println(startScanNum + " " + endScanNum);
 
-		System.out.println(Composition.C13 - Composition.C);
-		System.out.println(Composition.N15 - Composition.N);
-		System.out.println(System.getProperty("user.home"));
+//		System.out.println(Composition.C13 - Composition.C);
+//		System.out.println(Composition.N15 - Composition.N);
+//		System.out.println(System.getProperty("user.home"));
+		
+		String compStr = "C2H3NOFe";
+		System.out.println(compStr + ": " + Composition.getMass(compStr));
 	}
 
 	public static void recombCPReg() throws Exception
