@@ -15,7 +15,7 @@ import edu.ucsd.msjava.suffixarray.SuffixFactory;
  */
 public class CompactSuffixArray {
 
-	public static final int COMPACT_SUFFIX_ARRAY_FILE_FORMAT_ID = 8252;
+	public static final int COMPACT_SUFFIX_ARRAY_FILE_FORMAT_ID = 8258;
 	
 	/***** CONSTANTS *****/
 	// The default extension of a suffix array file.

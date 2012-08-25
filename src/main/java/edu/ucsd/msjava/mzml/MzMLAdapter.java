@@ -85,14 +85,19 @@ public class MzMLAdapter {
 		return null;
 	}
 	
+	private static boolean logOff = false;
+	
 	public static void turnOffLogs()
 	{
-		@SuppressWarnings("unchecked")
-		List<Logger> loggers = Collections.<Logger>list(LogManager.getCurrentLoggers());
-		loggers.add(LogManager.getRootLogger());
-		for ( Logger logger : loggers ) {
-		    logger.setLevel(Level.OFF);
-		}		
+		if(!logOff)
+		{
+			@SuppressWarnings("unchecked")
+			List<Logger> loggers = Collections.<Logger>list(LogManager.getCurrentLoggers());
+			loggers.add(LogManager.getRootLogger());
+			for ( Logger logger : loggers ) {
+			    logger.setLevel(Level.OFF);
+			}		
+		}
 	}
 	
 	public static void main(String argv[]) throws Exception
