@@ -93,9 +93,8 @@ public class Chores {
 //		System.out.println(Composition.C13 - Composition.C);
 //		System.out.println(Composition.N15 - Composition.N);
 //		System.out.println(System.getProperty("user.home"));
-		
-		String compStr = "C2H3NOFe";
-		System.out.println(compStr + ": " + Composition.getMass(compStr));
+
+		System.out.println(new File("/Hypothetical/File.txt").getName());
 	}
 
 	public static void recombCPReg() throws Exception

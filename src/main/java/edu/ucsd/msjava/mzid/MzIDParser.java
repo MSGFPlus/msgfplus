@@ -13,16 +13,22 @@ import edu.ucsd.msjava.msutil.Composition;
 import edu.ucsd.msjava.mzml.MzMLAdapter;
 
 import uk.ac.ebi.jmzidml.MzIdentMLElement;
+import uk.ac.ebi.jmzidml.model.MzIdentMLObject;
 import uk.ac.ebi.jmzidml.model.mzidml.AnalysisData;
+import uk.ac.ebi.jmzidml.model.mzidml.AnalysisProtocolCollection;
 import uk.ac.ebi.jmzidml.model.mzidml.CvParam;
 import uk.ac.ebi.jmzidml.model.mzidml.DBSequence;
 import uk.ac.ebi.jmzidml.model.mzidml.DataCollection;
+import uk.ac.ebi.jmzidml.model.mzidml.Inputs;
 import uk.ac.ebi.jmzidml.model.mzidml.Peptide;
 import uk.ac.ebi.jmzidml.model.mzidml.PeptideEvidence;
 import uk.ac.ebi.jmzidml.model.mzidml.SequenceCollection;
+import uk.ac.ebi.jmzidml.model.mzidml.SpectraData;
 import uk.ac.ebi.jmzidml.model.mzidml.SpectrumIdentificationItem;
 import uk.ac.ebi.jmzidml.model.mzidml.SpectrumIdentificationList;
+import uk.ac.ebi.jmzidml.model.mzidml.SpectrumIdentificationProtocol;
 import uk.ac.ebi.jmzidml.model.mzidml.SpectrumIdentificationResult;
+import uk.ac.ebi.jmzidml.model.mzidml.Tolerance;
 import uk.ac.ebi.jmzidml.model.mzidml.UserParam;
 import uk.ac.ebi.jmzidml.xml.io.MzIdentMLUnmarshaller;
 
@@ -125,6 +131,22 @@ public class MzIDParser {
         	pepEvMap.put(pepEv.getId(), pepEv);
 	}
 	
+	private boolean isPrecursorTolerancePPM()
+	{
+		AnalysisProtocolCollection apc = unmarshaller.unmarshal(AnalysisProtocolCollection.class);
+		SpectrumIdentificationProtocol sip = apc.getSpectrumIdentificationProtocol().get(0);
+		Tolerance parentTolerance = sip.getParentTolerance();
+		for(CvParam param : parentTolerance.getCvParam())
+		{
+			if(param.getAccession().equals("MS:1001412"))
+			{
+				if(param.getUnitName().equals("parts per million"))
+					return true;
+			}
+		}
+		return false;
+	}
+	
 	public static String getPeptideSeq(Peptide peptide)
 	{
 		StringBuffer buf = new StringBuffer();
@@ -145,14 +167,15 @@ public class MzIDParser {
 		else
 			out = System.out;
 		
+		boolean isPrecursorTolerancePPM = isPrecursorTolerancePPM();
+		
 		String header = 
 				"#SpecFile" +
 				"\tSpecID" +
 				"\tFragMethod"
 				+"\tPrecursor" +
 				"\tPrecursorError("
-//				+(rightParentMassTolerance.isTolerancePPM() ? "ppm" : "Da")
-				+"Da"
+				+ (isPrecursorTolerancePPM ? "ppm" : "Da")
 				+")" +
 				"\tCharge" +
 				"\tPeptide" +
@@ -164,19 +187,28 @@ public class MzIDParser {
 		out.println(header);
 		
 		unmarshallSequenceCollection();
+		
         DataCollection dc =  unmarshaller.unmarshal(DataCollection.class);
+        
+        // get spectrum file
+        Map<String, String> specFileNameMap = new HashMap<String, String>();
+        Inputs inputs = dc.getInputs();
+        for(SpectraData sd : inputs.getSpectraData())
+        {
+        	String specFileName = new File(sd.getLocation()).getName();
+        	specFileNameMap.put(sd.getId(), specFileName);
+        }
         
         AnalysisData ad = dc.getAnalysisData();
 
         // Get the list of SpectrumIdentification elements
         List<SpectrumIdentificationList> sil = ad.getSpectrumIdentificationList();
 
-        String specFile = "null";
-        
         for (SpectrumIdentificationList sIdentList : sil) {
              for (SpectrumIdentificationResult sir
                      : sIdentList.getSpectrumIdentificationResult()) {
 
+                 String specFileName = specFileNameMap.get(sir.getSpectraDataRef());
             	 String specID = sir.getSpectrumID();
                  for (SpectrumIdentificationItem sii
                       : sir.getSpectrumIdentificationItem()) {
@@ -204,16 +236,19 @@ public class MzIDParser {
                      UserParam userParam;
                      Integer isotopeError =  (userParam = userParamMap.get("IsotopeError")) == null ? null : Integer.parseInt(userParam.getValue());
                      
-                     double precursorError = calculatedMassToCharge-(experimentalMassToCharge-Composition.ISOTOPE*isotopeError/charge);
+                     double theoreticalMz = experimentalMassToCharge-Composition.ISOTOPE*isotopeError/charge;
+                     double precursorError = calculatedMassToCharge-theoreticalMz;
+                     if(isPrecursorTolerancePPM)
+                    	 precursorError = precursorError/theoreticalMz*1e6;
                      
                      String fragmentationMethod = "N/A";
                      String protein = "N/A";
                      
-                     out.println(specFile
+                     out.println(specFileName
                     		 +"\t"+specID
                     		 +"\t"+fragmentationMethod
-                    		 +"\t"+calculatedMassToCharge
-                    		 +"\t"+precursorError
+                    		 +"\t"+calculatedMassToCharge.floatValue()
+                    		 +"\t"+(float)precursorError
                     		 +"\t"+charge
                     		 +"\t"+peptideSeq
                     		 +"\t"+protein
