@@ -1,19 +1,19 @@
 package edu.ucsd.msjava.msdbsearch;
 
-import edu.ucsd.msjava.mzid.MZIdentMLGen;
+import java.util.List;
 
 public class ConcurrentMSGFPlus {
 	public static class RunMSGFPlus implements Runnable {
 		private final ScoredSpectraMap specScanner;
 		private final DBScanner scanner;
 		SearchParams params;
-		MZIdentMLGen gen;
+		List<MSGFPlusMatch> resultList;
 		
 		public RunMSGFPlus(
 				ScoredSpectraMap specScanner,
 				CompactSuffixArray sa,
 				SearchParams params,
-				MZIdentMLGen gen 
+				List<MSGFPlusMatch> resultList
 				)
 		{
 			this.specScanner = specScanner;
@@ -26,7 +26,7 @@ public class ConcurrentMSGFPlus {
 					params.getNumMatchesPerSpec(), 
 					params.getMinPeptideLength(), 
 					params.getMaxPeptideLength());
-			this.gen = gen;
+			this.resultList = resultList;
 		}
 		
 		public void run() 
@@ -61,10 +61,12 @@ public class ConcurrentMSGFPlus {
 			System.out.format("(elapsed time: %.2f sec)\n", (float)((System.currentTimeMillis()-time)/1000));
 			
 			scanner.generateSpecIndexDBMatchMap();
+			
 			if(params.outputAdditionalFeatures())
 				scanner.addAdditionalFeatures();
 			
-			gen.addSpectrumIdentificationResults(scanner.getSpecIndexDBMatchMap());
+			scanner.addResultsToList(resultList);
+//			gen.addSpectrumIdentificationResults(scanner.getSpecIndexDBMatchMap());
 		}
 	}	
 }

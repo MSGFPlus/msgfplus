@@ -7,7 +7,10 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,9 +20,12 @@ import edu.ucsd.msjava.msdbsearch.CompactFastaSequence;
 import edu.ucsd.msjava.msdbsearch.CompactSuffixArray;
 import edu.ucsd.msjava.msdbsearch.ConcurrentMSGFPlus;
 import edu.ucsd.msjava.msdbsearch.DBScanner;
+import edu.ucsd.msjava.msdbsearch.DatabaseMatch;
+import edu.ucsd.msjava.msdbsearch.MSGFPlusMatch;
 import edu.ucsd.msjava.msdbsearch.ReverseDB;
 import edu.ucsd.msjava.msdbsearch.ScoredSpectraMap;
 import edu.ucsd.msjava.msdbsearch.SearchParams;
+import edu.ucsd.msjava.msgf.MSGFDBResultGenerator;
 import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msscorer.NewScorerFactory.SpecDataType;
 import edu.ucsd.msjava.msutil.ActivationMethod;
@@ -229,7 +235,7 @@ public class MSGFPlus {
 		SpecDataType specDataType = new SpecDataType(activationMethod, instType, enzyme, protocol);
 		int fromIndexGlobal = 0;
 		
-		MZIdentMLGen mzidGen = new MZIdentMLGen(params, aaSet, sa, specAcc, ioIndex);
+		List<MSGFPlusMatch> resultList = Collections.synchronizedList(new ArrayList<MSGFPlusMatch>());
 		
 		while(true)
 		{
@@ -273,7 +279,7 @@ public class MSGFPlus {
 							specScanner,
 							sa,
 							params,
-							mzidGen
+							resultList
 							);
 				executor.execute(msgfdbExecutor);
 			}
@@ -284,6 +290,13 @@ public class MSGFPlus {
 			fromIndexGlobal += numSpecScannedTogether;
 		}
 		
+
+		// sort by spectral E-values
+		Collections.sort(resultList);
+
+		MZIdentMLGen mzidGen = new MZIdentMLGen(params, aaSet, sa, specAcc, ioIndex);
+		mzidGen.addSpectrumIdentificationResults(resultList);
+
     	time = System.currentTimeMillis();
     	
 		PrintStream out = null;

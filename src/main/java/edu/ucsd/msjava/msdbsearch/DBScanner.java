@@ -423,6 +423,7 @@ public class DBScanner {
 						if(matchedSpecKeyList.size() > 0)
 						{
 							boolean isNTermMetCleaved = candidatePepGrid.isNTermMetCleaved(j);
+//							int pepLength = i;
 							int pepLength;
 							if(!isNTermMetCleaved)
 								pepLength = i;
@@ -444,7 +445,8 @@ public class DBScanner {
 								
 								if(prevMatchQueue.size() < this.numPeptidesPerSpec || score == prevMatchQueue.peek().getScore())
 								{
-									DatabaseMatch dbMatch = new DatabaseMatch(index, (byte)(i+2), score, peptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm);
+									DatabaseMatch dbMatch = new DatabaseMatch(index, (byte)(pepLength+2), score, peptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm);
+									dbMatch.setNTermMetCleaved(isNTermMetCleaved);
 									prevMatchQueue.add(dbMatch);
 									prevMatch[i] = dbMatch;
 								}
@@ -454,7 +456,8 @@ public class DBScanner {
 									{
 										while(!prevMatchQueue.isEmpty() && prevMatchQueue.peek().getScore() < score)
 											prevMatchQueue.poll();
-										DatabaseMatch dbMatch = new DatabaseMatch(index, (byte)(i+2), score, peptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm);
+										DatabaseMatch dbMatch = new DatabaseMatch(index, (byte)(pepLength+2), score, peptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm);
+										dbMatch.setNTermMetCleaved(isNTermMetCleaved);
 										prevMatchQueue.add(dbMatch);
 										prevMatch[i] = dbMatch;
 									}
@@ -607,6 +610,16 @@ public class DBScanner {
 				}
 			}
 		}	
+	}
+	
+	public synchronized void addResultsToList(List<MSGFPlusMatch> resultList)
+	{
+		Iterator<Entry<Integer, PriorityQueue<DatabaseMatch>>> itr = specIndexDBMatchMap.entrySet().iterator();
+		while(itr.hasNext())
+		{
+			Entry<Integer, PriorityQueue<DatabaseMatch>> entry = itr.next();
+			resultList.add(new MSGFPlusMatch(entry.getKey(), entry.getValue()));
+		}
 	}
 	
 	public void addAdditionalFeatures()

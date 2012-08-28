@@ -10,6 +10,7 @@ public class DatabaseMatch extends Match {
 	// optional
 	private boolean isProteinNTerm;
 	private boolean isProteinCTerm;
+	private boolean isNTermMetCleaved = false;
 	
 	// for degenerate peptides
 	private List<Integer> indices;
@@ -43,6 +44,17 @@ public class DatabaseMatch extends Match {
 		return this;
 	}
 
+	public DatabaseMatch setNTermMetCleaved(boolean isNTermMetCleaved)
+	{
+		this.isNTermMetCleaved = isNTermMetCleaved;
+		return this;
+	}
+	
+	public boolean isNTermMetCleaved()
+	{
+		return this.isNTermMetCleaved;
+	}
+	
 	public void addIndex(int index)
 	{
 		if(indices == null)

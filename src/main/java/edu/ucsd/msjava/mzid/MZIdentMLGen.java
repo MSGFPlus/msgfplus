@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 import edu.ucsd.msjava.msdbsearch.CompactFastaSequence;
 import edu.ucsd.msjava.msdbsearch.CompactSuffixArray;
 import edu.ucsd.msjava.msdbsearch.DatabaseMatch;
+import edu.ucsd.msjava.msdbsearch.MSGFPlusMatch;
 import edu.ucsd.msjava.msdbsearch.SearchParams;
 import edu.ucsd.msjava.msgf.NominalMass;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
@@ -21,7 +22,6 @@ import edu.ucsd.msjava.msutil.Composition;
 import edu.ucsd.msjava.msutil.ModifiedAminoAcid;
 import edu.ucsd.msjava.msutil.Pair;
 import edu.ucsd.msjava.msutil.SpecFileFormat;
-import edu.ucsd.msjava.msutil.SpecKey;
 import edu.ucsd.msjava.msutil.SpectraAccessor;
 import edu.ucsd.msjava.ui.MSGFPlus;
 
@@ -161,16 +161,13 @@ public class MZIdentMLGen {
 		return this;
 	}
 	
-	public synchronized void addSpectrumIdentificationResults(Map<Integer,PriorityQueue<DatabaseMatch>> specIndexDBMatchMap)
+	public synchronized void addSpectrumIdentificationResults(List<MSGFPlusMatch> resultList)
 	{
-		Iterator<Entry<Integer, PriorityQueue<DatabaseMatch>>> itr = specIndexDBMatchMap.entrySet().iterator();
-		while(itr.hasNext())
+		for(MSGFPlusMatch mpMatch : resultList)
 		{
-			Entry<Integer, PriorityQueue<DatabaseMatch>> entry = itr.next();
-			int specIndex = entry.getKey();
-			
-			PriorityQueue<DatabaseMatch> matchQueue = entry.getValue();
-			if(matchQueue == null || matchQueue.size() == 0)
+			int specIndex = mpMatch.getSpecIndex();
+			List<DatabaseMatch> matchList = mpMatch.getMatchList();
+			if(matchList == null || matchList.size() == 0)
 				continue;
 
 			String specID = specAcc.getID(specIndex);
@@ -190,7 +187,6 @@ public class MZIdentMLGen {
 				sir.getCvParam().add(cvParam);
 			}
 			
-			ArrayList<DatabaseMatch> matchList = new ArrayList<DatabaseMatch>(matchQueue);
 			int rank = 0;
 			
 			for(int i=matchList.size()-1; i>=0; --i)
@@ -256,7 +252,7 @@ public class MZIdentMLGen {
 				specEValueCV.setValue(specEValueStr);
 				cvList.add(specEValueCV);
 
-				CvParam eValueCV = Constants.makeCvParam("MS:1002052", "MS-GF:EValue");
+				CvParam eValueCV = Constants.makeCvParam("MS:1002053", "MS-GF:EValue");
 				eValueCV.setValue(eValueStr);
 				cvList.add(eValueCV);
 				
@@ -366,7 +362,10 @@ public class MZIdentMLGen {
 				pepEv.setPeptide(peptide);
 				
 				int start = index-protStartIndex+1;
-				int end = start+length-1;
+				if(match.isNTermMetCleaved())
+					++start;
+				
+				int end = start+length-2-1;
 				pepEv.setStart(start);
 				pepEv.setEnd(end);
 				
@@ -401,13 +400,17 @@ public class MZIdentMLGen {
 			dbSeq.setAccession(accession);
 			dbSeq.setId("DBSeq"+(protStartIndex+1));
 			
-			CvParam protDescCV = Constants.makeCvParam("MS:1001088", "protein description");
-			protDescCV.setValue(annotation);
-			dbSeq.getCvParam().add(protDescCV);
+			boolean isDecoy = accession.startsWith(MSGFPlus.DECOY_PROTEIN_PREFIX); 
+			if(!isDecoy)
+			{
+				CvParam protDescCV = Constants.makeCvParam("MS:1001088", "protein description");
+				protDescCV.setValue(annotation);
+				dbSeq.getCvParam().add(protDescCV);
+			}
 			
 			this.dbSequenceList.add(dbSeq);
 			dbSeqMap.put(protStartIndex, dbSeq);
-			isDecoyMap.put(protStartIndex, accession.startsWith(MSGFPlus.DECOY_PROTEIN_PREFIX));
+			isDecoyMap.put(protStartIndex, isDecoy);
 		}
 		
 		return dbSeq;
@@ -500,6 +503,16 @@ public class MZIdentMLGen {
 		ffDB.setCvParam(Constants.makeCvParam("MS:1001348","FASTA format"));
 		searchDatabase.setFileFormat(ffDB);   
 		
+		// for decoy
+		if(params.useTDA())
+		{
+			searchDatabase.getCvParam().add(Constants.makeCvParam("MS:1001197", "DB composition target+decoy"));
+			CvParam decoyAccCV = Constants.makeCvParam("MS:1001283", "decoy DB accession regexp");
+			decoyAccCV.setValue(MSGFPlus.DECOY_PROTEIN_PREFIX);
+			searchDatabase.getCvParam().add(decoyAccCV);
+			searchDatabase.getCvParam().add(Constants.makeCvParam("MS:1001195", "decoy DB type reverse"));
+		}
+
 		inputs.getSearchDatabase().add(searchDatabase);
 		
 		// spectra data

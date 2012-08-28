@@ -67,6 +67,7 @@ public class AnalysisProtocolCollectionGen {
         userParamList.add(Constants.makeUserParam("Instrument", params.getInstType().getName()));
         userParamList.add(Constants.makeUserParam("Protocol", params.getProtocol().getName()));
         userParamList.add(Constants.makeUserParam("NumTolerableTermini", String.valueOf(params.getNumTolerableTermini())));
+        userParamList.add(Constants.makeUserParam("NumMatchesPerSpec", String.valueOf(params.getNumMatchesPerSpec())));
         // ModificationFile
         userParamList.add(Constants.makeUserParam("MinPepLength", String.valueOf(params.getMinPeptideLength())));
         userParamList.add(Constants.makeUserParam("MaxPepLength", String.valueOf(params.getMaxPeptideLength())));
@@ -181,11 +182,14 @@ public class AnalysisProtocolCollectionGen {
             // specificity rules
             SpecificityRules specificityRules = new SpecificityRules();
             List<CvParam> rules = specificityRules.getCvParam();
-            rules.add(Constants.makeCvParam("MS:1001055", "modification specificity rule", Constants.psiCV));
+            if(mod.getLocation() != edu.ucsd.msjava.msutil.Modification.Location.Anywhere)
+            	rules.add(Constants.makeCvParam("MS:1001055", "modification specificity rule", Constants.psiCV));
             if(mod.getLocation() == edu.ucsd.msjava.msutil.Modification.Location.N_Term || mod.getLocation() == edu.ucsd.msjava.msutil.Modification.Location.Protein_N_Term)
             	rules.add(Constants.makeCvParam("MS:1001189", "modification specificity N-term", Constants.psiCV));
             if(mod.getLocation() == edu.ucsd.msjava.msutil.Modification.Location.C_Term || mod.getLocation() == edu.ucsd.msjava.msutil.Modification.Location.Protein_C_Term)
             	rules.add(Constants.makeCvParam("MS:1001190", "modification specificity C-term", Constants.psiCV));
+            searchMod.getSpecificityRules().add(specificityRules);
+            
             searchModList.add(searchMod);
             
             modMap.put(mod.getModification(), searchMod);
