@@ -39,8 +39,8 @@ import edu.ucsd.msjava.params.ParamManager;
 
 
 public class MSGFPlus {
-	public static final String VERSION = "1.0 (v8294)";
-	public static final String RELEASE_DATE = "08/29/2012";
+	public static final String VERSION = "1.0 (v8297)";
+	public static final String RELEASE_DATE = "08/30/2012";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static final String DECOY_PROTEIN_PREFIX = "XXX";
@@ -292,8 +292,8 @@ public class MSGFPlus {
     	{
     		// Compute Q-values
     		System.out.println("Computing q-values...");
-    		ComputeFDR.addQValues(resultList, sa);
-    		System.out.print("Computing q-values finished");
+    		ComputeFDR.addQValues(resultList, sa, false);
+    		System.out.print("Computing q-values finished ");
     		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
     	}
 
@@ -322,7 +322,7 @@ public class MSGFPlus {
 
     	out.close();
 
-		System.out.print("Writing results finished");
+		System.out.print("Writing results finished ");
 		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
     	
     	return null;

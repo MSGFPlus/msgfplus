@@ -33,6 +33,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	private float rt = -1;                    // retention time
 	private ActivationMethod activationMethod = null;	// fragmentation method
 	private int msLevel = 2;	// ms level
+	private Boolean isCentroided = true;
 
 	/***** CONSTRUCTORS *****/
 	/**
@@ -155,6 +156,12 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	public ActivationMethod getActivationMethod() { return this.activationMethod; }
 
 	/**
+	 * Returns whether this spectrum is centroided.
+	 * @return true if this spectrum is centroided and false otherwise.
+	 */
+	public boolean isCentroided() { return this.isCentroided; }
+	
+	/**
 	 * Returns the ms level.
 	 * @return the ms level.
 	 */
@@ -245,6 +252,34 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 		this.msLevel = msLevel;
 	}
 
+	/**
+	 * Sets isCentroided.
+	 * @param isCentroided whether this spectrum is centroided.
+	 */
+	public void setIsCentroided(boolean isCentroided)
+	{
+		this.isCentroided = isCentroided;
+	}
+	
+	/**
+	 * Sets isCentroided by a simple testing.
+	 */
+	public void setIsCentroided()
+	{
+		this.isCentroided = true;
+		
+		if(this.size() > 100)
+		{
+			float[] diff = new float[100];
+			float prevMz = this.get(0).getMz();
+			for(int i=1; i<101; i++)
+				diff[i-1] = this.get(i).getMz() - prevMz;
+			Arrays.sort(diff);
+			if(diff[diff.length/2] < 0.075f)
+				isCentroided = false;
+		}
+	}
+	
 	/****** FUNCTIONS *****/
 	@Override
 	public String toString() {

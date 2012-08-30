@@ -4,12 +4,10 @@ import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Map.Entry;
+import java.util.SortedSet;
 
 import edu.ucsd.msjava.msdbsearch.CompactFastaSequence;
 import edu.ucsd.msjava.msdbsearch.CompactSuffixArray;
@@ -365,10 +363,10 @@ public class MZIdentMLGen {
 	public List<PeptideEvidenceRef> getPeptideEvidenceList(DatabaseMatch match, Peptide peptide)
 	{
 		
-		List<Integer> indices = match.getIndices();
+		SortedSet<Integer> indices = match.getIndices();
 		int length = match.getLength();
 		
-		String annotationKey = indices.get(0)+"_"+length;
+		String annotationKey = indices.first()+"_"+length;
 		List<PeptideEvidenceRef> evRefList = evRefListMap.get(annotationKey);
 		
 		if(evRefList == null)

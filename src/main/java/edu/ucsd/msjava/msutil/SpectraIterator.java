@@ -57,6 +57,7 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
 		}
 		else
 		{
+			currentSpectrum.setIsCentroided();
 			currentSpectrum.setSpecIndex(++specIndex);
 			currentSpectrum.setID("index="+String.valueOf(specIndex-1));
 		}
@@ -103,10 +104,12 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
 	private void parseFirstSpectrum()
 	{
 		currentSpectrum = parser.readSpectrum(lineReader);
+		
 		if (currentSpectrum==null) throw new Error("Error while parsing spectrum");
 		if(currentSpectrum != null)
 		{
 			hasNext = true;
+			currentSpectrum.setIsCentroided();
 			currentSpectrum.setSpecIndex(++specIndex);
 			currentSpectrum.setID("index="+String.valueOf(specIndex-1));
 		}

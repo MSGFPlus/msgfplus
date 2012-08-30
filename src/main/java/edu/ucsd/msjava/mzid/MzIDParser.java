@@ -35,16 +35,27 @@ import uk.ac.ebi.jmzidml.xml.io.MzIdentMLUnmarshaller;
 
 public class MzIDParser {
 	private final MzIdentMLUnmarshaller unmarshaller;
+	private final boolean showDecoy;
+	private boolean doNotShowQValue;
+	private final boolean unrollResults;
 	
 	private boolean isPrecursorTolerancePPM;
-	private boolean isTDA;
 	private Map<String, Peptide> pepMap;		// Peptide ref -> Peptide
 	private Map<String, DBSequence> dbSeqMap;		// DBSequenhce ref -> DBSequence
 	private Map<String, PeptideEvidence> pepEvMap;	// PeptideEvidence ref -> PeptideEvidence
 
+	
 	public MzIDParser(File mzIDFile)
 	{
+		this(mzIDFile, false, false, false);
+	}
+
+	public MzIDParser(File mzIDFile, boolean showDecoy, boolean doNotShowQValue, boolean unrollResults)
+	{
 		unmarshaller = new MzIdentMLUnmarshaller(mzIDFile);
+		this.showDecoy = showDecoy;
+		this.doNotShowQValue = doNotShowQValue;
+		this.unrollResults = unrollResults;
 	}
 	
 	public void writeToTSVFile(File outputFile)
@@ -67,8 +78,9 @@ public class MzIDParser {
 				"\tSpecID" +
 				"\tScanNum" +
 				"\tFragMethod"
-				+"\tPrecursor" +
-				"\tPrecursorError("
+				+"\tPrecursor"
+				+"\tIsotopeError"
+				+"\tPrecursorError("
 				+ (isPrecursorTolerancePPM ? "ppm" : "Da")
 				+")" +
 				"\tCharge" +
@@ -78,7 +90,7 @@ public class MzIDParser {
 				"\tMSGFScore" +
 				"\tSpecEValue" +
 				"\tEValue" +
-				(this.isTDA ? "\tQValue\tPepQValue" : "");
+				(!this.doNotShowQValue ? "\tQValue\tPepQValue" : "");
 		out.println(header);
 		
         DataCollection dc =  unmarshaller.unmarshal(DataCollection.class);
@@ -105,7 +117,7 @@ public class MzIDParser {
             	 String specID = sir.getSpectrumID();
             	 Map<String, CvParam> sirCvParamMap = getCvParamMap(sir.getCvParam());
             	 
-            	 String scanNum = "";
+            	 String scanNum = "-1";
             	 CvParam scanNumParam = sirCvParamMap.get("MS:1001115");
             	 if(scanNumParam != null)
             		 scanNum = scanNumParam.getValue();
@@ -149,34 +161,91 @@ public class MzIDParser {
                      Peptide peptide = pepMap.get(sii.getPeptideRef());
                      String peptideSeq = getPeptideSeq(peptide);
 
-                     for(PeptideEvidenceRef pepEvRef : sii.getPeptideEvidenceRef())
+                     if(this.unrollResults)
                      {
-                    	 PeptideEvidence pepEv = pepEvMap.get(pepEvRef.getPeptideEvidenceRef());
-                    	 String pre = pepEv.getPre();
-                    	 String post = pepEv.getPost();
-                    	 
-                    	 DBSequence dbSeq = dbSeqMap.get(pepEv.getDBSequenceRef());
-                    	 String protein = dbSeq.getAccession();
+                         for(PeptideEvidenceRef pepEvRef : sii.getPeptideEvidenceRef())
+                         {
+                        	 PeptideEvidence pepEv = pepEvMap.get(pepEvRef.getPeptideEvidenceRef());
+                        	 
+                        	 boolean isDecoy = pepEv.isIsDecoy();
+                        	 if(isDecoy && !this.showDecoy)
+                        		 continue;
+                        	 
+                        	 String pre = pepEv.getPre();
+                        	 String post = pepEv.getPost();
+                        	 
+                        	 DBSequence dbSeq = dbSeqMap.get(pepEv.getDBSequenceRef());
+                        	 String protein = dbSeq.getAccession();
 
-                         out.print(specFileName
-                        		 +"\t"+specID
-                        		 +"\t"+scanNum
-                        		 +"\t"+fragMethod
-                        		 +"\t"+calculatedMassToCharge.floatValue()
-                        		 +"\t"+(float)precursorError
-                        		 +"\t"+charge
-                        		 +"\t"+pre+"."+peptideSeq+"."+post
-                        		 +"\t"+protein
-                        		 +"\t"+deNovoScore
-                        		 +"\t"+rawScore
-                        		 +"\t"+specEValue
-                        		 +"\t"+eValue
-                        		 );
-                         if(this.isTDA)
-                        	 out.print("\t"+psmQValue+"\t"+pepQValue);
-                         out.println();
-                    	 
+                             out.print(specFileName
+                            		 +"\t"+specID
+                            		 +"\t"+scanNum
+                            		 +"\t"+fragMethod
+                            		 +"\t"+calculatedMassToCharge.floatValue()
+                            		 +"\t"+isotopeError
+                            		 +"\t"+(float)precursorError
+                            		 +"\t"+charge
+                            		 +"\t"+pre+"."+peptideSeq+"."+post
+                            		 +"\t"+protein
+                            		 +"\t"+deNovoScore
+                            		 +"\t"+rawScore
+                            		 +"\t"+specEValue
+                            		 +"\t"+eValue
+                            		 );
+                             if(!this.doNotShowQValue)
+                            	 out.print("\t"+psmQValue+"\t"+pepQValue);
+                             out.println();
+                         }                  	 
                      }
+                     else
+                     {
+                    	 StringBuffer proteinBuf = new StringBuffer();
+                    	 boolean isAllDecoy = true;
+                         for(PeptideEvidenceRef pepEvRef : sii.getPeptideEvidenceRef())
+                         {
+                        	 PeptideEvidence pepEv = pepEvMap.get(pepEvRef.getPeptideEvidenceRef());
+                        	 
+                        	 boolean isDecoy = pepEv.isIsDecoy();
+                        	 if(isDecoy && !this.showDecoy)
+                        	 {
+                        		 continue;
+                        	 }
+                        	 
+                        	 isAllDecoy = false;
+                        	 String pre = pepEv.getPre();
+                        	 String post = pepEv.getPost();
+                        	 
+                        	 DBSequence dbSeq = dbSeqMap.get(pepEv.getDBSequenceRef());
+                        	 String protein = dbSeq.getAccession();
+                        	 
+                        	 if(proteinBuf.length() != 0)
+                        		 proteinBuf.append(";");
+                        	 proteinBuf.append(protein+"(pre="+pre+",post="+post+")");
+                         }
+                         
+                         if(!isAllDecoy)
+                         {
+                             out.print(specFileName
+                            		 +"\t"+specID
+                            		 +"\t"+scanNum
+                            		 +"\t"+fragMethod
+                            		 +"\t"+calculatedMassToCharge.floatValue()
+                            		 +"\t"+isotopeError
+                            		 +"\t"+(float)precursorError
+                            		 +"\t"+charge
+                            		 +"\t"+peptideSeq
+                            		 +"\t"+proteinBuf.toString()
+                            		 +"\t"+deNovoScore
+                            		 +"\t"+rawScore
+                            		 +"\t"+specEValue
+                            		 +"\t"+eValue
+                            		 );
+	                         if(!this.doNotShowQValue)
+	                        	 out.print("\t"+psmQValue+"\t"+pepQValue);
+	                         out.println();
+                         }
+                     }
+
                  } // end spectrum identification item
              } // end spectrum identification results
         }
@@ -185,7 +254,7 @@ public class MzIDParser {
         	out.close();
 	}
 	
-	public Map<String,CvParam> getCvParamMap(List<CvParam> paramList)
+	private Map<String,CvParam> getCvParamMap(List<CvParam> paramList)
 	{
 		Map<String,CvParam> paramMap = new HashMap<String, CvParam>();
 		
@@ -195,7 +264,7 @@ public class MzIDParser {
 		return paramMap;
 	}
 
-	public Map<String,UserParam> getUserParamMap(List<UserParam> paramList)
+	private Map<String,UserParam> getUserParamMap(List<UserParam> paramList)
 	{
 		Map<String,UserParam> paramMap = new HashMap<String, UserParam>();
 		
@@ -241,14 +310,16 @@ public class MzIDParser {
 			}
 		}
 
-		isTDA = false;
-		for(UserParam param : sip.getAdditionalSearchParams().getUserParam())
+		if(!doNotShowQValue)
 		{
-			if(param.getName().equals("TargetDecoyApproach"))
+			for(UserParam param : sip.getAdditionalSearchParams().getUserParam())
 			{
-				if(param.getValue().equals("true"))
+				if(param.getName().equals("TargetDecoyApproach"))
 				{
-					isTDA = true;
+					if(param.getValue().equals("false"))
+					{
+						doNotShowQValue = true;
+					}
 					break;
 				}
 			}

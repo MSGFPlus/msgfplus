@@ -401,16 +401,16 @@ public class ParamManager {
 		specIndexParam.setHidden();
 		addParameter(specIndexParam);
 		
-		EnumParameter showFDRParam = new EnumParameter("showFDR");
-		showFDRParam.registerEntry("do not show FDRs");
-		showFDRParam.registerEntry("show FDRs").setDefault();
-		showFDRParam.setHidden();
+		EnumParameter showFDRParam = new EnumParameter("showQValue");
+		showFDRParam.registerEntry("do not show Q-values");
+		showFDRParam.registerEntry("show Q-values").setDefault();
+//		showFDRParam.setHidden();
 		addParameter(showFDRParam);
 
 		EnumParameter showDecoyParam = new EnumParameter("showDecoy");
 		showDecoyParam.registerEntry("do not show decoy PSMs").setDefault();
 		showDecoyParam.registerEntry("show decoy PSMs");
-		showDecoyParam.setHidden();
+//		showDecoyParam.setHidden();
 		addParameter(showDecoyParam);
 		
 		EnumParameter edgeScoreParam = new EnumParameter("edgeScore");

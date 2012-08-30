@@ -262,7 +262,7 @@ public class SearchParams {
 		endSpecIndex = ((IntRangeParameter)paramManager.getParameter("index")).getMax();
 		
 		useTDA = paramManager.getIntValue("tda") == 1 ? true : false;
-		showFDR = paramManager.getIntValue("showFDR") == 1 ? true : false;
+		showFDR = paramManager.getIntValue("showQValue") == 1 ? true : false;
 		showDecoy = paramManager.getIntValue("showDecoy") == 1 ? true : false;
 		outputAdditionalFeatures = paramManager.getIntValue("addFeatures") == 1 ? true : false;
 		

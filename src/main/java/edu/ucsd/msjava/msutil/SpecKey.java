@@ -61,6 +61,9 @@ public class SpecKey extends Pair<Integer, Integer> {
 		
 		ArrayList<SpecKey> specKeyList = new ArrayList<SpecKey>();
 		
+		int numProfileSpectra = 0;
+		int numSpectraWithTooFewPeaks = 0;
+		
 		while(itr.hasNext())
 		{
 			Spectrum spec = itr.next();
@@ -75,10 +78,18 @@ public class SpecKey extends Pair<Integer, Integer> {
 			
 			if(activationMethod != ActivationMethod.ASWRITTEN && spec.getActivationMethod() != null && spec.getActivationMethod() != activationMethod)
 				continue;
+			
+			if(!spec.isCentroided())
+			{
+				System.out.println("Ignoring spectrum " + spec.getID() + ": spectrum is not centroided.");
+				numProfileSpectra++;
+				continue;
+			}
 
 			if(spec.size() < Constants.MIN_NUM_PEAKS_PER_SPECTRUM)
 			{
 //				System.out.println("Spectrum " + spec.getScanNum() + " has too few peaks (#Peaks: " + spec.size()+"): ignored.");
+				numSpectraWithTooFewPeaks++;
 				continue;
 			}
 			if(charge == 0)
@@ -91,6 +102,9 @@ public class SpecKey extends Pair<Integer, Integer> {
 				specKeyList.add(new SpecKey(specIndex, charge));
 			}
 		}
+		
+		System.out.println("Ignoring " + numProfileSpectra + " profile spectra.");
+		System.out.println("Ignoring " + numSpectraWithTooFewPeaks + " spectra having less than " + Constants.MIN_NUM_PEAKS_PER_SPECTRUM + " peaks.");
 		return specKeyList;
 	}
 	

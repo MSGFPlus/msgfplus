@@ -1,7 +1,8 @@
 package edu.ucsd.msjava.msdbsearch;
 
-import java.util.ArrayList;
+import java.util.TreeSet;
 import java.util.List;
+import java.util.SortedSet;
 
 import edu.ucsd.msjava.msutil.ActivationMethod;
 
@@ -18,7 +19,7 @@ public class DatabaseMatch extends Match {
 	private Float pepQValue = null;
 	
 	// for degenerate peptides
-	private List<Integer> indices;
+	private SortedSet<Integer> indices;
 	
 	public DatabaseMatch(
 			int index, 
@@ -84,17 +85,17 @@ public class DatabaseMatch extends Match {
 	{
 		if(indices == null)
 		{
-			indices = new ArrayList<Integer>();
+			indices = new TreeSet<Integer>();
 			indices.add(this.index);
 		}
 		indices.add(index);
 	}
 	
-	public List<Integer> getIndices()
+	public SortedSet<Integer> getIndices()
 	{
 		if(indices == null)
 		{
-			List<Integer> temp = new ArrayList<Integer>();
+			SortedSet<Integer> temp = new TreeSet<Integer>();
 			temp.add(index);
 			return temp;
 		}

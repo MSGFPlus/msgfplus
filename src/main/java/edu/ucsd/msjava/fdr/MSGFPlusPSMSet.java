@@ -15,11 +15,19 @@ public class MSGFPlusPSMSet extends PSMSet {
 	private final boolean isDecoy;
 	private final CompactSuffixArray sa;
 	
+	private boolean considerBestMatchOnly = false;
+	
 	public MSGFPlusPSMSet(List<MSGFPlusMatch> msgfPlusPSMList, boolean isDecoy, CompactSuffixArray sa)
 	{
 		this.msgfPlusPSMList = msgfPlusPSMList;
 		this.isDecoy = isDecoy;
 		this.sa = sa;
+	}
+	
+	public MSGFPlusPSMSet setConsiderBestMatchOnly(boolean considerBestMatchOnly)
+	{
+		this.considerBestMatchOnly = considerBestMatchOnly;
+		return this;
 	}
 	
 	@Override
@@ -37,28 +45,39 @@ public class MSGFPlusPSMSet extends PSMSet {
 		
 		for(MSGFPlusMatch match : msgfPlusPSMList)
 		{
-			DatabaseMatch bestMatch = match.getBestDBMatch();
-			String pepSeq = bestMatch.getPepSeq();
-			
-			boolean isDecoy = true; 
-			for(int index : bestMatch.getIndices())
+			List<DatabaseMatch> dbMatchList;
+			if(considerBestMatchOnly)
 			{
-				String protAcc = sa.getSequence().getAnnotation(index);
-				if(!protAcc.startsWith(MSGFPlus.DECOY_PROTEIN_PREFIX))
-				{
-					isDecoy = false;
-					break;
-				}
+				dbMatchList = new ArrayList<DatabaseMatch>();
+				dbMatchList.add(match.getBestDBMatch());
 			}
+			else
+				dbMatchList = match.getMatchList();
 			
-			if(this.isDecoy != isDecoy)
-				continue;
+			for(DatabaseMatch m : dbMatchList)
+			{
+				String pepSeq = m.getPepSeq();
+				
+				boolean isDecoy = true; 
+				for(int index : m.getIndices())
+				{
+					String protAcc = sa.getSequence().getAnnotation(index);
+					if(!protAcc.startsWith(MSGFPlus.DECOY_PROTEIN_PREFIX))
+					{
+						isDecoy = false;
+						break;
+					}
+				}
+				
+				if(this.isDecoy != isDecoy)
+					continue;
 
-			float specEValue = (float)bestMatch.getSpecEValue();
-			psmList.add(new ScoredString(pepSeq, specEValue));
-			Float prevSpecEValue = peptideScoreTable.get(pepSeq);
-			if(prevSpecEValue == null || specEValue < prevSpecEValue)
-				peptideScoreTable.put(pepSeq, specEValue);
+				float specEValue = (float)m.getSpecEValue();
+				psmList.add(new ScoredString(pepSeq, specEValue));
+				Float prevSpecEValue = peptideScoreTable.get(pepSeq);
+				if(prevSpecEValue == null || specEValue < prevSpecEValue)
+					peptideScoreTable.put(pepSeq, specEValue);
+			}
 		}
 	}
 

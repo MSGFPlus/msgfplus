@@ -29,14 +29,25 @@ public class SpectrumConverter {
 		
         // MS Level
 		CVParam msLevelParam = null;
+		Boolean isCentroided = false;
 		for(CVParam cvParam : jmzMLSpec.getCvParam())
 		{
 			if(cvParam.getAccession().equals("MS:1000511"))	// MS level
 			{
 				msLevelParam = cvParam;
-				break;
+			}
+			else if(cvParam.getAccession().equals("MS:1000127"))	// centroid spectrum
+			{
+				isCentroided = true;
+			}
+			else if(cvParam.getAccession().equals("MS:1000128"))	// profile spectrum
+			{
+				isCentroided = false;
 			}
 		}
+		
+		spec.setIsCentroided(isCentroided);
+		
 		int msLevel = msLevelParam != null ? Integer.parseInt(msLevelParam.getValue()) : 0;
 		spec.setMsLevel(msLevel);
 		

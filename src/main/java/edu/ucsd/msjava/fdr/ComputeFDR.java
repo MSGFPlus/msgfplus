@@ -275,32 +275,34 @@ public class ComputeFDR {
 			out.close();
 	}
 	
-	public static void addQValues(List<MSGFPlusMatch> resultList, CompactSuffixArray sa)
+	public static void addQValues(List<MSGFPlusMatch> resultList, CompactSuffixArray sa, boolean considerBestMatchOnly)
 	{
-		MSGFPlusPSMSet target = new MSGFPlusPSMSet(resultList, false, sa);
+		MSGFPlusPSMSet target = new MSGFPlusPSMSet(resultList, false, sa).setConsiderBestMatchOnly(considerBestMatchOnly);
 		target.read();
-		MSGFPlusPSMSet decoy = new MSGFPlusPSMSet(resultList, true, sa);
+		MSGFPlusPSMSet decoy = new MSGFPlusPSMSet(resultList, true, sa).setConsiderBestMatchOnly(considerBestMatchOnly);
 		decoy.read();
 		
 		TargetDecoyAnalysis tda = new TargetDecoyAnalysis(target, decoy);
 		
 		for(MSGFPlusMatch match : resultList)
 		{
-			DatabaseMatch m = match.getBestDBMatch();
-			float psmQValue = tda.getPSMQValue((float)m.getSpecEValue());
-			Float pepQValue = tda.getPepQValue(m.getPepSeq());
-			
-			m.setPSMQValue(psmQValue);
-			m.setPepQValue(pepQValue);
+			List<DatabaseMatch> dbMatchList;
+			if(considerBestMatchOnly)
+			{
+				dbMatchList = new ArrayList<DatabaseMatch>();
+				dbMatchList.add(match.getBestDBMatch());
+			}
+			else
+				dbMatchList = match.getMatchList();
 
-//			for(DatabaseMatch m : match.getMatchList())
-//			{
-//				float psmQValue = tda.getPSMQValue((float)m.getSpecEValue());
-//				Float pepQValue = tda.getPepQValue(m.getPepSeq());
-//				
-//				m.setPSMQValue(psmQValue);
-//				m.setPepQValue(pepQValue);
-//			}
+			for(DatabaseMatch m : dbMatchList)
+			{
+				float psmQValue = tda.getPSMQValue((float)m.getSpecEValue());
+				Float pepQValue = tda.getPepQValue(m.getPepSeq());
+				
+				m.setPSMQValue(psmQValue);
+				m.setPepQValue(pepQValue);
+			}
 			
 		}
 	}

@@ -75,6 +75,12 @@ public class MzXMLSpectraMap implements SpectrumAccessorBySpecIndex {
 		spec.setID("scan="+String.valueOf(scanNum));
 		spec.setSpecIndex(header.getNum());
 
+		int centroided = header.getCentroided();
+		if(centroided != 0)
+			spec.setIsCentroided(true);
+		else
+			spec.setIsCentroided(false);
+		
 		// parse retention time. Note that retention time is a required field
 		String rtStr = header.getRetentionTime();
 		if (rtStr!=null) {
