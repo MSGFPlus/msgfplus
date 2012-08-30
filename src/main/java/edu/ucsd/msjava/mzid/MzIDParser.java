@@ -294,10 +294,17 @@ public class MzIDParser {
 
 	public static void main(String argv[]) throws Exception
 	{
+		long time = System.currentTimeMillis();
 		MzMLAdapter.turnOffLogs();
-		File mzidFile = new File(System.getProperty("user.home")+"/Research/Data/QCShew/test.mzid");
+//		File mzidFile = new File(System.getProperty("user.home")+"/Research/Data/QCShew/test.mzid");
+//		File outputFile = null;
+		
+		File mzidFile = new File(System.getProperty("user.home")+"/Research/Data/QCShew/QC_Shew_MSGFPlus_N3.mzid");
+		File outputFile = new File(System.getProperty("user.home")+"/Research/Data/QCShew/QC_Shew_MSGFPlus_N3.tsv");
 		MzIDParser parser = new MzIDParser(mzidFile);
-		parser.writeToTSVFile(null);
+		parser.writeToTSVFile(outputFile);
+		
+		System.out.println("Elapsed time: " + (System.currentTimeMillis()-time)/1000f);
 	}	
 
 }
