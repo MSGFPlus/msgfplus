@@ -71,6 +71,7 @@ public interface Sequence {
    * @return the unique identifier used for the suffix array to verified that the tree was built on the same sequence.
    */
   public int getId();
+
   
   /** 
    * Get the complete entry that corresponds to the given position. 

@@ -332,7 +332,7 @@ public class ParamManager {
 		tdaParam.registerEntry("search decoy database");
 		addParameter(tdaParam);
 		
-		addFragMethodParam();
+		addFragMethodParam(ActivationMethod.ASWRITTEN, true);
 		addInstTypeParam();
 		addEnzymeParam();
 		addProtocolParam();

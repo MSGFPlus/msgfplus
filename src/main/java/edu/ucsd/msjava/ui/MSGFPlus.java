@@ -7,25 +7,21 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
+import edu.ucsd.msjava.fdr.ComputeFDR;
 import edu.ucsd.msjava.msdbsearch.CompactFastaSequence;
 import edu.ucsd.msjava.msdbsearch.CompactSuffixArray;
 import edu.ucsd.msjava.msdbsearch.ConcurrentMSGFPlus;
 import edu.ucsd.msjava.msdbsearch.DBScanner;
-import edu.ucsd.msjava.msdbsearch.DatabaseMatch;
 import edu.ucsd.msjava.msdbsearch.MSGFPlusMatch;
 import edu.ucsd.msjava.msdbsearch.ReverseDB;
 import edu.ucsd.msjava.msdbsearch.ScoredSpectraMap;
 import edu.ucsd.msjava.msdbsearch.SearchParams;
-import edu.ucsd.msjava.msgf.MSGFDBResultGenerator;
 import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msscorer.NewScorerFactory.SpecDataType;
 import edu.ucsd.msjava.msutil.ActivationMethod;
@@ -43,8 +39,8 @@ import edu.ucsd.msjava.params.ParamManager;
 
 
 public class MSGFPlus {
-	public static final String VERSION = "1.0 (v8283)";
-	public static final String RELEASE_DATE = "08/27/2012";
+	public static final String VERSION = "1.0 (v8285)";
+	public static final String RELEASE_DATE = "08/29/2012";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static final String DECOY_PROTEIN_PREFIX = "XXX";
@@ -290,14 +286,26 @@ public class MSGFPlus {
 			fromIndexGlobal += numSpecScannedTogether;
 		}
 		
+    	time = System.currentTimeMillis();
+
+    	if(params.useTDA())
+    	{
+    		// Compute Q-values
+    		System.out.println("Computing q-values...");
+    		ComputeFDR.addQValues(resultList, sa);
+    		System.out.print("Computing q-values finished");
+    		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
+    	}
 
 		// sort by spectral E-values
+    	time = System.currentTimeMillis();
+    	
+		System.out.println("Writing results...");
 		Collections.sort(resultList);
 
 		MZIdentMLGen mzidGen = new MZIdentMLGen(params, aaSet, sa, specAcc, ioIndex);
 		mzidGen.addSpectrumIdentificationResults(resultList);
 
-    	time = System.currentTimeMillis();
     	
 		PrintStream out = null;
 		if(outputFile == null)
@@ -314,6 +322,9 @@ public class MSGFPlus {
     	mzidGen.writeResults(out);
 
     	out.close();
+
+		System.out.print("Writing results finished");
+		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
     	
     	return null;
 	}	    

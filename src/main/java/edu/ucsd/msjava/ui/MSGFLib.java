@@ -13,8 +13,6 @@ import edu.ucsd.msjava.msgf.DeNovoGraph;
 import edu.ucsd.msjava.msgf.FlexAminoAcidGraph;
 import edu.ucsd.msjava.msgf.GeneratingFunction;
 import edu.ucsd.msjava.msgf.NominalMass;
-import edu.ucsd.msjava.msgf.ScoredSpectrum;
-import edu.ucsd.msjava.msgf.ScoredSpectrumSum;
 import edu.ucsd.msjava.mslibsearch.ProcessedSpectrum;
 import edu.ucsd.msjava.msscorer.NewRankScorer;
 import edu.ucsd.msjava.msscorer.NewScoredSpectrum;

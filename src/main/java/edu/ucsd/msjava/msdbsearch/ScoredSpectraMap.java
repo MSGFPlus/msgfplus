@@ -107,8 +107,7 @@ public class ScoredSpectraMap {
 		{
 			int specIndex = specKey.getSpecIndex();
 			Spectrum spec = specAcc.getSpectrumBySpecIndex(specIndex);
-			spec.setCharge(specKey.getCharge());
-			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
+			float peptideMass = (spec.getPrecursorPeak().getMz()-(float)Composition.H)*specKey.getCharge()-(float)Composition.H2O;
 			
 			for(int delta = this.minNum13C; delta<=maxNum13C; delta++)
 			{

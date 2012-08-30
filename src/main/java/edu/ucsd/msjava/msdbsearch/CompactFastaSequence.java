@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
 
+import edu.ucsd.msjava.msutil.Pair;
 import edu.ucsd.msjava.sequences.Constants;
 import edu.ucsd.msjava.sequences.Sequence;
 
@@ -46,6 +47,8 @@ public class CompactFastaSequence implements Sequence {
 	// the identifier for this sequence
 	private int id;
 
+	private long lastModified;
+	
 	private boolean truncateAnnotation = false;	// if true, store annotations only before first blank
 	
 	/***** CONSTRUCTORS *****/
@@ -78,26 +81,46 @@ public class CompactFastaSequence implements Sequence {
 			System.exit(-1);
 		}
 
+		this.lastModified = new File(filepath).lastModified();
+		
 		String metaFile = basepath + ANNOTATION_FILE_EXTENSION;
 		String sequenceFile = basepath + SEQ_FILE_EXTENSION;
 		if(!new File(metaFile).exists() || !new File(sequenceFile).exists()) {      
 			createObjectFromRawFile(filepath, alphabet);
 		}
 
-		int metaId = readMetaInfo();
-		int seqId = readSequence();
+		Pair<Integer,Long> metaIdPair = null;
+		Pair<Integer,Long> seqIdPair = null;
+		try {
+			metaIdPair = readMetaInfo();
+			seqIdPair = readSequence();
+		} catch (NumberFormatException e)
+		{
+			createObjectFromRawFile(filepath, alphabet);
+			metaIdPair = readMetaInfo();
+			seqIdPair = readSequence();
+		}
 		
-		if(metaId == seqId && metaId != 0) {
-			initializeAlphabet(this.alphabetString);
-			this.id = metaId;
+		if(metaIdPair == null || metaIdPair == null 
+				|| !metaIdPair.getFirst().equals(seqIdPair.getFirst())
+				|| metaIdPair.getSecond() != lastModified
+				|| seqIdPair.getSecond() != lastModified
+				)
+		{
+			createObjectFromRawFile(filepath, alphabet);
+			metaIdPair = readMetaInfo();
+			seqIdPair = readSequence();
 		}
-		else {
-			System.err.println("The sequence file and meta file have different ids: " + basepath);
-			System.err.println("The problem can be solved by recreating the files");
-			System.exit(-1);
-		}
-	}
 
+		initializeAlphabet(this.alphabetString);
+		this.id = metaIdPair.getFirst();
+	}
+	
+	public long getLastModified()
+	{
+		return lastModified;
+	}
+	
 	public CompactFastaSequence truncateAnnotation()
 	{
 		truncateAnnotation = true;
@@ -253,9 +276,13 @@ public class CompactFastaSequence implements Sequence {
 		initializeAlphabet(alphabet);
 		int size = 0;
 		int id = UUID.randomUUID().hashCode();
+//		System.out.println("ID: " + id);
 
 		String seqFilepath = this.baseFilepath + SEQ_FILE_EXTENSION;
 		String metaFilepath = this.baseFilepath + ANNOTATION_FILE_EXTENSION;
+		
+		File rawFile = new File(filepath);
+		long lastModified = rawFile.lastModified();
 		
 		// read the fasta file
 		try {
@@ -264,9 +291,11 @@ public class CompactFastaSequence implements Sequence {
 			DataOutputStream seqOut = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(seqFilepath)));
 			seqOut.writeInt(size);
 			seqOut.writeInt(id);
+			seqOut.writeLong(lastModified);
 			
 			PrintStream metaOut = new PrintStream(new BufferedOutputStream(new FileOutputStream(metaFilepath)));
 			metaOut.println(id);
+			metaOut.println(lastModified);
 			metaOut.println(alphabet);
 			
 			Integer offset = 0;
@@ -331,11 +360,12 @@ public class CompactFastaSequence implements Sequence {
 	}
 
 	// read the metainformation file
-	private int readMetaInfo() {
+	private Pair<Integer,Long> readMetaInfo() {
 		String filepath = this.baseFilepath + ANNOTATION_FILE_EXTENSION;
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(filepath));
 			int id = Integer.parseInt(in.readLine());
+			long lastModified = Long.parseLong(in.readLine());
 			this.alphabetString = in.readLine().trim();
 //			this.boundaries = new TreeSet<Long>();
 //			for(String line = in.readLine(); line != null; line = in.readLine()) {
@@ -348,17 +378,17 @@ public class CompactFastaSequence implements Sequence {
 				this.annotations.put(Integer.parseInt(tokens[0]), tokens[1]);
 			}
 			in.close();
-			return id;
+			return new Pair<Integer,Long>(id, lastModified);
 		}
 		catch(IOException e) {
 			e.printStackTrace();
 			System.exit(-1);
 		}
-		return 0; 
+		return null; 
 	}
 
 	// read the sequence in binary
-	private int readSequence() {
+	private Pair<Integer,Long> readSequence() {
 		String filepath = this.baseFilepath + SEQ_FILE_EXTENSION;
 		try {
 			// read the first integer which encodes for the size of the file
@@ -366,18 +396,19 @@ public class CompactFastaSequence implements Sequence {
 			int size = in.readInt();
 			this.size = size;
 			int id = in.readInt(); 
+			long lastModified = in.readLong();
 
 			sequence = new byte[size];
 			in.read(sequence);
 
 			in.close();
-			return id;
+			return new Pair<Integer,Long>(id, lastModified);
 		}
 		catch(IOException e) {
 			e.printStackTrace();
 			System.exit(-1);
 		}
-		return 0;
+		return null;
 	}
 	
 	public int getNumProteins()

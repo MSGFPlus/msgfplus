@@ -94,8 +94,8 @@ public class MgfSpectrumParser implements SpectrumParser {
   				if(chargeStr.charAt(chargeStr.length()-1) == '+')
   					chargeStr = chargeStr.substring(0, chargeStr.length()-1);
   				precursorCharge = Integer.valueOf(chargeStr);
-  				if(precursorCharge == 0)
-  					precursorCharge = 2;
+//  				if(precursorCharge == 0)
+//  					precursorCharge = 2;
   			}
   			else if(buf.startsWith("SEQ"))
   			{

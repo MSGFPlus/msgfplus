@@ -15,7 +15,7 @@ import edu.ucsd.msjava.suffixarray.SuffixFactory;
  */
 public class CompactSuffixArray {
 
-	public static final int COMPACT_SUFFIX_ARRAY_FILE_FORMAT_ID = 8258;
+	public static final int COMPACT_SUFFIX_ARRAY_FILE_FORMAT_ID = 8259;
 	
 	/***** CONSTANTS *****/
 	// The default extension of a suffix array file.
@@ -64,7 +64,7 @@ public class CompactSuffixArray {
 		nlcpFile = new File(sequence.getBaseFilepath() + EXTENSION_NLCPS);
 
 		// create the file if it doesn't exist.
-		if(!indexFile.exists() || !nlcpFile.exists() || !isCompactSuffixArrayValid()) {           
+		if(!indexFile.exists() || !nlcpFile.exists() || !isCompactSuffixArrayValid(sequence.getLastModified())) {           
 			createSuffixArrayFiles(sequence, indexFile, nlcpFile);
 		}
 
@@ -73,7 +73,7 @@ public class CompactSuffixArray {
 
 		// check that the files are consistent
 		if(id != sequence.getId()) {
-			System.err.println("Suffix array files are not consistent: " + indexFile + ", " + nlcpFile);
+			System.err.println("Suffix array files are not consistent: " + indexFile + ", " + nlcpFile + " ("+ id + "!=" + sequence.getId()+")");
 			System.err.println("Please recreate the suffix array file.");
 			System.exit(-1);
 		}
@@ -109,7 +109,7 @@ public class CompactSuffixArray {
 		return sequence.getAnnotation(index);
 	}	
 	
-	private boolean isCompactSuffixArrayValid()
+	private boolean isCompactSuffixArrayValid(long lastModified)
 	{
 		File[] files = {indexFile, nlcpFile};
 		
@@ -117,11 +117,12 @@ public class CompactSuffixArray {
 		{
 			try {
 				RandomAccessFile raf = new RandomAccessFile(f, "r");
-				raf.seek(raf.length()-Integer.SIZE/8);
+				raf.seek(raf.length()-Integer.SIZE/8-Long.SIZE/8);
+				long lastModifiedRecorded = raf.readLong();
 				int id = raf.readInt();
 				raf.close();
 				
-				if(id != COMPACT_SUFFIX_ARRAY_FILE_FORMAT_ID)
+				if(lastModifiedRecorded != lastModified || id != COMPACT_SUFFIX_ARRAY_FILE_FORMAT_ID)
 					return false;
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -344,11 +345,14 @@ public class CompactSuffixArray {
 			}
 
 			bucketSuffixes = null;
-			
+
+			long lastModified = sequence.getLastModified();
+			indexOut.writeLong(lastModified);
 			indexOut.writeInt(CompactSuffixArray.COMPACT_SUFFIX_ARRAY_FILE_FORMAT_ID);
 			indexOut.flush();
 			indexOut.close();
 			
+			nLcpOut.writeLong(lastModified);
 			nLcpOut.writeInt(CompactSuffixArray.COMPACT_SUFFIX_ARRAY_FILE_FORMAT_ID);
 			nLcpOut.flush();
 			nLcpOut.close();

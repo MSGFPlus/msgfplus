@@ -170,20 +170,28 @@ public class TSVPSMSet extends PSMSet {
 			}
 	}
 
+	public void writeResults(TargetDecoyAnalysis tda, PrintStream out, float fdrThreshold, float pepFDRThreshold)
+	{
+		if(isGreaterBetter)
+			writeResults(tda, out, fdrThreshold, pepFDRThreshold, Float.MIN_VALUE);
+		else
+			writeResults(tda, out, fdrThreshold, pepFDRThreshold, Float.MAX_VALUE);
+	}
+	
 	public void writeResults(TargetDecoyAnalysis tda, PrintStream out, float fdrThreshold, float pepFDRThreshold, float scoreThreshold)
 	{
 		if(header != null)
 			out.println(header + delimeter + "FDR"+delimeter+"PepFDR");
 		for(ScoredString ss : getPSMList())
 		{
-			float psmFDR = tda.getPSMFDR(ss.getScore());
+			float psmFDR = tda.getPSMQValue(ss.getScore());
 			if(psmFDR > fdrThreshold)
 				continue;
 			if(isGreaterBetter && ss.getScore() <= scoreThreshold ||
 				!isGreaterBetter && ss.getScore() >= scoreThreshold)
 				continue;
 			String[] token = ss.getStr().split(delimeter);
-			Float pepFDR = tda.getPepFDR(token[pepCol]);
+			Float pepFDR = tda.getPepQValueFromAnnotation(token[pepCol]);
 			if(pepFDR == null || pepFDR > pepFDRThreshold)
 				continue;
 			String prevResult = ss.getStr();
@@ -199,7 +207,7 @@ public class TSVPSMSet extends PSMSet {
 		int numID = 0;
 		for(ScoredString ss : getPSMList())
 		{
-			float psmFDR = tda.getPSMFDR(ss.getScore());
+			float psmFDR = tda.getPSMQValue(ss.getScore());
 			if(psmFDR > fdrThreshold)
 				continue;
 			numID++;
@@ -213,7 +221,7 @@ public class TSVPSMSet extends PSMSet {
 		for(ScoredString ss : getPSMList())
 		{
 			String[] token = ss.getStr().split(delimeter);
-			Float pepFDR = tda.getPepFDR(token[pepCol]);
+			Float pepFDR = tda.getPepQValueFromAnnotation(token[pepCol]);
 			if(pepFDR == null || pepFDR > pepFDRThreshold)
 				continue;
 			

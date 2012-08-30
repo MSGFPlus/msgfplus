@@ -25,7 +25,8 @@ import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Composition;
 import edu.ucsd.msjava.msutil.Constants;
 import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.Peptide;
+import edu.ucsd.msjava.msutil.InstrumentType;
+import edu.ucsd.msjava.msutil.Protocol;
 import edu.ucsd.msjava.msutil.Sequence;
 import edu.ucsd.msjava.msutil.SpecFileFormat;
 import edu.ucsd.msjava.msutil.SpectraIterator;
@@ -330,7 +331,7 @@ public class MSProfile {
 			if(customScorer != null)
 				scorer = customScorer;
 			else
-				scorer = NewScorerFactory.get(spec.getActivationMethod(), enzyme);
+				scorer = NewScorerFactory.get(spec.getActivationMethod(), InstrumentType.LOW_RESOLUTION_LTQ, enzyme, Protocol.NOPROTOCOL);
 			ScoredSpectrum<NominalMass> curScoredSpec = scorer.getScoredSpectrum(spec);
 			
 			ScoredSpectrum<NominalMass> scoredSpec = null;		

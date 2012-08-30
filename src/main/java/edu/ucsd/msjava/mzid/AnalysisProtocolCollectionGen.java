@@ -61,6 +61,7 @@ public class AnalysisProtocolCollectionGen {
         cvParamList.add(Constants.makeCvParam("MS:1001211","parent mass type mono", Constants.psiCV));
         cvParamList.add(Constants.makeCvParam("MS:1001256","fragment mass type mono", Constants.psiCV));
         List<UserParam> userParamList = additionalSearchParams.getUserParam();
+        userParamList.add(Constants.makeUserParam("TargetDecoyApproach", String.valueOf(params.useTDA())));
         userParamList.add(Constants.makeUserParam("MinIsotopeError", String.valueOf(params.getMin13C())));
         userParamList.add(Constants.makeUserParam("MaxIsotopeError", String.valueOf(params.getMax13C())));
         userParamList.add(Constants.makeUserParam("FragmentMethod", params.getActivationMethod().getName()));

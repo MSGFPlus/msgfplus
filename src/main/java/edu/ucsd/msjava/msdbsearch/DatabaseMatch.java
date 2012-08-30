@@ -3,6 +3,8 @@ package edu.ucsd.msjava.msdbsearch;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.ucsd.msjava.msutil.ActivationMethod;
+
 public class DatabaseMatch extends Match {
 	private int		index;
 	private byte 	length;
@@ -11,6 +13,9 @@ public class DatabaseMatch extends Match {
 	private boolean isProteinNTerm;
 	private boolean isProteinCTerm;
 	private boolean isNTermMetCleaved = false;
+	
+	private Float psmQValue = null;
+	private Float pepQValue = null;
 	
 	// for degenerate peptides
 	private List<Integer> indices;
@@ -22,10 +27,11 @@ public class DatabaseMatch extends Match {
 			float peptideMass, 
 			int nominalPeptideMass,
 			int charge, 
-			String pepSeq 
+			String pepSeq,
+			ActivationMethod[] actMethodArr
 			) 
 	{
-		super(score, peptideMass, nominalPeptideMass, charge, pepSeq);
+		super(score, peptideMass, nominalPeptideMass, charge, pepSeq, actMethodArr);
 		this.index = index;
 		this.length = length;
 		isProteinNTerm = false;
@@ -55,6 +61,25 @@ public class DatabaseMatch extends Match {
 		return this.isNTermMetCleaved;
 	}
 	
+	public void setPSMQValue(float psmQValue)
+	{
+		this.psmQValue = psmQValue;
+	}
+
+	public Float getPSMQValue()	
+	{
+		return this.psmQValue;
+	}
+	
+	public void setPepQValue(Float pepQValue)
+	{
+		this.pepQValue = pepQValue;
+	}
+	
+	public Float getPepQValue()
+	{
+		return this.pepQValue;
+	}
 	public void addIndex(int index)
 	{
 		if(indices == null)

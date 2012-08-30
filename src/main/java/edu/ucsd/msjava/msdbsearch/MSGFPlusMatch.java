@@ -14,9 +14,14 @@ public class MSGFPlusMatch implements Comparable<MSGFPlusMatch> {
 	{
 		this.specIndex = specIndex;
 		this.matchList = new ArrayList<DatabaseMatch>(matchQueue);
-		specEValue = matchList.get(matchList.size()-1).getSpecEValue();
+		specEValue = getBestDBMatch().getSpecEValue();
 	}
 
+	public DatabaseMatch getBestDBMatch()
+	{
+		return matchList.get(matchList.size()-1);
+	}
+	
 	public int getSpecIndex() {
 		return specIndex;
 	}

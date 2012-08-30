@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import uk.ac.ebi.jmzidml.model.mzidml.CvParam;
+
+import edu.ucsd.msjava.mzid.Constants;
 import edu.ucsd.msjava.params.ParamObject;
 import edu.ucsd.msjava.params.UserParam;
 
@@ -12,11 +15,21 @@ public class ActivationMethod implements ParamObject {
 	private final String name;
 	private String fullName;
 	private boolean electronBased = false;
+	private String accession;
+	private CvParam cvParam;
 	
-	private ActivationMethod(String name, String fullName) 
+	private ActivationMethod(String name, String fullName)
+	{
+		this(name, fullName, null);
+	}
+	
+	private ActivationMethod(String name, String fullName, String accession) 
 	{
 		this.name = name;
 		this.fullName = fullName;
+		this.accession = accession;
+		if(accession != null)
+			this.cvParam = Constants.makeCvParam(accession, fullName);
 	}
 
 	private ActivationMethod electronBased()
@@ -28,7 +41,9 @@ public class ActivationMethod implements ParamObject {
 	public String getName()		{ return name; }
 	public String getFullName()	{ return fullName; }
 	public String getParamDescription()	{ return name; }
+	public String getPSICVAccession()	{ return accession; }
 	public boolean isElectronBased() { return electronBased; }
+	public CvParam getCvParam()	{ return cvParam; }
 	
 	public static final ActivationMethod ASWRITTEN;
 	public static final ActivationMethod CID;
@@ -76,7 +91,6 @@ public class ActivationMethod implements ParamObject {
 	public int hashCode() {
 		return this.name.hashCode();
 	}
-	
 
 	//// static /////////////
 	public static ActivationMethod[] getAllRegisteredActivationMethods()
@@ -108,11 +122,11 @@ public class ActivationMethod implements ParamObject {
 	
 	static {
 		ASWRITTEN = new ActivationMethod("As written in the spectrum or CID if no info", "as written in the spectrum or CID if no info");
-		CID = new ActivationMethod("CID", "collision-induced dissociation");
-		ETD = new ActivationMethod("ETD", "electron transfer dissociation").electronBased();
-		HCD = new ActivationMethod("HCD", "high-energy collision-induced dissociation");
+		CID = new ActivationMethod("CID", "collision-induced dissociation", "MS:1000133");
+		ETD = new ActivationMethod("ETD", "electron transfer dissociation", "MS:1000598").electronBased();
+		HCD = new ActivationMethod("HCD", "high-energy collision-induced dissociation", "MS:1000422");
 		FUSION = new ActivationMethod("Merge spectra from the same precursor", "Merge spectra from the same precursor");
-		PQD = new ActivationMethod("PQD", "pulsed q dissociation");
+		PQD = new ActivationMethod("PQD", "pulsed q dissociation", "MS:1000599");
 
 		table = new HashMap<String, ActivationMethod>();
 		
@@ -145,5 +159,6 @@ public class ActivationMethod implements ParamObject {
 		cvTable.put("MS:1000133", CID);
 		cvTable.put("MS:1000598", ETD);
 		cvTable.put("MS:1000422", HCD);
+		cvTable.put("MS:1000599", PQD);
 	}
 }

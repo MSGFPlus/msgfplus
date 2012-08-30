@@ -76,7 +76,7 @@ public class TargetDecoyAnalysis {
 	public TreeMap<Float,Float> getPSMLevelFDRMap()	{ return psmLevelFDRMap; }
 	public TreeMap<Float,Float> getPepLevelFDRMap()	{ return pepLevelFDRMap; }
 	
-	public float getPSMFDR(float score)
+	public float getPSMQValue(float score)
 	{
 		float fdr;
 		if(isGreaterBetter)
@@ -96,7 +96,7 @@ public class TargetDecoyAnalysis {
 		return fdr;
 	}
 	
-	public Float getPepFDR(String annotation)
+	public Float getPepQValueFromAnnotation(String annotation)
 	{
 		String pep = TSVPSMSet.getPeptideFromAnnotation(annotation);
 		
@@ -110,6 +110,18 @@ public class TargetDecoyAnalysis {
 		return getPepFDR(score);
 	}
 
+	public Float getPepQValue(String pep)
+	{
+		Float score = target.getPeptideScoreTable().get(pep);
+		if(score == null)
+		{
+			score = decoy.getPeptideScoreTable().get(pep);
+			if(score == null)
+				return null;
+		}
+		return getPepFDR(score);
+	}
+	
 	// returns threshold where FDR(t>threshold)<=fdrThreshold && FDR(t<=threshold)>fdrThreshold
 	public float getThresholdScore(float fdrThreshold, boolean isPeptideLevel)
 	{
@@ -164,7 +176,18 @@ public class TargetDecoyAnalysis {
 		}
 		
 		int targetIndex = 0;
-		float prevDecoyScore = Float.MIN_VALUE;
+		float prevDecoyScore = Float.NEGATIVE_INFINITY;
+		
+		if(isGreaterBetter)
+		{
+			fdrMap.put(Float.POSITIVE_INFINITY, 0f);
+			fdrMap.put(Float.NEGATIVE_INFINITY, 1f);
+		}
+		else
+		{
+			fdrMap.put(Float.POSITIVE_INFINITY, 1f);
+			fdrMap.put(Float.NEGATIVE_INFINITY, 0f);
+		}
 		
 		for(int decoyIndex=0; decoyIndex<decoy.size(); decoyIndex++)
 		{
@@ -204,6 +227,14 @@ public class TargetDecoyAnalysis {
 			}
 		}
 		
+		if(decoy.size() == 0)
+		{
+			if(isGreaterBetter)
+				fdrMap.put(Float.NEGATIVE_INFINITY, 0f);
+			else
+				fdrMap.put(Float.POSITIVE_INFINITY, 0f);
+		}
+		
 		TreeMap<Float,Float> finalFDRMap = new TreeMap<Float,Float>();
 		
 		// Convert FDRs into q-values
@@ -222,10 +253,17 @@ public class TargetDecoyAnalysis {
 			minFDR = fdr;
 			finalFDRMap.put(entry.getKey(), fdr);
 		}
-		if(isGreaterBetter)
-			finalFDRMap.put(Float.NEGATIVE_INFINITY, 1f);
-		else
-			finalFDRMap.put(Float.POSITIVE_INFINITY, 1f);
+		
+//		if(isGreaterBetter)
+//		{
+//			finalFDRMap.put(Float.POSITIVE_INFINITY, 0f);
+//			finalFDRMap.put(Float.NEGATIVE_INFINITY, 1f);
+//		}
+//		else
+//		{
+//			finalFDRMap.put(Float.POSITIVE_INFINITY, 1f);
+//			finalFDRMap.put(Float.NEGATIVE_INFINITY, 0f);
+//		}
 		return finalFDRMap;
 	}	
 	

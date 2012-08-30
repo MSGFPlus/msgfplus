@@ -17,6 +17,7 @@ import edu.ucsd.msjava.msdbsearch.DatabaseMatch;
 import edu.ucsd.msjava.msdbsearch.MSGFPlusMatch;
 import edu.ucsd.msjava.msdbsearch.SearchParams;
 import edu.ucsd.msjava.msgf.NominalMass;
+import edu.ucsd.msjava.msutil.ActivationMethod;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Composition;
 import edu.ucsd.msjava.msutil.ModifiedAminoAcid;
@@ -187,6 +188,15 @@ public class MZIdentMLGen {
 				sir.getCvParam().add(cvParam);
 			}
 			
+			// add scan number
+			int scanNum = specAcc.getSpecMap().getSpectrumBySpecIndex(specIndex).getScanNum();
+			if(scanNum >= 0)
+			{
+				CvParam cvParam = Constants.makeCvParam("MS:1001115", "scan number(s)");
+				cvParam.setValue(String.valueOf(scanNum));
+				sir.getCvParam().add(cvParam);
+			}
+			
 			int rank = 0;
 			
 			for(int i=matchList.size()-1; i>=0; --i)
@@ -240,6 +250,16 @@ public class MZIdentMLGen {
 				List<CvParam> cvList = sii.getCvParam();
 				List<UserParam> userList = sii.getUserParam();
 
+				ActivationMethod[] activationMethodArr = match.getActivationMethodArr();
+				if(activationMethodArr != null)
+				{
+					for(ActivationMethod actMethod : activationMethodArr)
+					{
+						CvParam fragMethodCV = actMethod.getCvParam();
+						cvList.add(fragMethodCV);
+					}
+				}
+				
 				CvParam rawScoreCV = Constants.makeCvParam("MS:1002049", "MS-GF:RawScore");
 				rawScoreCV.setValue(String.valueOf(score));
 				cvList.add(rawScoreCV);
@@ -255,6 +275,20 @@ public class MZIdentMLGen {
 				CvParam eValueCV = Constants.makeCvParam("MS:1002053", "MS-GF:EValue");
 				eValueCV.setValue(eValueStr);
 				cvList.add(eValueCV);
+
+				if(match.getPSMQValue() != null)
+				{
+					CvParam psmQValueCV = Constants.makeCvParam("MS:1002054", "MS-GF:QValue");
+					psmQValueCV.setValue(match.getPSMQValue().toString());
+					cvList.add(psmQValueCV);
+				}
+
+				if(match.getPepQValue() != null)
+				{
+					CvParam pepQValueCV = Constants.makeCvParam("MS:1002055", "MS-GF:PepQValue");
+					pepQValueCV.setValue(match.getPepQValue().toString());
+					cvList.add(pepQValueCV);
+				}
 				
 				UserParam isotopeErrorParam = Constants.makeUserParam("IsotopeError");
 				float expMass = precursorMz*charge;
@@ -464,12 +498,6 @@ public class MZIdentMLGen {
 		searchDBRefList.add(searchDBRef);
 		
 		specIdentList.add(specIdent);
-//
-//		specIdent.setSpectrumIdentificationList(siList);
-//		specIdent.setSpectrumIdentificationProtocol(siProtocol);
-//
-//
-//		specIdentList.add(specIdent);
 	}	
 	
 	private void generateAnalysisProtocolCollection()

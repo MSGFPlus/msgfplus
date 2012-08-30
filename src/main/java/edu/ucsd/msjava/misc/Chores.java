@@ -94,7 +94,9 @@ public class Chores {
 //		System.out.println(Composition.N15 - Composition.N);
 //		System.out.println(System.getProperty("user.home"));
 
-		System.out.println(new File("/Hypothetical/File.txt").getName());
+//		File file = new File("/Users/kims336/Downloads/temp.txt");
+//		file.createNewFile();
+		System.out.println("scan=1".matches("scan=\\d+"));
 	}
 
 	public static void recombCPReg() throws Exception

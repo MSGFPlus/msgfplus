@@ -12,7 +12,7 @@ public class LibraryMatch extends Match {
 			String pepSeq,
 			String protein) 
 	{
-		super(score, peptideMass, nominalPeptideMass, charge, pepSeq);
+		super(score, peptideMass, nominalPeptideMass, charge, pepSeq, null);
 		this.protein = protein;
 	}
 

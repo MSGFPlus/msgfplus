@@ -93,7 +93,7 @@ public class DBScanner {
 		}
 		
 		specKeyDBMatchMap = Collections.synchronizedMap(new HashMap<SpecKey,PriorityQueue<DatabaseMatch>>());
-//		specIndexDBMatchMap = Collections.synchronizedMap(new HashMap<Integer,PriorityQueue<DatabaseMatch>>());
+		specIndexDBMatchMap = Collections.synchronizedMap(new HashMap<Integer,PriorityQueue<DatabaseMatch>>());
 	}
 
 	// builder
@@ -232,8 +232,8 @@ public class DBScanner {
 					lcp = 0;
 
 				// For debugging
-//				System.out.println(sequence.getSubsequence(index, sequence.getSize()));
-//				if(index == 1)
+//				System.out.println(index+": " +sequence.getSubsequence(index, sequence.getSize()));
+//				if(index == 4)
 //					System.out.println("Debug");
 				// skip redundant peptides
 				
@@ -368,7 +368,7 @@ public class DBScanner {
 						continue;
 					
 //					System.out.println(sequence.getSubsequence(index+1, index+i+1));
-//					if(sequence.getSubsequence(index, index+i+1).equalsIgnoreCase("RIGAYLFVDMAHVAGLIAAGVYPNPVPHAHVVTSTTHK"))
+//					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("VTVEDAVEQIGNRFDMILVAAR"))
 //						System.out.println("Debug");
 					
 					int cTermCleavageScore = 0;
@@ -445,7 +445,7 @@ public class DBScanner {
 								
 								if(prevMatchQueue.size() < this.numPeptidesPerSpec || score == prevMatchQueue.peek().getScore())
 								{
-									DatabaseMatch dbMatch = new DatabaseMatch(index, (byte)(pepLength+2), score, peptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm);
+									DatabaseMatch dbMatch = new DatabaseMatch(index, (byte)(pepLength+2), score, peptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j), scorer.getActivationMethodArr()).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm);
 									dbMatch.setNTermMetCleaved(isNTermMetCleaved);
 									prevMatchQueue.add(dbMatch);
 									prevMatch[i] = dbMatch;
@@ -456,7 +456,7 @@ public class DBScanner {
 									{
 										while(!prevMatchQueue.isEmpty() && prevMatchQueue.peek().getScore() < score)
 											prevMatchQueue.poll();
-										DatabaseMatch dbMatch = new DatabaseMatch(index, (byte)(pepLength+2), score, peptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j)).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm);
+										DatabaseMatch dbMatch = new DatabaseMatch(index, (byte)(pepLength+2), score, peptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j), scorer.getActivationMethodArr()).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm);
 										dbMatch.setNTermMetCleaved(isNTermMetCleaved);
 										prevMatchQueue.add(dbMatch);
 										prevMatch[i] = dbMatch;
@@ -574,10 +574,9 @@ public class DBScanner {
 	
 	public synchronized void generateSpecIndexDBMatchMap()
 	{
-		specIndexDBMatchMap = new HashMap<Integer,PriorityQueue<DatabaseMatch>>();
-		
 		Iterator<Entry<SpecKey, PriorityQueue<DatabaseMatch>>> itr = specKeyDBMatchMap.entrySet().iterator();
 		int numPeptidesPerSpec = this.numPeptidesPerSpec;
+		
 		while(itr.hasNext())
 		{
 			Entry<SpecKey, PriorityQueue<DatabaseMatch>> entry = itr.next();
@@ -585,6 +584,22 @@ public class DBScanner {
 			PriorityQueue<DatabaseMatch> matchQueue = entry.getValue();
 			if(matchQueue == null || matchQueue.size() == 0)
 				continue;
+			else
+			{
+				Map<String, DatabaseMatch> pepSeqMap = new HashMap<String, DatabaseMatch>();
+				for(DatabaseMatch m : matchQueue)
+				{
+					String pepSeq = m.getPepSeq();
+					DatabaseMatch existingMatch = pepSeqMap.get(pepSeq);
+					if(existingMatch == null)
+						pepSeqMap.put(pepSeq, m);
+					else
+						existingMatch.addIndex(m.getIndex());
+				}
+				matchQueue = new PriorityQueue<DatabaseMatch>(pepSeqMap.values());
+				pepSeqMap = null;
+			}
+			
 			
 			int specIndex = specKey.getSpecIndex();
 			PriorityQueue<DatabaseMatch> existingQueue = specIndexDBMatchMap.get(specIndex);
@@ -596,20 +611,27 @@ public class DBScanner {
 			
 			for(DatabaseMatch match : matchQueue)
 			{
-				if(existingQueue.size() < numPeptidesPerSpec || match.getSpecEValue() == existingQueue.peek().getSpecEValue())
+				double curEValue = match.getSpecEValue();
+				if(existingQueue.size() < numPeptidesPerSpec || curEValue == existingQueue.peek().getSpecEValue())
 				{
 					existingQueue.add(match);
 				}
-				else
+				else if(curEValue == existingQueue.peek().getSpecEValue())
 				{
-					if(match.getSpecEValue() < existingQueue.peek().getSpecEValue())
+					
+				}
+				else	
+				{
+					double prevEValue = existingQueue.peek().getSpecEValue();
+					if(curEValue < prevEValue)
 					{
-						existingQueue.poll();
+						while(!existingQueue.isEmpty() && existingQueue.peek().getSpecEValue() == prevEValue)
+							existingQueue.poll();
 						existingQueue.add(match);
 					}
 				}
 			}
-		}	
+		}
 	}
 	
 	public synchronized void addResultsToList(List<MSGFPlusMatch> resultList)

@@ -6,6 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.List;
+
+import edu.ucsd.msjava.msdbsearch.CompactSuffixArray;
+import edu.ucsd.msjava.msdbsearch.DatabaseMatch;
+import edu.ucsd.msjava.msdbsearch.MSGFPlusMatch;
 
 public class ComputeFDR {
 	public static final float FDR_REPORT_THRESHOLD = 0.1f;
@@ -268,5 +273,35 @@ public class ComputeFDR {
 		
 		if(out != System.out)
 			out.close();
+	}
+	
+	public static void addQValues(List<MSGFPlusMatch> resultList, CompactSuffixArray sa)
+	{
+		MSGFPlusPSMSet target = new MSGFPlusPSMSet(resultList, false, sa);
+		target.read();
+		MSGFPlusPSMSet decoy = new MSGFPlusPSMSet(resultList, true, sa);
+		decoy.read();
+		
+		TargetDecoyAnalysis tda = new TargetDecoyAnalysis(target, decoy);
+		
+		for(MSGFPlusMatch match : resultList)
+		{
+			DatabaseMatch m = match.getBestDBMatch();
+			float psmQValue = tda.getPSMQValue((float)m.getSpecEValue());
+			Float pepQValue = tda.getPepQValue(m.getPepSeq());
+			
+			m.setPSMQValue(psmQValue);
+			m.setPepQValue(pepQValue);
+
+//			for(DatabaseMatch m : match.getMatchList())
+//			{
+//				float psmQValue = tda.getPSMQValue((float)m.getSpecEValue());
+//				Float pepQValue = tda.getPepQValue(m.getPepSeq());
+//				
+//				m.setPSMQValue(psmQValue);
+//				m.setPepQValue(pepQValue);
+//			}
+			
+		}
 	}
 }

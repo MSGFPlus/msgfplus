@@ -12,6 +12,8 @@ import edu.ucsd.msjava.msscorer.NewRankScorer;
 import edu.ucsd.msjava.msscorer.NewScorerFactory;
 import edu.ucsd.msjava.msutil.ActivationMethod;
 import edu.ucsd.msjava.msutil.Enzyme;
+import edu.ucsd.msjava.msutil.InstrumentType;
+import edu.ucsd.msjava.msutil.Protocol;
 import edu.ucsd.msjava.msutil.SpectraIterator;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.params.ParamParser;
@@ -106,7 +108,7 @@ public class MSDictionary {
 		String scoringParamFile = params.getParameter("ScoringParams");
 		NewAdditiveScorer scorer;
 		if(scoringParamFile == null)
-			scorer = NewScorerFactory.get(ActivationMethod.CID, Enzyme.TRYPSIN);
+			scorer = NewScorerFactory.get(ActivationMethod.CID, InstrumentType.LOW_RESOLUTION_LTQ, Enzyme.TRYPSIN, Protocol.NOPROTOCOL);
 		else
 			scorer = new NewRankScorer(scoringParamFile);
 		

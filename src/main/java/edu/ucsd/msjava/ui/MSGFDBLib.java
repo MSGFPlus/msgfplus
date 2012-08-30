@@ -2,13 +2,11 @@ package edu.ucsd.msjava.ui;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import java.util.concurrent.ExecutorService;
@@ -27,21 +25,9 @@ import edu.ucsd.msjava.msutil.Protocol;
 import edu.ucsd.msjava.msutil.SpecFileFormat;
 import edu.ucsd.msjava.msutil.SpecKey;
 import edu.ucsd.msjava.msutil.SpectraAccessor;
-import edu.ucsd.msjava.msutil.SpectraIterator;
-import edu.ucsd.msjava.msutil.SpectraMap;
-import edu.ucsd.msjava.msutil.Spectrum;
-import edu.ucsd.msjava.msutil.SpectrumAccessorBySpecIndex;
 import edu.ucsd.msjava.params.FileParameter;
 import edu.ucsd.msjava.params.ParamManager;
 import edu.ucsd.msjava.params.ToleranceParameter;
-import edu.ucsd.msjava.parser.MS2SpectrumParser;
-import edu.ucsd.msjava.parser.MgfSpectrumParser;
-import edu.ucsd.msjava.parser.MzXMLSpectraIterator;
-import edu.ucsd.msjava.parser.MzXMLSpectraMap;
-import edu.ucsd.msjava.parser.PNNLSpectraIterator;
-import edu.ucsd.msjava.parser.PNNLSpectraMap;
-import edu.ucsd.msjava.parser.PklSpectrumParser;
-import edu.ucsd.msjava.parser.SpectrumParser;
 
 
 public class MSGFDBLib {

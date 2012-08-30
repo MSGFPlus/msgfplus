@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import edu.ucsd.msjava.msgf.ScoreDist;
+import edu.ucsd.msjava.msutil.ActivationMethod;
 import edu.ucsd.msjava.msutil.Pair;
 
 public class Match implements Comparable<Match> {
@@ -13,6 +14,7 @@ public class Match implements Comparable<Match> {
 	private final int		nominalPeptideMass;
 	private final int		charge;
 	private final String	pepSeq;
+	private final ActivationMethod[] actMethodArr;
 	
 	// optional
 	private int			deNovoScore;	
@@ -21,12 +23,13 @@ public class Match implements Comparable<Match> {
 	
 	private List<Pair<String, String>> additionalFeatureList = null;
 	
-	public Match(int score, float peptideMass, int nominalPeptideMass, int charge, String pepSeq) {
+	public Match(int score, float peptideMass, int nominalPeptideMass, int charge, String pepSeq, ActivationMethod[] actMethodArr) {
 		this.score = score;
 		this.peptideMass = peptideMass;
 		this.nominalPeptideMass = nominalPeptideMass;
 		this.charge = charge;
 		this.pepSeq = pepSeq;
+		this.actMethodArr = actMethodArr;
 	}
 	
 	public int getScore() {
@@ -50,6 +53,11 @@ public class Match implements Comparable<Match> {
 	public String getPepSeq()
 	{
 		return pepSeq;
+	}
+	
+	public ActivationMethod[] getActivationMethodArr()
+	{
+		return actMethodArr;
 	}
 	
 	public void setDeNovoScore(int deNovoScore)

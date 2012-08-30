@@ -19,6 +19,14 @@ public class SpectrumConverter {
 		String id = jmzMLSpec.getId();
 		spec.setID(id);
 
+		// scan number
+		String[] idToken = id.split("\\s+");
+		if(idToken.length > 0 && idToken[idToken.length-1].matches("scan=\\d+"))
+		{
+			int scanNum = Integer.parseInt(idToken[idToken.length-1].substring(5));
+			spec.setScanNum(scanNum);
+		}
+		
         // MS Level
 		CVParam msLevelParam = null;
 		for(CVParam cvParam : jmzMLSpec.getCvParam())
