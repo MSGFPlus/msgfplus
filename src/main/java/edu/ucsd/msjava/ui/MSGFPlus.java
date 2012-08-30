@@ -305,7 +305,6 @@ public class MSGFPlus {
 
 		MZIdentMLGen mzidGen = new MZIdentMLGen(params, aaSet, sa, specAcc, ioIndex);
 		mzidGen.addSpectrumIdentificationResults(resultList);
-
     	
 		PrintStream out = null;
 		if(outputFile == null)

@@ -1,6 +1,7 @@
 package edu.ucsd.msjava.msdbsearch;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -14,6 +15,7 @@ public class MSGFPlusMatch implements Comparable<MSGFPlusMatch> {
 	{
 		this.specIndex = specIndex;
 		this.matchList = new ArrayList<DatabaseMatch>(matchQueue);
+		Collections.sort(matchList, new Match.SpecProbComparator());
 		specEValue = getBestDBMatch().getSpecEValue();
 	}
 

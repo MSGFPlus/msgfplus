@@ -616,10 +616,6 @@ public class DBScanner {
 				{
 					existingQueue.add(match);
 				}
-				else if(curEValue == existingQueue.peek().getSpecEValue())
-				{
-					
-				}
 				else	
 				{
 					double prevEValue = existingQueue.peek().getSpecEValue();
