@@ -14,7 +14,7 @@ public class MzIDToTsv {
 	{
 		long time = System.currentTimeMillis();
 
-		ParamManager paramManager = new ParamManager("MzIDToTsv", "8295", MSGFPlus.RELEASE_DATE, "java -Xmx3500M -cp MSGFPlus.jar edu.ucsd.msjava.ui.MzIDToTsv");
+		ParamManager paramManager = new ParamManager("MzIDToTsv", "8299", MSGFPlus.RELEASE_DATE, "java -Xmx3500M -cp MSGFPlus.jar edu.ucsd.msjava.ui.MzIDToTsv");
 		
 		FileParameter inputFileParam = new FileParameter("i", "MzIDFile", "MS-GF+ output file (*.mzid)");  
 		inputFileParam.addFileFormat(new FileFormat(".mzid"));
