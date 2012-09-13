@@ -132,15 +132,16 @@ public class MzIDParser {
                      Map<String, CvParam> cvParamMap = getCvParamMap(sii.getCvParam());
                      CvParam cvParam;
                      
-                     String fragMethod = null;
-                     for(ActivationMethod actMethod : ActivationMethod.getAllRegisteredActivationMethods())
-                     {
-                    	 if((cvParam = cvParamMap.get(actMethod.getPSICVAccession())) != null)
-                    	 {
-                    		 fragMethod = actMethod.getName();
-                    		 break;
-                    	 }
-                     }
+//                     String fragMethod = null;
+//                     for(ActivationMethod actMethod : ActivationMethod.getAllRegisteredActivationMethods())
+//                     {
+//                    	 if((cvParam = cvParamMap.get(actMethod.getPSICVAccession())) != null)
+//                    	 {
+//                    		 fragMethod = actMethod.getName();
+//                    		 break;
+//                    	 }
+//                     }
+
                      
                      String deNovoScore =  (cvParam = cvParamMap.get("MS:1002050")) == null ? "" : cvParam.getValue();
                      String rawScore =  (cvParam = cvParamMap.get("MS:1002049")) == null ? "" : cvParam.getValue();
@@ -151,6 +152,7 @@ public class MzIDParser {
 
                      Map<String, UserParam> userParamMap = getUserParamMap(sii.getUserParam());
                      UserParam userParam;
+                     String fragMethod =  (userParam = userParamMap.get("AssumedDissociationMethod")) == null ? null : userParam.getValue();
                      Integer isotopeError =  (userParam = userParamMap.get("IsotopeError")) == null ? null : Integer.parseInt(userParam.getValue());
                      
                      double theoreticalMz = experimentalMassToCharge-Composition.ISOTOPE*isotopeError/charge;
@@ -370,8 +372,8 @@ public class MzIDParser {
 //		File mzidFile = new File(System.getProperty("user.home")+"/Research/Data/QCShew/test.mzid");
 //		File outputFile = null;
 		
-		File mzidFile = new File(System.getProperty("user.home")+"/Research/Data/QCShew/QC_Shew_MSGFPlus_N3.mzid");
-		File outputFile = new File(System.getProperty("user.home")+"/Research/Data/QCShew/QC_Shew_MSGFPlus_N3.tsv");
+		File mzidFile = new File(System.getProperty("user.home")+"/Research/Data/QCShew/test.mzid");
+		File outputFile = new File(System.getProperty("user.home")+"/Research/Data/QCShew/test.tsv");
 		MzIDParser parser = new MzIDParser(mzidFile);
 		parser.writeToTSVFile(outputFile);
 		

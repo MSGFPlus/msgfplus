@@ -169,8 +169,9 @@ public class MZIdentMLGen {
 			if(matchList == null || matchList.size() == 0)
 				continue;
 
-			String specID = specAcc.getID(specIndex);
-			float precursorMz = specAcc.getPrecursorMz(specIndex) - (float)Composition.H;
+			edu.ucsd.msjava.msutil.Spectrum spec = specAcc.getSpecMap().getSpectrumBySpecIndex(specIndex);
+			String specID = spec.getID();
+			float precursorMz = spec.getPrecursorPeak().getMz();
 
 			SpectrumIdentificationResult sir = new SpectrumIdentificationResult();
 			sir.setId(Constants.sirID+specIndex);
@@ -178,7 +179,7 @@ public class MZIdentMLGen {
 			sir.setSpectrumID(specID);
 			
 			// add title
-			String title = specAcc.getTitle(specIndex);
+			String title = spec.getTitle();
 			if(title != null)
 			{
 				CvParam cvParam = Constants.makeCvParam("MS:1000796", "spectrum title");
@@ -187,13 +188,20 @@ public class MZIdentMLGen {
 			}
 			
 			// add scan number
-			int scanNum = specAcc.getSpecMap().getSpectrumBySpecIndex(specIndex).getScanNum();
+			int scanNum = spec.getScanNum();
 			if(scanNum >= 0)
 			{
 				CvParam cvParam = Constants.makeCvParam("MS:1001115", "scan number(s)");
 				cvParam.setValue(String.valueOf(scanNum));
 				sir.getCvParam().add(cvParam);
 			}
+			
+//			ActivationMethod activationMethod = spec.getActivationMethod();
+//			if(activationMethod != null)
+//			{
+//				CvParam fragMethodCV = activationMethod.getCvParam();
+//				sir.getCvParam().add(fragMethodCV);
+//			}
 			
 			int rank = 0;
 			
@@ -210,8 +218,9 @@ public class MZIdentMLGen {
 				int charge = match.getCharge();
 
 				float peptideMass = match.getPeptideMass();
-				float theoMass = peptideMass + (float)Composition.H2O;
-				float theoMz = theoMass/charge;
+//				float theoMass = peptideMass + (float)Composition.H2O;
+//				float theoMz = theoMass/charge;
+				float theoMz = (peptideMass + (float)Composition.H2O)/charge + (float)Composition.H;
 				
 				int score = match.getScore();
 				double specEValue = match.getSpecEValue();
@@ -248,15 +257,15 @@ public class MZIdentMLGen {
 				List<CvParam> cvList = sii.getCvParam();
 				List<UserParam> userList = sii.getUserParam();
 
-				ActivationMethod[] activationMethodArr = match.getActivationMethodArr();
-				if(activationMethodArr != null)
-				{
-					for(ActivationMethod actMethod : activationMethodArr)
-					{
-						CvParam fragMethodCV = actMethod.getCvParam();
-						cvList.add(fragMethodCV);
-					}
-				}
+//				ActivationMethod[] activationMethodArr = match.getActivationMethodArr();
+//				if(activationMethodArr != null)
+//				{
+//					for(ActivationMethod actMethod : activationMethodArr)
+//					{
+//						CvParam fragMethodCV = actMethod.getCvParam();
+//						cvList.add(fragMethodCV);
+//					}
+//				}
 				
 				CvParam rawScoreCV = Constants.makeCvParam("MS:1002049", "MS-GF:RawScore");
 				rawScoreCV.setValue(String.valueOf(score));
@@ -290,10 +299,23 @@ public class MZIdentMLGen {
 				
 				UserParam isotopeErrorParam = Constants.makeUserParam("IsotopeError");
 				float expMass = precursorMz*charge;
+				float theoMass = theoMz*charge;
 				int isotopeError = NominalMass.toNominalMass(expMass) - NominalMass.toNominalMass(theoMass);
 				isotopeErrorParam.setValue(String.valueOf(isotopeError));
 				userList.add(isotopeErrorParam);
 
+				ActivationMethod[] activationMethodArr = match.getActivationMethodArr();
+				if(activationMethodArr != null)
+				{
+					StringBuffer actMethodStrBuf = new StringBuffer();
+					actMethodStrBuf.append(activationMethodArr[0]);
+					for(int j=1; j<activationMethodArr.length; j++)
+						actMethodStrBuf.append("/"+activationMethodArr[j]);
+					UserParam dissociationMethodParam = Constants.makeUserParam("AssumedDissociationMethod");
+					dissociationMethodParam.setValue(actMethodStrBuf.toString());
+					userList.add(dissociationMethodParam);
+				}
+				
 				if(match.getAdditionalFeatureList() != null)
 				{
 					for(Pair<String,String> feature : match.getAdditionalFeatureList())

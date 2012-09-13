@@ -39,7 +39,7 @@ import edu.ucsd.msjava.params.ParamManager;
 
 
 public class MSGFPlus {
-	public static final String VERSION = "1.0 (v8444)";
+	public static final String VERSION = "1.0 (v8445)";
 	public static final String RELEASE_DATE = "09/13/2012";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
