@@ -112,7 +112,7 @@ public class ScoredSpectraMap {
 			for(int delta = this.minIsotopeError; delta<=maxIsotopeError; delta++)
 			{
 				float mass1 = peptideMass-delta*(float)Composition.ISOTOPE;
-				double mass1Key = (double)mass1;
+				double mass1Key = (double)mass1; 
 				while(pepMassSpecKeyMap.get(mass1Key) != null)
 					mass1Key = Math.nextUp(mass1Key);
 				pepMassSpecKeyMap.put(mass1Key, specKey);

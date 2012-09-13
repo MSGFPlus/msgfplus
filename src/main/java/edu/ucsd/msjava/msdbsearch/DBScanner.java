@@ -368,7 +368,7 @@ public class DBScanner {
 						continue;
 					
 //					System.out.println(sequence.getSubsequence(index+1, index+i+1));
-//					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("VTVEDAVEQIGNRFDMILVAAR"))
+//					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("YHQGFSSDFETPGGNVHLALAFNPSHLEIVNPVVMGSVR"))
 //						System.out.println("Debug");
 					
 					int cTermCleavageScore = 0;
@@ -522,7 +522,7 @@ public class DBScanner {
 			float peptideMass = scoredSpec.getPrecursorPeak().getMass() - (float)Composition.H2O;
 			int nominalPeptideMass = NominalMass.toNominalMass(peptideMass);
 			int minNominalPeptideMass = nominalPeptideMass - specScanner.getMaxIsotopeError();
-			int maxNominalPeptideMass = nominalPeptideMass + specScanner.getMinIsotopeError();
+			int maxNominalPeptideMass = nominalPeptideMass - specScanner.getMinIsotopeError();
 			
 			float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
 			float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
