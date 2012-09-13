@@ -338,7 +338,7 @@ public class ParamManager {
 		addProtocolParam();
 		
 		EnumParameter nttParam = new EnumParameter("ntt", null, "Number of Tolerable Termini");
-		nttParam.setAdditionalDescription("E.g. For trypsin, 2: fully-tryptic peptides only, 1: semi-tryptic, 0: non-tryptic.");
+		nttParam.setAdditionalDescription("E.g. For trypsin, 0: non-tryptic, 1: semi-tryptic, 2: fully-tryptic peptides only.");
 		nttParam.registerEntry("");
 		nttParam.registerEntry("");
 		nttParam.registerEntry("").setDefault();

@@ -33,7 +33,7 @@ public class CountPSMs {
 		int pepColNum = -1;
 		for(int i=0; i<headerToken.length; i++)
 		{
-			if(headerToken[i].equalsIgnoreCase("EFDR") || headerToken[i].equalsIgnoreCase("FDR") || headerToken[i].equalsIgnoreCase("q-value"))
+			if(headerToken[i].endsWith("FDR") || headerToken[i].endsWith("QValue") || headerToken[i].equalsIgnoreCase("q-value"))
 				eFDRColNum = i;
 			if(headerToken[i].equalsIgnoreCase("Peptide") || headerToken[i].equalsIgnoreCase("Annotation"))
 				pepColNum = i;
@@ -68,18 +68,30 @@ public class CountPSMs {
 				numID++;
 				int ntt=0;
 				String annotation = token[pepColNum];
-				char pre = annotation.charAt(0);
-				if(pre == 'K' || pre == 'R' || pre == '_')
-					ntt+=2;
-				String pepStr = annotation.substring(annotation.indexOf('.')+1, annotation.lastIndexOf('.'));
+				
+				String pepStr;
+				
+				if(annotation.matches("[A-Z\\-_]?\\..+\\.[A-Z\\-_]?"))
+				{
+					char pre = annotation.charAt(0);
+					if(pre == 'K' || pre == 'R' || pre == '_')
+						ntt+=2;
+					pepStr = annotation.substring(annotation.indexOf('.')+1, annotation.lastIndexOf('.'));
+					char last = annotation.charAt(annotation.lastIndexOf('.')-1);
+					if(last == 'K' || last == 'R')
+						ntt+=1;
+					nttHist.add(ntt);
+				}
+				else
+				{
+					pepStr = annotation;
+				}
+				
 				StringBuffer unmodStr = new StringBuffer();
 				for(int i=0; i<pepStr.length(); i++)
 					if(Character.isLetter(pepStr.charAt(i)))
 						unmodStr.append(pepStr.charAt(i));
-				char last = unmodStr.charAt(unmodStr.length()-1);
-				if(last == 'K' || last == 'R')
-					ntt+=1;
-				nttHist.add(ntt);
+				
 				pepSet.add(unmodStr.toString());
 			}
 			
@@ -94,5 +106,7 @@ public class CountPSMs {
 		System.out.println("NumPeptides\t" + pepSet.size());
 		System.out.println("Cleavage hist");
 		nttHist.printSortedRatio();
+		
+		in.close();
 	}
 }
