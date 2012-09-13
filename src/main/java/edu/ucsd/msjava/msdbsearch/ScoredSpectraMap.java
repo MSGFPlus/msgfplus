@@ -34,8 +34,8 @@ public class ScoredSpectraMap {
 	private final List<SpecKey> specKeyList;
 	private final Tolerance leftParentMassTolerance;
 	private final Tolerance rightParentMassTolerance;
-	private final int minNum13C;
-	private final int maxNum13C;
+	private final int minIsotopeError;
+	private final int maxIsotopeError;
 	private final SpecDataType specDataType;
 	
 	private SortedMap<Double,SpecKey> pepMassSpecKeyMap;
@@ -49,8 +49,8 @@ public class ScoredSpectraMap {
 			List<SpecKey> specKeyList,			
     		Tolerance leftParentMassTolerance, 
     		Tolerance rightParentMassTolerance, 
-			int minNum13C,
-			int maxNum13C,
+			int minIsotopeError,
+			int maxIsotopeError,
 			SpecDataType specDataType
 			)
 	{
@@ -58,8 +58,8 @@ public class ScoredSpectraMap {
 		this.specKeyList = specKeyList;
 		this.leftParentMassTolerance = leftParentMassTolerance;
 		this.rightParentMassTolerance = rightParentMassTolerance;
-		this.minNum13C = minNum13C;
-		this.maxNum13C = maxNum13C;
+		this.minIsotopeError = minIsotopeError;
+		this.maxIsotopeError = maxIsotopeError;
 		this.specDataType = specDataType;
 		
 		pepMassSpecKeyMap = Collections.synchronizedSortedMap((new TreeMap<Double,SpecKey>()));
@@ -92,8 +92,8 @@ public class ScoredSpectraMap {
 	public Tolerance getLeftParentMassTolerance()				{ return leftParentMassTolerance; }
 	public Tolerance getRightParentMassTolerance()				{ return rightParentMassTolerance; }
 //	public int getNumAllowedC13()								{ return numAllowedC13; }
-	public int getMaxNum13C()										{ return maxNum13C; }
-	public int getMinNum13C()										{ return minNum13C; }
+	public int getMaxIsotopeError()										{ return maxIsotopeError; }
+	public int getMinIsotopeError()										{ return minIsotopeError; }
 	
 	public List<SpecKey> getSpecKeyList()	{ return specKeyList; }
 	public SpecKey getSpecKey(int specIndex, int charge)
@@ -109,7 +109,7 @@ public class ScoredSpectraMap {
 			Spectrum spec = specAcc.getSpectrumBySpecIndex(specIndex);
 			float peptideMass = (spec.getPrecursorPeak().getMz()-(float)Composition.H)*specKey.getCharge()-(float)Composition.H2O;
 			
-			for(int delta = this.minNum13C; delta<=maxNum13C; delta++)
+			for(int delta = this.minIsotopeError; delta<=maxIsotopeError; delta++)
 			{
 				float mass1 = peptideMass-delta*(float)Composition.ISOTOPE;
 				double mass1Key = (double)mass1;

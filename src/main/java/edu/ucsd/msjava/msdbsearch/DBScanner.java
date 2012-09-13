@@ -170,12 +170,12 @@ public class DBScanner {
 		dbSearch(2, 0, size, verbose);
 	}
 
-	public void dbSearch(int numberOfTolerableTermini)
+	public void dbSearch(int numberOfAllowableNonEnzymaticTermini)
 	{
-		dbSearch(numberOfTolerableTermini, 0, size, true);
+		dbSearch(numberOfAllowableNonEnzymaticTermini, 0, size, true);
 	}
 	
-	public void dbSearch(int numberOfTolerableTermini, int fromIndex, int toIndex, boolean verbose)
+	public void dbSearch(int numberOfAllowableNonEnzymaticTermini, int fromIndex, int toIndex, boolean verbose)
 	{
 		Map<SpecKey,PriorityQueue<DatabaseMatch>> curSpecKeyDBMatchMap = new HashMap<SpecKey,PriorityQueue<DatabaseMatch>>();
 		
@@ -188,7 +188,7 @@ public class DBScanner {
 		int i = Integer.MAX_VALUE - 1000;
 		
 		boolean enzymaticSearch;
-		if(numberOfTolerableTermini == 2)
+		if(numberOfAllowableNonEnzymaticTermini == 2)
 			enzymaticSearch = false;
 		else
 			enzymaticSearch = true;
@@ -281,7 +281,7 @@ public class DBScanner {
 							if(enzymaticSearch)
 							{
 								numNonEnzTermini = 1;
-								if(numNonEnzTermini > numberOfTolerableTermini)
+								if(numNonEnzTermini > numberOfAllowableNonEnzymaticTermini)
 								{
 									i=0;
 									continue;
@@ -316,7 +316,7 @@ public class DBScanner {
 								if(enzymaticSearch)
 								{
 									numNonEnzTermini = 1;
-									if(numNonEnzTermini > numberOfTolerableTermini)
+									if(numNonEnzTermini > numberOfAllowableNonEnzymaticTermini)
 										break;
 								}
 							}
@@ -384,7 +384,7 @@ public class DBScanner {
 							else
 							{
 								cTermCleavageScore = peptideCleavagePenalty;
-								if(!isProteinCTerm && numNonEnzTermini+1 > numberOfTolerableTermini)
+								if(!isProteinCTerm && numNonEnzTermini+1 > numberOfAllowableNonEnzymaticTermini)
 								{
 									isExtensionAtTheSameIndex = true;
 									continue;
@@ -398,7 +398,7 @@ public class DBScanner {
 							else
 							{
 								cTermCleavageScore = neighboringAACleavagePenalty;
-								if(numNonEnzTermini+1 > numberOfTolerableTermini)
+								if(numNonEnzTermini+1 > numberOfAllowableNonEnzymaticTermini)
 								{
 									isExtensionAtTheSameIndex = true;
 									continue;
@@ -521,8 +521,8 @@ public class DBScanner {
 			SimpleDBSearchScorer<NominalMass> scoredSpec = specScanner.getSpecKeyScorerMap().get(specKey);
 			float peptideMass = scoredSpec.getPrecursorPeak().getMass() - (float)Composition.H2O;
 			int nominalPeptideMass = NominalMass.toNominalMass(peptideMass);
-			int minNominalPeptideMass = nominalPeptideMass - specScanner.getMaxNum13C();
-			int maxNominalPeptideMass = nominalPeptideMass + specScanner.getMinNum13C();
+			int minNominalPeptideMass = nominalPeptideMass - specScanner.getMaxIsotopeError();
+			int maxNominalPeptideMass = nominalPeptideMass + specScanner.getMinIsotopeError();
 			
 			float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
 			float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
@@ -746,7 +746,7 @@ public class DBScanner {
 				float pmError = Float.MAX_VALUE;
 				float theoMass = peptideMass + (float)Composition.H2O;
 
-				for(int delta=specScanner.getMinNum13C(); delta<=specScanner.getMaxNum13C(); delta++)
+				for(int delta=specScanner.getMinIsotopeError(); delta<=specScanner.getMaxIsotopeError(); delta++)
 				{
 					float error = expMass-theoMass-(float)(Composition.ISOTOPE)*delta; 
 					if(Math.abs(error) < Math.abs(pmError))

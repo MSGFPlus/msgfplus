@@ -49,8 +49,9 @@ public class ConcurrentMSGFPlus {
 			
 			int ntt = params.getNumTolerableTermini();
 			if(params.getEnzyme() == null)
-				ntt = 2;
-			scanner.dbSearch(ntt);
+				ntt = 0;
+			int nnet = 2-ntt;
+			scanner.dbSearch(nnet);
 			System.out.print(threadName+": Database search finished ");
 			System.out.format("(elapsed time: %.2f sec)\n", (float)((System.currentTimeMillis()-time)/1000));
 			

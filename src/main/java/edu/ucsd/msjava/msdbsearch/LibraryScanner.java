@@ -470,8 +470,8 @@ public class LibraryScanner {
 			SimpleDBSearchScorer<NominalMass> scoredSpec = specScanner.getSpecKeyScorerMap().get(specKey);
 			float peptideMass = scoredSpec.getPrecursorPeak().getMass() - (float)Composition.H2O;
 			int nominalPeptideMass = NominalMass.toNominalMass(peptideMass);
-			int minNominalPeptideMass = nominalPeptideMass + specScanner.getMinNum13C();
-			int maxNominalPeptideMass = nominalPeptideMass + specScanner.getMaxNum13C();
+			int minNominalPeptideMass = nominalPeptideMass + specScanner.getMinIsotopeError();
+			int maxNominalPeptideMass = nominalPeptideMass + specScanner.getMaxIsotopeError();
 			
 			float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
 			float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
@@ -592,7 +592,7 @@ public class LibraryScanner {
 				float pmError = Float.MAX_VALUE;
 
 				int deltaNominalMass = 0;
-				for(int delta=specScanner.getMinNum13C(); delta<=specScanner.getMaxNum13C(); delta++)
+				for(int delta=specScanner.getMinIsotopeError(); delta<=specScanner.getMaxIsotopeError(); delta++)
 				{
 					float error = expMass-theoMass-(float)(Composition.ISOTOPE)*delta; 
 					if(Math.abs(error) < Math.abs(pmError))

@@ -337,11 +337,11 @@ public class ParamManager {
 		addEnzymeParam();
 		addProtocolParam();
 		
-		EnumParameter nttParam = new EnumParameter("ntt", null, "Number of tolerable termini");
-		nttParam.setAdditionalDescription("E.g. For trypsin, 0: fully-tryptic peptides only, 1: semi-tryptic, 2: non-tryptic.");
+		EnumParameter nttParam = new EnumParameter("ntt", null, "Number of Tolerable Termini");
+		nttParam.setAdditionalDescription("E.g. For trypsin, 2: fully-tryptic peptides only, 1: semi-tryptic, 0: non-tryptic.");
+		nttParam.registerEntry("");
 		nttParam.registerEntry("");
 		nttParam.registerEntry("").setDefault();
-		nttParam.registerEntry("");
 		addParameter(nttParam);
 		
 		addModFileParam();

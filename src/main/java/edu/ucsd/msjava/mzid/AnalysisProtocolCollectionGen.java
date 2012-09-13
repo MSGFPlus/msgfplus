@@ -1,5 +1,6 @@
 package edu.ucsd.msjava.mzid;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ public class AnalysisProtocolCollectionGen {
 	private SpectrumIdentificationProtocol spectrumIdentificationProtocol;
 	
 	private Map<edu.ucsd.msjava.msutil.Modification, SearchModification> modMap;
+	private Map<Character, List<edu.ucsd.msjava.msutil.Modification>> fixedModMap;
 	
 	public AnalysisProtocolCollectionGen(SearchParams params, AminoAcidSet aaSet)
 	{
@@ -42,6 +44,11 @@ public class AnalysisProtocolCollectionGen {
 		return modMap.get(mod);
 	}
 	
+	public List<edu.ucsd.msjava.msutil.Modification> getFixedModifications(char residue)
+	{
+		return fixedModMap.get(residue);
+	}
+	
 	private void generateSpectrumIdentificationProtocol()
 	{
 		spectrumIdentificationProtocol = new SpectrumIdentificationProtocol();
@@ -62,8 +69,8 @@ public class AnalysisProtocolCollectionGen {
         cvParamList.add(Constants.makeCvParam("MS:1001256","fragment mass type mono", Constants.psiCV));
         List<UserParam> userParamList = additionalSearchParams.getUserParam();
         userParamList.add(Constants.makeUserParam("TargetDecoyApproach", String.valueOf(params.useTDA())));
-        userParamList.add(Constants.makeUserParam("MinIsotopeError", String.valueOf(params.getMin13C())));
-        userParamList.add(Constants.makeUserParam("MaxIsotopeError", String.valueOf(params.getMax13C())));
+        userParamList.add(Constants.makeUserParam("MinIsotopeError", String.valueOf(params.getMinIsotopeError())));
+        userParamList.add(Constants.makeUserParam("MaxIsotopeError", String.valueOf(params.getMaxIsotopeError())));
         userParamList.add(Constants.makeUserParam("FragmentMethod", params.getActivationMethod().getName()));
         userParamList.add(Constants.makeUserParam("Instrument", params.getInstType().getName()));
         userParamList.add(Constants.makeUserParam("Protocol", params.getProtocol().getName()));
@@ -142,6 +149,7 @@ public class AnalysisProtocolCollectionGen {
 	public ModificationParams getModificationParam()
 	{
 		modMap = new HashMap<edu.ucsd.msjava.msutil.Modification, uk.ac.ebi.jmzidml.model.mzidml.SearchModification>();
+		fixedModMap = new HashMap<Character, List<edu.ucsd.msjava.msutil.Modification>>();
 		
         ModificationParams modParams = new ModificationParams();
         List<SearchModification> searchModList = modParams.getSearchModification();
@@ -153,7 +161,7 @@ public class AnalysisProtocolCollectionGen {
     		
             SearchModification searchMod = new SearchModification();
 
-            searchMod.setFixedMod(true);
+            searchMod.setFixedMod(mod.isFixedModification());
             searchMod.setMassDelta(mod.getModification().getMass());
     		
     		// set modification CV params
@@ -194,6 +202,16 @@ public class AnalysisProtocolCollectionGen {
             searchModList.add(searchMod);
             
             modMap.put(mod.getModification(), searchMod);
+            if(mod.isFixedModification())
+            {
+            	List<edu.ucsd.msjava.msutil.Modification> fixedMods = fixedModMap.get(mod.getResidue());
+            	if(fixedMods == null)
+            	{
+            		fixedMods = new ArrayList<edu.ucsd.msjava.msutil.Modification>();
+            		fixedModMap.put(mod.getResidue(), fixedMods);
+            	}
+            	fixedMods.add(mod.getModification());
+            }
         }
 
         return modParams;

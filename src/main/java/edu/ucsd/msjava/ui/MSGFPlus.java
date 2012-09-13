@@ -128,8 +128,8 @@ public class MSGFPlus {
 		Tolerance leftParentMassTolerance = params.getLeftParentMassTolerance();
 		Tolerance rightParentMassTolerance = params.getRightParentMassTolerance();
 		
-		int min13C = params.getMin13C();	// inclusive
-		int max13C = params.getMax13C();	// inclusive
+		int minIsotopeError = params.getMinIsotopeError();	// inclusive
+		int maxIsotopeError = params.getMaxIsotopeError();	// inclusive
 		
 		Enzyme enzyme = params.getEnzyme();
 		
@@ -264,8 +264,8 @@ public class MSGFPlus {
 		    			Collections.synchronizedList(specKeyList.subList(startIndex[i], endIndex[i])),
 		    			leftParentMassTolerance,
 		    			rightParentMassTolerance,
-		    			min13C,
-		    			max13C,
+		    			minIsotopeError,
+		    			maxIsotopeError,
 		    			specDataType
 		    			);
 		    	if(doNotDseEdgeScore)

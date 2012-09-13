@@ -23,8 +23,8 @@ public class SearchParams {
 	private File databaseFile;
 	private Tolerance leftParentMassTolerance; 
 	private Tolerance rightParentMassTolerance; 
-	private int minIsotope;
-	private int maxIsotope;
+	private int minIsotopeError;
+	private int maxIsotopeError;
 	private Enzyme enzyme;
 	private int numTolerableTermini;
 	private ActivationMethod activationMethod;
@@ -66,12 +66,12 @@ public class SearchParams {
 		return rightParentMassTolerance;
 	}
 
-	public int getMin13C() {
-		return minIsotope;
+	public int getMinIsotopeError() {
+		return minIsotopeError;
 	}
 
-	public int getMax13C() {
-		return maxIsotope;
+	public int getMaxIsotopeError() {
+		return maxIsotopeError;
 	}
 	
 	public Enzyme getEnzyme() {
@@ -223,11 +223,11 @@ public class SearchParams {
 		}
 		
 		IntRangeParameter isotopeParam = (IntRangeParameter)paramManager.getParameter("ti");
-		this.minIsotope = isotopeParam.getMin();
-		this.maxIsotope = isotopeParam.getMax();
+		this.minIsotopeError = isotopeParam.getMin();
+		this.maxIsotopeError = isotopeParam.getMax();
 		
 		if(rightParentMassTolerance.getToleranceAsDa(1000, 2) >= 0.5f || leftParentMassTolerance.getToleranceAsDa(1000, 2) >= 0.5f)
-			minIsotope = maxIsotope = 0;
+			minIsotopeError = maxIsotopeError = 0;
 		
 		enzyme = paramManager.getEnzyme();
 		numTolerableTermini = paramManager.getIntValue("ntt");

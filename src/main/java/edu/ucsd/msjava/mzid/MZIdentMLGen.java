@@ -337,7 +337,7 @@ public class MZIdentMLGen {
 				{
 					Modification mod = new Modification();
 					ModifiedAminoAcid modAA = (ModifiedAminoAcid)aa;
-					if(location == 0 && modAA.isNTermVariableMod())
+					if(location == 1 && modAA.isNTermVariableMod())
 						mod.setLocation(location-1);
 					else if(location == peptide.size() && modAA.isCTermVariableMod())
 						mod.setLocation(location+1);
@@ -347,6 +347,34 @@ public class MZIdentMLGen {
 					
 					mod.getCvParam().addAll(apcGen.getSearchModification(modAA.getModification()).getCvParam());
 					modList.add(mod);
+					
+					if(modAA.getTargetAA().isModified())	// aa has two modifications
+					{
+						Modification mod2 = new Modification();
+						ModifiedAminoAcid modAA2 = (ModifiedAminoAcid)modAA.getTargetAA();
+						if(location == 1 && modAA2.isNTermVariableMod())
+							mod2.setLocation(location-1);
+						else if(location == peptide.size() && modAA2.isCTermVariableMod())
+							mod2.setLocation(location+1);
+						else
+							mod2.setLocation(location);
+						mod2.setMonoisotopicMassDelta(modAA2.getModification().getAccurateMass());
+						
+						mod2.getCvParam().addAll(apcGen.getSearchModification(modAA2.getModification()).getCvParam());
+						modList.add(mod2);
+					}
+				}
+				else if(apcGen.getFixedModifications(aa.getResidue()) != null)
+				{
+					List<edu.ucsd.msjava.msutil.Modification> fixedMods = apcGen.getFixedModifications(aa.getResidue());
+					for(edu.ucsd.msjava.msutil.Modification fixedMod : fixedMods)
+					{
+						Modification mod = new Modification();
+						mod.setLocation(location);
+						mod.setMonoisotopicMassDelta(fixedMod.getAccurateMass());
+						mod.getCvParam().addAll(apcGen.getSearchModification(fixedMod).getCvParam());
+						modList.add(mod);
+					}
 				}
 				location++;
 			}
