@@ -407,11 +407,10 @@ public class ParamManager {
 //		showFDRParam.setHidden();
 		addParameter(showFDRParam);
 
-		EnumParameter showDecoyParam = new EnumParameter("showDecoy");
-		showDecoyParam.registerEntry("do not show decoy PSMs").setDefault();
-		showDecoyParam.registerEntry("show decoy PSMs");
-//		showDecoyParam.setHidden();
-		addParameter(showDecoyParam);
+//		EnumParameter showDecoyParam = new EnumParameter("showDecoy");
+//		showDecoyParam.registerEntry("do not show decoy PSMs").setDefault();
+//		showDecoyParam.registerEntry("show decoy PSMs");
+//		addParameter(showDecoyParam);
 		
 		EnumParameter edgeScoreParam = new EnumParameter("edgeScore");
 		edgeScoreParam.registerEntry("use edge scoring").setDefault();

@@ -36,7 +36,7 @@ public class SearchParams {
 	private int endSpecIndex;
 	private boolean useTDA;
 	private boolean showFDR;
-	private boolean showDecoy;
+//	private boolean showDecoy;
 	private int minPeptideLength;
 	private int maxPeptideLength;
 	private int minCharge;
@@ -118,9 +118,9 @@ public class SearchParams {
 		return showFDR;
 	}
 
-	public boolean showDecoy() {
-		return showDecoy;
-	}
+//	public boolean showDecoy() {
+//		return showDecoy;
+//	}
 
 	public int getMinPeptideLength() {
 		return minPeptideLength;
@@ -263,7 +263,7 @@ public class SearchParams {
 		
 		useTDA = paramManager.getIntValue("tda") == 1 ? true : false;
 		showFDR = paramManager.getIntValue("showQValue") == 1 ? true : false;
-		showDecoy = paramManager.getIntValue("showDecoy") == 1 ? true : false;
+//		showDecoy = paramManager.getIntValue("showDecoy") == 1 ? true : false;
 		outputAdditionalFeatures = paramManager.getIntValue("addFeatures") == 1 ? true : false;
 		
 		minPeptideLength = paramManager.getIntValue("minLength");
