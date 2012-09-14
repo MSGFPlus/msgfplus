@@ -80,8 +80,9 @@ public class MzMLAdapter {
 			}
 		}
 		
-//		System.err.println("Unsupported mzML format: " + specFile.getAbsolutePath());
-//		System.exit(-1);
+		System.err.println("Unsupported mzML format: " + specFile.getAbsolutePath() + " does not contain a child term of MS:1000767 (native spectrum identifier format)");
+		System.err.println("Unsupported mzML format: " + specFile.getAbsolutePath());
+		System.exit(-1);
 		return null;
 	}
 	
