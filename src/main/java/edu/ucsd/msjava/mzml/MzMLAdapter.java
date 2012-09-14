@@ -80,8 +80,8 @@ public class MzMLAdapter {
 			}
 		}
 		
-		System.err.println("Unsupported mzML format: " + specFile.getAbsolutePath());
-		System.exit(-1);
+//		System.err.println("Unsupported mzML format: " + specFile.getAbsolutePath());
+//		System.exit(-1);
 		return null;
 	}
 	
