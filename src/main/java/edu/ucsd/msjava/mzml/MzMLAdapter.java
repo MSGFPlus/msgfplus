@@ -72,7 +72,12 @@ public class MzMLAdapter {
 			{
 				String tempAcc = param.getAccession();
 				long accNum = Long.parseLong(tempAcc.substring(tempAcc.lastIndexOf(':')+1));
-				if(accNum >= 1000768 && accNum <= 1000777)
+				if(accNum >= 1000768 && accNum <= 1000777 
+						|| accNum == 1000823 || accNum == 1000824 || accNum == 1000929
+						|| accNum == 1001508 || accNum == 1001526 || accNum == 1001528
+						|| accNum == 1001531 || accNum == 1001532
+						|| accNum == 1001559 || accNum == 1001562
+						)
 				{
 					spectrumIDFormatCvParam = Constants.makeCvParam(param.getAccession(), param.getName());
 					return spectrumIDFormatCvParam;
