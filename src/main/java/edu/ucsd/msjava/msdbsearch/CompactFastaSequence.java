@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import edu.ucsd.msjava.msutil.Pair;
 import edu.ucsd.msjava.sequences.Constants;
 import edu.ucsd.msjava.sequences.Sequence;
+import edu.ucsd.msjava.ui.MSGFPlus;
 
 
 
@@ -241,6 +242,19 @@ public class CompactFastaSequence implements Sequence {
 		return null;
 	}
 
+	public float getFractionDecoyProteins() {
+		int numTargetProteins = 0;
+		int numDecoyProteins = 0;
+		for(String annotation : annotations.values())
+		{
+			if(annotation.startsWith(MSGFPlus.DECOY_PROTEIN_PREFIX))
+				numDecoyProteins++;
+			else
+				numTargetProteins++;
+		}
+		return numTargetProteins/(float)numDecoyProteins;
+	}
+	
 	/**
 	 * Setter method.
 	 * @param baseFilepath set the baseFilepath for this object. The baseFilepath
