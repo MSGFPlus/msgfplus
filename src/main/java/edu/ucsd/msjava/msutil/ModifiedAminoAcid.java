@@ -9,7 +9,7 @@ public class ModifiedAminoAcid extends AminoAcid {
 	private boolean isNTermVariableMod = false;
 	private boolean isCTermVariableMod = false;
 	private boolean hasTerminalVariableMod = false;
-	private boolean hasAnywhereVariableMod = false;
+	private boolean hasResidueSpecificVariableMod = false;
 	private boolean isFixedModification = false;
 	private final int numMods;
 	
@@ -19,12 +19,12 @@ public class ModifiedAminoAcid extends AminoAcid {
 		this.mod = mod.getModification();
 		this.targetAA = targetAA;
 		this.hasTerminalVariableMod = targetAA.hasTerminalVariableMod();
-		this.hasAnywhereVariableMod = targetAA.hasAnywhereVariableMod();
+		this.hasResidueSpecificVariableMod = targetAA.hasResidueSpecificVariableMod();
 		super.setProbability(targetAA.getProbability());
 		if(mod.isFixedModification())
 			this.isFixedModification = mod.isFixedModification();
-		else if(mod.getLocation() == Location.Anywhere)
-			this.hasAnywhereVariableMod = true;
+		else if(mod.getResidue() != '*')
+			this.hasResidueSpecificVariableMod = true;
 		else
 		{
 			this.hasTerminalVariableMod = true;
@@ -33,7 +33,7 @@ public class ModifiedAminoAcid extends AminoAcid {
 			if(mod.getLocation() == Location.C_Term || mod.getLocation() == Location.Protein_C_Term)
 				isCTermVariableMod = true;
 		}
-		if(this.hasAnywhereVariableMod)
+		if(this.hasResidueSpecificVariableMod)
 		{
 			if(this.hasTerminalVariableMod)
 				numMods = 2;
@@ -92,9 +92,9 @@ public class ModifiedAminoAcid extends AminoAcid {
 	}
 	
 	@Override
-	public boolean hasAnywhereVariableMod()
+	public boolean hasResidueSpecificVariableMod()
 	{
-		return this.hasAnywhereVariableMod;
+		return this.hasResidueSpecificVariableMod;
 	}
 	
 	public boolean isNTermVariableMod()

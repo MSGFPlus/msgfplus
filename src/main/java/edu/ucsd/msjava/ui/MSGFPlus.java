@@ -39,8 +39,8 @@ import edu.ucsd.msjava.params.ParamManager;
 
 
 public class MSGFPlus {
-	public static final String VERSION = "1.0 (v8447)";
-	public static final String RELEASE_DATE = "09/13/2012";
+	public static final String VERSION = "1.0 (v8449)";
+	public static final String RELEASE_DATE = "09/17/2012";
 	
 	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
 	public static final String DECOY_PROTEIN_PREFIX = "XXX";
@@ -219,6 +219,8 @@ public class MSGFPlus {
 		int numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
 		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specAcc.getSpecItr(), startSpecIndex, endSpecIndex, minCharge, maxCharge, activationMethod);
 		int specSize = specKeyList.size();
+		if(specSize == 0)
+			return specFile.getPath() + " includes no spectrum";
 		
 		System.out.print("Reading spectra finished ");
 		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
@@ -238,6 +240,17 @@ public class MSGFPlus {
 			if(fromIndexGlobal >= specSize)
 				break;
 			int toIndexGlobal = Math.min(specSize, fromIndexGlobal+numSpecScannedTogether);
+			while(toIndexGlobal < specSize)
+			{
+				SpecKey lastSpecKey = specKeyList.get(toIndexGlobal-1);
+				SpecKey nextSpecKey = specKeyList.get(toIndexGlobal);
+				
+				if(lastSpecKey.getSpecIndex() == nextSpecKey.getSpecIndex())
+					toIndexGlobal++;
+				else
+					break;
+			}
+			
 			System.out.println("Spectrum " + fromIndexGlobal + "-" + (toIndexGlobal-1) + " (total: " + specSize + ")");
 			
 			// Thread pool
@@ -245,16 +258,33 @@ public class MSGFPlus {
 			
 			// Partition specKeyList
 			int size = toIndexGlobal - fromIndexGlobal;
-			int subListSize = size/numThreads;
 			int residue = size % numThreads;
 			
 			int[] startIndex = new int[numThreads];
 			int[] endIndex = new int[numThreads];
 			
+			int subListSize = size/numThreads;
 			for(int i=0; i<numThreads; i++)
 			{
 				startIndex[i] =  i > 0 ? endIndex[i-1] : fromIndexGlobal;
 				endIndex[i] = startIndex[i] + subListSize + (i < residue ? 1 : 0);
+
+				subListSize = size/numThreads;
+				while(endIndex[i] < specKeyList.size())
+				{
+					SpecKey lastSpecKey = specKeyList.get(endIndex[i]-1);
+					SpecKey nextSpecKey = specKeyList.get(endIndex[i]);
+					
+					if(lastSpecKey.getSpecIndex() == nextSpecKey.getSpecIndex())
+					{
+						++endIndex[i];
+						--subListSize;
+					}
+					else
+						break;
+				}
+//				System.out.println("Size: " + specKeyList.size() + " EndIndex: " + endIndex[i]);
+//				System.out.println(specKeyList.get(startIndex[i]).getSpecKeyString() + " - " + specKeyList.get(endIndex[i]-1).getSpecKeyString());
 			}
 			
 			for(int i=0; i<numThreads; i++)

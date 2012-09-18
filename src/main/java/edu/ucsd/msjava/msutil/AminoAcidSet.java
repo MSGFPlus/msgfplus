@@ -502,7 +502,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 					{
 						if(targetAA.isModified())
 						{
-							if(mod.getLocation() == Location.Anywhere && targetAA.hasAnywhereVariableMod())	// residue mod
+							if(mod.getLocation() == Location.Anywhere && targetAA.hasResidueSpecificVariableMod())	// residue mod
 								continue;
 							if(mod.getLocation() != Location.Anywhere && targetAA.hasTerminalVariableMod())	// residue mod
 								continue;
@@ -536,7 +536,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 //					}
 					if(targetAA.isModified())
 					{
-						if(mod.getLocation() == Location.Anywhere && targetAA.hasAnywhereVariableMod())	// residue mod
+						if(mod.getLocation() == Location.Anywhere && targetAA.hasResidueSpecificVariableMod())	// residue mod
 							continue;
 						if(mod.getLocation() != Location.Anywhere && targetAA.hasTerminalVariableMod())	// residue mod
 							continue;

@@ -90,7 +90,7 @@ public class AminoAcid extends Matter {
 	 * Tell whether this object is associated with a residue-specific modification
 	 * @return false if this is not associated with residue-specific modification
 	 */
-	public boolean hasAnywhereVariableMod()
+	public boolean hasResidueSpecificVariableMod()
 	{
 		return false;
 	}
