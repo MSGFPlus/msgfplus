@@ -39,10 +39,10 @@ import edu.ucsd.msjava.params.ParamManager;
 
 
 public class MSGFPlus {
-	public static final String VERSION = "1.0 (v8472)";
+	public static final String VERSION = "1.0 (v8476)";
 	public static final String RELEASE_DATE = "09/18/2012";
 	
-	public static final String DECOY_DB_EXTENSION = ".revConcat.fasta";
+	public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
 	public static final String DECOY_PROTEIN_PREFIX = "XXX";
 	
 	public static void main(String argv[])
@@ -200,7 +200,7 @@ public class MSGFPlus {
 			float fractionDecoyProteins = fastaSequence.getFractionDecoyProteins();
 			if(fractionDecoyProteins < 0.4f || fractionDecoyProteins > 0.6f)
 			{
-				System.err.println("Error while reading: " + databaseFile.getName() + " (fraction of decoy proteins:"+ fractionDecoyProteins+ ")");
+				System.err.println("Error while reading: " + databaseFile.getName() + " (fraction of decoy proteins: "+ fractionDecoyProteins+ ")");
 				System.err.println("Delete " + databaseFile.getName() + " and run MS-GF+ again.");
 				System.exit(-1);
 			}

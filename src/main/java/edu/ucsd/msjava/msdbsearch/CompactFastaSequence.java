@@ -252,7 +252,7 @@ public class CompactFastaSequence implements Sequence {
 			else
 				numTargetProteins++;
 		}
-		return numTargetProteins/(float)numDecoyProteins;
+		return numDecoyProteins/(float)(numTargetProteins+numDecoyProteins);
 	}
 	
 	/**
