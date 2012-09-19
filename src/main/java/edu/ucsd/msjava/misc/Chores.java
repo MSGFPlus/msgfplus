@@ -97,7 +97,8 @@ public class Chores {
 //		File file = new File("/Users/kims336/Downloads/temp.txt");
 //		file.createNewFile();
 //		System.out.println("scan=1".matches("scan=\\d+"));
-		System.out.println(".BCDEF.-".matches("[A-Z\\-_]?\\..+\\.[A-Z\\-_]?"));
+//		System.out.println(".BCDEF.-".matches("[A-Z\\-_]?\\..+\\.[A-Z\\-_]?"));
+		System.out.println(System.getProperty("user.home"));
 	}
 
 	public static void recombCPReg() throws Exception
