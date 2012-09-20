@@ -56,17 +56,17 @@ public class Modification {
 	// static member
 	private static Modification[] modList = 
 	{
-		new Modification("Carbamidomethylation", new Composition(2,3,1,1,0)),
-		new Modification("Carboxymethylation", new Composition(2,2,2,0,0)),
+		new Modification("Carbamidomethyl", new Composition(2,3,1,1,0)),
+		new Modification("Carboxymethyl", new Composition(2,2,2,0,0)),
 		new Modification("NIPCAM", new Composition(5,9,1,1,0)),
 		new Modification("Oxidation", new Composition(0,0,0,1,0)),
-		new Modification("Phosphorylation", Composition.getMass("HO3P")),
-		new Modification("Methylation", new Composition(1,2,0,0,0)),
-		new Modification("PyrogluQ", Composition.getMass("H-3N-1")),
-		new Modification("PyrogluE", Composition.getMass("H-2O-1")),
-		new Modification("Carbamylation", new Composition(1,1,1,1,0)),
-		new Modification("Acetylation", new Composition(2,2,0,1,0)),
-		new Modification("PyroCarbamidomethyl", Composition.getMass("H-3N-1")),
+		new Modification("Phospho", Composition.getMass("HO3P")),
+		new Modification("Methyl", new Composition(1,2,0,0,0)),
+		new Modification("Gln->pyro-Glu", Composition.getMass("H-3N-1")),
+		new Modification("Glu->pyro-Glu", Composition.getMass("H-2O-1")),
+		new Modification("Carbamyl", new Composition(1,1,1,1,0)),
+		new Modification("Acetyl", new Composition(2,2,0,1,0)),
+		new Modification("Pyro-carbamidomethyl", Composition.getMass("H-3N-1")),
 	};
 	
 	private static Hashtable<String,Modification> modTable; 
