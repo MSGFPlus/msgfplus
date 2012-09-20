@@ -28,6 +28,8 @@ public class ConvertToMgf {
 		File source = null;
 		File target = null;
 		int specIndex = -1;
+		int scanNum = -1;
+		String id = null;
 		
 		for(int i=0; i<argv.length; i+=2)
 		{
@@ -73,10 +75,20 @@ public class ConvertToMgf {
 				}
 				else
 					printUsageAndExit("Illegal activation method: " + argv[i+1]);
-			}			
+			}
 			else if(argv[i].equalsIgnoreCase("-index"))
 			{
 				specIndex = Integer.parseInt(argv[i+1]);
+				
+			}
+			else if(argv[i].equalsIgnoreCase("-scan"))
+			{
+				scanNum = Integer.parseInt(argv[i+1]);
+				
+			}
+			else if(argv[i].equalsIgnoreCase("-id"))
+			{
+				id = argv[i+1];
 			}
 			else
 			{
@@ -86,7 +98,7 @@ public class ConvertToMgf {
 
 		if(source == null || target == null)
 			printUsageAndExit("Invalid parameters!");
-		convert(source, target, writeActivationMethod, activationMethod, specIndex);
+		convert(source, target, writeActivationMethod, activationMethod, id, scanNum, specIndex);
 	}
 	
 	public static void printUsageAndExit(String message)
@@ -102,7 +114,7 @@ public class ConvertToMgf {
 		System.exit(-1);
 	}
 	
-	public static void convert(File source, File target, boolean writeActivationMethod, ActivationMethod activationMethod, int specIndex) throws Exception
+	public static void convert(File source, File target, boolean writeActivationMethod, ActivationMethod activationMethod, String id, int scanNum, int specIndex) throws Exception
 	{
 		PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(target)));
 		
@@ -122,7 +134,7 @@ public class ConvertToMgf {
 			if(specItr != null)
 			{
 				System.out.print(sourceFile.getName() + ": ");
-				int numSpecs = convertFile(specItr, target, writeActivationMethod, activationMethod, specIndex, out);
+				int numSpecs = convertFile(specItr, target, writeActivationMethod, activationMethod, id, scanNum, specIndex, out);
 				System.out.println(numSpecs + " spectra converted.");
 				numFileConverted++;
 			}
@@ -131,13 +143,17 @@ public class ConvertToMgf {
 		System.out.println("Converted " + numFileConverted + " files.");
 	}
 	
-	public static int convertFile(Iterator<Spectrum> specItr, File target, boolean writeActivationMethod, ActivationMethod activationMethod, int specIndex, PrintStream out) throws Exception
+	public static int convertFile(Iterator<Spectrum> specItr, File target, boolean writeActivationMethod, ActivationMethod activationMethod, String id, int scanNum, int specIndex, PrintStream out) throws Exception
 	{
 		int numSpecs = 0;
 		while(specItr.hasNext())
 		{
 			Spectrum spec = specItr.next();
+			if(id != null && spec.getID().endsWith(id))
+				continue;
 			if(specIndex > 0 && spec.getSpecIndex() != specIndex)
+				continue;
+			if(scanNum > 0 && spec.getScanNum() != scanNum)
 				continue;
 			if(activationMethod != null && spec.getActivationMethod() != activationMethod)
 				continue;

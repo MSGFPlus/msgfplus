@@ -412,7 +412,6 @@ public class MZIdentMLGen {
 	
 	public List<PeptideEvidenceRef> getPeptideEvidenceList(DatabaseMatch match, Peptide peptide)
 	{
-		
 		SortedSet<Integer> indices = match.getIndices();
 		int length = match.getLength();
 		
