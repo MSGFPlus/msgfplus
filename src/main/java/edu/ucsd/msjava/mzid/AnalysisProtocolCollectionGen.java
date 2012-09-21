@@ -177,6 +177,7 @@ public class AnalysisProtocolCollectionGen {
     		else	// does not exist in Unimod
     		{
     			cvParam.setAccession("MS:1001460");	// unknown modification
+    			cvParam.setCv(Constants.unimodCV);
     			cvParam.setName("unknown modification");
     		}
     		modCvParamList.add(cvParam);
@@ -188,16 +189,21 @@ public class AnalysisProtocolCollectionGen {
             else
             	residueList.add(String.valueOf(mod.getResidue()));
 
-            // specificity rules
-            SpecificityRules specificityRules = new SpecificityRules();
-            List<CvParam> rules = specificityRules.getCvParam();
             if(mod.getLocation() != edu.ucsd.msjava.msutil.Modification.Location.Anywhere)
-            	rules.add(Constants.makeCvParam("MS:1001055", "modification specificity rule", Constants.psiCV));
-            if(mod.getLocation() == edu.ucsd.msjava.msutil.Modification.Location.N_Term || mod.getLocation() == edu.ucsd.msjava.msutil.Modification.Location.Protein_N_Term)
-            	rules.add(Constants.makeCvParam("MS:1001189", "modification specificity N-term", Constants.psiCV));
-            if(mod.getLocation() == edu.ucsd.msjava.msutil.Modification.Location.C_Term || mod.getLocation() == edu.ucsd.msjava.msutil.Modification.Location.Protein_C_Term)
-            	rules.add(Constants.makeCvParam("MS:1001190", "modification specificity C-term", Constants.psiCV));
-            searchMod.getSpecificityRules().add(specificityRules);
+            {
+                // specificity rules
+                SpecificityRules specificityRules = new SpecificityRules();
+                List<CvParam> rules = specificityRules.getCvParam();
+                if(mod.getLocation() == edu.ucsd.msjava.msutil.Modification.Location.N_Term)
+                	rules.add(Constants.makeCvParam("MS:1001189", "modification specificity N-term", Constants.psiCV));
+                else if(mod.getLocation() == edu.ucsd.msjava.msutil.Modification.Location.Protein_N_Term)
+                	rules.add(Constants.makeCvParam("MS:1002057", "modification specificity protein N-term", Constants.psiCV));
+                else if(mod.getLocation() == edu.ucsd.msjava.msutil.Modification.Location.C_Term)
+                	rules.add(Constants.makeCvParam("MS:1001190", "modification specificity C-term", Constants.psiCV));
+                else if(mod.getLocation() == edu.ucsd.msjava.msutil.Modification.Location.Protein_C_Term)
+                	rules.add(Constants.makeCvParam("MS:1002058", "modification specificity protein C-term", Constants.psiCV));
+                searchMod.getSpecificityRules().add(specificityRules);
+            }
             
             searchModList.add(searchMod);
             

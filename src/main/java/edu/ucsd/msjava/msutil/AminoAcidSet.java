@@ -1184,7 +1184,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		if(standardAASetWithCarbamidomethylatedCys == null)
 		{
 			ArrayList<Modification.Instance> mods = new ArrayList<Modification.Instance>();
-			mods.add(new Modification.Instance(Modification.get("Carbamidomethylation"), 'C').fixedModification());
+			mods.add(new Modification.Instance(Modification.get("Carbamidomethyl"), 'C').fixedModification());
 			standardAASetWithCarbamidomethylatedCys = AminoAcidSet.getAminoAcidSet(mods); 
 		}
 		return standardAASetWithCarbamidomethylatedCys;
@@ -1195,7 +1195,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		if(standardAASetWithCarboxyomethylatedCys == null)
 		{
 			ArrayList<Modification.Instance> mods = new ArrayList<Modification.Instance>();
-			mods.add(new Modification.Instance(Modification.get("Carboxymethylation"), 'C').fixedModification());
+			mods.add(new Modification.Instance(Modification.get("Carboxymethyl"), 'C').fixedModification());
 			standardAASetWithCarboxyomethylatedCys = AminoAcidSet.getAminoAcidSet(mods);
 		}
 		return standardAASetWithCarboxyomethylatedCys;
@@ -1209,7 +1209,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	public static AminoAcidSet getStandardAminoAcidSetWithFixedCarbamidomethylatedCysWithTerm() {
 		if(standardAASetWithCarbamidomethylatedCysWithTerm == null) {
 			Modification.Instance[] mods = { 
-					new Modification.Instance(Modification.get("Carbamidomethylation"), 'C').fixedModification()
+					new Modification.Instance(Modification.get("Carbamidomethyl"), 'C').fixedModification()
 			};
 
 			HashMap<Character,Modification.Instance> modTable = new HashMap<Character,Modification.Instance>();

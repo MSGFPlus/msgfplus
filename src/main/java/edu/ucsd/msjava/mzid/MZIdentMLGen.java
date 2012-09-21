@@ -166,7 +166,7 @@ public class MZIdentMLGen {
 		{
 			int specIndex = mpMatch.getSpecIndex();
 			List<DatabaseMatch> matchList = mpMatch.getMatchList();
-			if(matchList == null || matchList.size() == 0)
+			if(matchList == null || matchList.size() == 0 || matchList.get(0).getDeNovoScore() < 0)
 				continue;
 
 			edu.ucsd.msjava.msutil.Spectrum spec = specAcc.getSpecMap().getSpectrumBySpecIndex(specIndex);
@@ -196,12 +196,6 @@ public class MZIdentMLGen {
 				sir.getCvParam().add(cvParam);
 			}
 			
-//			ActivationMethod activationMethod = spec.getActivationMethod();
-//			if(activationMethod != null)
-//			{
-//				CvParam fragMethodCV = activationMethod.getCvParam();
-//				sir.getCvParam().add(fragMethodCV);
-//			}
 			
 			int rank = 0;
 			

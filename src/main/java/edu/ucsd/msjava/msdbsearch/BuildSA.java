@@ -3,6 +3,7 @@ package edu.ucsd.msjava.msdbsearch;
 import java.io.File;
 
 import edu.ucsd.msjava.ui.MSGFDB;
+import edu.ucsd.msjava.ui.MSGFPlus;
 
 
 public class BuildSA {
@@ -94,12 +95,12 @@ public class BuildSA {
 		// decoy
 		if(mode == 1 || mode == 2)
 		{
-			String concatDBFileName = dbFileName.substring(0, dbFileName.lastIndexOf('.')) + MSGFDB.DECOY_DB_EXTENSION;
+			String concatDBFileName = dbFileName.substring(0, dbFileName.lastIndexOf('.')) + MSGFPlus.DECOY_DB_EXTENSION;
 			File concatTargetDecoyDBFile = new File(outputDir.getPath()+File.separator+concatDBFileName);
 			if(!concatTargetDecoyDBFile.exists())
 			{
 				System.out.println("Creating " + concatDBFileName + ".");
-				if(ReverseDB.reverseDB(databaseFile.getPath(), concatTargetDecoyDBFile.getPath(), true, "XXX") == false)
+				if(ReverseDB.reverseDB(databaseFile.getPath(), concatTargetDecoyDBFile.getPath(), true, MSGFPlus.DECOY_PROTEIN_PREFIX) == false)
 				{
 					System.err.println("Cannot create decoy database file!");
 					System.exit(-1);
@@ -112,7 +113,7 @@ public class BuildSA {
 			{
 				System.err.println("Error while indexing: " + concatTargetDecoyDBFile.getName() + " (too many redundant proteins)");
 				System.err.println("Error while indexing: " + concatTargetDecoyDBFile.getName() + " (too many redundant proteins)");
-				System.err.println("If the database contains forward and reverse proteins, run MS-GFDB (or BuildSA) again with \"-tda 0\"");
+				System.err.println("If the database contains forward and reverse proteins, run MS-GF+ (or BuildSA) again with \"-tda 0\"");
 				System.exit(-1);
 			}
 			new CompactSuffixArray(tdaSequence);

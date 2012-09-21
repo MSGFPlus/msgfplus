@@ -175,10 +175,10 @@ public class SearchParams {
 			File outputFile = paramManager.getOutputFileParam().getFile();
 			if(outputFile == null)
 			{
-				String outputFileName = specPath.getName().substring(0, specPath.getName().lastIndexOf('.'))+".mzid";
-				outputFile = new File(outputFileName);
-				if(outputFile.exists())
-					return outputFile.getPath() + " already exists!";
+				String outputFilePath = specPath.getPath().substring(0, specPath.getPath().lastIndexOf('.'))+".mzid";
+				outputFile = new File(outputFilePath);
+//				if(outputFile.exists())
+//					return outputFile.getPath() + " already exists!";
 			}
 			
 			dbSearchIOList = new ArrayList<DBSearchIOFiles>();

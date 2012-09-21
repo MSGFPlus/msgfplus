@@ -215,7 +215,10 @@ public class DBScanner {
 			int numNonEnzTermini = 0;	// number of non-enzymatic termini
 			int numIndices = toIndex-fromIndex;
 			
-			DatabaseMatch[] prevMatch = new DatabaseMatch[maxPeptideLength+2];
+			class MatchList extends ArrayList<DatabaseMatch>{
+				private static final long serialVersionUID = 1L;
+			}
+			MatchList[] prevMatchList = new MatchList[maxPeptideLength+2];
 			
 			for(int bufferIndex=0; bufferIndex<numIndices; bufferIndex++)
 			{
@@ -237,15 +240,18 @@ public class DBScanner {
 //					System.out.println("Debug");
 				// skip redundant peptides
 				
-				for(int prevMatchIndex=minPeptideLength; prevMatchIndex<prevMatch.length; prevMatchIndex++)
+				for(int prevMatchIndex=minPeptideLength; prevMatchIndex<prevMatchList.length; prevMatchIndex++)
 				{
 					if(prevMatchIndex<lcp)
 					{
-						if(prevMatch[prevMatchIndex] != null)
-							prevMatch[prevMatchIndex].addIndex(index);
+						if(prevMatchList[prevMatchIndex] != null)
+						{
+							for(DatabaseMatch m : prevMatchList[prevMatchIndex])
+								m.addIndex(index);
+						}
 					}
 					else
-						prevMatch[prevMatchIndex] = null;
+						prevMatchList[prevMatchIndex] = null;
 					
 				}
 
@@ -368,7 +374,7 @@ public class DBScanner {
 						continue;
 					
 //					System.out.println(sequence.getSubsequence(index+1, index+i+1));
-//					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("YHQGFSSDFETPGGNVHLALAFNPSHLEIVNPVVMGSVR"))
+//					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("LAHNISNSANTQANVADAK"))
 //						System.out.println("Debug");
 					
 					int cTermCleavageScore = 0;
@@ -448,7 +454,9 @@ public class DBScanner {
 									DatabaseMatch dbMatch = new DatabaseMatch(index, (byte)(pepLength+2), score, peptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j), scorer.getActivationMethodArr()).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm);
 									dbMatch.setNTermMetCleaved(isNTermMetCleaved);
 									prevMatchQueue.add(dbMatch);
-									prevMatch[i] = dbMatch;
+									if(prevMatchList[i] == null)
+										prevMatchList[i] = new MatchList();
+									prevMatchList[i].add(dbMatch);
 								}
 								else if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
 								{
@@ -459,7 +467,9 @@ public class DBScanner {
 										DatabaseMatch dbMatch = new DatabaseMatch(index, (byte)(pepLength+2), score, peptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j), scorer.getActivationMethodArr()).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm);
 										dbMatch.setNTermMetCleaved(isNTermMetCleaved);
 										prevMatchQueue.add(dbMatch);
-										prevMatch[i] = dbMatch;
+										if(prevMatchList[i] == null)
+											prevMatchList[i] = new MatchList();
+										prevMatchList[i].add(dbMatch);
 									}
 								}
 							}
