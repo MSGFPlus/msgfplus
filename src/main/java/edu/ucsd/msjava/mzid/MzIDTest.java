@@ -14,39 +14,77 @@ public class MzIDTest {
 		this.mzidFile = mzidFile;
 	}
 	
-	public boolean pepEvDupCheck() throws Exception
+	public boolean isValid() throws Exception
 	{
 		BufferedLineReader in = new BufferedLineReader(mzidFile.getPath());
 		
-		boolean dupID = false;
+		boolean isValid = true;
 		String s;
 		HashSet<String> idSet = new HashSet<String>();
+		
+		String sir = null;
+		boolean hasSII = false;
 		while((s=in.readLine()) != null)
 		{
 			s = s.trim();
+			
+			// duplicate PepEvID
 			if(s.startsWith("<PeptideEvidence isDecoy"))
 			{
 				String id = s.substring(s.lastIndexOf("id=")+4, s.lastIndexOf('"'));
 				if(idSet.contains(id))
 				{
 					System.out.println("Duplicate id: " + id);
-					dupID = true;
+					isValid = false;
 				}
 				else
 					idSet.add(id);
+			}
+			
+			// cvRef check
+			if(s.startsWith("<cvParam"))
+			{
+				if(!s.contains("cvRef="))
+				{
+					System.out.println("No cvRef: " + s);
+					isValid = false;
+				}
+			}
+			
+			// SIR check
+			if(s.startsWith("<SpectrumIdentificationResult"))
+			{
+				sir = s;
+				hasSII = false;
+			}
+			
+			if(sir != null && s.startsWith("<SpectrumIdentificationItem"))
+			{
+				hasSII = true;
+			}
+			
+			if(s.startsWith("</SpectrumIdentificationResult"))
+			{
+				if(hasSII == false)
+				{
+					isValid = false;
+					System.out.println("SIR doesn't have SII: " + sir);
+				}
+				sir = null;
 			}
 		}
 		
 		in.close();
 		
-		return dupID;
+		return isValid;
 	}
 	
 	public static void main(String argv[]) throws Exception
 	{
-		File mzidFile = new File("C:\\cygwin\\home\\kims336\\Research\\Data\\QCShew\\QC_Shew_MSGFPlus_0_1.mzid");
+		File mzidFile = new File("/Users/kims336/Research/Data/QCShew/QC_Shew_MSGFPlus_0_2_v8490.mzid");
 		MzIDTest test = new MzIDTest(mzidFile);
-		System.out.println("Is there duplicated PepEvID? " + test.pepEvDupCheck());
+		boolean isValid = test.isValid();
+		System.out.println("IsValid? " + isValid);
 	}
 	
 }
