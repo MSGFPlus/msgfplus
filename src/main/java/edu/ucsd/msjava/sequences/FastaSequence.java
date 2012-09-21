@@ -547,7 +547,14 @@ public class FastaSequence implements Sequence {
 		this.original = originalCopy;
 	}
 
-
+	/**
+	 * This method returns List of annotations.
+	 * @return All annotations as a list of Strings 
+	 */
+	public List<String> getAnnotations()
+	{
+		return new ArrayList<String>(annotations.values());
+	}
 
 
 	/*****  Methods doomed to deprecation *****/
