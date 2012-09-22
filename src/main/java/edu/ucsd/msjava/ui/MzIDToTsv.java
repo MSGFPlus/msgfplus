@@ -22,8 +22,9 @@ public class MzIDToTsv {
 		inputFileParam.mustBeAFile();
 		paramManager.addParameter(inputFileParam);
 		
-		FileParameter outputFileParam = new FileParameter("o", "TSVFile", "TSV output file (*.tsv)");  
+		FileParameter outputFileParam = new FileParameter("o", "TSVFile", "TSV output file (*.tsv) (Default: MzIDFileName.tsv)");  
 		outputFileParam.addFileFormat(new FileFormat(".tsv"));
+		outputFileParam.setAsOptional();
 		paramManager.addParameter(outputFileParam);	
 		
 		EnumParameter showQValueParam = new EnumParameter("showQValue");
@@ -79,6 +80,8 @@ public class MzIDToTsv {
 		
 		// output tsv file
 		File tsvFile = paramManager.getFile("o");
+		if(tsvFile == null)
+			tsvFile = new File(mzIDFile.getPath().substring(0, mzIDFile.getPath().lastIndexOf('.'))+".tsv");
 		
 		boolean showQValue = paramManager.getIntValue("showQValue") == 1 ? true : false;
 		boolean showDecoy = paramManager.getIntValue("showDecoy") == 1 ? true : false;
