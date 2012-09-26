@@ -71,12 +71,12 @@ public class ParamManager {
 	
 	public void printToolInfo()
 	{
-		System.out.println(this.toolName + " v" + this.version + " (" + this.date + ")");
+		System.out.println(this.toolName + " " + this.version + " (" + this.date + ")");
 	}
 	
 	public void printUsageInfo()
 	{
-		System.out.println(this.toolName + " v" + this.version + " (" + this.date + ")");
+		System.out.println(this.toolName + " " + this.version + " (" + this.date + ")");
 		System.out.println("Usage: " + this.command);
 		
 		ArrayList<Parameter> optParams = new ArrayList<Parameter>();
@@ -376,8 +376,8 @@ public class ParamManager {
 		addFeatureParam.registerEntry("output additional features");
 		addParameter(addFeatureParam);
 		
-		addExample("Example (high-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzXML -d IPI_human_3.79.fasta -t 20ppm -ti -1,2 -ntt 0 -tda 1 -o testMSGFPlus.mzid");
-		addExample("Example (low-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzXML -d IPI_human_3.79.fasta -t 0.5Da,2.5Da -ntt 0 -tda 1 -o testMSGFPlus.mzid");
+		addExample("Example (high-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzXML -d IPI_human_3.79.fasta -t 20ppm -ti -1,2 -ntt 2 -tda 1 -o testMSGFPlus.mzid");
+		addExample("Example (low-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzXML -d IPI_human_3.79.fasta -t 0.5Da,2.5Da -ntt 2 -tda 1 -o testMSGFPlus.mzid");
 		
 		// Hidden parameters
 		FileParameter dbIndexDirParam = new FileParameter("dd", "DBIndexDir", "Path to the directory containing database index files");
