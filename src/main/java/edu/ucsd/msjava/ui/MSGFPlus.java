@@ -73,7 +73,16 @@ public class MSGFPlus {
 		
 		// Running MS-GF+
 		paramManager.printToolInfo();
-		String errorMessage = runMSGFPlus(paramManager);
+		String errorMessage = null;
+		try {
+			errorMessage = runMSGFPlus(paramManager);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			System.exit(-1);
+		}
+		
 		if(errorMessage != null)
 		{
 			System.err.println("[Error] " + errorMessage);

@@ -125,8 +125,8 @@ public class MzIDParser {
                  for (SpectrumIdentificationItem sii
                       : sir.getSpectrumIdentificationItem()) {
 
-                     Double calculatedMassToCharge =  sii.getCalculatedMassToCharge() + Composition.H;
-                     Double experimentalMassToCharge = sii.getExperimentalMassToCharge() + Composition.H;
+                     Double calculatedMassToCharge =  sii.getCalculatedMassToCharge();
+                     Double experimentalMassToCharge = sii.getExperimentalMassToCharge();
                      int charge = sii.getChargeState();
 
                      Map<String, CvParam> cvParamMap = getCvParamMap(sii.getCvParam());
