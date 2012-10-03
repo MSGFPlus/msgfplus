@@ -231,7 +231,7 @@ public class MzIDParser {
                             		 +"\t"+specID
                             		 +"\t"+scanNum
                             		 +"\t"+fragMethod
-                            		 +"\t"+calculatedMassToCharge.floatValue()
+                            		 +"\t"+experimentalMassToCharge.floatValue()
                             		 +"\t"+isotopeError
                             		 +"\t"+(float)precursorError
                             		 +"\t"+charge
