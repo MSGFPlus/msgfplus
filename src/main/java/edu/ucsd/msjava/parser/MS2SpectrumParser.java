@@ -54,6 +54,7 @@ public class MS2SpectrumParser implements SpectrumParser {
 		else if(spec == null)
 			return null;
 			
+		boolean zParsed = false;
 		while((buf = lineReader.readLine()) != null)
 		{
 			String[] token = buf.split("\\s+");
@@ -79,10 +80,18 @@ public class MS2SpectrumParser implements SpectrumParser {
             }
 			else if(buf.startsWith("Z"))
 			{
-				int charge = Integer.parseInt(token[1]);
-				float precursorMH = Float.parseFloat(token[2]);
-				float precursorMz = ((precursorMH-(float)Composition.PROTON)+charge*(float)Composition.PROTON)/charge;
-				spec.setPrecursor(new Peak(precursorMz, 0, charge));
+				if(!zParsed)
+				{
+					int charge = Integer.parseInt(token[1]);
+					float precursorMH = Float.parseFloat(token[2]);
+					float precursorMz = ((precursorMH-(float)Composition.PROTON)+charge*(float)Composition.PROTON)/charge;
+					spec.setPrecursor(new Peak(precursorMz, 0, charge));
+					zParsed = true;
+				}
+				else
+				{
+					spec.setPrecursorCharge(0);
+				}
 			}
 			else if(token.length == 2)	// a peak
 			{

@@ -33,7 +33,7 @@ public class CountPSMs {
 		int pepColNum = -1;
 		for(int i=0; i<headerToken.length; i++)
 		{
-			if(headerToken[i].endsWith("FDR") || headerToken[i].endsWith("QValue") || headerToken[i].equalsIgnoreCase("q-value"))
+			if(headerToken[i].endsWith("FDR") || headerToken[i].equalsIgnoreCase("QValue") || headerToken[i].equalsIgnoreCase("q-value"))
 				eFDRColNum = i;
 			if(headerToken[i].equalsIgnoreCase("Peptide") || headerToken[i].equalsIgnoreCase("Annotation"))
 				pepColNum = i;
