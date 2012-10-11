@@ -667,6 +667,7 @@ public class DBScanner {
 			
 			for(DatabaseMatch match : matchQueue)
 			{
+				spec.setCharge(match.getCharge());
 				PSMFeatureFinder addFeatures = new PSMFeatureFinder(spec, aaSet.getPeptide(match.getPepSeq()), specType);
 				for(Pair<String, String> feature : addFeatures.getAllFeatures())
 					match.addAdditionalFeature(feature.getFirst(), feature.getSecond());

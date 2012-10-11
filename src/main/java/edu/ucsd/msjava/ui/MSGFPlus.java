@@ -39,8 +39,8 @@ import edu.ucsd.msjava.params.ParamManager;
 
 
 public class MSGFPlus {
-	public static final String VERSION = "Beta (v8597)";
-	public static final String RELEASE_DATE = "10/03/2012";
+	public static final String VERSION = "Beta (v8605)";
+	public static final String RELEASE_DATE = "10/04/2012";
 	
 	public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
 	public static final String DECOY_PROTEIN_PREFIX = "XXX";
@@ -63,7 +63,6 @@ public class MSGFPlus {
 		// Parse parameters
 		String errMessage = paramManager.parseParams(argv); 
 		if(errMessage != null)
-			
 		{
 			System.err.println("[Error] " + errMessage);
 			System.out.println();
