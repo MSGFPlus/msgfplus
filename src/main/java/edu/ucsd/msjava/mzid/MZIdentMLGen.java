@@ -406,19 +406,16 @@ public class MZIdentMLGen {
 							modList.add(mod);
 						}
 					}
-					else
+					List<edu.ucsd.msjava.msutil.Modification> fixedMods = apcGen.getFixedModifications(aa.getUnmodResidue());
+					if(fixedMods != null)
 					{
-						List<edu.ucsd.msjava.msutil.Modification> fixedMods = apcGen.getFixedModifications(aa.getUnmodResidue());
-						if(fixedMods != null)
+						for(edu.ucsd.msjava.msutil.Modification fixedMod : fixedMods)
 						{
-							for(edu.ucsd.msjava.msutil.Modification fixedMod : fixedMods)
-							{
-								Modification mod = new Modification();
-								mod.setLocation(location);
-								mod.setMonoisotopicMassDelta(fixedMod.getAccurateMass());
-								mod.getCvParam().addAll(apcGen.getSearchModification(fixedMod).getCvParam());
-								modList.add(mod);
-							}
+							Modification mod = new Modification();
+							mod.setLocation(location);
+							mod.setMonoisotopicMassDelta(fixedMod.getAccurateMass());
+							mod.getCvParam().addAll(apcGen.getSearchModification(fixedMod).getCvParam());
+							modList.add(mod);
 						}
 					}
 				}

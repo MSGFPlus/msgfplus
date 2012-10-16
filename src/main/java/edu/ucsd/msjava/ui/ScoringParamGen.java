@@ -19,8 +19,8 @@ import edu.ucsd.msjava.params.ParamManager;
 
 public class ScoringParamGen {
 
-	public static final int VERSION = 8081;
-	public static final String DATE = "10/15/2012";
+	public static final int VERSION = 8729;
+	public static final String DATE = "10/16/2012";
 	
 	public static void main(String argv[])
 	{
@@ -63,8 +63,7 @@ public class ScoringParamGen {
 		// Protocol
 		paramManager.addProtocolParam();
 		
-		paramManager.addModFileParam();
-
+//		paramManager.addModFileParam();
 //		StringParameter nlParam = new StringParameter("nl", "NeutralLosses", "Comma separated neutral losses to consider. Specify compositions or masses");
 //		nlParam.setAdditionalDescription("E.g. '-nl H3PO4', '-nl 97.995,64.064'");
 //		nlParam.defaultValue(null);
@@ -105,19 +104,22 @@ public class ScoringParamGen {
 	{
 		File[] resultFiles = paramManager.getFiles("i");
 		File specDir = paramManager.getFile("d");
-		File modFile = paramManager.getFile("mod");
-		AminoAcidSet aaSet = null;
-		if(modFile == null)
-			aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
-		else
-		{
-			String modFileName = modFile.getName();
-			String ext = modFileName.substring(modFileName.lastIndexOf('.')+1);
-			if(ext.equalsIgnoreCase("xml"))
-				aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile(modFile.getPath());
-			else
-				aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
-		}
+		
+		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSet();
+		
+//		File modFile = paramManager.getFile("mod");
+//		AminoAcidSet aaSet = null;
+//		if(modFile == null)
+//			aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
+//		else
+//		{
+//			String modFileName = modFile.getName();
+//			String ext = modFileName.substring(modFileName.lastIndexOf('.')+1);
+//			if(ext.equalsIgnoreCase("xml"))
+//				aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile(modFile.getPath());
+//			else
+//				aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
+//		}
 		
 		AnnotatedSpectra annotatedSpec = new AnnotatedSpectra(resultFiles, specDir, aaSet);
 		System.out.print("Reading training PSMs...");
