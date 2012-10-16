@@ -64,7 +64,7 @@ public class SPTxtParser implements SpectrumParserWithTitle {
 		return null;	
 	}
 
-	public Map<Integer, SpectrumMetaInfo> getSpecIndexMap(BufferedRandomAccessLineReader lineReader) 
+	public Map<Integer, SpectrumMetaInfo> getSpecMetaInfoMap(BufferedRandomAccessLineReader lineReader) 
 	{
 		Hashtable<Integer, SpectrumMetaInfo> specIndexMap = new Hashtable<Integer, SpectrumMetaInfo>();
 		String buf;

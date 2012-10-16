@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public interface SpectrumAccessorBySpecIndex {
 	public	Spectrum			getSpectrumBySpecIndex(int specIndex);
+	public	Spectrum			getSpectrumById(String specId);
 	public	String				getID(int specIndex);
 	public	Float				getPrecursorMz(int specIndex); 
 	public 	String				getTitle(int specIndex);

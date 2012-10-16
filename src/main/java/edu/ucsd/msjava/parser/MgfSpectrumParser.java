@@ -150,7 +150,7 @@ public class MgfSpectrumParser implements SpectrumParser {
 	 * @param lineReader a LineReader object that points to the start of a file.
 	 * @return A map from spectrum indexes to the spectrum meta information.
 	 */
-	public Map<Integer, SpectrumMetaInfo> getSpecIndexMap(BufferedRandomAccessLineReader lineReader)
+	public Map<Integer, SpectrumMetaInfo> getSpecMetaInfoMap(BufferedRandomAccessLineReader lineReader)
 	{
 		Hashtable<Integer, SpectrumMetaInfo> specIndexMap = new Hashtable<Integer, SpectrumMetaInfo>();
 		String buf;

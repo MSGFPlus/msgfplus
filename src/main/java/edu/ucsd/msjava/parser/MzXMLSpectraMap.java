@@ -169,6 +169,14 @@ public class MzXMLSpectraMap implements SpectrumAccessorBySpecIndex {
 	}
 
 	@Override
+	public Spectrum getSpectrumById(String specId) {
+		if(!specId.matches("scan=\\d+"))
+			return null;
+		int scanNum = Integer.parseInt(specId.substring(specId.lastIndexOf('=')+1));
+		return getSpectrumByScanNum(scanNum);
+	}
+	
+	@Override
 	public Float getPrecursorMz(int specIndex) {
 		Scan scanObj = parser.rap(specIndex);
 

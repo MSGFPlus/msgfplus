@@ -123,7 +123,7 @@ public class MS2SpectrumParser implements SpectrumParser {
 	 * @param lineReader A reader points to the start of the spectrum.
 	 * @return A Hashtable object maps a spectrum index into a file position.
 	 */
-	public Map<Integer, SpectrumMetaInfo> getSpecIndexMap(
+	public Map<Integer, SpectrumMetaInfo> getSpecMetaInfoMap(
 			BufferedRandomAccessLineReader lineReader) {
 		Hashtable<Integer, SpectrumMetaInfo> specIndexMap = new Hashtable<Integer, SpectrumMetaInfo>();
 		String buf;

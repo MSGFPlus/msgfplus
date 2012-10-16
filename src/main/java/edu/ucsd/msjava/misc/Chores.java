@@ -98,7 +98,11 @@ public class Chores {
 //		file.createNewFile();
 //		System.out.println("scan=1".matches("scan=\\d+"));
 //		System.out.println(".BCDEF.-".matches("[A-Z\\-_]?\\..+\\.[A-Z\\-_]?"));
-		System.out.println(System.getProperty("user.home"));
+//		System.out.println(System.getProperty("user.home"));
+
+		String specId = "scan=123";
+		System.out.println(specId.matches("scan=\\d+"));
+
 	}
 
 	public static void recombCPReg() throws Exception

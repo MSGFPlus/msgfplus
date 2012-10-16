@@ -7,6 +7,7 @@ import java.util.Map;
 
 import edu.ucsd.msjava.msdbsearch.SearchParams;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
+import edu.ucsd.msjava.msutil.Modification.Location;
 
 import uk.ac.ebi.jmzidml.model.mzidml.*;
 
@@ -18,7 +19,7 @@ public class AnalysisProtocolCollectionGen {
 	private SpectrumIdentificationProtocol spectrumIdentificationProtocol;
 	
 	private Map<edu.ucsd.msjava.msutil.Modification, SearchModification> modMap;
-	private Map<Character, List<edu.ucsd.msjava.msutil.Modification>> fixedModMap;
+	private Map<String, List<edu.ucsd.msjava.msutil.Modification>> fixedModMap;
 	
 	public AnalysisProtocolCollectionGen(SearchParams params, AminoAcidSet aaSet)
 	{
@@ -46,7 +47,34 @@ public class AnalysisProtocolCollectionGen {
 	
 	public List<edu.ucsd.msjava.msutil.Modification> getFixedModifications(char residue)
 	{
-		return fixedModMap.get(residue);
+		return fixedModMap.get(residue+"");
+	}
+
+	public List<edu.ucsd.msjava.msutil.Modification> getTerminalFixedModifications(char residue, Location location)
+	{
+		List<edu.ucsd.msjava.msutil.Modification> mods = new ArrayList<edu.ucsd.msjava.msutil.Modification>();
+		if(location == Location.N_Term)
+		{
+			List<edu.ucsd.msjava.msutil.Modification> modList = fixedModMap.get("["+residue);
+			if(modList != null)
+				mods.addAll(modList);
+			
+			modList = fixedModMap.get("[*");
+			if(modList != null)
+				mods.addAll(modList);
+		}
+		else if(location == Location.C_Term)
+		{
+			List<edu.ucsd.msjava.msutil.Modification> modList = fixedModMap.get(residue+"]");
+			if(modList != null)
+				mods.addAll(modList);
+			
+			modList = fixedModMap.get("*]");
+			if(modList != null)
+				mods.addAll(modList);
+		}
+		
+		return mods;
 	}
 	
 	private void generateSpectrumIdentificationProtocol()
@@ -149,7 +177,7 @@ public class AnalysisProtocolCollectionGen {
 	public ModificationParams getModificationParam()
 	{
 		modMap = new HashMap<edu.ucsd.msjava.msutil.Modification, uk.ac.ebi.jmzidml.model.mzidml.SearchModification>();
-		fixedModMap = new HashMap<Character, List<edu.ucsd.msjava.msutil.Modification>>();
+		fixedModMap = new HashMap<String, List<edu.ucsd.msjava.msutil.Modification>>();
 		
         ModificationParams modParams = new ModificationParams();
         List<SearchModification> searchModList = modParams.getSearchModification();
@@ -210,16 +238,32 @@ public class AnalysisProtocolCollectionGen {
             modMap.put(mod.getModification(), searchMod);
             if(mod.isFixedModification())
             {
-            	List<edu.ucsd.msjava.msutil.Modification> fixedMods = fixedModMap.get(mod.getResidue());
+            	String modKey = getModKey(mod.getResidue(), mod.getLocation());
+            	List<edu.ucsd.msjava.msutil.Modification> fixedMods = fixedModMap.get(modKey);
             	if(fixedMods == null)
             	{
             		fixedMods = new ArrayList<edu.ucsd.msjava.msutil.Modification>();
-            		fixedModMap.put(mod.getResidue(), fixedMods);
+            		fixedModMap.put(modKey, fixedMods);
             	}
             	fixedMods.add(mod.getModification());
             }
         }
 
         return modParams;
+	}
+	
+	private String getModKey(char residue, Location location)
+	{
+    	StringBuffer modKey = new StringBuffer();
+
+    	if(location == Location.N_Term)
+    		modKey.append('[');
+    	
+    	modKey.append(residue);
+
+    	if(location == Location.C_Term)
+    		modKey.append(']');
+    	
+    	return modKey.toString();
 	}
 }

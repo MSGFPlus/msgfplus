@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import edu.ucsd.msjava.mzid.MzIDParser;
 import edu.ucsd.msjava.parser.BufferedLineReader;
 
 public class AnnotatedSpectra {
@@ -47,9 +48,26 @@ public class AnnotatedSpectra {
 	
 	public String parseFile(File resultFile)
 	{
+		File tsvResultFile = null;
+		if(resultFile.getName().endsWith("mzid"))
+		{
+			try {
+				tsvResultFile = File.createTempFile("__AnnotatedSpectra", ".tsv");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			tsvResultFile.deleteOnExit();
+			
+			MzIDParser parser = new MzIDParser(resultFile);
+			parser.writeToTSVFile(tsvResultFile);
+		}
+		else
+			tsvResultFile = resultFile;
+		
+		
 		BufferedLineReader in = null;
 		try {
-			in = new BufferedLineReader(resultFile.getPath());
+			in = new BufferedLineReader(tsvResultFile.getPath());
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -61,7 +79,7 @@ public class AnnotatedSpectra {
 			return "Not a valid tsv result file";
 		}
 		
-		int specIndexCol = -1;
+		int specIdCol = -1;
 		int specFileCol = -1;
 		int pepCol = -1;
 		int fdrCol = -1;
@@ -72,23 +90,25 @@ public class AnnotatedSpectra {
 		{
 			if(label[i].equalsIgnoreCase("#SpecFile"))
 				specFileCol = i;
-			else if(label[i].equalsIgnoreCase("SpecIndex"))
-				specIndexCol = i;
+			else if(label[i].equalsIgnoreCase("SpecID"))
+				specIdCol = i;
 			else if(label[i].equalsIgnoreCase("Peptide"))
 				pepCol = i;
-			else if(label[i].equalsIgnoreCase("FDR") || label[i].equalsIgnoreCase("EFDR"))
+			else if(label[i].equalsIgnoreCase("FDR") || label[i].equalsIgnoreCase("EFDR") || label[i].equalsIgnoreCase("QValue") || label[i].equalsIgnoreCase("SpecQValue"))
 				fdrCol = i;
 			else if(label[i].equalsIgnoreCase("Charge"))
 				chargeCol = i;
 		}
-		if(specIndexCol < 0 || specFileCol < 0 || pepCol < 0 || fdrCol < 0)
-			return "Not a valid tsv result file";
+		if(specIdCol < 0 || specFileCol < 0 || pepCol < 0)
+			return "Not a valid mzid file";
+		if(fdrCol < 0)
+			return "QValue is missing";
 		
 		ArrayList<String> resultList = new ArrayList<String>();
 		while((s=in.readLine()) != null)
 		{
 			String[] token = s.split("\t");
-			if(token.length <= specIndexCol || token.length <= specFileCol || token.length <= pepCol || token.length <= fdrCol)
+			if(token.length <= specIdCol || token.length <= specFileCol || token.length <= pepCol || token.length <= fdrCol)
 				continue;
 			
 			float fdr = Float.parseFloat(token[fdrCol]);
@@ -101,7 +121,7 @@ public class AnnotatedSpectra {
 		
 		Iterator<String> itr = resultList.iterator();
 
-		HashMap<String,SpectrumAccessorBySpecIndex> specAccessorMap = new HashMap<String,SpectrumAccessorBySpecIndex>(); 
+		HashMap<String,SpectraAccessor> specAccessorMap = new HashMap<String,SpectraAccessor>(); 
 		while(itr.hasNext())
 		{
 			String str = itr.next();
@@ -116,21 +136,19 @@ public class AnnotatedSpectra {
 			
 			int charge = Integer.parseInt(token[chargeCol]);
 			
-			SpectrumAccessorBySpecIndex specMap = specAccessorMap.get(specFileName);
-			if(specMap == null)
+			SpectraAccessor specAccessor = specAccessorMap.get(specFileName);
+			if(specAccessor == null)
 			{
 				File specFile = new File(specDir.getPath()+File.separator+specFileName);
-				specMap = new SpectraAccessor(specFile).getSpecMap();
-				if(specMap == null)
-					return "Unrecognized spectrum format";
-				specAccessorMap.put(specFileName, specMap);
+				specAccessor = new SpectraAccessor(specFile);
+				specAccessorMap.put(specFileName, specAccessor);
 			}
-			
-			int specIndex = Integer.parseInt(token[specIndexCol]);
-			Spectrum spec = specMap.getSpectrumBySpecIndex(specIndex);
+
+			String specId = token[specIdCol];
+			Spectrum spec = specAccessor.getSpectrumById(specId);
 			
 			if(spec == null)
-				return specFileName+":"+specIndex+" is not available!";
+				return specFileName+":"+specId+" is not available!";
 			else
 			{
 				Peptide peptide = new Peptide(pep, aaSet);
@@ -143,7 +161,7 @@ public class AnnotatedSpectra {
 				}
 				else
 				{
-					return "parent mass doesn't match " + specFileName+":"+specIndex + " " + peptide.toString() + " " + spec.getPeptideMass() + " != " + peptide.getMass();
+					return "parent mass doesn't match " + specFileName+":"+specId + " " + peptide.toString() + " " + spec.getPeptideMass() + " != " + peptide.getMass();
 				}
 			}
 		}

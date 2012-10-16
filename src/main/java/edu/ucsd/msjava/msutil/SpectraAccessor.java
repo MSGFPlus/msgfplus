@@ -121,6 +121,11 @@ public class SpectraAccessor {
 		return getSpecMap().getSpectrumBySpecIndex(specIndex);
 	}
 	
+	public Spectrum getSpectrumById(String specId)
+	{
+		return getSpecMap().getSpectrumById(specId);
+	}
+	
 	public String getID(int specIndex)
 	{
 		return getSpecMap().getID(specIndex);

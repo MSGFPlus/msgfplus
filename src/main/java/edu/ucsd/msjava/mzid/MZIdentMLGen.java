@@ -18,6 +18,7 @@ import edu.ucsd.msjava.msgf.NominalMass;
 import edu.ucsd.msjava.msutil.ActivationMethod;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Composition;
+import edu.ucsd.msjava.msutil.Modification.Location;
 import edu.ucsd.msjava.msutil.ModifiedAminoAcid;
 import edu.ucsd.msjava.msutil.Pair;
 import edu.ucsd.msjava.msutil.SpecFileFormat;
@@ -348,6 +349,14 @@ public class MZIdentMLGen {
 			int location = 1;
 			for(edu.ucsd.msjava.msutil.AminoAcid aa : peptide)
 			{
+				Location loc;
+				if(location == 1)
+					loc = Location.N_Term;
+				else if(location == peptide.size()-1)
+					loc = Location.C_Term;
+				else
+					loc = Location.Anywhere;
+				
 				unmodPepStr.append(aa.getUnmodResidue());
 				if(aa.isModified())
 				{
@@ -380,16 +389,37 @@ public class MZIdentMLGen {
 						modList.add(mod2);
 					}
 				}
-				else if(apcGen.getFixedModifications(aa.getResidue()) != null)
+				else 
 				{
-					List<edu.ucsd.msjava.msutil.Modification> fixedMods = apcGen.getFixedModifications(aa.getResidue());
-					for(edu.ucsd.msjava.msutil.Modification fixedMod : fixedMods)
+					if(loc == Location.N_Term || loc == Location.C_Term)
 					{
-						Modification mod = new Modification();
-						mod.setLocation(location);
-						mod.setMonoisotopicMassDelta(fixedMod.getAccurateMass());
-						mod.getCvParam().addAll(apcGen.getSearchModification(fixedMod).getCvParam());
-						modList.add(mod);
+						List<edu.ucsd.msjava.msutil.Modification> fixedTermMods = apcGen.getTerminalFixedModifications(aa.getUnmodResidue(), loc);
+						for(edu.ucsd.msjava.msutil.Modification fixedMod : fixedTermMods)
+						{
+							Modification mod = new Modification();
+							if(loc == Location.N_Term)
+								mod.setLocation(location-1);
+							else
+								mod.setLocation(location+1);
+							mod.setMonoisotopicMassDelta(fixedMod.getAccurateMass());
+							mod.getCvParam().addAll(apcGen.getSearchModification(fixedMod).getCvParam());
+							modList.add(mod);
+						}
+					}
+					else
+					{
+						List<edu.ucsd.msjava.msutil.Modification> fixedMods = apcGen.getFixedModifications(aa.getUnmodResidue());
+						if(fixedMods != null)
+						{
+							for(edu.ucsd.msjava.msutil.Modification fixedMod : fixedMods)
+							{
+								Modification mod = new Modification();
+								mod.setLocation(location);
+								mod.setMonoisotopicMassDelta(fixedMod.getAccurateMass());
+								mod.getCvParam().addAll(apcGen.getSearchModification(fixedMod).getCvParam());
+								modList.add(mod);
+							}
+						}
 					}
 				}
 				location++;

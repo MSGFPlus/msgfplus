@@ -33,6 +33,8 @@ public class Protocol implements ParamObject {
 	
 	public static final Protocol NOPROTOCOL;
 	public static final Protocol PHOSPHORYLATION;
+	public static final Protocol ITRAQ;
+	
 	public static Protocol[] getAllRegisteredProtocols()
 	{
 		return protocolList.toArray(new Protocol[0]);
@@ -49,12 +51,14 @@ public class Protocol implements ParamObject {
 	static {
 		NOPROTOCOL = new Protocol("NoProtocol", "No protocol");
 		PHOSPHORYLATION = new Protocol("Phosphorylation", "Phospho-enriched");
+		ITRAQ = new Protocol("iTRAQ", "iTRAQ");
 		
 		table = new HashMap<String, Protocol>();
 		protocolList = new ArrayList<Protocol>();
 		
 		protocolList.add(NOPROTOCOL);
 		add(PHOSPHORYLATION);
+		add(ITRAQ);
 		
 		// Parse activation methods defined by a user
 		File protocolFile = new File("params/protocols.txt");

@@ -3,7 +3,9 @@ package edu.ucsd.msjava.msutil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import edu.ucsd.msjava.parser.BufferedRandomAccessLineReader;
 import edu.ucsd.msjava.parser.SpectrumParser;
@@ -14,13 +16,27 @@ public class SpectraMap implements SpectrumAccessorBySpecIndex {
 	protected BufferedRandomAccessLineReader lineReader;
 	private ArrayList<Integer> specIndexList = null;
 	
+	private Map<String, Integer> idToIndex = null;
+	
 	public SpectraMap(String fileName, SpectrumParser parser)
 	{
 		lineReader = new BufferedRandomAccessLineReader(fileName);
 		
 		this.parser = parser;
 		// set map
-	    specIndexMap = parser.getSpecIndexMap(lineReader);
+	    specIndexMap = parser.getSpecMetaInfoMap(lineReader);
+	}
+	
+	@Override
+	public Spectrum getSpectrumById(String specId)
+	{
+		if(idToIndex == null)
+			makeIdToIndexMap();
+		Integer specIndex = idToIndex.get(specId);
+		if(specIndex == null)
+			return null;
+		else
+			return getSpectrumBySpecIndex(specIndex);
 	}
 	
 	@Override
@@ -87,4 +103,16 @@ public class SpectraMap implements SpectrumAccessorBySpecIndex {
 		}
 		return specIndexList;
 	}
+	
+	private void makeIdToIndexMap()
+	{
+		idToIndex = new HashMap<String, Integer>();
+		Iterator<Entry<Integer, SpectrumMetaInfo>> itr = specIndexMap.entrySet().iterator();
+		while(itr.hasNext())
+		{
+			Entry<Integer, SpectrumMetaInfo> entry = itr.next();
+			idToIndex.put(entry.getValue().getID(), entry.getKey());
+		}
+	}
+	
 }
