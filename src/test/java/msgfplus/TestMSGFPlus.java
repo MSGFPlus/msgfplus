@@ -47,4 +47,18 @@ public class TestMSGFPlus {
 //		assertTrue(paramManager.parseParams(argv) == null);
 //		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
 	}
+	
+	@Test
+	public void testUserScoringParams()
+	{
+//		File specFile = new File("/Users/kims336/Research/Data/CPTAC/test.mgf");
+//		File dbFile = new File("/Users/kims336/Research/Data/CPTAC/test.fasta");
+//		File modFile = new File("/Users/kims336/Research/Data/CPTAC/Mods.txt");
+//
+//		String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), "-mod", modFile.getPath(), "-protocol", "2", "-m", "3"};
+//		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+//		paramManager.addMSGFPlusParams();
+//		assertTrue(paramManager.parseParams(argv) == null);
+//		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
+	}
 }

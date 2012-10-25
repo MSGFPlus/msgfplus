@@ -39,8 +39,8 @@ import edu.ucsd.msjava.params.ParamManager;
 
 
 public class MSGFPlus {
-	public static final String VERSION = "Beta (v8729)";
-	public static final String RELEASE_DATE = "10/15/2012";
+	public static final String VERSION = "Beta (v8730)";
+	public static final String RELEASE_DATE = "10/16/2012";
 	
 	public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
 	public static final String DECOY_PROTEIN_PREFIX = "XXX";
@@ -101,8 +101,14 @@ public class MSGFPlus {
     	{
     		List<DBSearchIOFiles> ioList = params.getDBSearchIOList();
     		boolean multFiles = false;
-    		if(ioList.size() > 2)
+    		if(ioList.size() >= 2)
+    		{
+    			System.out.println("Processing " + ioList.size() + " spectra");
+        		for(DBSearchIOFiles ioFiles : ioList)
+        			System.out.println("\t" + ioFiles.getSpecFile().getName());
     			multFiles = true;
+    		}
+    		
     		
     		int ioIndex = -1;
     		for(DBSearchIOFiles ioFiles : ioList)

@@ -358,6 +358,33 @@ public class MZIdentMLGen {
 					loc = Location.Anywhere;
 				
 				unmodPepStr.append(aa.getUnmodResidue());
+				if(loc == Location.N_Term || loc == Location.C_Term)
+				{
+					List<edu.ucsd.msjava.msutil.Modification> fixedTermMods = apcGen.getTerminalFixedModifications(aa.getUnmodResidue(), loc);
+					for(edu.ucsd.msjava.msutil.Modification fixedMod : fixedTermMods)
+					{
+						Modification mod = new Modification();
+						if(loc == Location.N_Term)
+							mod.setLocation(location-1);
+						else
+							mod.setLocation(location+1);
+						mod.setMonoisotopicMassDelta(fixedMod.getAccurateMass());
+						mod.getCvParam().addAll(apcGen.getSearchModification(fixedMod).getCvParam());
+						modList.add(mod);
+					}
+				}
+				List<edu.ucsd.msjava.msutil.Modification> fixedMods = apcGen.getFixedModifications(aa.getUnmodResidue());
+				if(fixedMods != null)
+				{
+					for(edu.ucsd.msjava.msutil.Modification fixedMod : fixedMods)
+					{
+						Modification mod = new Modification();
+						mod.setLocation(location);
+						mod.setMonoisotopicMassDelta(fixedMod.getAccurateMass());
+						mod.getCvParam().addAll(apcGen.getSearchModification(fixedMod).getCvParam());
+						modList.add(mod);
+					}
+				}
 				if(aa.isModified())
 				{
 					Modification mod = new Modification();
@@ -387,36 +414,6 @@ public class MZIdentMLGen {
 						
 						mod2.getCvParam().addAll(apcGen.getSearchModification(modAA2.getModification()).getCvParam());
 						modList.add(mod2);
-					}
-				}
-				else 
-				{
-					if(loc == Location.N_Term || loc == Location.C_Term)
-					{
-						List<edu.ucsd.msjava.msutil.Modification> fixedTermMods = apcGen.getTerminalFixedModifications(aa.getUnmodResidue(), loc);
-						for(edu.ucsd.msjava.msutil.Modification fixedMod : fixedTermMods)
-						{
-							Modification mod = new Modification();
-							if(loc == Location.N_Term)
-								mod.setLocation(location-1);
-							else
-								mod.setLocation(location+1);
-							mod.setMonoisotopicMassDelta(fixedMod.getAccurateMass());
-							mod.getCvParam().addAll(apcGen.getSearchModification(fixedMod).getCvParam());
-							modList.add(mod);
-						}
-					}
-					List<edu.ucsd.msjava.msutil.Modification> fixedMods = apcGen.getFixedModifications(aa.getUnmodResidue());
-					if(fixedMods != null)
-					{
-						for(edu.ucsd.msjava.msutil.Modification fixedMod : fixedMods)
-						{
-							Modification mod = new Modification();
-							mod.setLocation(location);
-							mod.setMonoisotopicMassDelta(fixedMod.getAccurateMass());
-							mod.getCvParam().addAll(apcGen.getSearchModification(fixedMod).getCvParam());
-							modList.add(mod);
-						}
 					}
 				}
 				location++;
@@ -604,7 +601,7 @@ public class MZIdentMLGen {
 		{
 			searchDatabase.getCvParam().add(Constants.makeCvParam("MS:1001197", "DB composition target+decoy"));
 			CvParam decoyAccCV = Constants.makeCvParam("MS:1001283", "decoy DB accession regexp");
-			decoyAccCV.setValue(MSGFPlus.DECOY_PROTEIN_PREFIX);
+			decoyAccCV.setValue("^"+MSGFPlus.DECOY_PROTEIN_PREFIX);
 			searchDatabase.getCvParam().add(decoyAccCV);
 			searchDatabase.getCvParam().add(Constants.makeCvParam("MS:1001195", "decoy DB type reverse"));
 		}

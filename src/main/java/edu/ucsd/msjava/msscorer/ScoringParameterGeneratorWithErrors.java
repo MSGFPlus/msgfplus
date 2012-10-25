@@ -123,10 +123,10 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 				System.out.println("Consider H3PO4 loss.");
 		}
 
-		boolean consideriTRAQ = false;
+		boolean consideriTRAQLoss = false;
 		if(dataType.getProtocol().getName().equals("iTRAQ"))
 		{
-			consideriTRAQ = true;
+			consideriTRAQLoss = true;
 			if(verbose)
 				System.out.println("Consider iTRAQ loss.");
 		}
@@ -182,6 +182,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 				specContOnePerPep, 
 				dataType,
 				considerPhosLoss, 
+				consideriTRAQLoss,
 				applyDeconvolution);
 		
 		// set up the tolerance
@@ -245,11 +246,13 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 	// Required
 	private SpectraContainer specContainer;
 	private final boolean considerPhosLoss;
+	private final boolean consideriTRAQLoss;
 
-	public ScoringParameterGeneratorWithErrors(SpectraContainer specContainer, SpecDataType dataType, boolean considerPhosLoss, boolean applyDeconvolution)
+	public ScoringParameterGeneratorWithErrors(SpectraContainer specContainer, SpecDataType dataType, boolean considerPhosLoss, boolean consideriTRAQLoss, boolean applyDeconvolution)
 	{
 		this.specContainer = specContainer;
 		this.considerPhosLoss = considerPhosLoss;
+		this.consideriTRAQLoss = consideriTRAQLoss;
 		super.dataType = dataType;
 		super.applyDeconvolution = applyDeconvolution;
 		super.deconvolutionErrorTolerance = DECONVOLUTION_MASS_TOLERANCE;
@@ -466,7 +469,8 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			ArrayList<FragmentOffsetFrequency> signalFragmentOffsetFrequencyList = new ArrayList<FragmentOffsetFrequency>();
 
 			int seg = partition.getSegNum();
-			IonType[] allIonTypes = IonType.getAllKnownIonTypes(Math.min(charge, 4), true, considerPhosLoss).toArray(new IonType[0]);
+			IonType[] allIonTypes = IonType.getAllKnownIonTypes(Math.min(charge, 4), true, considerPhosLoss, consideriTRAQLoss).toArray(new IonType[0]);
+			
 			IonProbability probGen = new IonProbability(
 					curPartContainer.iterator(), 
 					allIonTypes,

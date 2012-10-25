@@ -29,18 +29,26 @@ public class CountPSMs {
 			System.exit(0);
 		}
 		String[] headerToken = header.split("\t");
-		int eFDRColNum = -1;
+		int specQValueColNum = -1;
+		int pepQValueColNum = -1;
 		int pepColNum = -1;
 		for(int i=0; i<headerToken.length; i++)
 		{
 			if(headerToken[i].endsWith("FDR") || headerToken[i].equalsIgnoreCase("QValue") || headerToken[i].equalsIgnoreCase("q-value"))
-				eFDRColNum = i;
+				specQValueColNum = i;
+			if(headerToken[i].endsWith("PepFDR") || headerToken[i].equalsIgnoreCase("PepQValue"))
+				pepQValueColNum = i;
 			if(headerToken[i].equalsIgnoreCase("Peptide") || headerToken[i].equalsIgnoreCase("Annotation"))
 				pepColNum = i;
 		}
-		if(eFDRColNum < 0)
+		if(specQValueColNum < 0)
 		{
-			System.out.println("FDR column is missing!");
+			System.out.println("QValue column is missing!");
+			System.exit(0);
+		}
+		if(pepQValueColNum < 0)
+		{
+			System.out.println("PepQValue column is missing!");
 			System.exit(0);
 		}
 		if(pepColNum < 0)
@@ -59,13 +67,17 @@ public class CountPSMs {
 			if(s.startsWith("#"))
 				continue;
 			String[] token = s.split("\t");
-			if(token.length <= eFDRColNum || token.length <= pepColNum)
+			if(token.length <= specQValueColNum || token.length <= pepQValueColNum || token.length <= pepColNum)
 				continue;
-			double eFDR = Double.parseDouble(token[eFDRColNum]);
+			double specQValue = Double.parseDouble(token[specQValueColNum]);
+			double pepQValue = Double.parseDouble(token[pepQValueColNum]);
 			totalID++;
-			if(eFDR <= threshold)
+			if(specQValue <= threshold)
 			{
 				numID++;
+			}
+			if(pepQValue <= threshold)
+			{
 				int ntt=0;
 				String annotation = token[pepColNum];
 				
@@ -93,12 +105,7 @@ public class CountPSMs {
 						unmodStr.append(pepStr.charAt(i));
 				
 				pepSet.add(unmodStr.toString());
-			}
-			
-//			if(ntt == 0) {
-//				System.out.println(s);
-//				System.exit(0);
-//			}
+			}			
 		}
 		
 		System.out.println("TotalPSM\t" + totalID);

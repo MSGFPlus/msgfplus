@@ -183,12 +183,25 @@ public abstract class IonType {
 
     public static ArrayList<IonType> getAllKnownIonTypes(int maxCharge, boolean removeRedundancy)
     {
-    	return getAllKnownIonTypes(maxCharge, removeRedundancy, false);
+    	return getAllKnownIonTypes(maxCharge, removeRedundancy, false, false);
     }
     
-    public static ArrayList<IonType> getAllKnownIonTypes(int maxCharge, boolean removeRedundancy, boolean addPhosphoNL)
+    public static ArrayList<IonType> getAllKnownIonTypes(int maxCharge, boolean removeRedundancy, boolean addPhosphoNL, boolean addiTRAQNL)
     {
-    	return getAllKnownIonTypes(maxCharge, removeRedundancy, "H3PO4");
+    	String nlString;
+    	String phospho = "H3PO4";
+    	String iTRAQ = "iTRAQ";
+    	
+    	if(!addPhosphoNL && !addiTRAQNL)
+    		nlString = "";
+    	else if(!addPhosphoNL && addiTRAQNL)
+    		nlString = iTRAQ;
+    	else if(addPhosphoNL && !addiTRAQNL)
+    		nlString = phospho;
+    	else 
+    		nlString = phospho+","+iTRAQ;
+    		
+    	return getAllKnownIonTypes(maxCharge, removeRedundancy, nlString);
     }
     
     public static ArrayList<IonType> getAllKnownIonTypes(int maxCharge, boolean removeRedundancy, String nlString)
@@ -204,13 +217,10 @@ public abstract class IonType {
         if(nlString != null)
         {
         	String[] token = nlString.split(",");
-        	nlExt = new String[token.length];
+        	nlExt = new String[token.length+1];
+        	nlExt[0] = "";
         	for(int i=0; i<token.length; i++)
-        	{
-        		String nl = token[i].trim();
-        		
-        	}
-        	nlExt = new String[] {"", "-H3PO4"};
+        		nlExt[i+1] = "-"+token[i].trim();
         }
         else
         	nlExt = new String[] {""};
@@ -329,9 +339,10 @@ public abstract class IonType {
         compositionOffsetTable.put("n2", (float)Composition.ISOTOPE2);
         compositionOffsetTable.put("H", (float)Composition.H);
         compositionOffsetTable.put("H3PO4", (float)(Composition.H*3+Composition.P+Composition.O*4));
+        compositionOffsetTable.put("iTRAQ", 144.102063f);
     }
     public static void main(String[] args) {
-    	ArrayList<IonType> allIons = IonType.getAllKnownIonTypes(3, true, true);
+    	ArrayList<IonType> allIons = IonType.getAllKnownIonTypes(3, true, false, true);
     	for(IonType ion : allIons)
     		System.out.println(ion.getName()+"\t"+ion.getOffset());
     }
