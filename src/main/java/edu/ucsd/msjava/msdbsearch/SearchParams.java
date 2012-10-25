@@ -199,7 +199,6 @@ public class SearchParams {
 					dbSearchIOList.add(new DBSearchIOFiles(f, specFormat, outputFile));
 				}
 			}
-			return null;
 		}
 		
 		// DB file
