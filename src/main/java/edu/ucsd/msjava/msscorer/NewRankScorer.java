@@ -279,15 +279,23 @@ public class NewRankScorer implements NewAdditiveScorer {
 			if(verbose)
 				System.out.println("ChargeHistogram");
 			chargeHist = new Histogram<Integer>();
+			int minKey = Integer.MAX_VALUE;
+			int maxKey = Integer.MIN_VALUE;
 			int size = in.readInt();	// size
 			for(int i=0; i<size; i++)
 			{
 				int charge = in.readInt();
+				if(charge < minKey)
+					minKey = charge;
+				if(charge > maxKey)
+					maxKey = charge;
 				int numSpecs = in.readInt();
 				if(verbose)
 					System.out.println(charge+"\t"+numSpecs);
 				chargeHist.put(charge, numSpecs);
 			}
+			chargeHist.setMinKey(minKey);
+			chargeHist.setMaxKey(maxKey);
 
 			// Partition info
 			if(verbose)
@@ -629,7 +637,7 @@ public class NewRankScorer implements NewAdditiveScorer {
 		return ionTypes;
 	}	
 
-	protected void writeParameters(File outputFile)
+	public void writeParameters(File outputFile)
 	{
 		if(chargeHist == null ||
 				partitionSet == null ||
@@ -801,7 +809,7 @@ public class NewRankScorer implements NewAdditiveScorer {
 		}
 	}
 	
-	protected void writeParametersPlainText(File outputFile)
+	public void writeParametersPlainText(File outputFile)
 	{
 		PrintStream out = null;
 		if(outputFile == null)

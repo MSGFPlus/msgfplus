@@ -36,6 +36,10 @@ public class AnnotatedSpectra {
 	public String parse()
 	{
 		annotatedSpectra = new SpectraContainer();
+
+		System.out.println("Using " + resultFiles.length + " result files:");
+		for(File resultFile : resultFiles)
+			System.out.println("\t" + resultFile.getName());
 		
 		for(File resultFile : resultFiles)
 		{
@@ -48,6 +52,7 @@ public class AnnotatedSpectra {
 	
 	public String parseFile(File resultFile)
 	{
+		System.out.println("Parsing " + resultFile.getName());
 		File tsvResultFile = null;
 		if(resultFile.getName().endsWith("mzid"))
 		{

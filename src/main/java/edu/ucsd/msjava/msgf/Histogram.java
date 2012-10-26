@@ -27,6 +27,16 @@ public class Histogram<T extends Comparable<T>> extends Hashtable<T,Integer> {
 		size++;
 	}
 
+	public void setMinKey(T minKey)
+	{
+		this.minKey = minKey;
+	}
+
+	public void setMaxKey(T maxKey)
+	{
+		this.maxKey = maxKey;
+	}
+	
 	public T minKey()	
 	{ 
 		return minKey; 

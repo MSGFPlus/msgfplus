@@ -39,7 +39,7 @@ import edu.ucsd.msjava.params.ParamManager;
 
 
 public class MSGFPlus {
-	public static final String VERSION = "Beta (v8777)";
+	public static final String VERSION = "Beta (v8778)";
 	public static final String RELEASE_DATE = "10/25/2012";
 	
 	public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
@@ -120,12 +120,26 @@ public class MSGFPlus {
     			
     			if(multFiles)
     			{
-    				System.out.println("\nProcessing " + specFile.getPath());
-    				System.out.println("Writing results to " + outputFile.getPath());
+    				if(!outputFile.exists())
+    				{
+        				System.out.println("\nProcessing " + specFile.getPath());
+        				System.out.println("Writing results to " + outputFile.getPath());
+        				String errMsg = runMSGFPlus(ioIndex, specFormat, outputFile, params);
+        				if(errMsg != null)
+        					return errMsg;
+    				}
+    				else
+    				{
+        				System.out.println("\nIgnoring " + specFile.getPath());
+        				System.out.println("Output file " + outputFile.getPath() + " exists.");
+    				}
     			}
-				String errMsg = runMSGFPlus(ioIndex, specFormat, outputFile, params);
-				if(errMsg != null)
-					return errMsg;
+    			else
+    			{
+    				String errMsg = runMSGFPlus(ioIndex, specFormat, outputFile, params);
+    				if(errMsg != null)
+    					return errMsg;
+    			}
     		}
     	}
     	return null;

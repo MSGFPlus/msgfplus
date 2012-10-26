@@ -61,4 +61,18 @@ public class TestMSGFPlus {
 //		assertTrue(paramManager.parseParams(argv) == null);
 //		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
 	}
+	
+	@Test
+	public void testMultipleInputSpectra()
+	{
+//		File specPath = new File("/Users/kims336/Research/Data/TrainingITRAQ/Global/mzMLFiles");
+//		File dbFile = new File("/Users/kims336/Research/Data/TrainingITRAQ/Global/ID_003632_9011437E.fasta");
+//		File modFile = new File("/Users/kims336/Research/Data/TrainingITRAQ/Global/Mods.txt");
+//
+//		String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-mod", modFile.getPath(), "-ti", "0,1", "-tda", "1", "-ntt", "2"};
+//		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+//		paramManager.addMSGFPlusParams();
+//		paramManager.parseParams(argv);
+//		MSGFPlus.runMSGFPlus(paramManager);
+	}
 }

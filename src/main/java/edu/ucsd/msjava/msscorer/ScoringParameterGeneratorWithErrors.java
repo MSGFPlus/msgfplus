@@ -40,6 +40,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 	private static final float MAX_PRECURSOR_OFFSET = 30f;
 	private static final int MIN_NUM_SPECTRA_PER_PARTITION = 400;	// 400
 	private static final int MIN_NUM_SPECTRA_FOR_PRECURSOR_OFF = 150;
+	private static final int MAX_NUM_PARTITIONS_PER_CHARGE = 30;	// 400
 
 	private static final float MIN_PRECURSOR_OFFSET_PROBABILITY = 0.15f;	// 0.15
 	private static final float MIN_ION_OFFSET_PROBABILITY = 0.15f;	// 0.15, for ion types
@@ -264,6 +265,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		chargeHist = new Histogram<Integer>();
 		partitionSet = new TreeSet<Partition>();
 
+		
 		Hashtable<Integer,ArrayList<Float>> parentMassMap = new Hashtable<Integer,ArrayList<Float>>();
 		for(Spectrum spec : specContainer)
 		{
@@ -285,6 +287,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 
 		for(int c=chargeHist.minKey(); c<=chargeHist.maxKey(); c++)
 		{
+			
 			ArrayList<Float> parentMassList = parentMassMap.get(c);
 			if(parentMassList == null)
 				continue;
@@ -292,6 +295,8 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			int numSpec = parentMassList.size();
 			if(numSpec < Math.round(MIN_NUM_SPECTRA_PER_PARTITION*0.9f))	// to few spectra
 				continue;
+			
+			int partitionSize = Math.max(numSpec/MAX_NUM_PARTITIONS_PER_CHARGE, MIN_NUM_SPECTRA_PER_PARTITION);
 
 			Collections.sort(parentMassList);
 			int bestSetSize = 0;
@@ -300,13 +305,13 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 				bestSetSize = numSpec;
 			else
 			{
-				int smallestRemainder = MIN_NUM_SPECTRA_PER_PARTITION;
-				for(int i=Math.round(MIN_NUM_SPECTRA_PER_PARTITION*0.9f); i<=Math.round(MIN_NUM_SPECTRA_PER_PARTITION*1.1f); i++)
+				int smallestRemainder = partitionSize;
+				for(int i=Math.round(partitionSize*0.9f); i<=Math.round(partitionSize*1.1f); i++)
 				{
 					int remainder = numSpec % i;
 					if(i-remainder < remainder)
 						remainder = i-remainder;
-					if(remainder < smallestRemainder || (remainder==smallestRemainder && Math.abs(MIN_NUM_SPECTRA_PER_PARTITION-i) < Math.abs(MIN_NUM_SPECTRA_PER_PARTITION-bestSetSize)))
+					if(remainder < smallestRemainder || (remainder==smallestRemainder && Math.abs(partitionSize-i) < Math.abs(partitionSize-bestSetSize)))
 					{
 						bestSetSize = i;
 						smallestRemainder = remainder;
