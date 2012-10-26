@@ -194,8 +194,8 @@ public class SearchParams {
 				{
 					String outputFileName = f.getName().substring(0, f.getName().lastIndexOf('.'))+".mzid";
 					File outputFile = new File(outputFileName);
-					if(outputFile.exists())
-						return outputFile.getPath() + " already exists!";
+//					if(outputFile.exists())
+//						return outputFile.getPath() + " already exists!";
 					dbSearchIOList.add(new DBSearchIOFiles(f, specFormat, outputFile));
 				}
 			}

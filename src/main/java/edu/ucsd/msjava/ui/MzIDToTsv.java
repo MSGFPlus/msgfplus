@@ -2,7 +2,9 @@ package edu.ucsd.msjava.ui;
 
 import java.io.File;
 
+import edu.ucsd.msjava.msutil.DBSearchIOFiles;
 import edu.ucsd.msjava.msutil.FileFormat;
+import edu.ucsd.msjava.msutil.SpecFileFormat;
 import edu.ucsd.msjava.mzid.MzIDParser;
 import edu.ucsd.msjava.mzml.MzMLAdapter;
 import edu.ucsd.msjava.params.EnumParameter;
@@ -14,12 +16,12 @@ public class MzIDToTsv {
 	{
 		long time = System.currentTimeMillis();
 
-		ParamManager paramManager = new ParamManager("MzIDToTsv", "8299", MSGFPlus.RELEASE_DATE, "java -Xmx3500M -cp MSGFPlus.jar edu.ucsd.msjava.ui.MzIDToTsv");
+		ParamManager paramManager = new ParamManager("MzIDToTsv", "v8505", MSGFPlus.RELEASE_DATE, "java -Xmx3500M -cp MSGFPlus.jar edu.ucsd.msjava.ui.MzIDToTsv");
 		
-		FileParameter inputFileParam = new FileParameter("i", "MzIDFile", "MS-GF+ output file (*.mzid)");  
-		inputFileParam.addFileFormat(new FileFormat(".mzid"));
+		FileParameter inputFileParam = new FileParameter("i", "MzIDPath", "MS-GF+ output file (*.mzid) or directory containing mzid files");  
+//		inputFileParam.addFileFormat(new FileFormat(".mzid"));
 		inputFileParam.fileMustExist();
-		inputFileParam.mustBeAFile();
+//		inputFileParam.mustBeAFile();
 		paramManager.addParameter(inputFileParam);
 		
 		FileParameter outputFileParam = new FileParameter("o", "TSVFile", "TSV output file (*.tsv) (Default: MzIDFileName.tsv)");  
@@ -76,19 +78,39 @@ public class MzIDToTsv {
 	public static String convert(ParamManager paramManager)
 	{
 		// mzid File
-		File mzIDFile = paramManager.getFile("i");
-		
-		// output tsv file
-		File tsvFile = paramManager.getFile("o");
-		if(tsvFile == null)
-			tsvFile = new File(mzIDFile.getPath().substring(0, mzIDFile.getPath().lastIndexOf('.'))+".tsv");
+		File mzIDPath = paramManager.getFile("i");
 		
 		boolean showQValue = paramManager.getIntValue("showQValue") == 1 ? true : false;
 		boolean showDecoy = paramManager.getIntValue("showDecoy") == 1 ? true : false;
 		boolean unroll = paramManager.getIntValue("unroll") == 1 ? true : false;
 		
-		MzIDParser parser = new MzIDParser(mzIDFile, showDecoy, !showQValue, unroll);
-		parser.writeToTSVFile(tsvFile);
+		if(mzIDPath.isDirectory())
+		{
+			for(File f : mzIDPath.listFiles())
+			{
+				if(f.getName().endsWith(".mzid"))
+				{
+					File tsvFile = new File(f.getPath().substring(0, f.getPath().lastIndexOf('.'))+".tsv");
+					System.out.println("Converting " + f.getName() + " into " + tsvFile.getName());
+					MzIDParser parser = new MzIDParser(f, showDecoy, !showQValue, unroll);
+					parser.writeToTSVFile(tsvFile);
+				}
+			}
+		}
+		else
+		{
+			if(!mzIDPath.getName().endsWith(".mzid"))
+			{
+				return "Illegal file format: " + mzIDPath.getName();
+			}
+			// output tsv file
+			File tsvFile = paramManager.getFile("o");
+			if(tsvFile == null)
+				tsvFile = new File(mzIDPath.getPath().substring(0, mzIDPath.getPath().lastIndexOf('.'))+".tsv");
+			System.out.println("Converting " + mzIDPath.getName() + " into " + tsvFile.getName());
+			MzIDParser parser = new MzIDParser(mzIDPath, showDecoy, !showQValue, unroll);
+			parser.writeToTSVFile(tsvFile);
+		}
 		
 		return null;
 		

@@ -69,7 +69,7 @@ public class TestMSGFPlus {
 //		File dbFile = new File("/Users/kims336/Research/Data/TrainingITRAQ/Global/ID_003632_9011437E.fasta");
 //		File modFile = new File("/Users/kims336/Research/Data/TrainingITRAQ/Global/Mods.txt");
 //
-//		String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-mod", modFile.getPath(), "-ti", "0,1", "-tda", "1", "-ntt", "2"};
+//		String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-mod", modFile.getPath(), "-ti", "0,1", "-tda", "1", "-ntt", "2", "-protocol", "2"};
 //		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
 //		paramManager.addMSGFPlusParams();
 //		paramManager.parseParams(argv);

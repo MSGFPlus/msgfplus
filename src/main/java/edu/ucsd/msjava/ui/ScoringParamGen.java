@@ -12,6 +12,7 @@ import edu.ucsd.msjava.msutil.Enzyme;
 import edu.ucsd.msjava.msutil.FileFormat;
 import edu.ucsd.msjava.msutil.InstrumentType;
 import edu.ucsd.msjava.msutil.Protocol;
+import edu.ucsd.msjava.mzml.MzMLAdapter;
 import edu.ucsd.msjava.params.FileListParameter;
 import edu.ucsd.msjava.params.FileParameter;
 import edu.ucsd.msjava.params.ObjectEnumParameter;
@@ -26,6 +27,8 @@ public class ScoringParamGen {
 	{
 		ParamManager paramManager = new ParamManager("ScoringParamGen", String.valueOf(VERSION), DATE,
 			"java -Xmx2000M -cp MSGFPlus.jar edu.ucsd.msjava.ui.ScoringParamGen");
+		
+		MzMLAdapter.turnOffLogs();
 		
 		FileListParameter resFileParam = new FileListParameter("i", "ResultPath", "MSGFDBResultFile (*.mzid) or MSGFDBResultDir");
 		resFileParam.addFileFormat(new FileFormat(".mzid"));
