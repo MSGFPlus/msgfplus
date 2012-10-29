@@ -77,7 +77,8 @@ public class MS2ToMgf {
 				spec.setStartScanNum(startScanNum);
 				spec.setEndScanNum(endScanNum);
 				spec.setPrecursor(new Peak(precursorMz, 0, charge));
-				spec.setTitle("ms2Index="+ms2Index + " Z=" + token[1] + " MH=" + token[2]);
+				spec.setTitle("ms2Index:"+ms2Index + " Z:" + token[1] + " MH:" + token[2]);
+				specList.add(spec);
 			}
 			else if(token.length == 2)	// a peak
 			{
@@ -98,5 +99,7 @@ public class MS2ToMgf {
 		in.close();
 		out.flush();
 		out.close();
+		
+		System.out.println("Done.");
 	}
 }
