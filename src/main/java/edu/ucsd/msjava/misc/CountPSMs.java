@@ -8,9 +8,12 @@ import edu.ucsd.msjava.parser.BufferedLineReader;
 public class CountPSMs {
 	public static void main(String argv[]) throws Exception
 	{
-		if(argv.length != 2)
+		if(argv.length != 1 && argv.length != 2)
 			printUsageAndExit();
-		countID(argv[0], Double.parseDouble(argv[1]));
+		double threshold = 0.01;
+		if(argv.length == 2)
+			threshold = Double.parseDouble(argv[1]);
+		countID(argv[0], threshold);
 	}
 	
 	public static void printUsageAndExit()

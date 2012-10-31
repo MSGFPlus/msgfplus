@@ -18,9 +18,9 @@ public class MS2ToMgf {
 		if(argv.length != 1)
 			printUsageAndExit("Illegal parameters");
 		
-		File ms2File = new File(argv[1]);
+		File ms2File = new File(argv[0]);
 		if(!ms2File.exists() || !ms2File.getName().endsWith(".ms2"))
-			printUsageAndExit("Illegal ms2 input: " + argv[1]);
+			printUsageAndExit("Illegal ms2 input: " + argv[0]);
 		
 		String ms2FileName = ms2File.getAbsolutePath();
 		File mgfFile = new File(ms2FileName.substring(0, ms2FileName.lastIndexOf('.'))+".mgf");
