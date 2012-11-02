@@ -5,6 +5,9 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>MS-Java</name>
   <description>MS-Java for MS Java projects</description>
+  <properties>
+    <skipTests>true</skipTests>
+  </properties>
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
     <resources>

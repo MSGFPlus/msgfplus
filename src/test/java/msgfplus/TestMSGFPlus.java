@@ -7,8 +7,10 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import edu.ucsd.msjava.mzml.MzMLAdapter;
 import edu.ucsd.msjava.params.ParamManager;
 import edu.ucsd.msjava.ui.MSGFPlus;
+import edu.ucsd.msjava.ui.ScoringParamGen;
 
 public class TestMSGFPlus {
 	@Test
@@ -74,5 +76,21 @@ public class TestMSGFPlus {
 //		paramManager.addMSGFPlusParams();
 //		paramManager.parseParams(argv);
 //		MSGFPlus.runMSGFPlus(paramManager);
+	}
+	
+	@Test
+	public void testScoringParamGen()
+	{
+		File resultPath = new File("/Users/kims336/Research/Data/TrainingITRAQ/Phospho/test");
+		File specPath = new File("/Users/kims336/Research/Data/TrainingITRAQ/Phospho/mzMLFiles");
+		
+		String[] argv = {"-i", resultPath.getPath(), "-d", specPath.getPath(), "-m", "2", "-inst", "1", "-e", "0", "-protocol", "3"};
+		ParamManager paramManager = new ParamManager("ScoringParamGen", String.valueOf(ScoringParamGen.VERSION), ScoringParamGen.DATE,
+				"java -Xmx2000M -cp MSGFPlus.jar edu.ucsd.msjava.ui.ScoringParamGen");
+		MzMLAdapter.turnOffLogs();
+		paramManager.addScoringParamGenParams();
+		paramManager.parseParams(argv);
+		
+		ScoringParamGen.runScoringParamGen(paramManager);
 	}
 }

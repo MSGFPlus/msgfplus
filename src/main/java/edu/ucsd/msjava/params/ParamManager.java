@@ -13,6 +13,7 @@ import edu.ucsd.msjava.msutil.FileFormat;
 import edu.ucsd.msjava.msutil.InstrumentType;
 import edu.ucsd.msjava.msutil.Protocol;
 import edu.ucsd.msjava.msutil.SpecFileFormat;
+import edu.ucsd.msjava.mzml.MzMLAdapter;
 import edu.ucsd.msjava.ui.MSGF;
 
 
@@ -417,6 +418,52 @@ public class ParamManager {
 		edgeScoreParam.registerEntry("do not use edge scoring");
 		edgeScoreParam.setHidden();
 		addParameter(edgeScoreParam);
+	}
+	
+	public void addScoringParamGenParams()
+	{
+		FileListParameter resFileParam = new FileListParameter("i", "ResultPath", "MSGFDBResultFile (*.mzid) or MSGFDBResultDir");
+		resFileParam.addFileFormat(new FileFormat(".mzid"));
+		addParameter(resFileParam);
+		
+		FileParameter specDirParam = new FileParameter("d", "SpecDir", "Path to directory containing spectrum files");
+		specDirParam.mustBeADirectory();
+		specDirParam.fileMustExist();
+		addParameter(specDirParam);
+
+		// ActivationMethod
+		ObjectEnumParameter<ActivationMethod> fragParam = new ObjectEnumParameter<ActivationMethod>("m", "FragmentMethodID");
+		ActivationMethod[] methods = ActivationMethod.getAllRegisteredActivationMethods();
+		for(int i=1; i<methods.length ;i++)
+		{
+			ActivationMethod m = methods[i];
+			if(m != ActivationMethod.FUSION)
+				fragParam.registerObject(m);
+		}
+		addParameter(fragParam);
+		
+		// Instrument type
+		addInstTypeParam(null);
+		
+		// Enzyme
+		ObjectEnumParameter<Enzyme> enzParam = new ObjectEnumParameter<Enzyme>("e", "EnzymeID");
+		Enzyme[] allEnzymes = Enzyme.getAllRegisteredEnzymes();
+		for(int i=1; i<allEnzymes.length; i++)
+		{
+			Enzyme e = allEnzymes[i];
+			enzParam.registerObject(e);
+		}
+		addParameter(enzParam);
+		
+		// Protocol
+		addProtocolParam();		
+		
+//		paramManager.addModFileParam();
+//		StringParameter nlParam = new StringParameter("nl", "NeutralLosses", "Comma separated neutral losses to consider. Specify compositions or masses");
+//		nlParam.setAdditionalDescription("E.g. '-nl H3PO4', '-nl 97.995,64.064'");
+//		nlParam.defaultValue(null);
+//		paramManager.addParameter(nlParam);
+		
 	}
 	
 	public void addMSGFDBParams()

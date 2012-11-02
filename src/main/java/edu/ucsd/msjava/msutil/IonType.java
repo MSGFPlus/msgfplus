@@ -214,7 +214,7 @@ public abstract class IonType {
         	};
         
         String[] nlExt;
-        if(nlString != null)
+        if(nlString != null && nlString.length() > 0)
         {
         	String[] token = nlString.split(",");
         	nlExt = new String[token.length+1];
@@ -342,7 +342,7 @@ public abstract class IonType {
         compositionOffsetTable.put("iTRAQ", 144.102063f);
     }
     public static void main(String[] args) {
-    	ArrayList<IonType> allIons = IonType.getAllKnownIonTypes(3, true, false, true);
+    	ArrayList<IonType> allIons = IonType.getAllKnownIonTypes(3, true, true, true);
     	for(IonType ion : allIons)
     		System.out.println(ion.getName()+"\t"+ion.getOffset());
     }

@@ -29,48 +29,7 @@ public class ScoringParamGen {
 			"java -Xmx2000M -cp MSGFPlus.jar edu.ucsd.msjava.ui.ScoringParamGen");
 		
 		MzMLAdapter.turnOffLogs();
-		
-		FileListParameter resFileParam = new FileListParameter("i", "ResultPath", "MSGFDBResultFile (*.mzid) or MSGFDBResultDir");
-		resFileParam.addFileFormat(new FileFormat(".mzid"));
-		paramManager.addParameter(resFileParam);
-		
-		FileParameter specDirParam = new FileParameter("d", "SpecDir", "Path to directory containing spectrum files");
-		specDirParam.mustBeADirectory();
-		specDirParam.fileMustExist();
-		paramManager.addParameter(specDirParam);
-
-		// ActivationMethod
-		ObjectEnumParameter<ActivationMethod> fragParam = new ObjectEnumParameter<ActivationMethod>("m", "FragmentMethodID");
-		ActivationMethod[] methods = ActivationMethod.getAllRegisteredActivationMethods();
-		for(int i=1; i<methods.length ;i++)
-		{
-			ActivationMethod m = methods[i];
-			if(m != ActivationMethod.FUSION)
-				fragParam.registerObject(m);
-		}
-		paramManager.addParameter(fragParam);
-		
-		// Instrument type
-		paramManager.addInstTypeParam(null);
-		
-		// Enzyme
-		ObjectEnumParameter<Enzyme> enzParam = new ObjectEnumParameter<Enzyme>("e", "EnzymeID");
-		Enzyme[] allEnzymes = Enzyme.getAllRegisteredEnzymes();
-		for(int i=1; i<allEnzymes.length; i++)
-		{
-			Enzyme e = allEnzymes[i];
-			enzParam.registerObject(e);
-		}
-		paramManager.addParameter(enzParam);
-		
-		// Protocol
-		paramManager.addProtocolParam();
-		
-//		paramManager.addModFileParam();
-//		StringParameter nlParam = new StringParameter("nl", "NeutralLosses", "Comma separated neutral losses to consider. Specify compositions or masses");
-//		nlParam.setAdditionalDescription("E.g. '-nl H3PO4', '-nl 97.995,64.064'");
-//		nlParam.defaultValue(null);
-//		paramManager.addParameter(nlParam);
+		paramManager.addScoringParamGenParams();
 		
 		if(argv.length == 0)
 		{

@@ -54,19 +54,26 @@ public class AnnotatedSpectra {
 	{
 		System.out.println("Parsing " + resultFile.getName());
 		File tsvResultFile = null;
-		if(resultFile.getName().endsWith("mzid"))
+		if(resultFile.getName().endsWith(".mzid"))
 		{
-			try {
-				tsvResultFile = File.createTempFile("__AnnotatedSpectra", ".tsv");
-			} catch (IOException e) {
-				e.printStackTrace();
+			String resultFileName = resultFile.getAbsolutePath();
+			String tsvResultFileName = resultFileName.substring(0, resultFileName.lastIndexOf('.'))+".tsv";
+			tsvResultFile = new File(tsvResultFileName);
+			if(!tsvResultFile.exists())
+			{
+				try {
+					System.out.println("Converting " + resultFile.getName());
+					tsvResultFile = File.createTempFile("__AnnotatedSpectra", ".tsv");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				tsvResultFile.deleteOnExit();
+				
+				MzIDParser parser = new MzIDParser(resultFile);
+				parser.writeToTSVFile(tsvResultFile);				
 			}
-			tsvResultFile.deleteOnExit();
-			
-			MzIDParser parser = new MzIDParser(resultFile);
-			parser.writeToTSVFile(tsvResultFile);
 		}
-		else
+		else if(resultFile.getName().endsWith(".tsv"))
 			tsvResultFile = resultFile;
 		
 		

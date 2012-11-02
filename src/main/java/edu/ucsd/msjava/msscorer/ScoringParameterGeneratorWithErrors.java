@@ -131,6 +131,14 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			if(verbose)
 				System.out.println("Consider iTRAQ loss.");
 		}
+
+		if(dataType.getProtocol().getName().equals("iTRAQPhospho"))
+		{
+			considerPhosLoss = true;
+			consideriTRAQLoss = true;
+			if(verbose)
+				System.out.println("Consider iTRAQ and H3PO4 loss.");
+		}
 		
 		HashSet<String> pepSet = new HashSet<String>();
 		for(Spectrum spec : container)
