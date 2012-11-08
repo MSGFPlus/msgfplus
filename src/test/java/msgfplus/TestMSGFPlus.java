@@ -79,6 +79,19 @@ public class TestMSGFPlus {
 	}
 	
 	@Test
+	public void testNTermMetCleavage()
+	{
+		File specPath = new File("C:\\cygwin\\home\\kims336\\Research\\Data\\Bug\\test.mgf");
+		File dbFile = new File("C:\\cygwin\\home\\kims336\\Research\\Data\\Bug\\test.fasta");
+
+		String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-ti", "0,0", "-tda", "0", "-ntt", "2", "-protocol", "2"};
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		paramManager.addMSGFPlusParams();
+		paramManager.parseParams(argv);
+		MSGFPlus.runMSGFPlus(paramManager);
+	}
+	
+	@Test
 	public void testScoringParamGen()
 	{
 		File resultPath = new File("/Users/kims336/Research/Data/TrainingITRAQ/Phospho/test");
@@ -93,4 +106,5 @@ public class TestMSGFPlus {
 		
 		ScoringParamGen.runScoringParamGen(paramManager);
 	}
+
 }
