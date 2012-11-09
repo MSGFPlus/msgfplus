@@ -134,6 +134,12 @@ public class MgfSpectrumParser implements SpectrumParser {
   			else if(buf.startsWith("END IONS"))
   			{
   				assert(spec != null);
+  				if(spec.getScanNum() == -1 && spec.getTitle().matches("Scan:\\d+\\s.+"))
+  				{
+  					String[] token = spec.getTitle().split("\\s++");
+  					int scanNum = Integer.parseInt(token[0].substring("Scan:".length()));
+  					spec.setScanNum(scanNum);
+  				}
   				spec.setPrecursor(new Peak(precursorMz, precursorIntensity, precursorCharge));
   				if(!sorted)
   					Collections.sort(spec);
