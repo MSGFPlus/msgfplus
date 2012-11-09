@@ -106,5 +106,18 @@ public class TestMSGFPlus {
 		
 		ScoringParamGen.runScoringParamGen(paramManager);
 	}
+	
+	@Test
+	public void testMgf()
+	{
+		File specPath = new File("C:\\cygwin\\home\\kims336\\Research\\Data\\Test\\test.mgf");
+		File dbFile = new File("C:\\cygwin\\home\\kims336\\Research\\Data\\Test\\test.fasta");
+
+		String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-ti", "0,0", "-tda", "0", "-ntt", "2"};
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		paramManager.addMSGFPlusParams();
+		paramManager.parseParams(argv);
+		MSGFPlus.runMSGFPlus(paramManager);
+	}
 
 }
