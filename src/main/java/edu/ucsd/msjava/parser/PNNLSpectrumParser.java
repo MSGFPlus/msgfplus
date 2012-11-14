@@ -24,6 +24,9 @@ public class PNNLSpectrumParser implements SpectrumParser {
 		Spectrum spec = null;
 
 		String buf;
+		float prevMass = 0;
+		boolean isSorted = true;
+		
 		while((buf = lineReader.readLine()) != null)
 		{
 			if(buf.length() == 0)
@@ -77,8 +80,12 @@ public class PNNLSpectrumParser implements SpectrumParser {
 				if(token2.length != 2)
 					continue;
 				float mass = Float.parseFloat(token2[0]);
+				if(isSorted && mass < prevMass)
+					isSorted = false;
+				
 				float intensity = Float.parseFloat(token2[1]);
 				spec.add(new Peak(mass, intensity, 1));
+				prevMass = mass;
 			}
 		}
 		return spec;

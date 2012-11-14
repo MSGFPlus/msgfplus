@@ -120,4 +120,10 @@ public class TestMSGFPlus {
 		MSGFPlus.runMSGFPlus(paramManager);
 	}
 
+	@Test
+	public void testMzID()
+	{
+		File mzidFile = null;
+		
+	}
 }
