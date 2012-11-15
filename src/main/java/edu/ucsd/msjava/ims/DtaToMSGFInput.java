@@ -4,8 +4,14 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.Collections;
 
+import edu.ucsd.msjava.msutil.Composition;
+import edu.ucsd.msjava.msutil.Peak;
+import edu.ucsd.msjava.msutil.SpectraIterator;
+import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.parser.BufferedLineReader;
+import edu.ucsd.msjava.parser.PNNLSpectrumParser;
 
 public class DtaToMSGFInput {
 	public static void main(String argv[]) throws Exception
@@ -18,8 +24,6 @@ public class DtaToMSGFInput {
 			printUsageAndExit("File does not exist.");
 		
 		File msgfInputFile = new File(argv[1]);
-		if(msgfInputFile.exists())
-			printUsageAndExit(msgfInputFile.getName()+ " already exists.");
 
 		makeMSGFInput(dtaFile, msgfInputFile);
 	}
@@ -34,26 +38,29 @@ public class DtaToMSGFInput {
 	
 	public static void makeMSGFInput(File dtaFile, File msgfInputFile) throws Exception
 	{
-		PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(msgfInputFile)));
-		String header = "#SpectrumFile\tScan#\tAnnotation\tCharge\tFrameNum\tPrevSpecProb";
-		out.println(header);
+		PrintStream msgfOut = new PrintStream(new BufferedOutputStream(new FileOutputStream(msgfInputFile)));
+		String header = "#SpectrumFile\tScan#\tAnnotation\tCharge\tFrameNum\tDtaIndex\tPrevSpecProb";
+		msgfOut.println(header);
 		
-		String dtaFileName = dtaFile.getName();
+		String dtaFilePath = dtaFile.getAbsolutePath();
+		File mgfFile = new File(dtaFilePath.substring(0, dtaFilePath.lastIndexOf("_dta.txt")) + ".mgf");
+		String mgfFileName = mgfFile.getName();
 		
 		BufferedLineReader in = new BufferedLineReader(dtaFile.getPath());
 		String s;
 		
 		int lineNum = 0;
-		int specIndex = -1;
+		int specIndex = 0;
+		int origSpecIndex = 0;
 		while((s=in.readLine()) != null)
 		{
 			lineNum++;
 			if(s.startsWith("==="))
 			{
-				++specIndex;
+				++origSpecIndex;
 				String metaInfo = s.substring(s.indexOf('"')+1, s.lastIndexOf(".dta"));
 				String[] token = metaInfo.split("\\.");
-				if(token.length != 5)
+				if(token.length != 5 && token.length != 4)
 				{
 					System.out.println("Syntax Error in Line " + lineNum + ": " + s);
 					System.exit(-1);
@@ -61,14 +68,38 @@ public class DtaToMSGFInput {
 				String pepSeq = token[0].replaceAll("!", "").replaceAll("@", "+15.995");
 				int maxCharge = Integer.parseInt(token[1]);
 				int frameNum = Integer.parseInt(token[2]);
-				float prevSpecProb = Float.parseFloat(token[3]+token[4]);
+				float prevSpecProb;
+				if(token.length == 5)
+					prevSpecProb = Float.parseFloat(token[3]+token[4]);
+				else
+					prevSpecProb = Float.parseFloat(token[3]);
 				
 				for(int charge=2; charge<=maxCharge; charge++)
-					out.println(dtaFileName+"\t"+specIndex+"\t"+"."+pepSeq+".\t"+charge+"\t"+frameNum+"\t"+prevSpecProb);
+				{		
+					++specIndex;
+					msgfOut.println(mgfFileName+"\t"+specIndex+"\t"+"."+pepSeq+".\t"+charge+"\t"+frameNum+"\t"+origSpecIndex+"\t"+prevSpecProb);
+				}
 			}
 		}
 
 		in.close();
-		out.close();
+		
+		msgfOut.close();
+		
+		PrintStream mgfOut = new PrintStream(new BufferedOutputStream(new FileOutputStream(mgfFile)));
+		
+		SpectraIterator itr = new SpectraIterator(dtaFile.getPath(), new PNNLSpectrumParser());
+		while(itr.hasNext())
+		{
+			Spectrum spec = itr.next();
+			int maxCharge = spec.getCharge();
+			for(int charge=2; charge<=maxCharge; charge++)
+			{		
+				float precursorMz = spec.getParentMass()/charge+(float)Composition.PROTON;
+				spec.setPrecursor(new Peak(precursorMz, 0, charge));
+				spec.outputMgf(mgfOut);
+			}			
+		}
+		mgfOut.close();
 	}
 }

@@ -30,6 +30,7 @@ import edu.ucsd.msjava.parser.InsPecTParser;
 import edu.ucsd.msjava.parser.MS2SpectrumParser;
 import edu.ucsd.msjava.parser.MgfSpectrumParser;
 import edu.ucsd.msjava.parser.MzXMLSpectraMap;
+import edu.ucsd.msjava.parser.PNNLSpectrumParser;
 import edu.ucsd.msjava.parser.PSMList;
 import edu.ucsd.msjava.parser.PklSpectrumParser;
 
@@ -228,6 +229,10 @@ public class MSGF {
 				else if(ext.equalsIgnoreCase(".ms2"))
 				{			
 					specAccessor = new SpectraMap(specFilePath, new MS2SpectrumParser());
+				}
+				else if(fileName.endsWith("_dta.txt"))
+				{
+					specAccessor = new SpectraMap(specFilePath, new PNNLSpectrumParser());
 				}
 				else
 				{

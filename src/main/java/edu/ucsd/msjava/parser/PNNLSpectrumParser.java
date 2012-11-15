@@ -2,6 +2,7 @@ package edu.ucsd.msjava.parser;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -32,7 +33,11 @@ public class PNNLSpectrumParser implements SpectrumParser {
 			if(buf.length() == 0)
 			{
 				if(spec != null)
+				{
+					if(!isSorted)
+						Collections.sort(spec);
 					return spec;
+				}
 				else
 					continue;
 			}
