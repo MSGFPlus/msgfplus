@@ -97,20 +97,23 @@ public class SpectrumConverter {
 		// Peak list
         BinaryDataArray mzArray = null, intenArray = null;
 
-        for (BinaryDataArray array : jmzMLSpec.getBinaryDataArrayList().getBinaryDataArray()) {
-            // check the cvParams
-            for (CVParam param : array.getCvParam()) {
-                if (param.getAccession().equals("MS:1000514")) {
-                    mzArray = array;
-                    break;
+        if(jmzMLSpec.getBinaryDataArrayList() != null && jmzMLSpec.getBinaryDataArrayList().getBinaryDataArray() != null)
+        {
+            for (BinaryDataArray array : jmzMLSpec.getBinaryDataArrayList().getBinaryDataArray()) {
+                // check the cvParams
+                for (CVParam param : array.getCvParam()) {
+                    if (param.getAccession().equals("MS:1000514")) {
+                        mzArray = array;
+                        break;
+                    }
+                    if (param.getAccession().equals("MS:1000515")) {
+                        intenArray = array;
+                        break;
+                    }
                 }
-                if (param.getAccession().equals("MS:1000515")) {
-                    intenArray = array;
+                if (mzArray != null && intenArray != null)
                     break;
-                }
             }
-            if (mzArray != null && intenArray != null)
-                break;
         }
 
         if (mzArray != null && intenArray != null)
