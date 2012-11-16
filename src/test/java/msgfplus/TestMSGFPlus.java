@@ -123,7 +123,5 @@ public class TestMSGFPlus {
 	@Test
 	public void testMzID()
 	{
-		File mzidFile = null;
-		
 	}
 }
