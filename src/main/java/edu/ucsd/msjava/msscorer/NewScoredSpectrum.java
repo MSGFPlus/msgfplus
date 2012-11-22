@@ -61,7 +61,10 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 		mainIon = scorer.getMainIonType(partition);
 		
 		float approxNumBins = spec.getPeptideMass()/(scorer.getMME().getValue()*2);
-		probPeak = spec.size()/approxNumBins;
+		if(spec.size() == 0)
+			probPeak = 1/approxNumBins;
+		else
+			probPeak = spec.size()/approxNumBins;
 		this.spec = spec;
 	}
 	

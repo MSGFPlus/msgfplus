@@ -4,39 +4,71 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
+import edu.ucsd.msjava.msutil.Composition;
 import edu.ucsd.msjava.parser.BufferedLineReader;
 
 public class DtaToMSGFInput {
 	public static void main(String argv[]) throws Exception
 	{
-		if(argv.length != 2)
+		if(argv.length != 1)
 			printUsageAndExit("Illegal parameter");
 		
-		File dtaFile = new File(argv[0]);
-		if(!dtaFile.exists())
+		File dtaPath = new File(argv[0]);
+		if(!dtaPath.exists())
 			printUsageAndExit("File does not exist.");
 		
-		File msgfInputFile = new File(argv[1]);
-
-		makeMSGFInput(dtaFile, msgfInputFile);
+		List<File> dtaFileList = new ArrayList<File>();
+		
+		if(dtaPath.isDirectory())
+		{
+			for(File f : dtaPath.listFiles())
+			{
+				if(f.getName().endsWith("_dta.txt"))
+					dtaFileList.add(f);
+			}
+		}
+		else
+		{
+			if(dtaPath.getName().endsWith("_dta.txt"))
+				dtaFileList.add(dtaPath);
+		}
+		
+		if(dtaFileList.size() == 0)
+			printUsageAndExit("No _dta.txt file!");
+		
+		makeMSGFInput(dtaFileList);
 	}
 	
 	public static void printUsageAndExit(String message)
 	{
 		if(message != null)
 			System.out.println(message);
-		System.out.println("Usage: java DtaToMSGFInput DTAFile MSGFInputFile");
+		System.out.println("Usage: java DtaToMSGFInput DTAPath");
 		System.exit(-1);
+	}
+	
+	public static void makeMSGFInput(List<File> dtaFileList) throws Exception
+	{
+		for(File dtaFile : dtaFileList)
+		{
+			String dtaFilePath = dtaFile.getAbsolutePath();
+			String msgfInputFilePath = dtaFilePath.substring(0, dtaFilePath.lastIndexOf("_dta.txt")) + "_msgfInput.txt";
+			File msgfInputFile = new File(msgfInputFilePath);
+			System.out.println(dtaFile.getName() + "->" + msgfInputFile.getName());
+			makeMSGFInput(dtaFile, msgfInputFile);
+		}
 	}
 	
 	public static void makeMSGFInput(File dtaFile, File msgfInputFile) throws Exception
 	{
 		PrintStream msgfOut = new PrintStream(new BufferedOutputStream(new FileOutputStream(msgfInputFile)));
-		String header = "#SpectrumFile\tScan#\tAnnotation\tCharge\tFrameNum\tFromScan\tToScan\tPrevSpecProb";
+		String header = "#SpectrumFile\tScan#\tAnnotation\tPrecursorMz\tCharge\tFrameNum\tFromScan\tToScan\tPrevSpecProb";
 		msgfOut.println(header);
 		
-		String dtaFilePath = dtaFile.getAbsolutePath();
+//		String dtaFilePath = dtaFile.getAbsolutePath();
 //		File mgfFile = new File(dtaFilePath.substring(0, dtaFilePath.lastIndexOf("_dta.txt")) + ".mgf");
 //		String mgfFileName = mgfFile.getName();
 		
@@ -69,7 +101,19 @@ public class DtaToMSGFInput {
 				else
 					prevSpecProb = Float.parseFloat(token[7]);
 				
-				msgfOut.println(dtaFile.getName()+"\t"+origSpecIndex+"\t"+annotation+"\t"+charge+"\t"+frameNum+"\t"+fromScan+"\t"+toScan+"\t"+prevSpecProb);
+				String precursorStr = in.readLine();
+				if(precursorStr == null)
+					break;
+				String[] precursorToken = precursorStr.split("\\s+");
+				if(precursorToken.length < 2)
+				{
+					System.out.println("Syntax Error in line " + lineNum + ": " + precursorStr);
+					System.exit(-1);
+				}
+				float precursorMH = Float.parseFloat(precursorToken[0]);
+				float precursorMz = (precursorMH-(float)Composition.PROTON)/charge+(float)Composition.PROTON;
+
+				msgfOut.println(dtaFile.getName()+"\t"+origSpecIndex+"\t"+annotation+"\t"+precursorMz+"\t"+charge+"\t"+frameNum+"\t"+fromScan+"\t"+toScan+"\t"+prevSpecProb);
 			}
 		}
 

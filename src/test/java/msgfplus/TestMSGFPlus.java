@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.mzml.MzMLAdapter;
 import edu.ucsd.msjava.params.ParamManager;
 import edu.ucsd.msjava.ui.MSGFPlus;
@@ -121,7 +122,10 @@ public class TestMSGFPlus {
 	}
 
 	@Test
-	public void testMzID()
+	public void testModFileReading()
 	{
+		File modFile = new File("/Users/kims336/Research/Data/Mouse_Brain_Phospho/Mods.txt");
+		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
+		aaSet.printAASet();
 	}
 }
