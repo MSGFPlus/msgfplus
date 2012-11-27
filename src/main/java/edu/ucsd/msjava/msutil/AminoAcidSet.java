@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 
 import edu.ucsd.msjava.msutil.Modification.Location;
@@ -446,9 +447,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 						newAAList.add(aa.getAAWithFixedModification(mod.getModification()));	// replace with a new amino acid
 					else
 					{
-						char modResidue = this.getModifiedResidue(aa.getUnmodResidue());
-						// make a new amino acid and add
-						ModifiedAminoAcid modAA = new ModifiedAminoAcid(aa, mod, modResidue);
+//						char modResidue = this.getModifiedResidue(aa.getUnmodResidue());
+//						ModifiedAminoAcid modAA = new ModifiedAminoAcid(aa, mod, modResidue);
+						ModifiedAminoAcid modAA = getModifiedAminoAcid(aa, mod);
 						newAAList.add(modAA);
 					}
 				}
@@ -473,8 +474,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 					newAAList.add(aa.getAAWithFixedModification(mod.getModification()));
 				else
 				{
-					char modResidue = this.getModifiedResidue(aa.getUnmodResidue());
-					ModifiedAminoAcid modAA = new ModifiedAminoAcid(aa, mod, modResidue);
+//					char modResidue = this.getModifiedResidue(aa.getUnmodResidue());
+//					ModifiedAminoAcid modAA = new ModifiedAminoAcid(aa, mod, modResidue);
+					ModifiedAminoAcid modAA = getModifiedAminoAcid(aa, mod);
 					newAAList.add(modAA);
 				}
 			}
@@ -507,8 +509,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 							if(mod.getLocation() != Location.Anywhere && targetAA.hasTerminalVariableMod())	// residue mod
 								continue;
 						}
-						char modResidue = this.getModifiedResidue(targetAA.getUnmodResidue());
-						ModifiedAminoAcid modAA = new ModifiedAminoAcid(targetAA, mod, modResidue);
+//						char modResidue = this.getModifiedResidue(targetAA.getUnmodResidue());
+//						ModifiedAminoAcid modAA = new ModifiedAminoAcid(targetAA, mod, modResidue);
+						ModifiedAminoAcid modAA = getModifiedAminoAcid(targetAA, mod);
 						newAAList.add(modAA);
 					}
 				}
@@ -541,8 +544,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 						if(mod.getLocation() != Location.Anywhere && targetAA.hasTerminalVariableMod())	// residue mod
 							continue;
 					}
-					char modResidue = this.getModifiedResidue(targetAA.getUnmodResidue());
-					ModifiedAminoAcid modAA = new ModifiedAminoAcid(targetAA, mod, modResidue);
+//					char modResidue = this.getModifiedResidue(targetAA.getUnmodResidue());
+//					ModifiedAminoAcid modAA = new ModifiedAminoAcid(targetAA, mod, modResidue);
+					ModifiedAminoAcid modAA = getModifiedAminoAcid(targetAA, mod);
 					newAAList.add(modAA);
 				}
 			}
@@ -1302,9 +1306,26 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		return symbol;
 	}
 
+	private List<ModifiedAminoAcid> modAAList = new ArrayList<ModifiedAminoAcid>();
+	
+	private ModifiedAminoAcid getModifiedAminoAcid(AminoAcid targetAA, Modification.Instance mod)
+	{
+		for(ModifiedAminoAcid modAA : modAAList)
+		{
+			if(modAA.getTargetAA() == targetAA && modAA.getModification() == mod.getModification())
+				return modAA;
+		}
+		
+		char modResidue = this.getModifiedResidue(targetAA.getUnmodResidue());
+		ModifiedAminoAcid modAA = new ModifiedAminoAcid(targetAA, mod, modResidue);
+		modAAList.add(modAA);
+		
+		return modAA;
+	}
+	
 	public static void main(String argv[])
 	{
-		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(System.getProperty("user.home")+"/Research/Data/QCShew/Mods.txt");
+		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(System.getProperty("user.home")+"/Research/Data/Mouse_Brain_Phospho/Mods.txt");
 		aaSet.printAASet();
 	}
 }

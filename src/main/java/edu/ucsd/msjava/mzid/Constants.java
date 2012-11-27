@@ -25,6 +25,8 @@ public class Constants {
     static String measureIntID = "Measure_Int";
     static String measureErrorID = "Measure_Error";
     static String sourceFileID = "SourceFile_1";
+    static String pepIDPrefix = "Pep";
+    static String pepEvIDPrefix = "PepEv";
 	static final String UNIMOD_RESOURCE_PATH = "unimod.obo";
 
     static Cv psiCV;

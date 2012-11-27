@@ -337,7 +337,18 @@ public class MZIdentMLGen {
 //		String pvID = pre+pepStr+post;
 		
 		String pepStr = match.getPepSeq();
+		
+//		/////////
+//		System.out.println("PepStr: " + pepStr);
+//		///////////
+		
 		Peptide mzidPeptide = pepMap.get(pepStr);
+		
+//		/////////////
+//		edu.ucsd.msjava.msutil.Peptide testPep = aaSet.getPeptide(pepStr);
+//		System.out.println(testPep);
+//		System.out.println(pepStr+"->"+(mzidPeptide == null ? null : mzidPeptide.getId()));
+		/////////////
 		
 		if(mzidPeptide == null)
 		{
@@ -421,7 +432,7 @@ public class MZIdentMLGen {
 
 			mzidPeptide.setPeptideSequence(unmodPepStr.toString());
 			pepMap.put(pepStr, mzidPeptide);
-			mzidPeptide.setId("Pep"+pepMap.size());
+			mzidPeptide.setId(Constants.pepIDPrefix+pepMap.size());
 			peptideList.add(mzidPeptide);
 		}
 		
@@ -437,7 +448,8 @@ public class MZIdentMLGen {
 		if(match.isNTermMetCleaved())
 			++startKey;
 		
-		String annotationKey = startKey+"_"+length;
+		String pepIDNum = peptide.getId().substring(Constants.pepIDPrefix.length());
+		String annotationKey = startKey+"_"+pepIDNum;
 		List<PeptideEvidenceRef> evRefList = evRefListMap.get(annotationKey);
 		
 		if(evRefList == null)
@@ -449,7 +461,8 @@ public class MZIdentMLGen {
 			{
 				PeptideEvidence pepEv = new PeptideEvidence();
 				
-				String pepEvKey = "PepEv"+(index+1)+"_"+length;
+//				String pepEvKey = "PepEv"+(index+1)+"_"+length;
+				String pepEvKey = Constants.pepEvIDPrefix+"_"+(index+1)+"_"+pepIDNum;
 				if(match.isNTermMetCleaved())
 					pepEvKey += "_1";
 				pepEv.setId(pepEvKey);

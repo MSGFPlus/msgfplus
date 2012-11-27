@@ -115,5 +115,25 @@ public class Modification {
 			return mod.getName()+" "+residue+" "+location+" "+(isFixedModification ? "Fixed" : "Variable");		
 		}
 		
+		@Override
+		public boolean equals(Object obj)
+		{
+			if(obj instanceof Instance)
+			{
+				Instance other = (Instance)obj;
+				if(mod == other.mod && this.residue == other.residue && this.location == other.location && this.isFixedModification == other.isFixedModification)
+					return true;
+				else
+					return false;
+			}
+			return false;
+		}
+		
+		@Override
+		public int hashCode()
+		{
+			return mod.getName().hashCode()+new Character(residue).hashCode() + location.hashCode()+new Boolean(isFixedModification).hashCode();
+		}
+		
 	}
 }
