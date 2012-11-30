@@ -428,6 +428,9 @@ public class DBScanner {
 						Collection<SpecKey> matchedSpecKeyList = specScanner.getPepMassSpecKeyMap().subMap(leftThr, rightThr).values();
 						if(matchedSpecKeyList.size() > 0)
 						{
+							//////
+//							System.out.println("\tMatch: " + sequence.getCharAt(index)+"."+sequence.getSubsequence(index+1, index+i+1)+"."+sequence.getCharAt(index+i+1));
+							///////
 							boolean isNTermMetCleaved = candidatePepGrid.isNTermMetCleaved(j);
 //							int pepLength = i;
 							int pepLength;
@@ -435,6 +438,9 @@ public class DBScanner {
 								pepLength = i;
 							else
 								pepLength = i-1;
+							
+							if(pepLength < minPeptideLength)
+								continue;
 							
 							for(SpecKey specKey : matchedSpecKeyList)
 							{

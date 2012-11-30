@@ -112,10 +112,19 @@ public class BuildSA {
 			if(ratioUniqueProteins < 0.5f)
 			{
 				System.err.println("Error while indexing: " + concatTargetDecoyDBFile.getName() + " (too many redundant proteins)");
-				System.err.println("Error while indexing: " + concatTargetDecoyDBFile.getName() + " (too many redundant proteins)");
+				System.err.println("Ratio of unique proteins: " + ratioUniqueProteins);
 				System.err.println("If the database contains forward and reverse proteins, run MS-GF+ (or BuildSA) again with \"-tda 0\"");
 				System.exit(-1);
 			}
+			
+			float fractionDecoyProteins = tdaSequence.getFractionDecoyProteins();
+			if(fractionDecoyProteins < 0.4f || fractionDecoyProteins > 0.6f)
+			{
+				System.err.println("Error while reading: " + databaseFile.getName() + " (fraction of decoy proteins: "+ fractionDecoyProteins+ ")");
+				System.err.println("Delete " + databaseFile.getName() + " and run MS-GF+ again.");
+				System.exit(-1);
+			}
+			
 			new CompactSuffixArray(tdaSequence);
 		}
 		

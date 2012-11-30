@@ -464,7 +464,7 @@ public class MZIdentMLGen {
 //				String pepEvKey = "PepEv"+(index+1)+"_"+length;
 				String pepEvKey = Constants.pepEvIDPrefix+"_"+(index+1)+"_"+pepIDNum;
 				if(match.isNTermMetCleaved())
-					pepEvKey += "_1";
+					pepEvKey += "_N"+"_"+startKey;
 				pepEv.setId(pepEvKey);
 				char pre = sa.getSequence().getCharAt(index);
 				if(pre == '_')

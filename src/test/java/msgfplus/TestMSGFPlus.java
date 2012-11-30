@@ -8,6 +8,8 @@ import java.io.IOException;
 import org.junit.Test;
 
 import edu.ucsd.msjava.msutil.AminoAcidSet;
+import edu.ucsd.msjava.msutil.SpectraAccessor;
+import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.mzml.MzMLAdapter;
 import edu.ucsd.msjava.params.ParamManager;
 import edu.ucsd.msjava.ui.MSGFPlus;
@@ -127,5 +129,15 @@ public class TestMSGFPlus {
 		File modFile = new File("/Users/kims336/Research/Data/Mouse_Brain_Phospho/Mods.txt");
 		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
 		aaSet.printAASet();
+	}
+	
+	@Test
+	public void testProfieSpectraDetector()
+	{
+		File specFile = new File("/Users/kims336/Research/Data/Nikola/Athal0470_26Mar12_Jaguar_12-02-27_dta.txt");
+		SpectraAccessor specAcc = new SpectraAccessor(specFile);
+		Spectrum spec = specAcc.getSpectrumBySpecIndex(1);
+		spec.setIsCentroided();
+		System.out.println(spec.isCentroided());
 	}
 }
