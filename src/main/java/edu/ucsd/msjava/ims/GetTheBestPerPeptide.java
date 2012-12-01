@@ -59,6 +59,8 @@ public class GetTheBestPerPeptide {
 		String s;
 		while((s=in.readLine()) != null)
 		{
+			if(s.startsWith("#"))
+				continue;
 			String[] token = s.split("\t");
 			String annotation = token[annotationIndexCol];
 			String prev = table.get(annotation);

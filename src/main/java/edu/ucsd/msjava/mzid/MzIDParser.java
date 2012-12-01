@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -163,6 +164,7 @@ public class MzIDParser {
                      Peptide peptide = pepMap.get(sii.getPeptideRef());
                      String peptideSeq = getPeptideSeq(peptide);
 
+                	 HashSet<String> proteinSet = new HashSet<String>();
                      if(this.unrollResults)
                      {
                          for(PeptideEvidenceRef pepEvRef : sii.getPeptideEvidenceRef())
@@ -178,25 +180,27 @@ public class MzIDParser {
                         	 
                         	 DBSequence dbSeq = dbSeqMap.get(pepEv.getDBSequenceRef());
                         	 String protein = dbSeq.getAccession();
-
-                             out.print(specFileName
-                            		 +"\t"+specID
-                            		 +"\t"+scanNum
-                            		 +"\t"+fragMethod
-                            		 +"\t"+experimentalMassToCharge.floatValue()
-                            		 +"\t"+isotopeError
-                            		 +"\t"+(float)precursorError
-                            		 +"\t"+charge
-                            		 +"\t"+pre+"."+peptideSeq+"."+post
-                            		 +"\t"+protein
-                            		 +"\t"+deNovoScore
-                            		 +"\t"+rawScore
-                            		 +"\t"+specEValue
-                            		 +"\t"+eValue
-                            		 );
-                             if(!this.doNotShowQValue)
-                            	 out.print("\t"+psmQValue+"\t"+pepQValue);
-                             out.println();
+                        	 if(proteinSet.add(pre+protein+post))
+                        	 {
+                                 out.print(specFileName
+                                		 +"\t"+specID
+                                		 +"\t"+scanNum
+                                		 +"\t"+fragMethod
+                                		 +"\t"+experimentalMassToCharge.floatValue()
+                                		 +"\t"+isotopeError
+                                		 +"\t"+(float)precursorError
+                                		 +"\t"+charge
+                                		 +"\t"+pre+"."+peptideSeq+"."+post
+                                		 +"\t"+protein
+                                		 +"\t"+deNovoScore
+                                		 +"\t"+rawScore
+                                		 +"\t"+specEValue
+                                		 +"\t"+eValue
+                                		 );
+                                 if(!this.doNotShowQValue)
+                                	 out.print("\t"+psmQValue+"\t"+pepQValue);
+                                 out.println();
+                        	 }
                          }                  	 
                      }
                      else
@@ -220,9 +224,12 @@ public class MzIDParser {
                         	 DBSequence dbSeq = dbSeqMap.get(pepEv.getDBSequenceRef());
                         	 String protein = dbSeq.getAccession();
                         	 
-                        	 if(proteinBuf.length() != 0)
-                        		 proteinBuf.append(";");
-                        	 proteinBuf.append(protein+"(pre="+pre+",post="+post+")");
+                        	 if(proteinSet.add(pre+protein+post))
+                        	 {
+                        		 if(proteinBuf.length() != 0)
+                        			 proteinBuf.append(";");
+                        		 proteinBuf.append(protein+"(pre="+pre+",post="+post+")");
+                        	 }
                          }
                          
                          if(!isAllDecoy)

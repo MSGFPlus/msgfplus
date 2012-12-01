@@ -199,7 +199,6 @@ public class MZIdentMLGen {
 			
 			
 			int rank = 0;
-			
 			for(int i=matchList.size()-1; i>=0; --i)
 			{
 				++rank;
@@ -325,7 +324,8 @@ public class MZIdentMLGen {
 				
 				sir.getSpectrumIdentificationItem().add(sii);
 			}
-			siList.getSpectrumIdentificationResult().add(sir);
+			if(!sir.getSpectrumIdentificationItem().isEmpty())
+				siList.getSpectrumIdentificationResult().add(sir);
 		}
 	}	
 	
@@ -463,8 +463,8 @@ public class MZIdentMLGen {
 				
 //				String pepEvKey = "PepEv"+(index+1)+"_"+length;
 				String pepEvKey = Constants.pepEvIDPrefix+"_"+(index+1)+"_"+pepIDNum;
-				if(match.isNTermMetCleaved())
-					pepEvKey += "_N"+"_"+startKey;
+//				if(match.isNTermMetCleaved())
+//					pepEvKey += "_N"+"_"+startKey;
 				pepEv.setId(pepEvKey);
 				char pre = sa.getSequence().getCharAt(index);
 				if(pre == '_')

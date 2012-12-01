@@ -252,7 +252,6 @@ public class DBScanner {
 					}
 					else
 						prevMatchList[prevMatchIndex] = null;
-					
 				}
 
 				if(lcp > i+1 ||
@@ -606,9 +605,14 @@ public class DBScanner {
 				for(DatabaseMatch m : matchQueue)
 				{
 					String pepSeq = m.getPepSeq();
-					DatabaseMatch existingMatch = pepSeqMap.get(pepSeq);
+					int index = m.getIndex();
+					char pre = sa.getSequence().getCharAt(index);
+					char post = sa.getSequence().getCharAt(index+m.getLength()-1);
+					String annotation = pre+pepSeq+post;
+					
+					DatabaseMatch existingMatch = pepSeqMap.get(annotation);
 					if(existingMatch == null)
-						pepSeqMap.put(pepSeq, m);
+						pepSeqMap.put(annotation, m);
 					else
 						existingMatch.addIndex(m.getIndex());
 				}

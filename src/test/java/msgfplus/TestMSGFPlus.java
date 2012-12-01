@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 
 import org.junit.Test;
 
@@ -12,6 +13,7 @@ import edu.ucsd.msjava.msutil.SpectraAccessor;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.mzml.MzMLAdapter;
 import edu.ucsd.msjava.params.ParamManager;
+import edu.ucsd.msjava.parser.BufferedLineReader;
 import edu.ucsd.msjava.ui.MSGFPlus;
 import edu.ucsd.msjava.ui.ScoringParamGen;
 
@@ -139,5 +141,43 @@ public class TestMSGFPlus {
 		Spectrum spec = specAcc.getSpectrumBySpecIndex(1);
 		spec.setIsCentroided();
 		System.out.println(spec.isCentroided());
+	}
+	
+	@Test
+	public void testDuplicatedProteins() throws Exception
+	{
+		File tsvFile = new File("/Users/kims336/Research/Data/Nikola/NoEnzyme.tsv");
+		BufferedLineReader in = new BufferedLineReader(tsvFile.getPath());
+		
+		String headerLine = in.readLine();
+		String[] header = headerLine.split("\t");
+		int proteinCol = -1;
+		for(int i=0; i<header.length; i++)
+			if(header[i].equals("Protein"))
+				proteinCol = i;
+		
+		String s;
+		while((s=in.readLine()) != null)
+		{
+			if(s.startsWith("#"))
+				continue;
+			String[] token = s.split("\t");
+			String annotation = token[proteinCol];
+			String[] protein = annotation.split(";");
+			HashSet<String> proteinSet = new HashSet<String>();
+			for(String prot : protein)
+			{
+				if(!proteinSet.add(prot))
+				{
+					System.err.println("Duplicate Protein entry (" + prot + ")\n");
+					System.err.println(s);
+					System.exit(-1);
+				}
+			}
+		}
+		
+		in.close();
+		
+		System.out.println("No duplicate protein entry");
 	}
 }
