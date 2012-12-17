@@ -35,7 +35,7 @@ public class SearchParams {
 	private int startSpecIndex;
 	private int endSpecIndex;
 	private boolean useTDA;
-	private boolean showFDR;
+//	private boolean showFDR;
 //	private boolean showDecoy;
 	private int minPeptideLength;
 	private int maxPeptideLength;
@@ -114,10 +114,10 @@ public class SearchParams {
 		return useTDA;
 	}
 
-	public boolean showFDR() {
-		return showFDR;
-	}
-
+//	public boolean showFDR() {
+//		return showFDR;
+//	}
+//
 //	public boolean showDecoy() {
 //		return showDecoy;
 //	}
@@ -261,7 +261,7 @@ public class SearchParams {
 		endSpecIndex = ((IntRangeParameter)paramManager.getParameter("index")).getMax();
 		
 		useTDA = paramManager.getIntValue("tda") == 1 ? true : false;
-		showFDR = paramManager.getIntValue("showQValue") == 1 ? true : false;
+//		showFDR = paramManager.getIntValue("showQValue") == 1 ? true : false;
 //		showDecoy = paramManager.getIntValue("showDecoy") == 1 ? true : false;
 		outputAdditionalFeatures = paramManager.getIntValue("addFeatures") == 1 ? true : false;
 		

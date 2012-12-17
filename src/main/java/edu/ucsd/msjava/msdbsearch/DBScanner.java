@@ -373,7 +373,7 @@ public class DBScanner {
 						continue;
 					
 //					System.out.println(sequence.getSubsequence(index+1, index+i+1));
-//					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("LAHNISNSANTQANVADAK"))
+//					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("IKAALEVAAQR"))
 //						System.out.println("Debug");
 					
 					int cTermCleavageScore = 0;
@@ -416,14 +416,21 @@ public class DBScanner {
 					
 					for(int j=0; j<candidatePepGrid.size(); j++)
 					{
-						float peptideMass = candidatePepGrid.getPeptideMass(j);
+						float theoPeptideMass = candidatePepGrid.getPeptideMass(j);
 						int nominalPeptideMass = candidatePepGrid.getNominalPeptideMass(j);
-						float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
-						float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
+						float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(theoPeptideMass);
+						float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(theoPeptideMass);
 
+						double leftThr = (double)(theoPeptideMass - tolDaLeft);
+						double rightThr = (double)(theoPeptideMass + tolDaRight);
 						
-						double leftThr = (double)(peptideMass - tolDaRight);
-						double rightThr = (double)(peptideMass + tolDaLeft);
+//						float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
+//						float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
+//						int maxPeptideMassIndex, minPeptideMassIndex;
+//						
+//						maxPeptideMassIndex = maxNominalPeptideMass + Math.round(tolDaLeft-0.4999f);
+//						minPeptideMassIndex = minNominalPeptideMass - Math.round(tolDaRight-0.4999f);
+						
 						Collection<SpecKey> matchedSpecKeyList = specScanner.getPepMassSpecKeyMap().subMap(leftThr, rightThr).values();
 						if(matchedSpecKeyList.size() > 0)
 						{
@@ -456,7 +463,7 @@ public class DBScanner {
 								
 								if(prevMatchQueue.size() < this.numPeptidesPerSpec || score == prevMatchQueue.peek().getScore())
 								{
-									DatabaseMatch dbMatch = new DatabaseMatch(index, (byte)(pepLength+2), score, peptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j), scorer.getActivationMethodArr()).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm);
+									DatabaseMatch dbMatch = new DatabaseMatch(index, (byte)(pepLength+2), score, theoPeptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j), scorer.getActivationMethodArr()).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm);
 									dbMatch.setNTermMetCleaved(isNTermMetCleaved);
 									prevMatchQueue.add(dbMatch);
 									if(prevMatchList[i] == null)
@@ -469,7 +476,7 @@ public class DBScanner {
 									{
 										while(!prevMatchQueue.isEmpty() && prevMatchQueue.peek().getScore() < score)
 											prevMatchQueue.poll();
-										DatabaseMatch dbMatch = new DatabaseMatch(index, (byte)(pepLength+2), score, peptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j), scorer.getActivationMethodArr()).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm);
+										DatabaseMatch dbMatch = new DatabaseMatch(index, (byte)(pepLength+2), score, theoPeptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j), scorer.getActivationMethodArr()).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm);
 										dbMatch.setNTermMetCleaved(isNTermMetCleaved);
 										prevMatchQueue.add(dbMatch);
 										if(prevMatchList[i] == null)

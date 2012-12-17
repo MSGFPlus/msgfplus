@@ -156,10 +156,10 @@ public class MzIDParser {
                      String fragMethod =  (userParam = userParamMap.get("AssumedDissociationMethod")) == null ? null : userParam.getValue();
                      Integer isotopeError =  (userParam = userParamMap.get("IsotopeError")) == null ? null : Integer.parseInt(userParam.getValue());
                      
-                     double theoreticalMz = experimentalMassToCharge-Composition.ISOTOPE*isotopeError/charge;
-                     double precursorError = calculatedMassToCharge-theoreticalMz;
+                     double adjustedExpMz = experimentalMassToCharge-Composition.ISOTOPE*isotopeError/charge;
+                     double precursorError = adjustedExpMz-calculatedMassToCharge;
                      if(isPrecursorTolerancePPM)
-                    	 precursorError = precursorError/theoreticalMz*1e6;
+                    	 precursorError = precursorError/calculatedMassToCharge*1e6;
                      
                      Peptide peptide = pepMap.get(sii.getPeptideRef());
                      String peptideSeq = getPeptideSeq(peptide);

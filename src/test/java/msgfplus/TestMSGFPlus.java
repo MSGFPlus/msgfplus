@@ -126,6 +126,19 @@ public class TestMSGFPlus {
 	}
 
 	@Test
+	public void testCrossLink()
+	{
+		File specPath = new File(System.getProperty("user.home")+"/Research/Data/Eric/CuMB_006e_scan2089.mgf");
+		File dbFile = new File(System.getProperty("user.home")+"/Research/Data/Eric/database.fasta");
+
+		String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-ti", "0,0", "-tda", "0", "-ntt", "2", "-m", "2"};
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		paramManager.addMSGFPlusParams();
+		paramManager.parseParams(argv);
+		MSGFPlus.runMSGFPlus(paramManager);
+	}
+	
+	@Test
 	public void testModFileReading()
 	{
 		File modFile = new File("/Users/kims336/Research/Data/Mouse_Brain_Phospho/Mods.txt");
@@ -180,4 +193,37 @@ public class TestMSGFPlus {
 		
 		System.out.println("No duplicate protein entry");
 	}
+	
+	@Test
+	public void testPrecursorError() throws Exception
+	{
+		File specPath = new File(System.getProperty("user.home")+"/Research/Data/Matt/test_dta.txt");
+		File dbFile = new File(System.getProperty("user.home")+"/Research/Data/Matt/test.fasta");
+		File modFile = new File(System.getProperty("user.home")+"/Research/Data/Matt/Mods.txt");
+
+		String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "1.5Da,2.5Da", "-ti", "-1,1", "-tda", "0", "-ntt", "1", "-n", "3", "-mod", modFile.getPath()};
+		
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		paramManager.addMSGFPlusParams();
+		paramManager.parseParams(argv);
+		MSGFPlus.runMSGFPlus(paramManager);
+		System.out.println("Done");
+	}
+	
+	@Test
+	public void testMissingPeptides() throws Exception
+	{
+		File specPath = new File(System.getProperty("user.home")+"/Research/Data/Matt/test.mgf");
+//		File dbFile = new File(System.getProperty("user.home")+"/Research/Data/Matt/ID_003456_9B916A8B.fasta");
+		File dbFile = new File(System.getProperty("user.home")+"/Research/Data/Matt/test.fasta");
+
+		String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "1.5Da,2.5Da", "-n", "1", "-ntt", "2"};
+		
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		paramManager.addMSGFPlusParams();
+		paramManager.parseParams(argv);
+		MSGFPlus.runMSGFPlus(paramManager);
+		System.out.println("Done");
+	}
+	
 }

@@ -2,9 +2,7 @@ package edu.ucsd.msjava.ui;
 
 import java.io.File;
 
-import edu.ucsd.msjava.msutil.DBSearchIOFiles;
 import edu.ucsd.msjava.msutil.FileFormat;
-import edu.ucsd.msjava.msutil.SpecFileFormat;
 import edu.ucsd.msjava.mzid.MzIDParser;
 import edu.ucsd.msjava.mzml.MzMLAdapter;
 import edu.ucsd.msjava.params.EnumParameter;
@@ -16,7 +14,7 @@ public class MzIDToTsv {
 	{
 		long time = System.currentTimeMillis();
 
-		ParamManager paramManager = new ParamManager("MzIDToTsv", "v8505", MSGFPlus.RELEASE_DATE, "java -Xmx3500M -cp MSGFPlus.jar edu.ucsd.msjava.ui.MzIDToTsv");
+		ParamManager paramManager = new ParamManager("MzIDToTsv", "v8792", MSGFPlus.RELEASE_DATE, "java -Xmx3500M -cp MSGFPlus.jar edu.ucsd.msjava.ui.MzIDToTsv");
 		
 		FileParameter inputFileParam = new FileParameter("i", "MzIDPath", "MS-GF+ output file (*.mzid) or directory containing mzid files");  
 //		inputFileParam.addFileFormat(new FileFormat(".mzid"));

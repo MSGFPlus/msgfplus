@@ -402,11 +402,11 @@ public class ParamManager {
 		specIndexParam.setHidden();
 		addParameter(specIndexParam);
 		
-		EnumParameter showFDRParam = new EnumParameter("showQValue");
-		showFDRParam.registerEntry("do not show Q-values");
-		showFDRParam.registerEntry("show Q-values").setDefault();
+//		EnumParameter showFDRParam = new EnumParameter("showQValue");
+//		showFDRParam.registerEntry("do not show Q-values");
+//		showFDRParam.registerEntry("show Q-values").setDefault();
 //		showFDRParam.setHidden();
-		addParameter(showFDRParam);
+//		addParameter(showFDRParam);
 
 //		EnumParameter showDecoyParam = new EnumParameter("showDecoy");
 //		showDecoyParam.registerEntry("do not show decoy PSMs").setDefault();

@@ -110,9 +110,9 @@ public class ConvertToMgf {
 				"\t-t TargetFileName (*.mgf)\n" +
 				"\t[-w 0/1] (0: don't write ActivationMethod (default), 1: write ActivationMethod)\n" +
 				"\t[-m FragmentationMethodID] (0: convert all (Default), 1: CID, 2: ETD, 3: HCD)\n" +
-				"\t[-index SpecIndex] (only write the spectrum of the specified index will be converted)" +
-				"\t[-scan ScanNum] (only write the spectrum of the specified scan number will be converted)" +
-				"\t[-id id] (only write the spectrum of the specified id will be converted)");
+				"\t[-index SpecIndex] (only write the spectrum of the specified index will be converted)\n" +
+				"\t[-scan ScanNum] (only write the spectrum of the specified scan number will be converted)\n" +
+				"\t[-id id] (only write the spectrum of the specified id will be converted)\n");
 		System.exit(-1);
 	}
 	
