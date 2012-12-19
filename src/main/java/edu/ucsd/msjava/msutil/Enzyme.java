@@ -242,7 +242,7 @@ public class Enzyme implements ParamObject {
 	public char[] getResidues()	{ return residues; }
 	
 	/** The Constant TRYPSIN. */
-	public static final Enzyme NOENZYME;
+	public static final Enzyme UnspecificCleavage;
 	
 	/** The Constant TRYPSIN. */
 	public static final Enzyme TRYPSIN;
@@ -269,7 +269,7 @@ public class Enzyme implements ParamObject {
 	public static final Enzyme ALP;
 	
 	/** Endogenous peptides */
-	public static final Enzyme Peptidomics;
+	public static final Enzyme NoCleavage;
 	
 	public static Enzyme getEnzymeByName(String name)
 	{
@@ -296,7 +296,7 @@ public class Enzyme implements ParamObject {
 	}
 	
 	static {
-		NOENZYME = new Enzyme("NoEnzyme", null, false, "NoEnzyme", "MS:1001045");
+		UnspecificCleavage = new Enzyme("UnspecificCleavage", null, false, "unspecific cleavage", "MS:1001956");
 		TRYPSIN = new Enzyme("Tryp", "KR", false, "Trypsin", "MS:1001251");
 //		TRYPSIN.setNeighboringAAEfficiency(0.9148273f);
 //		TRYPSIN.setPeptideCleavageEffiency(0.98173124f);
@@ -326,12 +326,12 @@ public class Enzyme implements ParamObject {
 		
 		ALP = new Enzyme("aLP", null, false, "alphaLP", null);
 		
-		Peptidomics = new Enzyme("Peptidomics", null, false, "No Enzyme (for peptidomics)", null);
+		NoCleavage = new Enzyme("NoCleavage", null, false, "no cleavage", "MS:1001955");
 		
 		enzymeTable = new HashMap<String,Enzyme>();
 		registeredEnzymeList = new ArrayList<Enzyme>();
 		
-		registeredEnzymeList.add(NOENZYME);
+		registeredEnzymeList.add(UnspecificCleavage);
 		register("Tryp", TRYPSIN);
 		register("CHYMOTRYPSIN", CHYMOTRYPSIN);
 		register("LysC", LysC);
@@ -340,7 +340,7 @@ public class Enzyme implements ParamObject {
 		register("ArgC", ArgC);
 		register("AspN", AspN);
 		register("aLP", ALP);
-		register("Peptidomics", Peptidomics);
+		register("Peptidomics", NoCleavage);
 		
 		// Add user-defined enzymes
 		File enzymeFile = new File("params/enzymes.txt");

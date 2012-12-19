@@ -445,11 +445,11 @@ public class MZIdentMLGen {
 		int length = match.getLength();
 		
 		int startKey = indices.first();
-		if(match.isNTermMetCleaved())
-			++startKey;
+//		if(match.isNTermMetCleaved())
+//			++startKey;
 		
 		String pepIDNum = peptide.getId().substring(Constants.pepIDPrefix.length());
-		String annotationKey = startKey+"_"+pepIDNum;
+		String annotationKey = (match.isNTermMetCleaved() ? "M" : "")+startKey+"_"+pepIDNum;
 		List<PeptideEvidenceRef> evRefList = evRefListMap.get(annotationKey);
 		
 		if(evRefList == null)
@@ -469,7 +469,11 @@ public class MZIdentMLGen {
 				char pre = sa.getSequence().getCharAt(index);
 				if(pre == '_')
 					pre = '-';
-				char post = sa.getSequence().getCharAt(index+length-1);
+				char post;
+				if(match.isNTermMetCleaved())
+					post = sa.getSequence().getCharAt(index+length);
+				else
+					post = sa.getSequence().getCharAt(index+length-1);
 				if(post == '_')
 					post = '-';
 				pepEv.setPre(String.valueOf(pre));

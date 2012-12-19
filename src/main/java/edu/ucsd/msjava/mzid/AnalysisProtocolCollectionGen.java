@@ -90,6 +90,10 @@ public class AnalysisProtocolCollectionGen {
         searchTypeParam.setParam(Constants.makeCvParam("MS:1001083","ms-ms search"));
         spectrumIdentificationProtocol.setSearchType(searchTypeParam);
 
+        // Enzymes
+        Enzymes enzymes = new Enzymes();
+        edu.ucsd.msjava.msutil.Enzyme enzyme = params.getEnzyme();
+        
         // AdditionalSearchParams
         ParamList additionalSearchParams = new ParamList();
         List<CvParam> cvParamList = additionalSearchParams.getCvParam();
@@ -102,7 +106,10 @@ public class AnalysisProtocolCollectionGen {
         userParamList.add(Constants.makeUserParam("FragmentMethod", params.getActivationMethod().getName()));
         userParamList.add(Constants.makeUserParam("Instrument", params.getInstType().getName()));
         userParamList.add(Constants.makeUserParam("Protocol", params.getProtocol().getName()));
-        userParamList.add(Constants.makeUserParam("NumTolerableTermini", String.valueOf(params.getNumTolerableTermini())));
+        int ntt = params.getNumTolerableTermini();
+        if(enzyme == edu.ucsd.msjava.msutil.Enzyme.NoCleavage || enzyme == edu.ucsd.msjava.msutil.Enzyme.UnspecificCleavage)
+        	ntt = 0;
+        userParamList.add(Constants.makeUserParam("NumTolerableTermini", String.valueOf(ntt)));
         userParamList.add(Constants.makeUserParam("NumMatchesPerSpec", String.valueOf(params.getNumMatchesPerSpec())));
         // ModificationFile
         userParamList.add(Constants.makeUserParam("MinPepLength", String.valueOf(params.getMinPeptideLength())));
@@ -114,10 +121,6 @@ public class AnalysisProtocolCollectionGen {
         ModificationParams modParams = getModificationParam();
         spectrumIdentificationProtocol.setModificationParams(modParams);
 
-        // Enzymes
-        Enzymes enzymes = new Enzymes();
-
-        edu.ucsd.msjava.msutil.Enzyme enzyme = params.getEnzyme();
 //        enzymes.setIndependent(false);
 //        if(enzyme == null || enzyme == edu.ucsd.msjava.msutil.Enzyme.NOENZYME)
 //        	enzymes.setIndependent(true);
@@ -130,7 +133,7 @@ public class AnalysisProtocolCollectionGen {
             List<Enzyme> enzymeList = enzymes.getEnzyme();
             Enzyme mzIdEnzyme = new Enzyme();
             mzIdEnzyme.setId(enzyme.getName());
-            if(params.getNumTolerableTermini() == 0)
+            if(ntt == 2)
             	mzIdEnzyme.setSemiSpecific(false);
             else
             	mzIdEnzyme.setSemiSpecific(true);

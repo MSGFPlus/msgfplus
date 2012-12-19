@@ -226,4 +226,52 @@ public class TestMSGFPlus {
 		System.out.println("Done");
 	}
 	
+	@Test
+	public void testPrePost() throws Exception
+	{
+		File specPath = new File("C:\\cygwin\\home\\kims336\\Research\\Data\\Matt\\test.mgf");
+		File dbFile = new File("C:\\cygwin\\home\\kims336\\Research\\Data\\Matt\\test.fasta");
+		File modFile = new File("C:\\cygwin\\home\\kims336\\Research\\Data\\Matt\\MSGFDB_Mods.txt");
+
+		String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "1.5Da,2.5Da", "-n", "2", "-ntt", "1", "-mod", modFile.getPath(), "-ti", "0,1"};
+		
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		paramManager.addMSGFPlusParams();
+		paramManager.parseParams(argv);
+		MSGFPlus.runMSGFPlus(paramManager);
+		System.out.println("Done");
+	}
+
+	@Test
+	public void testNoEnzymeSearch() throws Exception
+	{
+		File specPath = new File("C:\\cygwin\\home\\kims336\\Research\\Data\\Matt\\test.mgf");
+		File dbFile = new File("C:\\cygwin\\home\\kims336\\Research\\Data\\Matt\\test.fasta");
+		File modFile = new File("C:\\cygwin\\home\\kims336\\Research\\Data\\Matt\\MSGFDB_Mods.txt");
+
+		String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "1.5Da,2.5Da", "-n", "2", "-ntt", "1", "-mod", modFile.getPath(), "-ti", "0,1", "-e", "0"};
+		
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		paramManager.addMSGFPlusParams();
+		paramManager.parseParams(argv);
+		MSGFPlus.runMSGFPlus(paramManager);
+		System.out.println("Done");
+	}
+
+	@Test
+	public void testCTermFixedMod() throws Exception
+	{
+		File specPath = new File("C:\\cygwin\\home\\kims336\\Research\\Data\\Matt\\test.mgf");
+		File dbFile = new File("C:\\cygwin\\home\\kims336\\Research\\Data\\Matt\\test.fasta");
+		File modFile = new File("C:\\cygwin\\home\\kims336\\Research\\Data\\Matt\\MSGFDB_Mods.txt");
+
+		String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "1.5Da,2.5Da", "-n", "2", "-ntt", "1", "-mod", modFile.getPath(), "-ti", "0,1", "-e", "0"};
+		
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		paramManager.addMSGFPlusParams();
+		paramManager.parseParams(argv);
+		MSGFPlus.runMSGFPlus(paramManager);
+		System.out.println("Done");
+	}
+	
 }

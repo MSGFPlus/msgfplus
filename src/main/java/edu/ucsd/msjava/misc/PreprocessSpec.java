@@ -134,7 +134,7 @@ public class PreprocessSpec {
 				else if(argv[i+1].equalsIgnoreCase("8"))
 					enzyme = Enzyme.ALP;
 				else if(argv[i+1].equalsIgnoreCase("9"))
-					enzyme = Enzyme.Peptidomics;
+					enzyme = Enzyme.NoCleavage;
 				else
 					printUsageAndExit("Illegal enzyme: " + argv[i+1]);
 			}

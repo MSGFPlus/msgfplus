@@ -373,7 +373,7 @@ public class DBScanner {
 						continue;
 					
 //					System.out.println(sequence.getSubsequence(index+1, index+i+1));
-//					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("IKAALEVAAQR"))
+//					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("ACPLDQAIGLLVAIFHK"))
 //						System.out.println("Debug");
 					
 					int cTermCleavageScore = 0;
@@ -614,7 +614,11 @@ public class DBScanner {
 					String pepSeq = m.getPepSeq();
 					int index = m.getIndex();
 					char pre = sa.getSequence().getCharAt(index);
-					char post = sa.getSequence().getCharAt(index+m.getLength()-1);
+					char post;
+					if(m.isNTermMetCleaved())
+						post = sa.getSequence().getCharAt(index+m.getLength());
+					else
+						post = sa.getSequence().getCharAt(index+m.getLength()-1);
 					String annotation = pre+pepSeq+post;
 					
 					DatabaseMatch existingMatch = pepSeqMap.get(annotation);
