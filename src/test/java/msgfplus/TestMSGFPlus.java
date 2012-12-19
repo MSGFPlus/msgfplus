@@ -261,11 +261,11 @@ public class TestMSGFPlus {
 	@Test
 	public void testCTermFixedMod() throws Exception
 	{
-		File specPath = new File("C:\\cygwin\\home\\kims336\\Research\\Data\\Matt\\test.mgf");
-		File dbFile = new File("C:\\cygwin\\home\\kims336\\Research\\Data\\Matt\\test.fasta");
-		File modFile = new File("C:\\cygwin\\home\\kims336\\Research\\Data\\Matt\\MSGFDB_Mods.txt");
+		File specPath = new File(System.getProperty("user.home")+"/Research/Data/Joe/test.mgf");
+		File dbFile = new File(System.getProperty("user.home")+"/Research/Data/Joe/test.fasta");
+		File modFile = new File(System.getProperty("user.home")+"/Research/Data/Joe/testMods.txt");
 
-		String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "1.5Da,2.5Da", "-n", "2", "-ntt", "1", "-mod", modFile.getPath(), "-ti", "0,1", "-e", "0"};
+		String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "2.5Da,2.5Da", "-n", "1", "-ntt", "2", "-mod", modFile.getPath()};
 		
 		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
 		paramManager.addMSGFPlusParams();

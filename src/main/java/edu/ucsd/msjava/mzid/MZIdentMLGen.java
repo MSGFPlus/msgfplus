@@ -363,7 +363,7 @@ public class MZIdentMLGen {
 				Location loc;
 				if(location == 1)
 					loc = Location.N_Term;
-				else if(location == peptide.size()-1)
+				else if(location == peptide.size())
 					loc = Location.C_Term;
 				else
 					loc = Location.Anywhere;
