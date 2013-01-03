@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import edu.ucsd.msjava.msutil.ActivationMethod;
 import edu.ucsd.msjava.msutil.Composition;
 import edu.ucsd.msjava.mzml.MzMLAdapter;
 
@@ -122,6 +121,11 @@ public class MzIDParser {
             	 CvParam scanNumParam = sirCvParamMap.get("MS:1001115");
             	 if(scanNumParam != null)
             		 scanNum = scanNumParam.getValue();
+
+            	 String title = null;
+            	 CvParam titleParam = sirCvParamMap.get("MS:1000796");
+            	 if(titleParam != null)
+            		 title = titleParam.getValue();
             	 
                  for (SpectrumIdentificationItem sii
                       : sir.getSpectrumIdentificationItem()) {
@@ -185,6 +189,7 @@ public class MzIDParser {
                                  out.print(specFileName
                                 		 +"\t"+specID
                                 		 +"\t"+scanNum
+                                		 +"\t"+(title == null ? "" : title)
                                 		 +"\t"+fragMethod
                                 		 +"\t"+experimentalMassToCharge.floatValue()
                                 		 +"\t"+isotopeError
@@ -237,6 +242,7 @@ public class MzIDParser {
                              out.print(specFileName
                             		 +"\t"+specID
                             		 +"\t"+scanNum
+                            		 +"\t"+(title == null ? "" : title)
                             		 +"\t"+fragMethod
                             		 +"\t"+experimentalMassToCharge.floatValue()
                             		 +"\t"+isotopeError
