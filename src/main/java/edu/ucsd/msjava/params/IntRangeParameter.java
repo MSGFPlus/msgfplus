@@ -13,12 +13,12 @@ public class IntRangeParameter extends RangeParameter<Integer> {
 	public String parse(String value) {
 		String[] token = value.split(",");
 		try {
-			if(token.length == 1)
-			{
-				min = Integer.parseInt(token[0]);
-				max = min;
-			}
-			else if(token.length == 2)
+//			if(token.length == 1)
+//			{
+//				min = Integer.parseInt(token[0]);
+//				max = min;
+//			}
+			if(token.length == 2)
 			{
 				min = Integer.parseInt(token[0]);
 				max = Integer.parseInt(token[1]);

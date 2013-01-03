@@ -10,11 +10,13 @@ import edu.ucsd.msjava.params.FileParameter;
 import edu.ucsd.msjava.params.ParamManager;
 
 public class MzIDToTsv {
+	public static final String VERSION = "v9108";
+	
 	public static void main(String argv[])
 	{
 		long time = System.currentTimeMillis();
 
-		ParamManager paramManager = new ParamManager("MzIDToTsv", "v8792", MSGFPlus.RELEASE_DATE, "java -Xmx3500M -cp MSGFPlus.jar edu.ucsd.msjava.ui.MzIDToTsv");
+		ParamManager paramManager = new ParamManager("MzIDToTsv", VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -cp MSGFPlus.jar edu.ucsd.msjava.ui.MzIDToTsv");
 		
 		FileParameter inputFileParam = new FileParameter("i", "MzIDPath", "MS-GF+ output file (*.mzid) or directory containing mzid files");  
 //		inputFileParam.addFileFormat(new FileFormat(".mzid"));

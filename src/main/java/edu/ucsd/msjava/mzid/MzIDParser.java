@@ -18,6 +18,7 @@ import uk.ac.ebi.jmzidml.model.mzidml.AnalysisProtocolCollection;
 import uk.ac.ebi.jmzidml.model.mzidml.CvParam;
 import uk.ac.ebi.jmzidml.model.mzidml.DBSequence;
 import uk.ac.ebi.jmzidml.model.mzidml.DataCollection;
+import uk.ac.ebi.jmzidml.model.mzidml.FileFormat;
 import uk.ac.ebi.jmzidml.model.mzidml.Inputs;
 import uk.ac.ebi.jmzidml.model.mzidml.Modification;
 import uk.ac.ebi.jmzidml.model.mzidml.Peptide;
@@ -73,10 +74,26 @@ public class MzIDParser {
 		unmarshallSequenceCollection();
 		unmarshallAnalysisProtocolCollection();
 		
+        DataCollection dc =  unmarshaller.unmarshal(DataCollection.class);
+        
+        // get spectrum file
+        boolean isMgf = false;
+        Map<String, String> specFileNameMap = new HashMap<String, String>();
+        Inputs inputs = dc.getInputs();
+        for(SpectraData sd : inputs.getSpectraData())
+        {
+        	String specFileName = new File(sd.getLocation()).getName();
+        	specFileNameMap.put(sd.getId(), specFileName);
+        	FileFormat ff = sd.getFileFormat();
+        	if(ff.getCvParam().getAccession().equals("MS:1001062"))
+        		isMgf = true;
+        }
+
 		String header = 
 				"#SpecFile" +
 				"\tSpecID" +
 				"\tScanNum" +
+				(isMgf ? "\tTitle" : "") +
 				"\tFragMethod"
 				+"\tPrecursor"
 				+"\tIsotopeError"
@@ -92,17 +109,6 @@ public class MzIDParser {
 				"\tEValue" +
 				(!this.doNotShowQValue ? "\tQValue\tPepQValue" : "");
 		out.println(header);
-		
-        DataCollection dc =  unmarshaller.unmarshal(DataCollection.class);
-        
-        // get spectrum file
-        Map<String, String> specFileNameMap = new HashMap<String, String>();
-        Inputs inputs = dc.getInputs();
-        for(SpectraData sd : inputs.getSpectraData())
-        {
-        	String specFileName = new File(sd.getLocation()).getName();
-        	specFileNameMap.put(sd.getId(), specFileName);
-        }
         
         AnalysisData ad = dc.getAnalysisData();
 
@@ -122,7 +128,7 @@ public class MzIDParser {
             	 if(scanNumParam != null)
             		 scanNum = scanNumParam.getValue();
 
-            	 String title = null;
+            	 String title = "N/A";
             	 CvParam titleParam = sirCvParamMap.get("MS:1000796");
             	 if(titleParam != null)
             		 title = titleParam.getValue();
@@ -189,7 +195,7 @@ public class MzIDParser {
                                  out.print(specFileName
                                 		 +"\t"+specID
                                 		 +"\t"+scanNum
-                                		 +"\t"+(title == null ? "" : title)
+                                		 +(!isMgf ? "" : "\t"+title)
                                 		 +"\t"+fragMethod
                                 		 +"\t"+experimentalMassToCharge.floatValue()
                                 		 +"\t"+isotopeError
@@ -242,7 +248,7 @@ public class MzIDParser {
                              out.print(specFileName
                             		 +"\t"+specID
                             		 +"\t"+scanNum
-                            		 +"\t"+(title == null ? "" : title)
+                            		 +(!isMgf ? "" : "\t"+title)
                             		 +"\t"+fragMethod
                             		 +"\t"+experimentalMassToCharge.floatValue()
                             		 +"\t"+isotopeError
