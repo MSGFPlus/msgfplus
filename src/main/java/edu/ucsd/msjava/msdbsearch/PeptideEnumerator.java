@@ -17,9 +17,9 @@ import edu.ucsd.msjava.sequences.Constants;
 public class PeptideEnumerator {
 	
 	private static final int MIN_PEPTIDE_LENGTH = 6;
-	private static final int MAX_PEPTIDE_LENGTH = 50;
-	private static final int MAX_NUM_MODS = 2;
-	private static final int MAX_NUM_MISSED_CLEAVAGES = 2;
+	private static final int MAX_PEPTIDE_LENGTH = 30;
+	private static final int MAX_NUM_MODS = 0;
+	private static final int MAX_NUM_MISSED_CLEAVAGES = 1;
 	
 	public static void main(String argv[]) throws Exception
 	{
@@ -64,7 +64,7 @@ public class PeptideEnumerator {
 		int size = sa.getSize();
 		
 		ArrayList<Modification.Instance> mods = new ArrayList<Modification.Instance>();
-		mods.add(new Modification.Instance(Modification.get("Oxidation"), 'M'));
+//		mods.add(new Modification.Instance(Modification.get("Oxidation"), 'M'));
 		mods.add(new Modification.Instance(Modification.get("Carbamidomethyl"), 'C').fixedModification());
 		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSet(mods);
 		aaSet.setMaxNumberOfVariableModificationsPerPeptide(MAX_NUM_MODS);

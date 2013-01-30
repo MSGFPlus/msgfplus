@@ -65,7 +65,8 @@ public class DtaToMSGFInput {
 	public static void makeMSGFInput(File dtaFile, File msgfInputFile) throws Exception
 	{
 		PrintStream msgfOut = new PrintStream(new BufferedOutputStream(new FileOutputStream(msgfInputFile)));
-		String header = "#SpectrumFile\tScan#\tAnnotation\tPrecursorMz\tCharge\tFrameNum\tFromScan\tToScan\tPrevSpecProb";
+//		String header = "#SpectrumFile\tScan#\tAnnotation\tPrecursorMz\tCharge\tFrameNum\tFromScan\tToScan\tPrevSpecProb";
+		String header = "#SpectrumFile\tScan#\tAnnotation\tEmpFormula\tCharge\tNET\tAbundance";
 		msgfOut.println(header);
 		
 //		String dtaFilePath = dtaFile.getAbsolutePath();
@@ -83,37 +84,22 @@ public class DtaToMSGFInput {
 			if(s.startsWith("==="))
 			{
 				++origSpecIndex;
+				// Sequence.EmpFormula.Charge.NET.Abundance.dta
+				// ====== "EYANQFMWEYSTNYGQAPLSLLVSYTK.C148H211N33O45S1.3.0.5849.106219.dta" ====
 				String metaInfo = s.substring(s.indexOf('"')+1, s.lastIndexOf(".dta"));
 				String[] token = metaInfo.split("\\.");
-				if(token.length != 8 && token.length != 9)
+				if(token.length != 6)
 				{
 					System.out.println("Syntax Error in Line " + lineNum + ": " + s);
 					System.exit(-1);
 				}
-				String annotation = token[0]+"."+token[1].replaceAll("!", "").replaceAll("@", "+15.995").replaceAll("\\*", "+15.995")+"."+token[2];
-				int charge = Integer.parseInt(token[3]);
-				int frameNum = Integer.parseInt(token[4]);
-				int fromScan = Integer.parseInt(token[5]);
-				int toScan = Integer.parseInt(token[6]);
-				float prevSpecProb;
-				if(token.length == 9)
-					prevSpecProb = Float.parseFloat(token[7]+token[8]);
-				else
-					prevSpecProb = Float.parseFloat(token[7]);
+				String annotation = token[0].replaceAll("!", "").replaceAll("@", "+15.995").replaceAll("\\*", "+15.995");
+				String formula = token[1];
+				int charge = Integer.parseInt(token[2]);
+				float net = Float.parseFloat(token[3]+"."+token[4]);
+				int abundance = Integer.parseInt(token[5]);
 				
-				String precursorStr = in.readLine();
-				if(precursorStr == null)
-					break;
-				String[] precursorToken = precursorStr.split("\\s+");
-				if(precursorToken.length < 2)
-				{
-					System.out.println("Syntax Error in line " + lineNum + ": " + precursorStr);
-					System.exit(-1);
-				}
-				float precursorMH = Float.parseFloat(precursorToken[0]);
-				float precursorMz = (precursorMH-(float)Composition.PROTON)/charge+(float)Composition.PROTON;
-
-				msgfOut.println(dtaFile.getName()+"\t"+origSpecIndex+"\t"+annotation+"\t"+precursorMz+"\t"+charge+"\t"+frameNum+"\t"+fromScan+"\t"+toScan+"\t"+prevSpecProb);
+				msgfOut.println(dtaFile.getName()+"\t"+origSpecIndex+"\t"+annotation+"\t"+formula+"\t"+charge+"\t"+net+"\t"+abundance);
 			}
 		}
 
