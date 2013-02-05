@@ -204,6 +204,26 @@ public abstract class IonType {
     	return getAllKnownIonTypes(maxCharge, removeRedundancy, nlString);
     }
     
+    private static class IonTypeComparator implements Comparator<IonType>
+    {
+		@Override
+        public int compare(IonType i1, IonType i2) {
+        	if(i1.getCharge() < i2.getCharge())
+        		return -1;
+        	else if(i1.getCharge() > i2.getCharge())
+        		return 1;
+        	else
+        	{
+        		if (i1.getOffset()<i2.getOffset()) 
+        			return -1;
+        		else if (i1.getOffset()>i2.getOffset()) 
+        			return 1;
+        		else
+        			return 0;
+        	}
+        }
+    }
+    
     public static ArrayList<IonType> getAllKnownIonTypes(int maxCharge, boolean removeRedundancy, String nlString)
     {
         String[] base ={
@@ -242,15 +262,9 @@ public abstract class IonType {
             }
         }
 
-        Collections.sort(ionList, new Comparator<IonType>() {
-            public int compare(IonType i1, IonType i2) {
-            	if(i1.getCharge() < i2.getCharge())
-            		return -1;
-            	else if (i1.getOffset()<i2.getOffset()) return -1;
-                else if (i1.getOffset()>i2.getOffset()) return 1;
-                return 0;
-            }
-        });
+//        System.out.println(maxCharge+"\t"+removeRedundancy+"\t"+nlString);
+        Collections.sort(ionList, new IonTypeComparator());
+//        System.out.println("Sorting Done");
         
         if(!removeRedundancy)
         	return ionList;

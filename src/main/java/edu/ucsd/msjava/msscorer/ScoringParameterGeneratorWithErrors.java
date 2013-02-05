@@ -482,7 +482,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			ArrayList<FragmentOffsetFrequency> signalFragmentOffsetFrequencyList = new ArrayList<FragmentOffsetFrequency>();
 
 			int seg = partition.getSegNum();
-			IonType[] allIonTypes = IonType.getAllKnownIonTypes(Math.min(charge, 4), true, considerPhosLoss, consideriTRAQLoss).toArray(new IonType[0]);
+			IonType[] allIonTypes = IonType.getAllKnownIonTypes(Math.min(charge, 3), true, considerPhosLoss, consideriTRAQLoss).toArray(new IonType[0]);
 			
 			IonProbability probGen = new IonProbability(
 					curPartContainer.iterator(), 

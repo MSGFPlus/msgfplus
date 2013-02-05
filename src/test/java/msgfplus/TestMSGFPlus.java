@@ -9,6 +9,7 @@ import java.util.HashSet;
 import org.junit.Test;
 
 import edu.ucsd.msjava.msutil.AminoAcidSet;
+import edu.ucsd.msjava.msutil.IonType;
 import edu.ucsd.msjava.msutil.SpectraAccessor;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.mzml.MzMLAdapter;
@@ -273,6 +274,28 @@ public class TestMSGFPlus {
 		paramManager.parseParams(argv);
 		MSGFPlus.runMSGFPlus(paramManager);
 		System.out.println("Done");
+	}
+	
+	@Test
+	public void testScoringParamGenETD()
+	{
+		File resultPath = new File("/Users/kims336/Research/Data/TrainingITRAQ/Global/beforeTraining/CPTAC_OvC_JB5427_iTRAQ_01_9Apr12_Cougar_12-03-21.mzid");
+		File specPath = new File("/Users/kims336/Research/Data/TrainingITRAQ/Global/mzMLFiles");
+		
+		String[] argv = {"-i", resultPath.getPath(), "-d", specPath.getPath(), "-m", "1", "-inst", "0", "-e", "1"};
+		ParamManager paramManager = new ParamManager("ScoringParamGen", String.valueOf(ScoringParamGen.VERSION), ScoringParamGen.DATE,
+				"java -Xmx2000M -cp MSGFPlus.jar edu.ucsd.msjava.ui.ScoringParamGen");
+		MzMLAdapter.turnOffLogs();
+		paramManager.addScoringParamGenParams();
+		paramManager.parseParams(argv);
+		
+		ScoringParamGen.runScoringParamGen(paramManager);
+	}
+
+	@Test
+	public void selectIonTypeTest()
+	{
+		IonType.getAllKnownIonTypes(4, true);
 	}
 	
 }

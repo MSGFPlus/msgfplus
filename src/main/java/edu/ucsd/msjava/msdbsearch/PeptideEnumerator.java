@@ -19,7 +19,8 @@ public class PeptideEnumerator {
 	private static final int MIN_PEPTIDE_LENGTH = 6;
 	private static final int MAX_PEPTIDE_LENGTH = 30;
 	private static final int MAX_NUM_MODS = 0;
-	private static final int MAX_NUM_MISSED_CLEAVAGES = 1;
+	private static final int MAX_NUM_MISSED_CLEAVAGES = 2;
+	private static final int NTT = 1;
 	
 	public static void main(String argv[]) throws Exception
 	{
@@ -72,7 +73,7 @@ public class PeptideEnumerator {
 		Enzyme enzyme = Enzyme.TRYPSIN;
 		CandidatePeptideGrid candidatePepGrid = new CandidatePeptideGrid(aaSet, MAX_PEPTIDE_LENGTH);
 		int[] numMissedCleavages = new int[MAX_PEPTIDE_LENGTH+1];
-		
+		int nnet = 0;
 		for(int bufferIndex=0; bufferIndex<size; bufferIndex++)
 		{
 			int index = indices.readInt();
@@ -87,7 +88,11 @@ public class PeptideEnumerator {
 				if(precedingAA != Constants.TERMINATOR_CHAR && !enzyme.isCleavable(precedingAA))
 				{
 					i=0;
-					continue;
+					nnet = 1;
+					if(nnet > 2-NTT)
+					{
+						continue;
+					}
 				}
 			}			
 			if(lcp == 0)
@@ -115,7 +120,10 @@ public class PeptideEnumerator {
 				
 				char next = sequence.getCharAt(index+i+1);
 				if(!enzyme.isCleavable(residue) && next != Constants.TERMINATOR_CHAR)
-					continue;
+				{
+					if(nnet+1 > 2-NTT)
+						continue;
+				}
 				
 				for(int j=0; j<candidatePepGrid.size(); j++)
 				{
