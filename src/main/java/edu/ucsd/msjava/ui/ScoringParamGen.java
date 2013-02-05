@@ -20,8 +20,8 @@ import edu.ucsd.msjava.params.ParamManager;
 
 public class ScoringParamGen {
 
-	public static final int VERSION = 8729;
-	public static final String DATE = "10/16/2012";
+	public static final int VERSION = 8831;
+	public static final String DATE = "02/04/2013";
 	
 	public static void main(String argv[])
 	{
