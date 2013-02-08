@@ -181,7 +181,7 @@ public class TSVPSMSet extends PSMSet {
 	public void writeResults(TargetDecoyAnalysis tda, PrintStream out, float fdrThreshold, float pepFDRThreshold, float scoreThreshold)
 	{
 		if(header != null)
-			out.println(header + delimeter + "FDR"+delimeter+"PepFDR");
+			out.println(header + delimeter + "QValue"+delimeter+"PepQValue");
 		for(ScoredString ss : getPSMList())
 		{
 			float psmFDR = tda.getPSMQValue(ss.getScore());

@@ -44,6 +44,16 @@ public class MzIDToTsv {
 		rank1OnlyParam.registerEntry("unroll shared peptides");
 		paramManager.addParameter(rank1OnlyParam);
 		
+		EnumParameter onePerScan = new EnumParameter("onePerScan");
+		onePerScan.registerEntry("report one match per nativeID").setDefault();
+		onePerScan.registerEntry("report one match per scan");
+		paramManager.addParameter(onePerScan);
+
+		EnumParameter mergeAll = new EnumParameter("merge");
+		mergeAll.registerEntry("convert each file separately").setDefault();
+		mergeAll.registerEntry("merge all files");
+		paramManager.addParameter(mergeAll);
+
 		if(argv.length == 0)
 		{
 			paramManager.printUsageInfo();
