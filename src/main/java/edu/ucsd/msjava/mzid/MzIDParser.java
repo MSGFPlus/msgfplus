@@ -71,6 +71,14 @@ public class MzIDParser {
 		else
 			out = System.out;
 		
+		writeToTSVFile(out);
+		
+		if(out != System.out)
+			out.close();
+	}
+	
+	public void writeToTSVFile(PrintStream out)
+	{
 		unmarshallSequenceCollection();
 		unmarshallAnalysisProtocolCollection();
 		
@@ -270,9 +278,6 @@ public class MzIDParser {
                  } // end spectrum identification item
              } // end spectrum identification results
         }
-        
-        if(out != System.out)
-        	out.close();
 	}
 	
 	private Map<String,CvParam> getCvParamMap(List<CvParam> paramList)

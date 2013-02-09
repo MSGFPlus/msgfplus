@@ -93,6 +93,8 @@ public class MzIDToTsv {
 		boolean showQValue = paramManager.getIntValue("showQValue") == 1 ? true : false;
 		boolean showDecoy = paramManager.getIntValue("showDecoy") == 1 ? true : false;
 		boolean unroll = paramManager.getIntValue("unroll") == 1 ? true : false;
+		boolean onePerScan = paramManager.getIntValue("onePerScan") == 1 ? true : false;
+		boolean merge = paramManager.getIntValue("merge") == 1 ? true : false;
 		
 		if(mzIDPath.isDirectory())
 		{
@@ -101,9 +103,16 @@ public class MzIDToTsv {
 				if(f.getName().endsWith(".mzid"))
 				{
 					File tsvFile = new File(f.getPath().substring(0, f.getPath().lastIndexOf('.'))+".tsv");
-					System.out.println("Converting " + f.getName() + " into " + tsvFile.getName());
-					MzIDParser parser = new MzIDParser(f, showDecoy, !showQValue, unroll);
-					parser.writeToTSVFile(tsvFile);
+					if(tsvFile.exists())
+					{
+						System.out.println(tsvFile.getName() + " already exists.");
+					}
+					else
+					{
+						System.out.println("Converting " + f.getName() + " into " + tsvFile.getName());
+						MzIDParser parser = new MzIDParser(f, showDecoy, !showQValue, unroll);
+						parser.writeToTSVFile(tsvFile);
+					}
 				}
 			}
 		}
