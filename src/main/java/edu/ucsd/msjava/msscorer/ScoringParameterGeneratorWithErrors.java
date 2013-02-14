@@ -106,7 +106,8 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 		boolean applyDeconvolution = false;
 		
 		if(dataType.getInstrumentType() == InstrumentType.HIGH_RESOLUTION_LTQ 
-				|| dataType.getInstrumentType() == InstrumentType.TOF)
+				|| dataType.getInstrumentType() == InstrumentType.TOF
+				|| dataType.getInstrumentType().isHighResolution())
 		{
 			errorScalingFactor = 100;
 			applyDeconvolution = true;
