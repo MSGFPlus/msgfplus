@@ -89,7 +89,7 @@ public class NewScorerFactory {
 			enzyme = Enzyme.TRYPSIN;
 		if(instType == null)
 			instType = InstrumentType.LOW_RESOLUTION_LTQ;
-		if(method == ActivationMethod.HCD)
+		if(method == ActivationMethod.HCD && instType != InstrumentType.HIGH_RESOLUTION_LTQ && instType != InstrumentType.QEXACTIVE)
 			instType = InstrumentType.HIGH_RESOLUTION_LTQ;
 		
 		SpecDataType condition = new SpecDataType(method, instType, enzyme, protocol);

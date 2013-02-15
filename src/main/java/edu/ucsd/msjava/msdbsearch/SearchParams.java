@@ -232,7 +232,7 @@ public class SearchParams {
 		numTolerableTermini = paramManager.getIntValue("ntt");
 		activationMethod = paramManager.getActivationMethod();
 		instType = paramManager.getInstType();
-		if(activationMethod == ActivationMethod.HCD)
+		if(activationMethod == ActivationMethod.HCD && instType != InstrumentType.HIGH_RESOLUTION_LTQ && instType != InstrumentType.QEXACTIVE)
 			instType = InstrumentType.HIGH_RESOLUTION_LTQ;
 		
 		protocol = paramManager.getProtocol();

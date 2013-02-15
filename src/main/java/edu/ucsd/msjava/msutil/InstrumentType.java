@@ -65,6 +65,7 @@ public class InstrumentType implements ParamObject {
 		table.put(LOW_RESOLUTION_LTQ.getName(), LOW_RESOLUTION_LTQ);
 		table.put(HIGH_RESOLUTION_LTQ.getName(), HIGH_RESOLUTION_LTQ);
 		table.put(TOF.getName(), TOF);
+		table.put(QEXACTIVE.getName(), QEXACTIVE);
 	}
 
 }
