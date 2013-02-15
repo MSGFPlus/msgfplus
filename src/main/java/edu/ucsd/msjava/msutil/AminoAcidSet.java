@@ -51,6 +51,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	private boolean containsNTermModification;	// true if this contains any (fixed or variable) modification specific to N-terminus
 	private boolean containsCTermModification;	// true if this contains any (fixed or variable) modification specific to N-terminus
 	private boolean containsPhosphorylation;	// true if this contains phosphorylation
+	private boolean containsITRAQ;	// true if this contains iTRAQ
 	
 	private HashSet<Character> modResidueSet = new HashSet<Character>();	// set of symbols used for residues
 	private char nextResidue;
@@ -281,6 +282,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	public boolean containsNTermModification()	{ return this.containsNTermModification; }
 	public boolean containsCTermModification()	{ return this.containsCTermModification; }
 	public boolean containsPhosphorylation()	{ return this.containsPhosphorylation; }
+	public boolean containsITRAQ()				{ return this.containsITRAQ; }
 	
 	public char getMaxResidue()	{ return nextResidue; }
 	
@@ -420,8 +422,10 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 				this.containsCTermModification = true;
 			if(location != Location.Anywhere || !mod.isFixedModification())
 				this.containsModification = true;
-			if(mod.getModification().getName().equalsIgnoreCase("phosphorylation"))
+			if(mod.getModification().getName().toLowerCase().startsWith("phospho"))
 				this.containsPhosphorylation = true;
+			if(mod.getModification().getName().toLowerCase().startsWith("itraq"))
+				this.containsITRAQ = true;
 		}
 	}
 

@@ -318,8 +318,9 @@ public class TestMSGFPlus {
 	{
 		File specPath = new File(System.getProperty("user.home")+"/Research/Data/Tabb/TCGA-7D-HCD-QExactive/test.mgf");
 		File dbFile = new File(System.getProperty("user.home")+"/Research/Data/Tabb/TCGA-7D-HCD-QExactive/test.fasta");
+		File modFile = new File(System.getProperty("user.home")+"/Research/Data/Tabb/TCGA-7D-HCD-QExactive/testMod.txt");
 
-		String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "10ppm", "-ntt", "1", "-ti", "0,0", "-m", "3", "-inst", "3"};
+		String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "10ppm", "-ntt", "1", "-ti", "0,0", "-m", "3", "-inst", "3", "-mod", modFile.getPath()};
 		
 		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
 		paramManager.addMSGFPlusParams();
