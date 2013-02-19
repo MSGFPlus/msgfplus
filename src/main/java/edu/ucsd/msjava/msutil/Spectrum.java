@@ -272,7 +272,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 		{
 			float[] diff = new float[100];
 			float prevMz = this.get(0).getMz();
-			for(int i=1; i<101; i++)
+			for(int i=this.size()-100; i<this.size(); i++)
 			{
 				float curMz = this.get(i).getMz();
 				diff[i-1] = curMz - prevMz;
