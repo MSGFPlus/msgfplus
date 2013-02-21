@@ -233,7 +233,7 @@ public class SearchParams {
 		activationMethod = paramManager.getActivationMethod();
 		instType = paramManager.getInstType();
 		if(activationMethod == ActivationMethod.HCD && instType != InstrumentType.HIGH_RESOLUTION_LTQ && instType != InstrumentType.QEXACTIVE)
-			instType = InstrumentType.HIGH_RESOLUTION_LTQ;
+			instType = InstrumentType.QEXACTIVE;	// by default use Q-Exactive model for HCD
 		
 		protocol = paramManager.getProtocol();
 		
