@@ -39,8 +39,8 @@ import edu.ucsd.msjava.params.ParamManager;
 
 
 public class MSGFPlus {
-	public static final String VERSION = "Beta (v9284)";
-	public static final String RELEASE_DATE = "2/15/2013";
+	public static final String VERSION = "Beta (v9287)";
+	public static final String RELEASE_DATE = "2/18/2013";
 	
 	public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
 	public static final String DECOY_PROTEIN_PREFIX = "XXX";
