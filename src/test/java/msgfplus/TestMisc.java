@@ -1,6 +1,10 @@
 package msgfplus;
 
+import java.io.File;
+
 import org.junit.Test;
+
+import edu.ucsd.msjava.misc.VennDiagram;
 
 public class TestMisc {
 	@Test
@@ -13,5 +17,18 @@ public class TestMisc {
 		String[] token = title.split("\\s+");
 		int scanNum = Integer.parseInt(token[0].substring("Scan:".length()));
 		System.out.println(scanNum);
+	}
+	
+	@Test
+	public void testVennDiagram()
+	{
+		File result1 = new File("/Users/kims336/Research/Data/Tao/Global/MSGFPlus_10ppm_TI1/CPTAC_OvC_JB5427_iTRAQ_01_9Apr12_Cougar_12-03-21_dta.tsv");
+		File result2 = new File("/Users/kims336/Research/Data/Tao/Global/MSGFPlus_20ppm_TI2/CPTAC_OvC_JB5427_iTRAQ_01_9Apr12_Cougar_12-03-21_dta.tsv");
+		
+		try {
+			VennDiagram.vennDiagram(result1, result2, 0.01f);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

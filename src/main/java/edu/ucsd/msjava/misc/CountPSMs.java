@@ -35,6 +35,7 @@ public class CountPSMs {
 		int specQValueColNum = -1;
 		int pepQValueColNum = -1;
 		int pepColNum = -1;
+		int specIDCol = -1;
 		for(int i=0; i<headerToken.length; i++)
 		{
 			if(headerToken[i].equalsIgnoreCase("FDR") || headerToken[i].equalsIgnoreCase("QValue") || headerToken[i].equalsIgnoreCase("q-value"))
@@ -43,6 +44,8 @@ public class CountPSMs {
 				pepQValueColNum = i;
 			if(headerToken[i].equalsIgnoreCase("Peptide") || headerToken[i].equalsIgnoreCase("Annotation"))
 				pepColNum = i;
+			if(headerToken[i].equalsIgnoreCase("SpecID") || headerToken[i].equalsIgnoreCase("ScanNum") || headerToken[i].equalsIgnoreCase("Scan#") || headerToken[i].equalsIgnoreCase("Scan"))
+				specIDCol = i;
 		}
 		if(specQValueColNum < 0)
 		{
@@ -59,11 +62,16 @@ public class CountPSMs {
 			System.out.println("Annotation column is missing!");
 			System.exit(0);
 		}
+		if(specIDCol < 0)
+		{
+			System.out.println("SpecID or Scan# column is missing!");
+			System.exit(0);
+		}
 		
-		int totalID = 0;
-		int numID = 0;
 		String s;
 		HashSet<String> pepSet = new HashSet<String>();
+		HashSet<String> idScanSet = new HashSet<String>();
+		HashSet<String> scanSet = new HashSet<String>();
 		Histogram<Integer> nttHist = new Histogram<Integer>();
 		while((s=in.readLine()) != null)
 		{
@@ -74,10 +82,10 @@ public class CountPSMs {
 				continue;
 			double specQValue = Double.parseDouble(token[specQValueColNum]);
 			double pepQValue = Double.parseDouble(token[pepQValueColNum]);
-			totalID++;
+			scanSet.add(token[specIDCol]);
 			if(specQValue <= threshold)
 			{
-				numID++;
+				idScanSet.add(token[specIDCol]);
 			}
 			if(pepQValue <= threshold)
 			{
@@ -111,8 +119,8 @@ public class CountPSMs {
 			}			
 		}
 		
-		System.out.println("TotalPSM\t" + totalID);
-		System.out.println("NumID\t" + numID+"\t"+numID/(float)totalID);
+		System.out.println("TotalPSM\t" + scanSet.size());
+		System.out.println("NumID\t" + idScanSet.size()+"\t"+idScanSet.size()/(float)scanSet.size());
 		System.out.println("NumPeptides\t" + pepSet.size());
 		System.out.println("Cleavage hist");
 		nttHist.printSortedRatio();
