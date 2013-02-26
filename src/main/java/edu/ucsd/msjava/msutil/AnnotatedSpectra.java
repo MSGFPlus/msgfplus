@@ -3,6 +3,7 @@ package edu.ucsd.msjava.msutil;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -50,6 +51,15 @@ public class AnnotatedSpectra {
 		return null;
 	}
 	
+	public void writeToMgf(PrintStream out)
+	{
+		if(annotatedSpectra != null)
+		{
+			for(Spectrum spec : annotatedSpectra)
+				spec.outputMgf(out);
+		}
+	}
+	
 	public String parseFile(File resultFile)
 	{
 		System.out.println("Parsing " + resultFile.getName());
@@ -71,6 +81,10 @@ public class AnnotatedSpectra {
 				
 				MzIDParser parser = new MzIDParser(resultFile);
 				parser.writeToTSVFile(tsvResultFile);				
+			}
+			else
+			{
+				System.out.println(tsvResultFileName + " already exists.");
 			}
 		}
 		else if(resultFile.getName().endsWith(".tsv"))

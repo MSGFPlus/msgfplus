@@ -1,6 +1,10 @@
 package edu.ucsd.msjava.ui;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 
 import edu.ucsd.msjava.msscorer.NewRankScorer;
 import edu.ucsd.msjava.msscorer.ScoringParameterGeneratorWithErrors;
@@ -83,6 +87,7 @@ public class ScoringParamGen {
 //				aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
 //		}
 		
+		
 		AnnotatedSpectra annotatedSpec = new AnnotatedSpectra(resultFiles, specDir, aaSet);
 		System.out.print("Reading training PSMs...");
 		String errMsg = annotatedSpec.parse();
@@ -95,6 +100,21 @@ public class ScoringParamGen {
 		Enzyme enzyme = paramManager.getEnzyme();
 		Protocol protocol = paramManager.getProtocol();
 		SpecDataType dataType = new SpecDataType(activationMethod, instType, enzyme, protocol);
+
+		boolean createMgf = paramManager.getIntValue("mgf") == 1 ? true : false;
+		if(createMgf)
+		{
+			String mgfFileName = dataType.toString()+".mgf";
+			File mgfFile = new File(mgfFileName);
+			System.out.println("Creating " + mgfFile.getPath());
+			try {
+				PrintStream mgfOut = new PrintStream(new BufferedOutputStream(new FileOutputStream(mgfFile)));
+				annotatedSpec.writeToMgf(mgfOut);
+				mgfOut.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
 		
 		ScoringParameterGeneratorWithErrors.generateParameters(
 				annotatedSpec.getAnnotatedSpecContainer(), 

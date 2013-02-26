@@ -47,11 +47,13 @@ public class MzIDToTsv {
 		EnumParameter onePerScan = new EnumParameter("onePerScan");
 		onePerScan.registerEntry("report one match per nativeID").setDefault();
 		onePerScan.registerEntry("report one match per scan");
+		onePerScan.setHidden();
 		paramManager.addParameter(onePerScan);
 
 		EnumParameter mergeAll = new EnumParameter("merge");
 		mergeAll.registerEntry("convert each file separately").setDefault();
 		mergeAll.registerEntry("merge all files");
+		mergeAll.setHidden();
 		paramManager.addParameter(mergeAll);
 
 		if(argv.length == 0)
@@ -93,8 +95,8 @@ public class MzIDToTsv {
 		boolean showQValue = paramManager.getIntValue("showQValue") == 1 ? true : false;
 		boolean showDecoy = paramManager.getIntValue("showDecoy") == 1 ? true : false;
 		boolean unroll = paramManager.getIntValue("unroll") == 1 ? true : false;
-		boolean onePerScan = paramManager.getIntValue("onePerScan") == 1 ? true : false;
-		boolean merge = paramManager.getIntValue("merge") == 1 ? true : false;
+//		boolean onePerScan = paramManager.getIntValue("onePerScan") == 1 ? true : false;
+//		boolean merge = paramManager.getIntValue("merge") == 1 ? true : false;
 		
 		if(mzIDPath.isDirectory())
 		{

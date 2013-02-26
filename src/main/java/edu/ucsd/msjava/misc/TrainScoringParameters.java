@@ -17,15 +17,16 @@ import edu.ucsd.msjava.msutil.Protocol;
 
 public class TrainScoringParameters {
 	
-	private static final String PARAM_DIR = System.getProperty("user.home")+"/Developments/MS_Java_Dev/src/resources/ionstat";
-	private static final String BACKUP_DIR = System.getProperty("user.home")+"/Developments/ionstat";
-	private static final String SPEC_DIR = System.getProperty("user.home")+"/Research/Data/IonStat/SpectraForTraining";
+	private static final String PARAM_DIR = System.getProperty("user.home")+"/Research/Data/TrainingMSGFPlus/new";
+//	private static final String PARAM_DIR = System.getProperty("user.home")+"/Developments/MS_Java_Dev/src/main/resources/ionstat";
+	private static final String BACKUP_DIR = System.getProperty("user.home")+"/Research/Data/TrainingMSGFPlus/backup";
+	private static final String SPEC_DIR = System.getProperty("user.home")+"/Research/Data/TrainingMSGFPlus/AnnotatedSpectra";
 	
 	public static void main(String argv[]) throws Exception
 	{
-		backup();
+//		backup();
 //		createParamFiles();
-//		testParamFiles();
+		testParamFiles();
 	}
 	
 	public static void backup() throws Exception
@@ -95,6 +96,9 @@ public class TrainScoringParameters {
 			String specFileName = specFile.getName();
 			if(specFileName.endsWith(".mgf"))
 			{
+//				if(!specFileName.equals("ETD_LowRes_LysC.mgf"))
+//					continue;
+					
 				String id = specFileName.substring(0, specFileName.lastIndexOf('.'));
 				String[] token = id.split("_");
 				if(token.length != 3 && token.length != 4)
@@ -110,11 +114,34 @@ public class TrainScoringParameters {
 					protocolStr = token[3];
 				
 				ActivationMethod actMethod = ActivationMethod.get(actMethodStr);
+				if(actMethod == null)
+				{
+					System.err.println("Unrecognized ActivationMethod: " + actMethodStr + "(" + specFileName + ")");
+					System.exit(-1);
+				}
 				InstrumentType instType = InstrumentType.get(instTypeStr);
+				if(instType == null)
+				{
+					System.err.println("Unrecognized InstrumentType: " + instTypeStr + "(" + specFileName + ")");
+					System.exit(-1);
+				}
 				Enzyme enzyme = Enzyme.getEnzymeByName(enzymeStr);
+				if(enzyme == null)
+				{
+					System.err.println("Unrecognized Enzyme: " + enzymeStr + "(" + specFileName + ")");
+					System.exit(-1);
+				}
+				
 				Protocol protocol = null;
 				if(protocolStr != null)
+				{
 					protocol = Protocol.get(protocolStr);
+					if(protocol == null)
+					{
+						System.err.println("Unrecognized Protocol: " + protocolStr + "(" + specFileName + ")");
+						System.exit(-1);
+					}
+				}
 				else
 					protocol = Protocol.NOPROTOCOL;
 				
@@ -149,6 +176,11 @@ public class TrainScoringParameters {
 				InputStream is = new BufferedInputStream(new FileInputStream(f));
 				NewRankScorer scorer = new NewRankScorer(new BufferedInputStream(is));
 				System.out.println(scorer.getSpecDataType());
+				if(!f.getName().substring(0, f.getName().lastIndexOf('.')).equals(scorer.getSpecDataType().toString()))
+				{
+					System.out.println(f.getName().substring(0, f.getName().lastIndexOf('.')) + " != " + scorer.getSpecDataType().toString());
+					System.out.println("********* Mismatch **********");
+				}
 			}
 		}
 		System.out.println("Read Success");

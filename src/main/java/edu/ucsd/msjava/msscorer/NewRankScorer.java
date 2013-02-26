@@ -258,6 +258,11 @@ public class NewRankScorer implements NewAdditiveScorer {
 				for(byte i=0; i<lenProtocol; i++)
 					bufProtocol.append(in.readChar());
 				protocol = Protocol.get(bufProtocol.toString());
+//				if(protocol == null)
+//				{
+//					System.out.println(bufProtocol.toString());
+//					System.exit(-1);
+//				}
 			}
 			else
 				protocol = Protocol.NOPROTOCOL;

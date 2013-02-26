@@ -90,7 +90,7 @@ public class NewScorerFactory {
 		if(instType == null)
 			instType = InstrumentType.LOW_RESOLUTION_LTQ;
 		if(method == ActivationMethod.HCD && instType != InstrumentType.HIGH_RESOLUTION_LTQ && instType != InstrumentType.QEXACTIVE)
-			instType = InstrumentType.HIGH_RESOLUTION_LTQ;
+			instType = InstrumentType.QEXACTIVE;
 		
 		SpecDataType condition = new SpecDataType(method, instType, enzyme, protocol);
 		NewRankScorer scorer = scorerTable.get(condition);
@@ -165,7 +165,7 @@ public class NewScorerFactory {
 	{
 		for(ActivationMethod method : ActivationMethod.getAllRegisteredActivationMethods())
 		{
-			if(method == ActivationMethod.FUSION)
+			if(method == ActivationMethod.FUSION || method == ActivationMethod.ASWRITTEN)
 				continue;
 			for(InstrumentType inst : InstrumentType.getAllRegisteredInstrumentTypes())
 			{
@@ -173,6 +173,10 @@ public class NewScorerFactory {
 				{
 					for(Protocol protocol : Protocol.getAllRegisteredProtocols())
 					{
+//						if(method == ActivationMethod.HCD && inst == InstrumentType.QEXACTIVE && enzyme == Enzyme.UnspecificCleavage && protocol == Protocol.NOPROTOCOL)
+//						{
+//							System.out.println("Debug");
+//						}
 						NewRankScorer scorer = NewScorerFactory.get(method, inst, enzyme, protocol);
 						System.out.print(method.getName()+"_"+inst.getName()+"_"+enzyme.getName()+"_"+protocol.getName()+" -> ");
 						if(scorer != null)

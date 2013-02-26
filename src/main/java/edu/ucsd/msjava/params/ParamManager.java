@@ -457,6 +457,13 @@ public class ParamManager {
 		
 		// Protocol
 		addProtocolParam();		
+
+		EnumParameter mgfParam = new EnumParameter("mgf");
+		mgfParam.registerEntry("do not create annotated mgf").setDefault();
+		mgfParam.registerEntry("create annotated mgf");
+		mgfParam.setHidden();
+		addParameter(mgfParam);
+		
 		
 //		paramManager.addModFileParam();
 //		StringParameter nlParam = new StringParameter("nl", "NeutralLosses", "Comma separated neutral losses to consider. Specify compositions or masses");

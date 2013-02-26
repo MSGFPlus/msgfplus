@@ -332,15 +332,16 @@ public class Enzyme implements ParamObject {
 		registeredEnzymeList = new ArrayList<Enzyme>();
 		
 		registeredEnzymeList.add(UnspecificCleavage);
-		register("Tryp", TRYPSIN);
-		register("CHYMOTRYPSIN", CHYMOTRYPSIN);
-		register("LysC", LysC);
-		register("LysN", LysN);
-		register("GluC", GluC);
-		register("ArgC", ArgC);
-		register("AspN", AspN);
-		register("aLP", ALP);
-		register("Peptidomics", NoCleavage);
+//		register(UnspecificCleavage.name, UnspecificCleavage);
+		register(TRYPSIN.name, TRYPSIN);
+		register(CHYMOTRYPSIN.name, CHYMOTRYPSIN);
+		register(LysC.name, LysC);
+		register(LysN.name, LysN);
+		register(GluC.name, GluC);
+		register(ArgC.name, ArgC);
+		register(AspN.name, AspN);
+		register(ALP.name, ALP);
+		register(NoCleavage.name, NoCleavage);
 		
 		// Add user-defined enzymes
 		File enzymeFile = new File("params/enzymes.txt");
