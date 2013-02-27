@@ -1329,7 +1329,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	
 	public static void main(String argv[])
 	{
-		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(System.getProperty("user.home")+"/Research/Data/Mouse_Brain_Phospho/Mods.txt");
+		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(System.getProperty("user.home")+"/Research/Data/Debug/mods.txt");
 		aaSet.printAASet();
 	}
 }

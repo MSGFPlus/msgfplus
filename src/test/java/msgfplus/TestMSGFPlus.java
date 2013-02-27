@@ -328,4 +328,21 @@ public class TestMSGFPlus {
 		MSGFPlus.runMSGFPlus(paramManager);
 		System.out.println("Done");		
 	}	
+	
+	@Test
+	public void testMultipleNTermMod()
+	{
+		File specPath = new File(System.getProperty("user.home")+"/Research/Data/Debug/test.mgf");
+		File dbFile = new File(System.getProperty("user.home")+"/Research/Data/Debug/test.fasta");
+		File modFile = new File(System.getProperty("user.home")+"/Research/Data/Debug/mods.txt");
+
+		String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "20ppm", "-ntt", "2", "-ti", "0,1", "-m", "3", "-inst", "1", "-mod", modFile.getPath()};
+		
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		paramManager.addMSGFPlusParams();
+		paramManager.parseParams(argv);
+		MSGFPlus.runMSGFPlus(paramManager);
+		System.out.println("Done");		
+	}
+	
 }
