@@ -1,5 +1,6 @@
 package edu.ucsd.msjava.misc;
 
+import java.io.File;
 import java.util.HashSet;
 
 import edu.ucsd.msjava.msgf.Histogram;
@@ -13,7 +14,20 @@ public class CountPSMs {
 		double threshold = 0.01;
 		if(argv.length == 2)
 			threshold = Double.parseDouble(argv[1]);
-		countID(argv[0], threshold);
+		File specPath = new File(argv[0]);
+		if(specPath.isDirectory())
+		{
+			for(File f : specPath.listFiles())
+			{
+				if(f.getName().endsWith(".tsv"))
+				{
+					System.out.println(f.getName());
+					countID(f.getPath(), threshold);
+				}
+			}
+		}
+		else
+			countID(argv[0], threshold);
 	}
 	
 	public static void printUsageAndExit()

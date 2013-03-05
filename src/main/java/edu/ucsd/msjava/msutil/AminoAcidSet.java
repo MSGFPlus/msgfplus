@@ -508,9 +508,11 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 					{
 						if(targetAA.isModified())
 						{
-							if(mod.getLocation() == Location.Anywhere && targetAA.hasResidueSpecificVariableMod())	// residue mod
-								continue;
-							if(mod.getLocation() != Location.Anywhere && targetAA.hasTerminalVariableMod())	// residue mod
+//							if(mod.getLocation() == Location.Anywhere && targetAA.hasResidueSpecificVariableMod())	// residue mod
+//								continue;
+//							if(mod.getLocation() != Location.Anywhere && targetAA.hasTerminalVariableMod())	// residue mod
+//								continue;
+							if(targetAA.hasResidueSpecificVariableMod())
 								continue;
 						}
 //						char modResidue = this.getModifiedResidue(targetAA.getUnmodResidue());
@@ -543,9 +545,11 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 //					}
 					if(targetAA.isModified())
 					{
-						if(mod.getLocation() == Location.Anywhere && targetAA.hasResidueSpecificVariableMod())	// residue mod
-							continue;
-						if(mod.getLocation() != Location.Anywhere && targetAA.hasTerminalVariableMod())	// residue mod
+//						if(mod.getLocation() == Location.Anywhere && targetAA.hasResidueSpecificVariableMod())	// residue mod
+//							continue;
+//						if(mod.getLocation() != Location.Anywhere && targetAA.hasTerminalVariableMod())	// residue mod
+//							continue;
+						if(targetAA.hasTerminalVariableMod())
 							continue;
 					}
 //					char modResidue = this.getModifiedResidue(targetAA.getUnmodResidue());

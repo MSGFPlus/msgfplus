@@ -26,9 +26,13 @@ public class ModifiedAminoAcid extends AminoAcid {
 		else
 		{
 			if(mod.getResidue() != '*')
+			{
 				this.hasResidueSpecificVariableMod = true;
+			}
 			else
+			{
 				this.hasTerminalVariableMod = true;
+			}
 			if(mod.getLocation() == Location.N_Term || mod.getLocation() == Location.Protein_N_Term)
 				isNTermVariableMod = true;
 			if(mod.getLocation() == Location.C_Term || mod.getLocation() == Location.Protein_C_Term)

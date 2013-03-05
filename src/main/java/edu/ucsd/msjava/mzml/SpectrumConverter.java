@@ -83,15 +83,23 @@ public class SpectrumConverter {
 			
 			// activation method
 			ParamGroup actMethodParams = precursor.getActivation();
+			boolean isETD = false;
 			for(CVParam param : actMethodParams.getCvParam())
 			{
 				ActivationMethod am = ActivationMethod.getByCV(param.getAccession());
 				if(am != null)
 				{
-					spec.setActivationMethod(am);
-					break;
+					if(am == ActivationMethod.ETD)
+					{
+						isETD = true;
+						break;
+					}
+					if(spec.getActivationMethod() == null)
+						spec.setActivationMethod(am);
 				}
 			}
+			if(isETD)
+				spec.setActivationMethod(ActivationMethod.ETD);
 		}
 
 		// Peak list
