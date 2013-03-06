@@ -424,6 +424,7 @@ public class ParamManager {
 	{
 		FileListParameter resFileParam = new FileListParameter("i", "ResultPath", "MSGFDBResultFile (*.mzid) or MSGFDBResultDir");
 		resFileParam.addFileFormat(new FileFormat(".mzid"));
+		resFileParam.addFileFormat(new FileFormat(".tsv"));
 		addParameter(resFileParam);
 		
 		FileParameter specDirParam = new FileParameter("d", "SpecDir", "Path to directory containing spectrum files");
