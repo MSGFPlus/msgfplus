@@ -110,12 +110,16 @@ public class TSVPSMSet extends PSMSet {
 				{
 					if(isTarget)
 					{
-						if(token[dbCol].contains(decoyPrefix))
+//						if(token[dbCol].contains(decoyPrefix))
+//							continue;
+						if(token[dbCol].startsWith(decoyPrefix))
 							continue;
 					}
 					else
 					{
-						if(!token[dbCol].contains(decoyPrefix))
+//						if(!token[dbCol].contains(decoyPrefix))
+//							continue;
+						if(!token[dbCol].startsWith(decoyPrefix))
 							continue;
 					}
 				}
@@ -170,17 +174,17 @@ public class TSVPSMSet extends PSMSet {
 			}
 	}
 
-	public void writeResults(TargetDecoyAnalysis tda, PrintStream out, float fdrThreshold, float pepFDRThreshold)
+	public void writeResults(TargetDecoyAnalysis tda, PrintStream out, float fdrThreshold, float pepFDRThreshold, boolean writeHeader)
 	{
 		if(isGreaterBetter)
-			writeResults(tda, out, fdrThreshold, pepFDRThreshold, Float.MIN_VALUE);
+			writeResults(tda, out, fdrThreshold, pepFDRThreshold, Float.MIN_VALUE, writeHeader);
 		else
-			writeResults(tda, out, fdrThreshold, pepFDRThreshold, Float.MAX_VALUE);
+			writeResults(tda, out, fdrThreshold, pepFDRThreshold, Float.MAX_VALUE, writeHeader);
 	}
 	
-	public void writeResults(TargetDecoyAnalysis tda, PrintStream out, float fdrThreshold, float pepFDRThreshold, float scoreThreshold)
+	public void writeResults(TargetDecoyAnalysis tda, PrintStream out, float fdrThreshold, float pepFDRThreshold, float scoreThreshold, boolean writeHeader)
 	{
-		if(header != null)
+		if(writeHeader && header != null)
 			out.println(header + delimeter + "QValue"+delimeter+"PepQValue");
 		for(ScoredString ss : getPSMList())
 		{
@@ -233,13 +237,18 @@ public class TSVPSMSet extends PSMSet {
 	public static String getPeptideFromAnnotation(String annotation)
 	{
 		String pep;
-		// if there are flanking amino acids (e.g. R.ACDEFK.G), remove them
-		int firstDotIndex = annotation.indexOf('.');
-		int lastDotIndex = annotation.lastIndexOf('.');
-		if(firstDotIndex < lastDotIndex)
-			pep = annotation.substring(firstDotIndex+1, lastDotIndex);
+		if(annotation.matches("[A-Z\\-_]?\\..+\\.[A-Z\\-_]?"))
+			pep = annotation.substring(annotation.indexOf('.')+1, annotation.lastIndexOf('.'));
 		else
 			pep = annotation;
+		
+		// if there are flanking amino acids (e.g. R.ACDEFK.G), remove them
+//		int firstDotIndex = annotation.indexOf('.');
+//		int lastDotIndex = annotation.lastIndexOf('.');
+//		if(firstDotIndex < lastDotIndex)
+//			pep = annotation.substring(firstDotIndex+1, lastDotIndex);
+//		else
+//			pep = annotation;
 		pep = pep.toUpperCase();
 		return pep;
 	}

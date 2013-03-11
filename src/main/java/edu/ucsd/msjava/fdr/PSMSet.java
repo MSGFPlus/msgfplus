@@ -1,6 +1,5 @@
 package edu.ucsd.msjava.fdr;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;

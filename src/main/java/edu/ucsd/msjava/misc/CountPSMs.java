@@ -84,6 +84,9 @@ public class CountPSMs {
 		
 		String s;
 		HashSet<String> pepSet = new HashSet<String>();
+		HashSet<String> modPepSet = new HashSet<String>();
+		HashSet<String> pepSetPSMFDR = new HashSet<String>();
+		HashSet<String> modPepSetFDR = new HashSet<String>();
 		HashSet<String> idScanSet = new HashSet<String>();
 		HashSet<String> scanSet = new HashSet<String>();
 		Histogram<Integer> nttHist = new Histogram<Integer>();
@@ -100,6 +103,14 @@ public class CountPSMs {
 			if(specQValue <= threshold)
 			{
 				idScanSet.add(token[specIDCol]);
+				pepSetPSMFDR.add(getUnmodStr(token[pepColNum]));
+				String annotation = token[pepColNum];
+				String pepStr;
+				if(annotation.matches("[A-Z\\-_]?\\..+\\.[A-Z\\-_]?"))
+					pepStr = annotation.substring(annotation.indexOf('.')+1, annotation.lastIndexOf('.'));
+				else
+					pepStr = annotation;
+				modPepSetFDR.add(pepStr);
 			}
 			if(pepQValue <= threshold)
 			{
@@ -130,15 +141,35 @@ public class CountPSMs {
 						unmodStr.append(pepStr.charAt(i));
 				
 				pepSet.add(unmodStr.toString());
+				modPepSet.add(pepStr);
 			}			
 		}
 		
 		System.out.println("TotalPSM\t" + scanSet.size());
-		System.out.println("NumID\t" + idScanSet.size()+"\t"+idScanSet.size()/(float)scanSet.size());
-		System.out.println("NumPeptides\t" + pepSet.size());
+		System.out.println("NumID\t" + idScanSet.size()+"\t"+idScanSet.size()/(float)scanSet.size() + 
+				" (" + pepSetPSMFDR.size() + " peptides " + " " + modPepSetFDR.size() + " peptide variants)");
+		System.out.println("NumUnmodPeptides\t" + pepSet.size());
+		System.out.println("NumPeptidesVariants\t" + modPepSet.size());
 		System.out.println("Cleavage hist");
 		nttHist.printSortedRatio();
 		
 		in.close();
+	}
+	
+	public static String getUnmodStr(String annotation)
+	{
+		String pepStr;
+		
+		if(annotation.matches("[A-Z\\-_]?\\..+\\.[A-Z\\-_]?"))
+			pepStr = annotation.substring(annotation.indexOf('.')+1, annotation.lastIndexOf('.'));
+		else
+			pepStr = annotation;
+		
+		StringBuffer unmodStr = new StringBuffer();
+		for(int i=0; i<pepStr.length(); i++)
+			if(Character.isLetter(pepStr.charAt(i)))
+				unmodStr.append(pepStr.charAt(i));
+		
+		return unmodStr.toString();
 	}
 }

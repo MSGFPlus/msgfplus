@@ -267,9 +267,9 @@ public class ComputeFDR {
 		else
 			out = System.out;
 		
-		target.writeResults(tda, out, fdrThreshold, pepFDRThreshold);
+		target.writeResults(tda, out, fdrThreshold, pepFDRThreshold, true);
 		if(includeDecoy)
-			decoy.writeResults(tda, out, fdrThreshold, pepFDRThreshold);
+			decoy.writeResults(tda, out, fdrThreshold, pepFDRThreshold, false);
 		
 		if(out != System.out)
 			out.close();
