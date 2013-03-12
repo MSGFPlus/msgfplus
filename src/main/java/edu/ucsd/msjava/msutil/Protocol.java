@@ -35,6 +35,7 @@ public class Protocol implements ParamObject {
 	public static final Protocol PHOSPHORYLATION;
 	public static final Protocol ITRAQ;
 	public static final Protocol ITRAQPHOSPHO;
+	public static final Protocol TMT;
 	
 	public static Protocol[] getAllRegisteredProtocols()
 	{
@@ -54,6 +55,7 @@ public class Protocol implements ParamObject {
 		PHOSPHORYLATION = new Protocol("Phosphorylation", "Phospho-enriched");
 		ITRAQ = new Protocol("iTRAQ", "iTRAQ");
 		ITRAQPHOSPHO = new Protocol("iTRAQPhospho", "iTRAQPhospho");
+		TMT = new Protocol("TMT", "TMT");
 		
 		table = new HashMap<String, Protocol>();
 		protocolList = new ArrayList<Protocol>();
@@ -62,6 +64,7 @@ public class Protocol implements ParamObject {
 		add(PHOSPHORYLATION);
 		add(ITRAQ);
 		add(ITRAQPHOSPHO);
+		add(TMT);
 		
 		// Parse activation methods defined by a user
 		File protocolFile = new File("params/protocols.txt");

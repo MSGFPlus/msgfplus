@@ -46,20 +46,24 @@ public class CountPSMs {
 			System.exit(0);
 		}
 		String[] headerToken = header.split("\t");
+		int specFileColNum = -1;
 		int specQValueColNum = -1;
 		int pepQValueColNum = -1;
 		int pepColNum = -1;
 		int specIDCol = -1;
 		for(int i=0; i<headerToken.length; i++)
 		{
+			if(headerToken[i].equalsIgnoreCase("#SpecFile") || headerToken[i].equalsIgnoreCase("#SpectrumFile"))
+				specFileColNum = i;
 			if(headerToken[i].equalsIgnoreCase("FDR") || headerToken[i].equalsIgnoreCase("QValue") || headerToken[i].equalsIgnoreCase("q-value"))
 				specQValueColNum = i;
 			if(headerToken[i].equalsIgnoreCase("PepFDR") || headerToken[i].equalsIgnoreCase("PepQValue"))
 				pepQValueColNum = i;
 			if(headerToken[i].equalsIgnoreCase("Peptide") || headerToken[i].equalsIgnoreCase("Annotation"))
 				pepColNum = i;
-			if(headerToken[i].equalsIgnoreCase("SpecID") || headerToken[i].equalsIgnoreCase("ScanNum") || headerToken[i].equalsIgnoreCase("Scan#") || headerToken[i].equalsIgnoreCase("Scan"))
-				specIDCol = i;
+			if(specIDCol < 0)
+				if(headerToken[i].equalsIgnoreCase("SpecID") || headerToken[i].equalsIgnoreCase("ScanNum") || headerToken[i].equalsIgnoreCase("Scan#") || headerToken[i].equalsIgnoreCase("Scan"))
+					specIDCol = i;
 		}
 		if(specQValueColNum < 0)
 		{
@@ -99,10 +103,13 @@ public class CountPSMs {
 				continue;
 			double specQValue = Double.parseDouble(token[specQValueColNum]);
 			double pepQValue = Double.parseDouble(token[pepQValueColNum]);
-			scanSet.add(token[specIDCol]);
+			String specID = token[specIDCol];
+			if(specFileColNum >= 0)
+				specID += token[specFileColNum]+":"+specID;
+			scanSet.add(specID);
 			if(specQValue <= threshold)
 			{
-				idScanSet.add(token[specIDCol]);
+				idScanSet.add(specID);
 				pepSetPSMFDR.add(getUnmodStr(token[pepColNum]));
 				String annotation = token[pepColNum];
 				String pepStr;

@@ -133,6 +133,14 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 				System.out.println("Consider iTRAQ loss.");
 		}
 
+		boolean considerTMTLoss = false;
+		if(dataType.getProtocol().getName().equals("TMT"))
+		{
+			considerTMTLoss = true;
+			if(verbose)
+				System.out.println("Consider TMT loss.");
+		}
+		
 		if(dataType.getProtocol().getName().equals("iTRAQPhospho"))
 		{
 			considerPhosLoss = true;
@@ -193,6 +201,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 				dataType,
 				considerPhosLoss, 
 				consideriTRAQLoss,
+				considerTMTLoss,
 				applyDeconvolution);
 		
 		// set up the tolerance
@@ -257,12 +266,14 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 	private SpectraContainer specContainer;
 	private final boolean considerPhosLoss;
 	private final boolean consideriTRAQLoss;
+	private final boolean considerTMTLoss;
 
-	public ScoringParameterGeneratorWithErrors(SpectraContainer specContainer, SpecDataType dataType, boolean considerPhosLoss, boolean consideriTRAQLoss, boolean applyDeconvolution)
+	public ScoringParameterGeneratorWithErrors(SpectraContainer specContainer, SpecDataType dataType, boolean considerPhosLoss, boolean consideriTRAQLoss, boolean considerTMTLoss, boolean applyDeconvolution)
 	{
 		this.specContainer = specContainer;
 		this.considerPhosLoss = considerPhosLoss;
 		this.consideriTRAQLoss = consideriTRAQLoss;
+		this.considerTMTLoss = considerTMTLoss;
 		super.dataType = dataType;
 		super.applyDeconvolution = applyDeconvolution;
 		super.deconvolutionErrorTolerance = DECONVOLUTION_MASS_TOLERANCE;
@@ -483,7 +494,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			ArrayList<FragmentOffsetFrequency> signalFragmentOffsetFrequencyList = new ArrayList<FragmentOffsetFrequency>();
 
 			int seg = partition.getSegNum();
-			IonType[] allIonTypes = IonType.getAllKnownIonTypes(Math.min(charge, 3), true, considerPhosLoss, consideriTRAQLoss).toArray(new IonType[0]);
+			IonType[] allIonTypes = IonType.getAllKnownIonTypes(Math.min(charge, 3), true, considerPhosLoss, consideriTRAQLoss, considerTMTLoss).toArray(new IonType[0]);
 			
 			IonProbability probGen = new IonProbability(
 					curPartContainer.iterator(), 
