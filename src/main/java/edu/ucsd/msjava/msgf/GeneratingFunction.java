@@ -315,6 +315,12 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 		if(maxScore <= minScore)
 			return false;
 		
+		if(minScore < -10000 || maxScore > 10000)
+		{
+			System.err.println("Error! MinScore: " + minScore + ", MaxScore: " + maxScore);
+			System.exit(-1);
+		}
+		
 		// merge distributions of dest nodes
 		ScoreDist mergedDist = factory.getInstance(minScore, maxScore);
 		for(T sinkNode : graph.getSinkList())
@@ -384,6 +390,7 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 				return;
 			curMinScore = min;
 		}
+		
 		// determine minScore and maxScore
 		ArrayList<DeNovoGraph.Edge<T>> edges = new ArrayList<DeNovoGraph.Edge<T>>(); // modified by kyowon
 		for(DeNovoGraph.Edge<T> edge : graph.getEdges(curNode))
@@ -406,6 +413,12 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 		}
 		if(curMinScore >= curMaxScore)
 			return;
+
+		if(curMinScore < -10000 || curMaxScore > 10000)
+		{
+			System.err.println("Error! MinScore: " + curMinScore + ", MaxScore: " + curMaxScore);
+			System.exit(-1);
+		}
 
 		ScoreDist curDist = scoreDistFactory.getInstance(curMinScore, curMaxScore);
 		BacktrackPointer backPointer = null;

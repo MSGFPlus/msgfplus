@@ -172,6 +172,8 @@ public class NewRankScorer implements NewAdditiveScorer {
 			noiseExistenceProb = probPeak*probPeak;
 		else
 			noiseExistenceProb = probPeak*(1-probPeak);
+		if(ionExistenceProb[index] == 0)
+			ionExistenceProb[index] = 0.01f;
 		return (float)Math.log(ionExistenceProb[index]/noiseExistenceProb);
 	}
 	

@@ -50,6 +50,7 @@ public class InstrumentType implements ParamObject {
 	public static final InstrumentType TOF;
 	public static final InstrumentType HIGH_RESOLUTION_LTQ;
 	public static final InstrumentType QEXACTIVE;
+//	public static final InstrumentType TRIPLETOF;
 	
 	public static InstrumentType[] getAllRegisteredInstrumentTypes()
 	{
@@ -61,11 +62,13 @@ public class InstrumentType implements ParamObject {
 		HIGH_RESOLUTION_LTQ = new InstrumentType("HighRes", "High-res LTQ", true);
 		TOF = new InstrumentType("TOF", "TOF", true);
 		QEXACTIVE = new InstrumentType("QExactive", "Q-Exactive", true);
+//		TRIPLETOF = new InstrumentType("TripleTOF", "TripleTOF 5600", true);
 		
 		table.put(LOW_RESOLUTION_LTQ.getName(), LOW_RESOLUTION_LTQ);
 		table.put(HIGH_RESOLUTION_LTQ.getName(), HIGH_RESOLUTION_LTQ);
 		table.put(TOF.getName(), TOF);
 		table.put(QEXACTIVE.getName(), QEXACTIVE);
+//		table.put(TRIPLETOF.getName(), TRIPLETOF);
 	}
 
 }

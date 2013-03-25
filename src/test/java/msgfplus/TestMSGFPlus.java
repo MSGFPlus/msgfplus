@@ -361,4 +361,22 @@ public class TestMSGFPlus {
 		System.out.println("Done");		
 	}		
 	
+	@Test
+	public void testWaLP()
+	{
+//		File dir = new File("/Users/kims336/Research/Data/Jesse");
+//		File specPath = new File(dir.getPath() + File.separator + "test.mgf");
+//		File dbFile = new File(dir.getPath() + File.separator + "test.fasta");
+
+		File specPath = new File(System.getProperty("user.home")+"/Research/Data/Jesse/test.mgf");
+		File dbFile = new File(System.getProperty("user.home")+"/Research/Data/Jesse/test.fasta");
+		
+		String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "0.1Da", "-m", "1", "-inst", "1", "-e", "10"};
+		
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		paramManager.addMSGFPlusParams();
+		paramManager.parseParams(argv);
+		MSGFPlus.runMSGFPlus(paramManager);
+		System.out.println("Done");		
+	}		
 }

@@ -276,9 +276,16 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
 					aa.getProbability(),
 					aaSet.getIndex(aa),
 					aa.getMass());
+//			if(curNode.getNominalMass() == 57 && nextNode.getNominalMass() == 114)
+//				System.out.println("Debug");
 			int errorScore = scoredSpec.getEdgeScore(nextNode, curNode, aa.getMass());
-			if(aa.isModified())
-				errorScore += MODIFIED_EDGE_PENALTY;
+//			if(aa.isModified())
+//				errorScore += MODIFIED_EDGE_PENALTY;
+			if(errorScore < -100 || errorScore > 100)
+			{
+				System.err.println("Illegal ErrorScore: " + errorScore);
+				System.exit(-1);
+			}
 			edge.setErrorScore(errorScore);
 			if(addCleavageScore)
 			{

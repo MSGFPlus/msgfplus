@@ -59,6 +59,9 @@ public class DBScanScorer extends FastScorer {
 	}
 	
 	private int getEdgeScoreInt(int curNominalMass, int prevNominalMass, float theoMass) {
+		// Debug
+//		if(curNominalMass == 114 && prevNominalMass == 57)
+//			System.out.println("Debug");
 		int ionExistenceIndex = 0;
 		float curMass = nodeMass[curNominalMass];
 		if(curMass >= 0)
@@ -69,7 +72,9 @@ public class DBScanScorer extends FastScorer {
 		
 		float edgeScore = scorer.getIonExistenceScore(partition, ionExistenceIndex, probPeak);
 		if(ionExistenceIndex == 3)
+		{
 			edgeScore += scorer.getErrorScore(partition, curMass-prevMass-theoMass);
+		}
 		return Math.round(edgeScore);
 	}
 }

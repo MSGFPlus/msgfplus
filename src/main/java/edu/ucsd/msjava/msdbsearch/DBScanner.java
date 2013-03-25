@@ -545,6 +545,10 @@ public class DBScanner {
 			int nominalPeptideMass = NominalMass.toNominalMass(peptideMass);
 			int minNominalPeptideMass = nominalPeptideMass - specScanner.getMaxIsotopeError();
 			int maxNominalPeptideMass = nominalPeptideMass - specScanner.getMinIsotopeError();
+
+			// Debug
+//			System.out.println("***Debug " + threadName + ": " + scoredSpec.getPrecursorPeak().getMz() + "," + scoredSpec.getPrecursorPeak().getCharge());
+			///
 			
 			float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
 			float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
