@@ -461,11 +461,6 @@ public class MZIdentMLGen {
 			{
 				PeptideEvidence pepEv = new PeptideEvidence();
 				
-//				String pepEvKey = "PepEv"+(index+1)+"_"+length;
-				String pepEvKey = Constants.pepEvIDPrefix+"_"+(index+1)+"_"+pepIDNum;
-//				if(match.isNTermMetCleaved())
-//					pepEvKey += "_N"+"_"+startKey;
-				pepEv.setId(pepEvKey);
 				char pre = sa.getSequence().getCharAt(index);
 				if(pre == '_')
 					pre = '-';
@@ -491,6 +486,12 @@ public class MZIdentMLGen {
 				int end = start+length-2-1;
 				pepEv.setStart(start);
 				pepEv.setEnd(end);
+				
+//				String pepEvKey = "PepEv"+(index+1)+"_"+length;
+				String pepEvKey = Constants.pepEvIDPrefix+"_"+(index+1)+"_"+pepIDNum+"_"+start;
+//				if(match.isNTermMetCleaved())
+//					pepEvKey += "_N"+"_"+startKey;
+				pepEv.setId(pepEvKey);
 				
 				pepEv.setIsDecoy(isDecoyMap.get(protStartIndex));
 				

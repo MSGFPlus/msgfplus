@@ -81,7 +81,8 @@ public class MzIDTest {
 	
 	public static void main(String argv[]) throws Exception
 	{
-		File mzidFile = new File("/Users/kims336/Research/Data/Mouse_Brain_Phospho/V9012.mzid");
+		File mzidFile = new File("/Users/kims336/Research/Data/Bug/multiple_pepevs_with_same_id.mzid");
+//		mzidFile = new File("/Users/kims336/Research/Data/QCShew/V9324_10ppm_TI1_NTT1.mzid");
 		MzIDTest test = new MzIDTest(mzidFile);
 		boolean isValid = test.isValid();
 		System.out.println("IsValid? " + isValid);
