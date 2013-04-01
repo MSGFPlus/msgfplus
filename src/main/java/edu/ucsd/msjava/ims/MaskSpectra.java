@@ -45,8 +45,8 @@ public class MaskSpectra {
 		{
 			Spectrum spec = itr.next();
 			float precurosrMz = spec.getPrecursorPeak().getMz();
-			int minMz = Math.round(precurosrMz/windowSize)*windowSize;
-			int maxMz = minMz + windowSize;
+			int minMz = Math.round(precurosrMz/windowSize)*windowSize - windowSize/2;
+			int maxMz = minMz + windowSize/2;
 			
 			Spectrum newSpec = spec.getCloneWithoutPeakList();
 			for(Peak p : spec)
