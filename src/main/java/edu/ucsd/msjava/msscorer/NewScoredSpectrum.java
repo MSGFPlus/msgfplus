@@ -182,7 +182,7 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 		return score;
 	}	
 	
-	public float getExplainedIonCurrent(float residueMass, boolean isPrefix)
+	public float getExplainedIonCurrent(float residueMass, boolean isPrefix, Tolerance fragmentTolerance)
 	{
 		float explainedIonCurrent = 0;
 		for(int segIndex=0; segIndex<scorer.getNumSegments(); segIndex++)
@@ -209,7 +209,7 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 				if(segNum != segIndex)
 					continue;
 				
-				Peak p = spec.getPeakByMass(theoMass, mme);
+				Peak p = spec.getPeakByMass(theoMass, fragmentTolerance);
 				
 				if(p != null)	// peak exists
 					explainedIonCurrent += p.getIntensity();
@@ -218,16 +218,20 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 		return explainedIonCurrent;
 	}
 	
-	public Pair<Float, Float> getMassErrorWithIntensity(float residueMass, boolean isPrefix)
+	public Pair<Float, Float> getMassErrorWithIntensity(float residueMass, boolean isPrefix, Tolerance fragmentTolerance)
 	{
 		float error = -1f;
 		float maxIntensity = 0;
-		IonType bestIon = null;
+//		IonType bestIon = null;
+//		Peak bestPeak = null;
+//		float bestTheoMass = 0;
 		
 		for(int segIndex=0; segIndex<scorer.getNumSegments(); segIndex++)
 		{
 			for(IonType ion : ionTypes[segIndex])
 			{
+				if(ion.getCharge() != 1)
+					continue;
 				float theoMass;
 				if(isPrefix)	// prefix
 				{
@@ -248,7 +252,7 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 				if(segNum != segIndex)
 					continue;
 				
-				Peak p = spec.getPeakByMass(theoMass, mme);
+				Peak p = spec.getPeakByMass(theoMass, fragmentTolerance);
 				
 				if(p != null)	// peak exists
 				{
@@ -263,7 +267,9 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 					{
 						error = err;
 						maxIntensity = intensity;
-						bestIon = ion;
+//						bestIon = ion;
+//						bestPeak = p;
+//						bestTheoMass = theoMass;
 					}
 				}
 			}			
@@ -272,8 +278,9 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 			return null;
 		else
 		{
-			// Debug
-			System.out.println("*\t" + residueMass + "\t" + bestIon.getName() + "\t" + error + "\t" + maxIntensity);
+//			// Debug
+//			System.out.println("*\t" + residueMass + "\t" + bestIon.getName() + "\t" + error + "\t" + bestPeak.getRank() 
+//					+ "\t" + bestPeak.getMz() + "\t" + bestPeak.getIntensity() + "\t" + bestTheoMass);
 			return new Pair<Float, Float>(error, maxIntensity);
 		}
 	}	

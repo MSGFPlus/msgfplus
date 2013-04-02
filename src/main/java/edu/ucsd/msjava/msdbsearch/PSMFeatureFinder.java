@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.ucsd.msjava.msgf.NominalMass;
+import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msscorer.NewRankScorer;
 import edu.ucsd.msjava.msscorer.NewScoredSpectrum;
 import edu.ucsd.msjava.msutil.Peak;
@@ -28,6 +29,7 @@ public class PSMFeatureFinder {
 	private Float errMean7 = null;
 //	private Float ms1IonCurrent;
 //	private Float isolationWindowEfficiency;
+	private Tolerance mme;
 	
 	public PSMFeatureFinder(Spectrum spec, Spectrum precursorSpec, Peptide peptide, NewRankScorer scorer)
 	{
@@ -36,6 +38,11 @@ public class PSMFeatureFinder {
 //		this.precursorSpec = precursorSpec;
 
 		scoredSpec = scorer.getScoredSpectrum(spec);
+		if(scorer.getSpecDataType().getInstrumentType().isHighResolution())
+			mme = new Tolerance(20f, true);	// for high-precision MS/MS, set tolerance as 20ppm
+		else
+			mme = new Tolerance(0.5f, false);	// low resolution: 0.5Da
+
 		extractFeatures();
 	}
 
@@ -112,13 +119,13 @@ public class PSMFeatureFinder {
 		{
 			prm += peptide.get(i).getAccurateMass();
 			srm += peptide.get(peptide.size()-1-i).getAccurateMass();
-			nTermIonCurrent += scoredSpec.getExplainedIonCurrent((float)prm, true);
-			cTermIonCurrent += scoredSpec.getExplainedIonCurrent((float)srm, false);
+			nTermIonCurrent += scoredSpec.getExplainedIonCurrent((float)prm, true, mme);
+			cTermIonCurrent += scoredSpec.getExplainedIonCurrent((float)srm, false, mme);
 			
 			Pair<Float, Float> err;
-			if((err = scoredSpec.getMassErrorWithIntensity((float)prm, true)) != null)
+			if((err = scoredSpec.getMassErrorWithIntensity((float)prm, true, mme)) != null)
 				errStat.add(err);
-			if((err = scoredSpec.getMassErrorWithIntensity((float)srm, false)) != null)
+			if((err = scoredSpec.getMassErrorWithIntensity((float)srm, false, mme)) != null)
 				errStat.add(err);
 		}
 

@@ -67,9 +67,9 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 	}
 
 	public int getNodeScore(NominalMass prefixMass, NominalMass suffixMass) {
-		if(prefixMass.getNominalMass() >= prefixScore.length ||
-				suffixMass.getNominalMass() >= suffixScore.length)
-			System.out.println("Debug");
+//		if(prefixMass.getNominalMass() >= prefixScore.length ||
+//				suffixMass.getNominalMass() >= suffixScore.length)
+//			System.out.println("Debug");
 		return Math.round(prefixScore[prefixMass.getNominalMass()]+suffixScore[suffixMass.getNominalMass()]);
 	}
 
