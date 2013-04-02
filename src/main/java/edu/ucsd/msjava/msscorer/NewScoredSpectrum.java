@@ -1,5 +1,6 @@
 package edu.ucsd.msjava.msscorer;
 
+import edu.ucsd.msjava.msdbsearch.FragmentMassErrors;
 import edu.ucsd.msjava.msgf.ScoredSpectrum;
 import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msutil.ActivationMethod;
@@ -217,6 +218,46 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 		}
 		return explainedIonCurrent;
 	}
+	
+	public FragmentMassErrors getMassErrorInfo(float residueMass, boolean isPrefix)
+	{
+		FragmentMassErrors errInfo = new FragmentMassErrors();
+		
+		for(int segIndex=0; segIndex<scorer.getNumSegments(); segIndex++)
+		{
+			for(IonType ion : ionTypes[segIndex])
+			{
+				float theoMass;
+				if(isPrefix)	// prefix
+				{
+					if(ion instanceof IonType.PrefixIon)
+						theoMass = ion.getMz(residueMass);
+					else
+						continue;
+				}
+				else
+				{
+					if(ion instanceof IonType.SuffixIon)
+						theoMass = ion.getMz(residueMass);
+					else
+						continue;
+				}
+				
+				int segNum = scorer.getSegmentNum(theoMass, parentMass);
+				if(segNum != segIndex)
+					continue;
+				
+				Peak p = spec.getPeakByMass(theoMass, mme);
+				
+				if(p != null)	// peak exists
+				{
+					float error = p.getMz() - theoMass;
+					errInfo.add(new Pair<Float,Float>(error, p.getIntensity()));
+				}
+			}			
+		}
+		return errInfo;
+	}	
 	
 	public Pair<Float,Float> getNodeMassAndScore(float residueMass, boolean isPrefix)
 	{

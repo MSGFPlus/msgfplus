@@ -70,6 +70,7 @@ public class PSMFeatureFinder {
 		Float isolationWindowEfficiency = getIsolationWindowEfficiency();
 		if(isolationWindowEfficiency != null)
 			list.add(new Pair<String,String>("IsolationWindowEfficiency", String.valueOf(isolationWindowEfficiency)));
+		
 		return list;
 	}
 	
