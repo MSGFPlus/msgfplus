@@ -42,6 +42,8 @@ public class ScoredSpectraMap {
 	private Map<SpecKey,SimpleDBSearchScorer<NominalMass>> specKeyScorerMap;
 	private Map<Pair<Integer,Integer>, SpecKey> specIndexChargeToSpecKeyMap;
 	
+	private Map<SpecKey,NewRankScorer> specKeyRankScorerMap;
+	
 	private boolean turnOffEdgeScoring = false;
 
 	public ScoredSpectraMap(
@@ -51,7 +53,8 @@ public class ScoredSpectraMap {
     		Tolerance rightParentMassTolerance, 
 			int minIsotopeError,
 			int maxIsotopeError,
-			SpecDataType specDataType
+			SpecDataType specDataType,
+			boolean storeRankScorer
 			)
 	{
 		this.specAcc = specAcc;
@@ -65,6 +68,9 @@ public class ScoredSpectraMap {
 		pepMassSpecKeyMap = Collections.synchronizedSortedMap((new TreeMap<Double,SpecKey>()));
 		specKeyScorerMap = Collections.synchronizedMap(new HashMap<SpecKey,SimpleDBSearchScorer<NominalMass>>());
 		specIndexChargeToSpecKeyMap = Collections.synchronizedMap(new HashMap<Pair<Integer,Integer>,SpecKey>());
+		
+		if(storeRankScorer)
+			specKeyRankScorerMap = Collections.synchronizedMap(new HashMap<SpecKey,NewRankScorer>());
 	}
 
 	public ScoredSpectraMap(
@@ -73,10 +79,11 @@ public class ScoredSpectraMap {
     		Tolerance leftParentMassTolerance, 
     		Tolerance rightParentMassTolerance, 
 			int maxNum13C,
-			SpecDataType specDataType
+			SpecDataType specDataType,
+			boolean storeRankScorer
 			)
 	{
-		this(specAcc, specKeyList, leftParentMassTolerance, rightParentMassTolerance, 0, maxNum13C, specDataType);
+		this(specAcc, specKeyList, leftParentMassTolerance, rightParentMassTolerance, 0, maxNum13C, specDataType, storeRankScorer);
 	}
 	
 	public ScoredSpectraMap turnOffEdgeScoring()
@@ -99,6 +106,14 @@ public class ScoredSpectraMap {
 	public SpecKey getSpecKey(int specIndex, int charge)
 	{
 		return specIndexChargeToSpecKeyMap.get(new Pair<Integer,Integer>(specIndex, charge));
+	}
+	
+	public NewRankScorer getRankScorer(SpecKey specKey)
+	{
+		if(specKeyRankScorerMap == null)
+			return null;
+		else
+			return this.specKeyRankScorerMap.get(specKey);
 	}
 	
 	public ScoredSpectraMap makePepMassSpecKeyMap()
@@ -172,6 +187,8 @@ public class ScoredSpectraMap {
 				specKeyScorerMap.put(specKey, new DBScanScorer(scoredSpec, maxNominalPeptideMass));
 			else
 				specKeyScorerMap.put(specKey, new FastScorer(scoredSpec, maxNominalPeptideMass));
+			if(specKeyRankScorerMap != null)
+				specKeyRankScorerMap.put(specKey, scorer);
 		}				
 	}
 	

@@ -314,7 +314,8 @@ public class MSGFDB {
 		    			leftParentMassTolerance,
 		    			rightParentMassTolerance,
 		    			numAllowedC13,
-		    			specDataType
+		    			specDataType,
+		    			false
 		    			);
 		    	if(doNotDseEdgeScore)
 		    		specScanner.turnOffEdgeScoring();

@@ -168,7 +168,8 @@ public class MSGFDBLib {
 		    			leftParentMassTolerance,
 		    			rightParentMassTolerance,
 		    			numAllowedC13,
-		    			specDataType
+		    			specDataType,
+		    			false
 		    			);
 		    	
 				ConcurrentMSGFDB.RunMSGFDBLib msgfdbExecutor = new ConcurrentMSGFDB.RunMSGFDBLib(

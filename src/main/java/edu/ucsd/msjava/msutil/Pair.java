@@ -125,4 +125,28 @@ public class Pair<A, B> {
         		return p1.getSecond().compareTo(p2.getSecond());
         }
     }
+    
+    public static class PairReverseComparator<A extends Comparable<? super A> ,B extends Comparable<? super B>> implements Comparator<Pair<A,B>> {
+    	boolean useSecondForComprison;
+    	public PairReverseComparator()
+    	{
+    		this(false);
+    	}
+    	public PairReverseComparator(boolean useSecondForComprison)
+    	{
+    		this.useSecondForComprison = useSecondForComprison;
+    	}
+        /**
+         * Determines the order of Pair objects. If useSecondForComparison is set, use B for comparison, otherwise A is used.
+         * @param o1 the first element.
+         * @param o2 the second element.
+         * @return 1 if p1 > p2, -1 if p2 > p1 and 0 otherwise.
+         */
+        public int compare(Pair<A,B> p1, Pair<A,B> p2) {
+        	if(!useSecondForComprison)
+        		return p2.getFirst().compareTo(p1.getFirst());
+        	else
+        		return p2.getSecond().compareTo(p1.getSecond());
+        }
+    }    
 }

@@ -21,6 +21,7 @@ import edu.ucsd.msjava.msgf.GeneratingFunction;
 import edu.ucsd.msjava.msgf.GeneratingFunctionGroup;
 import edu.ucsd.msjava.msgf.MSGFDBResultGenerator;
 import edu.ucsd.msjava.msgf.NominalMass;
+import edu.ucsd.msjava.msscorer.NewRankScorer;
 import edu.ucsd.msjava.msscorer.NewScorerFactory.SpecDataType;
 import edu.ucsd.msjava.msscorer.SimpleDBSearchScorer;
 import edu.ucsd.msjava.msutil.AminoAcid;
@@ -677,7 +678,6 @@ public class DBScanner {
 	
 	public void addAdditionalFeatures()
 	{
-		SpecDataType specType = specScanner.getSpecDataType();
 		Iterator<Entry<Integer, PriorityQueue<DatabaseMatch>>> itr = specIndexDBMatchMap.entrySet().iterator();
 		while(itr.hasNext())
 		{
@@ -689,11 +689,11 @@ public class DBScanner {
 				continue;
 			
 			Spectrum spec = specScanner.getSpectraAccessor().getSpectrumBySpecIndex(specIndex);
-			
 			for(DatabaseMatch match : matchQueue)
 			{
+				NewRankScorer scorer = specScanner.getRankScorer(new SpecKey(specIndex, match.getCharge()));
 				spec.setCharge(match.getCharge());
-				PSMFeatureFinder addFeatures = new PSMFeatureFinder(spec, aaSet.getPeptide(match.getPepSeq()), specType);
+				PSMFeatureFinder addFeatures = new PSMFeatureFinder(spec, aaSet.getPeptide(match.getPepSeq()), scorer);
 				for(Pair<String, String> feature : addFeatures.getAllFeatures())
 					match.addAdditionalFeature(feature.getFirst(), feature.getSecond());
 			}

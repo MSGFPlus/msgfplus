@@ -332,7 +332,8 @@ public class MSGFPlus {
 		    			rightParentMassTolerance,
 		    			minIsotopeError,
 		    			maxIsotopeError,
-		    			specDataType
+		    			specDataType,
+		    			params.outputAdditionalFeatures()
 		    			);
 		    	if(doNotDseEdgeScore)
 		    		specScanner.turnOffEdgeScoring();

@@ -6,8 +6,6 @@ import java.util.List;
 import edu.ucsd.msjava.msgf.NominalMass;
 import edu.ucsd.msjava.msscorer.NewRankScorer;
 import edu.ucsd.msjava.msscorer.NewScoredSpectrum;
-import edu.ucsd.msjava.msscorer.NewScorerFactory;
-import edu.ucsd.msjava.msscorer.NewScorerFactory.SpecDataType;
 import edu.ucsd.msjava.msutil.Peak;
 import edu.ucsd.msjava.msutil.Peptide;
 import edu.ucsd.msjava.msutil.Spectrum;
@@ -24,23 +22,26 @@ public class PSMFeatureFinder {
 	private Float nTermIonCurrent = null;	// summed intensity of all explained N-term product ions
 	private Float cTermIonCurrent = null;	// summed intensity of all explained C-term product ions
 	
+	private Float errSDAll = null;
+	private Float errMeanAll = null;
+	private Float errSD7 = null;
+	private Float errMean7 = null;
 //	private Float ms1IonCurrent;
 //	private Float isolationWindowEfficiency;
 	
-	public PSMFeatureFinder(Spectrum spec, Peptide peptide, Spectrum precursorSpec, SpecDataType specDataType)
+	public PSMFeatureFinder(Spectrum spec, Spectrum precursorSpec, Peptide peptide, NewRankScorer scorer)
 	{
 		this.spec = spec;
 		this.peptide = peptide;
 //		this.precursorSpec = precursorSpec;
-		NewRankScorer scorer = NewScorerFactory.get(spec.getActivationMethod(), specDataType.getInstrumentType(), specDataType.getEnzyme(), specDataType.getProtocol());
+
 		scoredSpec = scorer.getScoredSpectrum(spec);
-		
 		extractFeatures();
 	}
 
-	public PSMFeatureFinder(Spectrum spec, Peptide peptide, SpecDataType specDataType)
+	public PSMFeatureFinder(Spectrum spec, Peptide peptide, NewRankScorer scorer)
 	{
-		this(spec, peptide, null, specDataType);
+		this(spec, null, peptide, scorer);
 	}
 	
 	public List<Pair<String, String>> getAllFeatures()
@@ -70,6 +71,18 @@ public class PSMFeatureFinder {
 		Float isolationWindowEfficiency = getIsolationWindowEfficiency();
 		if(isolationWindowEfficiency != null)
 			list.add(new Pair<String,String>("IsolationWindowEfficiency", String.valueOf(isolationWindowEfficiency)));
+
+		if(this.errMeanAll != null)
+			list.add(new Pair<String,String>("MeanErrorAll", String.valueOf(errMeanAll)));
+
+		if(this.errSDAll != null)
+			list.add(new Pair<String,String>("StdevErrorAll", String.valueOf(errSDAll)));
+
+		if(this.errMean7 != null)
+			list.add(new Pair<String,String>("MeanErrorTop7", String.valueOf(errMean7)));
+
+		if(this.errSD7 != null)
+			list.add(new Pair<String,String>("StdevErrorTop7", String.valueOf(errSD7)));
 		
 		return list;
 	}
@@ -93,6 +106,7 @@ public class PSMFeatureFinder {
 	{
 		float nTermIonCurrent = 0f, cTermIonCurrent = 0f;
 		
+		MassErrorStat errStat = new MassErrorStat();
 		double prm = 0, srm = 0;
 		for(int i=0; i<peptide.size()-1; i++)
 		{
@@ -100,6 +114,21 @@ public class PSMFeatureFinder {
 			srm += peptide.get(peptide.size()-1-i).getAccurateMass();
 			nTermIonCurrent += scoredSpec.getExplainedIonCurrent((float)prm, true);
 			cTermIonCurrent += scoredSpec.getExplainedIonCurrent((float)srm, false);
+			
+			Pair<Float, Float> err;
+			if((err = scoredSpec.getMassErrorWithIntensity((float)prm, true)) != null)
+				errStat.add(err);
+			if((err = scoredSpec.getMassErrorWithIntensity((float)srm, false)) != null)
+				errStat.add(err);
+		}
+
+		if(errStat.size() > 0)
+		{
+			errStat.computeStats();
+			this.errMeanAll = errStat.getMean();
+			this.errSDAll = errStat.getSd();
+			this.errMean7 = errStat.getMean7();
+			this.errSD7 = errStat.getSd7();
 		}
 		
 		this.nTermIonCurrent = nTermIonCurrent;

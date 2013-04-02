@@ -1,6 +1,5 @@
 package edu.ucsd.msjava.msscorer;
 
-import edu.ucsd.msjava.msdbsearch.FragmentMassErrors;
 import edu.ucsd.msjava.msgf.ScoredSpectrum;
 import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msutil.ActivationMethod;
@@ -219,9 +218,11 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 		return explainedIonCurrent;
 	}
 	
-	public FragmentMassErrors getMassErrorInfo(float residueMass, boolean isPrefix)
+	public Pair<Float, Float> getMassErrorWithIntensity(float residueMass, boolean isPrefix)
 	{
-		FragmentMassErrors errInfo = new FragmentMassErrors();
+		float error = -1f;
+		float maxIntensity = 0;
+		IonType bestIon = null;
 		
 		for(int segIndex=0; segIndex<scorer.getNumSegments(); segIndex++)
 		{
@@ -251,12 +252,30 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 				
 				if(p != null)	// peak exists
 				{
-					float error = p.getMz() - theoMass;
-					errInfo.add(new Pair<Float,Float>(error, p.getIntensity()));
+					float err = (p.getMz() - theoMass)/theoMass*1e6f;
+//					float err = p.getMz() - theoMass;
+					if(err < 0)
+						err = -err;
+					float intensity = p.getIntensity();
+					// Debug
+//					System.out.println(residueMass + " " + ion.getName() + " " + err + " " + intensity);
+					if(intensity > maxIntensity)
+					{
+						error = err;
+						maxIntensity = intensity;
+						bestIon = ion;
+					}
 				}
 			}			
 		}
-		return errInfo;
+		if(error < 0)
+			return null;
+		else
+		{
+			// Debug
+			System.out.println("*\t" + residueMass + "\t" + bestIon.getName() + "\t" + error + "\t" + maxIntensity);
+			return new Pair<Float, Float>(error, maxIntensity);
+		}
 	}	
 	
 	public Pair<Float,Float> getNodeMassAndScore(float residueMass, boolean isPrefix)
