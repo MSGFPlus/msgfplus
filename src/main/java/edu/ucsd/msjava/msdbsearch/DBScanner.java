@@ -617,18 +617,19 @@ public class DBScanner {
 				for(DatabaseMatch m : matchQueue)
 				{
 					String pepSeq = m.getPepSeq();
-					int index = m.getIndex();
-					char pre = sa.getSequence().getCharAt(index);
-					char post;
-					if(m.isNTermMetCleaved())
-						post = sa.getSequence().getCharAt(index+m.getLength());
-					else
-						post = sa.getSequence().getCharAt(index+m.getLength()-1);
-					String annotation = pre+pepSeq+post;
-					
-					DatabaseMatch existingMatch = pepSeqMap.get(annotation);
+//					int index = m.getIndex();
+//					char pre = sa.getSequence().getCharAt(index);
+//					char post;
+//					if(m.isNTermMetCleaved())
+//						post = sa.getSequence().getCharAt(index+m.getLength());
+//					else
+//						post = sa.getSequence().getCharAt(index+m.getLength()-1);
+//					String key = pre+pepSeq+post;
+
+					String key = pepSeq+m.getScore();
+					DatabaseMatch existingMatch = pepSeqMap.get(key);
 					if(existingMatch == null)
-						pepSeqMap.put(annotation, m);
+						pepSeqMap.put(key, m);
 					else
 						existingMatch.addIndex(m.getIndex());
 				}
