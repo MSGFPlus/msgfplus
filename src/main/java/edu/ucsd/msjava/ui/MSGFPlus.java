@@ -36,6 +36,7 @@ import edu.ucsd.msjava.msutil.SpectraAccessor;
 import edu.ucsd.msjava.mzid.MZIdentMLGen;
 import edu.ucsd.msjava.mzml.MzMLAdapter;
 import edu.ucsd.msjava.params.ParamManager;
+import edu.ucsd.msjava.sequences.Constants;
 
 
 public class MSGFPlus {
@@ -179,6 +180,13 @@ public class MSGFPlus {
 		boolean doNotDseEdgeScore = params.doNotDseEdgeScore();
 		
 		int minNumPeaksPerSpectrum = params.getMinNumPeaksPerSpectrum();
+		if(minNumPeaksPerSpectrum == -1)	// not specified
+		{
+			if(instType == InstrumentType.TOF)
+				minNumPeaksPerSpectrum = Constants.MIN_NUM_PEAKS_PER_SPECTRUM_TOF;
+			else
+				minNumPeaksPerSpectrum = Constants.MIN_NUM_PEAKS_PER_SPECTRUM;
+		}
 		System.out.println("Loading database files...");
 		
 		File dbIndexDir = params.getDBIndexDir();

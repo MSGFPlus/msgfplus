@@ -74,6 +74,11 @@ public class Constants {
    * Minumum number of peaks per spectrum.
    */
   public static final int MIN_NUM_PEAKS_PER_SPECTRUM = 20;
- 
+
+  /**
+   * Minumum number of peaks per spectrum for TOF spectra.
+   */
+  public static final int MIN_NUM_PEAKS_PER_SPECTRUM_TOF = 3;
+  
   public static final AminoAcidSet AA = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCysWithTerm();
 }

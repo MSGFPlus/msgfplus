@@ -421,8 +421,7 @@ public class ParamManager {
 		addParameter(edgeScoreParam);
 		
 		IntParameter minNumPeaksParam = new IntParameter("minNumPeaks", "MinNumPeaksPerSpectrum", "Minimum number of peaks per spectrum, Default: " + Constants.MIN_NUM_PEAKS_PER_SPECTRUM);
-		minNumPeaksParam.minValue(0);
-		minNumPeaksParam.defaultValue(Constants.MIN_NUM_PEAKS_PER_SPECTRUM);
+		minNumPeaksParam.defaultValue(-1);
 		minNumPeaksParam.setHidden();
 		addParameter(minNumPeaksParam);
 	}
