@@ -23,7 +23,7 @@ public class TestPercolator {
 		File specFile = new File(dir.getPath()+File.separator+"testITRAQ.mgf");
 		File dbFile = new File(dir.getPath()+File.separator+"testITRAQ.fasta");
 		File modFile = new File(dir.getPath()+File.separator+"testITRAQMods.txt");
-		String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), "-addFeatures", "1", "-mod", modFile.getPath(), "-m", "3", "-inst", "3"};
+		String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), "-addFeatures", "1", "-mod", modFile.getPath(), "-m", "3", "-inst", "3", "-minNumPeaks", "5"};
 		
 		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
 		paramManager.addMSGFPlusParams();

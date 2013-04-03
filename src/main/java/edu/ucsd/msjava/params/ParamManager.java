@@ -14,6 +14,7 @@ import edu.ucsd.msjava.msutil.InstrumentType;
 import edu.ucsd.msjava.msutil.Protocol;
 import edu.ucsd.msjava.msutil.SpecFileFormat;
 import edu.ucsd.msjava.mzml.MzMLAdapter;
+import edu.ucsd.msjava.sequences.Constants;
 import edu.ucsd.msjava.ui.MSGF;
 
 
@@ -418,6 +419,12 @@ public class ParamManager {
 		edgeScoreParam.registerEntry("do not use edge scoring");
 		edgeScoreParam.setHidden();
 		addParameter(edgeScoreParam);
+		
+		IntParameter minNumPeaksParam = new IntParameter("minNumPeaks", "MinNumPeaksPerSpectrum", "Minimum number of peaks per spectrum, Default: " + Constants.MIN_NUM_PEAKS_PER_SPECTRUM);
+		minNumPeaksParam.minValue(0);
+		minNumPeaksParam.defaultValue(Constants.MIN_NUM_PEAKS_PER_SPECTRUM);
+		minNumPeaksParam.setHidden();
+		addParameter(minNumPeaksParam);
 	}
 	
 	public void addScoringParamGenParams()

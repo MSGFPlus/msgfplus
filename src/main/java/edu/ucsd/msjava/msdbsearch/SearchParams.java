@@ -46,6 +46,7 @@ public class SearchParams {
 	private boolean doNotDseEdgeScore;
 	private File dbIndexDir;
 	private boolean outputAdditionalFeatures;
+	private int minNumPeaksPerSpectrum;
 	
 	
 	public SearchParams()	{}
@@ -157,6 +158,11 @@ public class SearchParams {
 	public boolean outputAdditionalFeatures()
 	{
 		return outputAdditionalFeatures;
+	}
+	
+	public int getMinNumPeaksPerSpectrum()
+	{
+		return minNumPeaksPerSpectrum;
 	}
 	
 	public String parse(ParamManager paramManager)
@@ -298,6 +304,7 @@ public class SearchParams {
 		
 		dbIndexDir = paramManager.getFile("dd");
 		
+		minNumPeaksPerSpectrum = paramManager.getIntValue("minNumPeaks");
 		
 		return null;
 	}

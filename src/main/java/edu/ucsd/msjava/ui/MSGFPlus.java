@@ -178,6 +178,7 @@ public class MSGFPlus {
 		int numThreads = params.getNumThreads();
 		boolean doNotDseEdgeScore = params.doNotDseEdgeScore();
 		
+		int minNumPeaksPerSpectrum = params.getMinNumPeaksPerSpectrum();
 		System.out.println("Loading database files...");
 		
 		File dbIndexDir = params.getDBIndexDir();
@@ -253,7 +254,8 @@ public class MSGFPlus {
 		int avgPeptideMass = 2000;
 		int numBytesPerMass = 12;
 		int numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
-		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specAcc.getSpecItr(), startSpecIndex, endSpecIndex, minCharge, maxCharge, activationMethod);
+		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specAcc.getSpecItr(), 
+				startSpecIndex, endSpecIndex, minCharge, maxCharge, activationMethod, minNumPeaksPerSpectrum);
 		int specSize = specKeyList.size();
 		if(specSize == 0)
 			return specFile.getPath() + " includes no spectrum";

@@ -54,7 +54,8 @@ public class SpecKey extends Pair<Integer, Integer> {
 		return specIndexList;
 	}
 	
-	public static ArrayList<SpecKey> getSpecKeyList(Iterator<Spectrum> itr, int startSpecIndex, int endSpecIndex, int minCharge, int maxCharge, ActivationMethod activationMethod)
+	public static ArrayList<SpecKey> getSpecKeyList(Iterator<Spectrum> itr, int startSpecIndex, 
+			int endSpecIndex, int minCharge, int maxCharge, ActivationMethod activationMethod, int minNumPeaksPerSpectrum)
 	{
 		if(activationMethod == ActivationMethod.FUSION)
 			return getFusedSpecKeyList(itr, startSpecIndex, endSpecIndex, minCharge, maxCharge);
@@ -86,7 +87,7 @@ public class SpecKey extends Pair<Integer, Integer> {
 				continue;
 			}
 
-			if(spec.size() < Constants.MIN_NUM_PEAKS_PER_SPECTRUM)
+			if(spec.size() < minNumPeaksPerSpectrum)
 			{
 //				System.out.println("Spectrum " + spec.getScanNum() + " has too few peaks (#Peaks: " + spec.size()+"): ignored.");
 				numSpectraWithTooFewPeaks++;
@@ -104,7 +105,7 @@ public class SpecKey extends Pair<Integer, Integer> {
 		}
 		
 		System.out.println("Ignoring " + numProfileSpectra + " profile spectra.");
-		System.out.println("Ignoring " + numSpectraWithTooFewPeaks + " spectra having less than " + Constants.MIN_NUM_PEAKS_PER_SPECTRUM + " peaks.");
+		System.out.println("Ignoring " + numSpectraWithTooFewPeaks + " spectra having less than " + minNumPeaksPerSpectrum + " peaks.");
 		return specKeyList;
 	}
 	

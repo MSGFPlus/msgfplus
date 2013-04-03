@@ -34,6 +34,7 @@ import edu.ucsd.msjava.params.FileParameter;
 import edu.ucsd.msjava.params.IntRangeParameter;
 import edu.ucsd.msjava.params.ParamManager;
 import edu.ucsd.msjava.params.ToleranceParameter;
+import edu.ucsd.msjava.sequences.Constants;
 
 
 public class MSGFDB {
@@ -266,7 +267,7 @@ public class MSGFDB {
 		int avgPeptideMass = 2000;
 		int numBytesPerMass = 12;
 		int numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
-		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specAcc.getSpecItr(), startSpecIndex, endSpecIndex, minCharge, maxCharge, activationMethod);
+		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specAcc.getSpecItr(), startSpecIndex, endSpecIndex, minCharge, maxCharge, activationMethod, Constants.MIN_NUM_PEAKS_PER_SPECTRUM);
 		int specSize = specKeyList.size();
 		
 		System.out.print("Reading spectra finished ");
