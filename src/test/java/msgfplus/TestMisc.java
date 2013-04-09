@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.junit.Test;
 
+import edu.ucsd.msjava.misc.ConvertToMgf;
 import edu.ucsd.msjava.misc.VennDiagram;
 
 public class TestMisc {
@@ -31,4 +32,17 @@ public class TestMisc {
 			e.printStackTrace();
 		}
 	}
+	
+	@Test
+	public void testMzMLParser()
+	{
+		File mzMLFile = new File("/Users/kims336/Research/Data/Faviel/mam_042408o_CPTAC_study6_6B011.mzML");
+		File mgfFile = new File("/Users/kims336/Research/Data/Faviel/test.mgf");
+		try {
+			ConvertToMgf.convert(mzMLFile, mgfFile, false, null, "controllerType=0 controllerNumber=1 scan=158", -1, -1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 }

@@ -102,6 +102,8 @@ public class SpectrumConverter {
 				spec.setActivationMethod(ActivationMethod.ETD);
 		}
 
+		if(id.equals("controllerType=0 controllerNumber=1 scan=158"))
+			System.out.println("Debug");
 		// Peak list
         BinaryDataArray mzArray = null, intenArray = null;
 

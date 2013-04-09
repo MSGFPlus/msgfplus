@@ -151,6 +151,7 @@ public class ConvertToMgf {
 		while(specItr.hasNext())
 		{
 			Spectrum spec = specItr.next();
+			System.out.println(spec.getID());
 			if(id != null && spec.getID().endsWith(id))
 				continue;
 			if(specIndex > 0 && spec.getSpecIndex() != specIndex)
@@ -160,6 +161,7 @@ public class ConvertToMgf {
 			if(activationMethod != null && spec.getActivationMethod() != activationMethod)
 				continue;
 			spec.outputMgf(out, writeActivationMethod);
+//			System.out.println(spec.getID() + " " + spec.getScanNum());
 			numSpecs++;
 		}
 		return numSpecs;
