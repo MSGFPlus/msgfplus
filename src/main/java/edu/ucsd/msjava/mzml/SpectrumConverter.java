@@ -50,7 +50,7 @@ public class SpectrumConverter {
 		
 		int msLevel = msLevelParam != null ? Integer.parseInt(msLevelParam.getValue()) : 0;
 		spec.setMsLevel(msLevel);
-		
+
 		// Precursor
 		PrecursorList precursorList = jmzMLSpec.getPrecursorList();
 		if(precursorList != null && precursorList.getCount().intValue() > 0 && precursorList.getPrecursor().get(0).getSelectedIonList() != null)
@@ -102,14 +102,14 @@ public class SpectrumConverter {
 				spec.setActivationMethod(ActivationMethod.ETD);
 		}
 
-		if(id.equals("controllerType=0 controllerNumber=1 scan=158"))
-			System.out.println("Debug");
 		// Peak list
         BinaryDataArray mzArray = null, intenArray = null;
-
+        
         if(jmzMLSpec.getBinaryDataArrayList() != null && jmzMLSpec.getBinaryDataArrayList().getBinaryDataArray() != null)
         {
             for (BinaryDataArray array : jmzMLSpec.getBinaryDataArrayList().getBinaryDataArray()) {
+            	if(array.getEncodedLength() == 0)
+            		continue;
                 // check the cvParams
                 for (CVParam param : array.getCvParam()) {
                     if (param.getAccession().equals("MS:1000514")) {

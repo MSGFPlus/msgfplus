@@ -39,7 +39,7 @@ public class TestMisc {
 		File mzMLFile = new File("/Users/kims336/Research/Data/Faviel/mam_042408o_CPTAC_study6_6B011.mzML");
 		File mgfFile = new File("/Users/kims336/Research/Data/Faviel/test.mgf");
 		try {
-			ConvertToMgf.convert(mzMLFile, mgfFile, false, null, "controllerType=0 controllerNumber=1 scan=158", -1, -1);
+			ConvertToMgf.convert(mzMLFile, mgfFile, false, null, "controllerType=0 controllerNumber=1 scan=159", -1, -1);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
