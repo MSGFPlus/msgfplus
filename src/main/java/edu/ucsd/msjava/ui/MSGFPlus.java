@@ -40,8 +40,8 @@ import edu.ucsd.msjava.sequences.Constants;
 
 
 public class MSGFPlus {
-	public static final String VERSION = "Beta (v9517)";
-	public static final String RELEASE_DATE = "4/10/2013";
+	public static final String VERSION = "Beta (v9540)";
+	public static final String RELEASE_DATE = "4/16/2013";
 	
 	public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
 	public static final String DECOY_PROTEIN_PREFIX = "XXX";
