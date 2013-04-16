@@ -380,4 +380,26 @@ public class TestMSGFPlus {
 		
 		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
 	}	
+	
+	@Test
+	public void testAdditionalFeatures()
+	{
+		File dir = new File("C:\\cygwin\\home\\sangtaekim\\Research\\Data\\CompRef\\Global\\");
+
+		File specFile = new File(dir.getPath()+File.separator+"test.mgf");
+		File dbFile = new File(dir.getPath()+File.separator+"test.fasta");
+		File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
+		String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
+				"-mod", modFile.getPath(), "-t", "10ppm", "-m", "3", //}; 
+				"-addFeatures", "1"};
+
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		paramManager.addMSGFPlusParams();
+		
+		String msg = paramManager.parseParams(argv);
+		assertTrue(msg == null);
+		
+		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
+		
+	}
 }

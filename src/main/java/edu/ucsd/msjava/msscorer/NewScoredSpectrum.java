@@ -274,7 +274,7 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 				}
 			}			
 		}
-		if(error == 0)
+		if(error == null)
 			return null;
 		else
 		{

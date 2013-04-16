@@ -87,7 +87,7 @@ public class PSMFeatureFinder {
 			list.add(new Pair<String,String>("IsolationWindowEfficiency", String.valueOf(isolationWindowEfficiency)));
 
 		if(this.numExplainedPeaks != null)
-			list.add(new Pair<String,String>("NumExplainedCleavages", String.valueOf(numExplainedPeaks)));
+			list.add(new Pair<String,String>("NumMatchedMainIons", String.valueOf(numExplainedPeaks)));
 		
 		if(this.errMeanAll != null)
 			list.add(new Pair<String,String>("MeanErrorAll", String.valueOf(errMeanAll)));
