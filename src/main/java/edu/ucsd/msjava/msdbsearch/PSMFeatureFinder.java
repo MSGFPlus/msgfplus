@@ -23,6 +23,7 @@ public class PSMFeatureFinder {
 	private Float nTermIonCurrent = null;	// summed intensity of all explained N-term product ions
 	private Float cTermIonCurrent = null;	// summed intensity of all explained C-term product ions
 	
+	private Integer numExplainedPeaks = null;
 	private Float errSDAll = null;
 	private Float errMeanAll = null;
 	private Float errSD7 = null;
@@ -85,6 +86,9 @@ public class PSMFeatureFinder {
 		if(isolationWindowEfficiency != null)
 			list.add(new Pair<String,String>("IsolationWindowEfficiency", String.valueOf(isolationWindowEfficiency)));
 
+		if(this.numExplainedPeaks != null)
+			list.add(new Pair<String,String>("NumExplainedCleavages", String.valueOf(numExplainedPeaks)));
+		
 		if(this.errMeanAll != null)
 			list.add(new Pair<String,String>("MeanErrorAll", String.valueOf(errMeanAll)));
 
@@ -150,6 +154,7 @@ public class PSMFeatureFinder {
 		if(errStat.size() > 0)
 		{
 			errStat.computeStats();
+			this.numExplainedPeaks = errStat.size();
 			this.errMeanAll = errStat.getMean();
 			this.errSDAll = errStat.getSd();
 			this.errMean7 = errStat.getMean7();
