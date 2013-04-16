@@ -220,7 +220,7 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 	
 	public Pair<Float, Float> getMassErrorWithIntensity(float residueMass, boolean isPrefix, Tolerance fragmentTolerance)
 	{
-		float error = -1f;
+		Float error = null;
 		float maxIntensity = 0;
 //		IonType bestIon = null;
 //		Peak bestPeak = null;
@@ -258,8 +258,8 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 				{
 					float err = (p.getMz() - theoMass)/theoMass*1e6f;
 //					float err = p.getMz() - theoMass;
-					if(err < 0)
-						err = -err;
+//					if(err < 0)
+//						err = -err;
 					float intensity = p.getIntensity();
 					// Debug
 //					System.out.println(residueMass + " " + ion.getName() + " " + err + " " + intensity);
@@ -274,7 +274,7 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 				}
 			}			
 		}
-		if(error < 0)
+		if(error == 0)
 			return null;
 		else
 		{

@@ -9,17 +9,29 @@ import edu.ucsd.msjava.msutil.Pair;
 public class MassErrorStat {
 	private List<Pair<Float, Float>> errorList; // (error, intensity)
 	
-	// for all peaks
-	private float sum;
+	// for all peaks (absolute)
+//	private float sum;
 	private float mean;
-	private float median;
+//	private float median;
 	private float sd;
 	
-	// for top 7 peaks
-	private float sum7;
+	// for top 7 peaks (absolute)
+//	private float sum7;
 	private float mean7;
-	private float median7;
+//	private float median7;
 	private float sd7;
+
+	// for all peaks (absolute)
+//	private float rSum;
+	private float rMean;
+//	private float rMedian;
+	private float rSd;
+	
+	// for top 7 peaks (absolute)
+//	private float rSum7;
+	private float rMean7;
+//	private float rMedian7;
+	private float rSd7;
 	
 	public MassErrorStat()
 	{
@@ -36,25 +48,33 @@ public class MassErrorStat {
 		List<Float> allErrors = new ArrayList<Float>();
 		List<Float> top7Errors = new ArrayList<Float>();
 		
+		List<Float> allRErrors = new ArrayList<Float>();
+		List<Float> top7RErrors = new ArrayList<Float>();
+		
 		Collections.sort(errorList, new Pair.PairReverseComparator<Float,Float>(true));	// sort by intensities
 		int rank = 0;
 		for(Pair<Float,Float> errInfo : errorList)
 		{
 			float error = errInfo.getFirst();
-			allErrors.add(error);
+			float absError = Math.abs(error);
+			allErrors.add(absError);
+			allRErrors.add(error);
 			if(++rank <= 7)
-				top7Errors.add(error);
+			{
+				top7Errors.add(absError);
+				top7RErrors.add(error);
+			}
 		}
 		
-//		sum = sum(allErrors);
 		mean = mean(allErrors);
-//		median = median(allErrors);
+		rMean = mean(allRErrors);
 		sd = stdev(allErrors);
+		rSd = stdev(allRErrors);
 		
-//		sum7 = sum(top7Errors);
 		mean7 = mean(top7Errors);
-//		median7 = median(top7Errors);
+		rMean7 = mean(top7RErrors);
 		sd7 = stdev(top7Errors);
+		rSd7 = stdev(top7RErrors);
 	}
 
 	public List<Pair<Float, Float>> getErrorList() {
@@ -65,36 +85,52 @@ public class MassErrorStat {
 		return errorList.size();
 	}
 	
-	public float getSum() {
-		return sum;
-	}
+//	public float getSum() {
+//		return sum;
+//	}
 
 	public float getMean() {
 		return mean;
 	}
-
-	public float getMedian() {
-		return median;
+	
+	public float getRMean() {
+		return rMean;
 	}
+
+//	public float getMedian() {
+//		return median;
+//	}
 
 	public float getSd() {
 		return sd;
 	}
 
-	public float getSum7() {
-		return sum7;
+	public float getRSd() {
+		return rSd;
 	}
+	
+//	public float getSum7() {
+//		return sum7;
+//	}
 
+//	public float getRSum7() {
+//		return rSum7;
+//	}
+	
 	public float getMean7() {
 		return mean7;
 	}
 
-	public float getMedian7() {
-		return median7;
+	public float getRMean7() {
+		return rMean7;
 	}
-
+	
 	public float getSd7() {
 		return sd7;
+	}
+
+	public float getRSd7() {
+		return rSd7;
 	}
 	
 	public static float sum(List<Float> numbers)

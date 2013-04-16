@@ -27,6 +27,12 @@ public class PSMFeatureFinder {
 	private Float errMeanAll = null;
 	private Float errSD7 = null;
 	private Float errMean7 = null;
+	
+	private Float errRSDAll = null;
+	private Float errRMeanAll = null;
+	private Float errRSD7 = null;
+	private Float errRMean7 = null;
+	
 //	private Float ms1IonCurrent;
 //	private Float isolationWindowEfficiency;
 	private Tolerance mme;
@@ -90,6 +96,18 @@ public class PSMFeatureFinder {
 
 		if(this.errSD7 != null)
 			list.add(new Pair<String,String>("StdevErrorTop7", String.valueOf(errSD7)));
+
+		if(this.errRMeanAll != null)
+			list.add(new Pair<String,String>("MeanRelErrorAll", String.valueOf(errRMeanAll)));
+
+		if(this.errRSDAll != null)
+			list.add(new Pair<String,String>("StdevRelErrorAll", String.valueOf(errRSDAll)));
+
+		if(this.errRMean7 != null)
+			list.add(new Pair<String,String>("MeanRelErrorTop7", String.valueOf(errRMean7)));
+
+		if(this.errRSD7 != null)
+			list.add(new Pair<String,String>("StdevRelErrorTop7", String.valueOf(errRSD7)));
 		
 		return list;
 	}
@@ -136,6 +154,11 @@ public class PSMFeatureFinder {
 			this.errSDAll = errStat.getSd();
 			this.errMean7 = errStat.getMean7();
 			this.errSD7 = errStat.getSd7();
+			
+			this.errRMeanAll = errStat.getRMean();
+			this.errRSDAll = errStat.getRSd();
+			this.errRMean7 = errStat.getRMean7();
+			this.errRSD7 = errStat.getRSd7();
 		}
 		
 		this.nTermIonCurrent = nTermIonCurrent;
