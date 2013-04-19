@@ -12,6 +12,11 @@ public class TSVParser {
 	}
 
 	private HashMap<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
+
+	public ArrayList<String> getList(String label)
+	{
+		return map.get(label);
+	}
 	
 	public void parse(String fileName)
 	{
@@ -33,7 +38,7 @@ public class TSVParser {
 			if(s.startsWith("#"))
 				continue;
 			String[] token = s.split("\t");
-			if(token.length < labelArr.length)
+			if(token.length != labelArr.length)
 				continue;
 			for(int i=0; i<labelArr.length; i++)
 				map.get(labelArr[i]).add(token[i]);

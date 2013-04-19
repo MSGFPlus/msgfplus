@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import edu.ucsd.msjava.msutil.Atom;
 import edu.ucsd.msjava.msutil.Composition;
 
 public class UnimodComposition {
@@ -51,6 +52,11 @@ public class UnimodComposition {
 				}
 				add(element, num);
 			}
+			else if(e.matches("\\d+\\.?\\d*"))
+			{
+				double mass = Double.parseDouble(e);
+				add(mass);
+			}
 			else
 			{
 				System.err.println("Wrong Unimod delta_composition: " + deltaComposition);
@@ -74,6 +80,35 @@ public class UnimodComposition {
 			this.deltaMass = deltaMass;
 		else
 			this.deltaMass += deltaMass;
+	}
+	
+	public Double getMass()
+	{
+		double mass = 0;
+		Iterator<Entry<String, Integer>> itr = compMap.entrySet().iterator();
+		while(itr.hasNext())
+		{
+			Entry<String, Integer> entry = itr.next();
+			String element = entry.getKey();
+			int num = entry.getValue();
+			if(num == 0)
+				continue;
+			Atom atom = Atom.get(element);
+			if(atom == null)
+				return null;
+			mass += atom.getMass()*num;
+		}
+		
+		if(deltaMass != null)
+			mass += deltaMass;
+		return mass;
+	}
+	
+	public static Double getMass(String unimodCompositionStr)
+	{
+		UnimodComposition comp = new UnimodComposition();
+		comp.add(unimodCompositionStr);
+		return comp.getMass();
 	}
 	
 	@Override

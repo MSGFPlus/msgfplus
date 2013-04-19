@@ -46,6 +46,7 @@ public class Unimod {
 		idToDeltaCompositionMap = new HashMap<String, String>();
 		String s;
 		String curID = null;
+		String deltaMass = null;
 		try {
 			while((s=in.readLine()) != null)
 			{
@@ -62,6 +63,24 @@ public class Unimod {
 				{
 					String deltaComposition = s.substring(s.indexOf('"')+1, s.lastIndexOf('"'));
 					idToDeltaCompositionMap.put(curID, deltaComposition);
+//					Double mass = UnimodComposition.getMass(deltaComposition);
+//					if(mass == null)
+//					{
+//						System.out.println(deltaComposition);
+//					}
+					if(deltaMass != null)
+					{
+						Double mass = UnimodComposition.getMass(deltaComposition);
+						Double mass2 = Double.parseDouble(deltaMass);
+						if(Math.abs(mass-mass2) > 0.001)
+						{
+							System.out.println("Error: " + deltaComposition + " " + mass + " " + mass2);
+						}
+					}
+				}
+				if(s.startsWith("xref: delta_mono_mass"))
+				{
+					deltaMass = s.substring(s.indexOf('"')+1, s.lastIndexOf('"'));
 				}
 			}
 		} catch (IOException e) {

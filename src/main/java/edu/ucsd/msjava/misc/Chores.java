@@ -100,9 +100,9 @@ public class Chores {
 //		System.out.println(".BCDEF.-".matches("[A-Z\\-_]?\\..+\\.[A-Z\\-_]?"));
 //		System.out.println(System.getProperty("user.home"));
 
-		String unimod = "C(+10)";
-		System.out.println(unimod.matches("\\d*?[a-zA-Z]+(\\(-?\\d+\\))?"));
-		float f = 956.322026f;
+		String unimod = "-123.12";
+		System.out.println(unimod.matches("-?\\d+\\.?\\d*"));
+		float f = 1.007825035f;
 		System.out.println(f);
 	}
 
