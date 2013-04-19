@@ -61,7 +61,10 @@ public class UnimodComposition {
 	
 	public void add(double deltaMass)
 	{
-		this.deltaMass += deltaMass;
+		if(this.deltaMass == null)
+			this.deltaMass = deltaMass;
+		else
+			this.deltaMass += deltaMass;
 	}
 	
 	@Override
@@ -95,6 +98,8 @@ public class UnimodComposition {
 			}
 		}
 		
+		if(deltaMass != null)
+			buf.append(" " + deltaMass);
 		return buf.toString();
 	}
 	
@@ -108,6 +113,6 @@ public class UnimodComposition {
 	}
 	
 	private Map<String,Integer> compMap;
-	private double deltaMass = 0;
+	private Double deltaMass = null;
 	
 }

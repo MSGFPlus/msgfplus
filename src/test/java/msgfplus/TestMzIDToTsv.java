@@ -16,6 +16,13 @@ public class TestMzIDToTsv {
 		UnimodComposition comp = new UnimodComposition();
 		comp.add(AminoAcidSet.getStandardAminoAcidSet().getAminoAcid('K').getComposition());
 		comp.add(deltaComposition);
+		comp.add(956.322026);
 		System.out.println(comp);
+	}
+	
+	@Test
+	public void testConversion()
+	{
+		
 	}
 }
