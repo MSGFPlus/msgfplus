@@ -102,6 +102,8 @@ public class Chores {
 
 		String unimod = "C(+10)";
 		System.out.println(unimod.matches("\\d*?[a-zA-Z]+(\\(-?\\d+\\))?"));
+		float f = 956.322026f;
+		System.out.println(f);
 	}
 
 	public static void recombCPReg() throws Exception

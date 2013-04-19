@@ -59,6 +59,15 @@ public class UnimodComposition {
 		}
 	}
 	
+	public void add(String element, int number)
+	{
+		Integer num = compMap.get(element);
+		if(num == null)
+			compMap.put(element, number);
+		else
+			compMap.put(element, num+number);
+	}
+	
 	public void add(double deltaMass)
 	{
 		if(this.deltaMass == null)
@@ -101,15 +110,6 @@ public class UnimodComposition {
 		if(deltaMass != null)
 			buf.append(" " + deltaMass);
 		return buf.toString();
-	}
-	
-	private void add(String element, int number)
-	{
-		Integer num = compMap.get(element);
-		if(num == null)
-			compMap.put(element, number);
-		else
-			compMap.put(element, num+number);
 	}
 	
 	private Map<String,Integer> compMap;

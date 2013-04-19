@@ -426,6 +426,9 @@ public class MzIDParser {
         		composition.add(mod.getMonoisotopicMassDelta());
         }
         
+        composition.add("H", 2);	// add H2O
+        composition.add("O", 1);
+        
         return composition.toString();
 	}
 
