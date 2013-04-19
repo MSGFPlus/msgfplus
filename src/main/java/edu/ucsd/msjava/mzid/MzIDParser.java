@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Composition;
 import edu.ucsd.msjava.mzml.MzMLAdapter;
 
@@ -39,24 +40,25 @@ public class MzIDParser {
 	private final boolean showDecoy;
 	private boolean doNotShowQValue;
 	private final boolean unrollResults;
+	private final boolean showMolecularFormula;
 	
 	private boolean isPrecursorTolerancePPM;
 	private Map<String, Peptide> pepMap;		// Peptide ref -> Peptide
 	private Map<String, DBSequence> dbSeqMap;		// DBSequenhce ref -> DBSequence
 	private Map<String, PeptideEvidence> pepEvMap;	// PeptideEvidence ref -> PeptideEvidence
 
-	
 	public MzIDParser(File mzIDFile)
 	{
-		this(mzIDFile, false, false, false);
+		this(mzIDFile, false, false, false, false);
 	}
 
-	public MzIDParser(File mzIDFile, boolean showDecoy, boolean doNotShowQValue, boolean unrollResults)
+	public MzIDParser(File mzIDFile, boolean showDecoy, boolean doNotShowQValue, boolean unrollResults, boolean showMolecularFormula)
 	{
 		unmarshaller = new MzIdentMLUnmarshaller(mzIDFile);
 		this.showDecoy = showDecoy;
 		this.doNotShowQValue = doNotShowQValue;
 		this.unrollResults = unrollResults;
+		this.showMolecularFormula = showMolecularFormula;
 	}
 	
 	public void writeToTSVFile(File outputFile)
@@ -110,6 +112,7 @@ public class MzIDParser {
 				+")" +
 				"\tCharge" +
 				"\tPeptide" +
+				(showMolecularFormula ? "\tFormula" : "") +
 				"\tProtein" +
 				"\tDeNovoScore" +
 				"\tMSGFScore" +
@@ -181,6 +184,9 @@ public class MzIDParser {
                      
                      Peptide peptide = pepMap.get(sii.getPeptideRef());
                      String peptideSeq = getPeptideSeq(peptide);
+                     String molecularFormula = null;
+                     if(showMolecularFormula)
+                    	 molecularFormula = getMolecularFormula(peptide);
 
                 	 HashSet<String> proteinSet = new HashSet<String>();
                      if(this.unrollResults)
@@ -210,6 +216,7 @@ public class MzIDParser {
                                 		 +"\t"+(float)precursorError
                                 		 +"\t"+charge
                                 		 +"\t"+pre+"."+peptideSeq+"."+post
+                                		 +(molecularFormula == null ? "" : "\t"+molecularFormula)
                                 		 +"\t"+protein
                                 		 +"\t"+deNovoScore
                                 		 +"\t"+rawScore
@@ -263,6 +270,7 @@ public class MzIDParser {
                             		 +"\t"+(float)precursorError
                             		 +"\t"+charge
                             		 +"\t"+peptideSeq
+                            		 +(molecularFormula == null ? "" : "\t"+molecularFormula)
                             		 +"\t"+proteinBuf.toString()
                             		 +"\t"+deNovoScore
                             		 +"\t"+rawScore
@@ -387,6 +395,39 @@ public class MzIDParser {
 		return buf.toString();
 	}
 	
+	private static String getMolecularFormula(Peptide peptide)
+	{
+		AminoAcidSet stdAASet = AminoAcidSet.getStandardAminoAcidSet();
+		
+		String unmodPepSeq = peptide.getPeptideSequence();
+		UnimodComposition composition = new UnimodComposition();
+		for(int i=0; i<unmodPepSeq.length(); i++)
+		{
+			char residue = unmodPepSeq.charAt(i);
+			composition.add(stdAASet.getAminoAcid(residue).getComposition());
+		}
+		
+        // Modification
+        for(Modification mod : peptide.getModification())
+        {
+        	boolean hasComposition = false;
+        	for(CvParam cvParam : mod.getCvParam())
+        	{
+        		String accession = cvParam.getAccession();
+    			String deltaComposition = Unimod.getUnimod().getDeltaComposition(accession);
+    			if(deltaComposition != null)	// correct unimod accession number
+    			{
+    				composition.add(deltaComposition);
+    				hasComposition = true;
+    				break;
+    			}
+        	}
+        	if(!hasComposition)
+        		composition.add(mod.getMonoisotopicMassDelta());
+        }
+        
+        return composition.toString();
+	}
 
 
 	public static void main(String argv[]) throws Exception

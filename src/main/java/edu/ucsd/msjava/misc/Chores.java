@@ -100,9 +100,8 @@ public class Chores {
 //		System.out.println(".BCDEF.-".matches("[A-Z\\-_]?\\..+\\.[A-Z\\-_]?"));
 //		System.out.println(System.getProperty("user.home"));
 
-		String specId = "scan=123";
-		System.out.println(specId.matches("scan=\\d+"));
-
+		String unimod = "C(+10)";
+		System.out.println(unimod.matches("\\d*?[a-zA-Z]+(\\(-?\\d+\\))?"));
 	}
 
 	public static void recombCPReg() throws Exception

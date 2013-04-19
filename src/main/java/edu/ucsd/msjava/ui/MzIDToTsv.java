@@ -39,6 +39,11 @@ public class MzIDToTsv {
 		showDecoyParam.registerEntry("show decoy PSMs");
 		paramManager.addParameter(showDecoyParam);
 
+		EnumParameter showFormula = new EnumParameter("showFormula");
+		showFormula.registerEntry("do not show molecular formula").setDefault();
+		showFormula.registerEntry("show molecular formula of peptides");
+		paramManager.addParameter(showFormula);
+		
 		EnumParameter rank1OnlyParam = new EnumParameter("unroll");
 		rank1OnlyParam.registerEntry("merge shared peptides").setDefault();
 		rank1OnlyParam.registerEntry("unroll shared peptides");
@@ -95,6 +100,7 @@ public class MzIDToTsv {
 		boolean showQValue = paramManager.getIntValue("showQValue") == 1 ? true : false;
 		boolean showDecoy = paramManager.getIntValue("showDecoy") == 1 ? true : false;
 		boolean unroll = paramManager.getIntValue("unroll") == 1 ? true : false;
+		boolean showFormula = paramManager.getIntValue("showFormula") == 1 ? true : false;;
 //		boolean onePerScan = paramManager.getIntValue("onePerScan") == 1 ? true : false;
 //		boolean merge = paramManager.getIntValue("merge") == 1 ? true : false;
 		
@@ -112,7 +118,7 @@ public class MzIDToTsv {
 					else
 					{
 						System.out.println("Converting " + f.getName() + " into " + tsvFile.getName());
-						MzIDParser parser = new MzIDParser(f, showDecoy, !showQValue, unroll);
+						MzIDParser parser = new MzIDParser(f, showDecoy, !showQValue, unroll, showFormula);
 						parser.writeToTSVFile(tsvFile);
 					}
 				}
@@ -129,7 +135,7 @@ public class MzIDToTsv {
 			if(tsvFile == null)
 				tsvFile = new File(mzIDPath.getPath().substring(0, mzIDPath.getPath().lastIndexOf('.'))+".tsv");
 			System.out.println("Converting " + mzIDPath.getName() + " into " + tsvFile.getName());
-			MzIDParser parser = new MzIDParser(mzIDPath, showDecoy, !showQValue, unroll);
+			MzIDParser parser = new MzIDParser(mzIDPath, showDecoy, !showQValue, unroll, showFormula);
 			parser.writeToTSVFile(tsvFile);
 		}
 		
