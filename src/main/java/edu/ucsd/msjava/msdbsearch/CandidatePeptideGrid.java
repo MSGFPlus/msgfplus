@@ -60,7 +60,7 @@ public class CandidatePeptideGrid {
 		prm = new double[MAX_NUM_VARIATIONS_PER_PEPTIDE][maxPeptideLength+1];
 		numMods = new int[MAX_NUM_VARIATIONS_PER_PEPTIDE][maxPeptideLength+1];
 		peptide = new StringBuffer[MAX_NUM_VARIATIONS_PER_PEPTIDE];
-		size = new int[MAX_NUM_VARIATIONS_PER_PEPTIDE];
+		size = new int[maxPeptideLength+1];
 		
 		initializeNTerm();
 	}	

@@ -309,4 +309,36 @@ public class SearchParams {
 		return null;
 	}
 	
+	@Override
+	public String toString()
+	{
+		StringBuffer buf = new StringBuffer();
+
+//		buf.append("Spectrum File(s):\n");
+//		for(DBSearchIOFiles ioFile : this.dbSearchIOList)
+//		{
+//			buf.append("\t"+ioFile.getSpecFile().getAbsolutePath()+"\n");
+//		}
+//		buf.append("Database File: " + this.databaseFile.getAbsolutePath() + "\n");
+
+		buf.append("\tPrecursorMassTolerance: ");
+		if(leftParentMassTolerance.equals(rightParentMassTolerance))
+			buf.append(leftParentMassTolerance);
+		else
+			buf.append("["+leftParentMassTolerance+","+rightParentMassTolerance+"]");
+		buf.append("\n");
+		
+		buf.append("\tIsotopeError: " + this.minIsotopeError + "," + this.maxIsotopeError + "\n");
+		buf.append("\tTargetDecoyAnalysis: " + this.useTDA + "\n");
+		buf.append("\tFragmentationMethod: " + this.activationMethod + "\n");
+		buf.append("\tInstrument: " + this.instType + "\n");
+		buf.append("\tEnzyme: " + this.enzyme.getName() + "\n");
+		buf.append("\tProtocol: " + this.protocol.getName() + "\n");
+		buf.append("\tNumTolerableTermini: " + this.numTolerableTermini + "\n");
+		buf.append("\tMinPeptideLength: " + this.minPeptideLength + "\n");
+		buf.append("\tMaxPeptideLength: " + this.maxPeptideLength + "\n");
+		buf.append("\tNumMatchesPerSpec: " + this.numMatchesPerSpec);
+		
+		return buf.toString();
+	}
 }

@@ -276,6 +276,10 @@ public class MSGFPlus {
 			numThreads = 1;
 		System.out.println("Using " + numThreads + (numThreads == 1 ? " thread." : " threads."));
 		
+		// Print out parameters
+		System.out.println("Search Parameters:");
+		System.out.println(params.toString());
+		
 		SpecDataType specDataType = new SpecDataType(activationMethod, instType, enzyme, protocol);
 		int fromIndexGlobal = 0;
 		

@@ -80,6 +80,19 @@ public class Tolerance implements Serializable { // Serializable is needed in or
 		else return value * 1e6f / mass;
 	}
 	
+	@Override
+	public boolean equals(Object obj)
+	{
+		if(obj instanceof Tolerance)
+		{
+			Tolerance other = (Tolerance)obj;
+			if(this.value == other.value && this.unit == other.unit)
+				return true;
+		}
+		return false;
+	}
+	
+	@Override
 	public String toString()
 	{
 		if(unit == Unit.Da)
