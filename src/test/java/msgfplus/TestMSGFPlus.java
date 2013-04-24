@@ -402,4 +402,27 @@ public class TestMSGFPlus {
 		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
 		
 	}
+	
+	@Test
+	public void testLongPeptides()
+	{
+		File dir = new File("C:\\cygwin\\home\\kims336\\Data\\QCShew");
+
+		File specFile = new File(dir.getPath()+File.separator+"QC_Shew_12_02_pt5_a4_10Apr13_Draco_13-02-14_dta.txt");
+		File dbFile = new File(dir.getPath()+File.separator+"ID_003456_9B916A8B.fasta");
+		File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
+		String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
+				"-mod", modFile.getPath(), "-t", "10ppm", "-tda", "1", "-m", "3",
+				"-maxLength", "250"}; 
+
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		paramManager.addMSGFPlusParams();
+		
+		String msg = paramManager.parseParams(argv);
+		assertTrue(msg == null);
+		
+		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
+		
+	}
+	
 }
