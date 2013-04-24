@@ -331,9 +331,9 @@ public class SearchParams {
 		buf.append("\tIsotopeError: " + this.minIsotopeError + "," + this.maxIsotopeError + "\n");
 		buf.append("\tTargetDecoyAnalysis: " + this.useTDA + "\n");
 		buf.append("\tFragmentationMethod: " + this.activationMethod + "\n");
-		buf.append("\tInstrument: " + this.instType + "\n");
-		buf.append("\tEnzyme: " + this.enzyme.getName() + "\n");
-		buf.append("\tProtocol: " + this.protocol.getName() + "\n");
+		buf.append("\tInstrument: " + (instType == null ? "null" : this.instType.getName()) + "\n");
+		buf.append("\tEnzyme: " + (enzyme == null ? "null" : this.enzyme.getName()) + "\n");
+		buf.append("\tProtocol: " + (protocol == null ? "null" : this.protocol.getName()) + "\n");
 		buf.append("\tNumTolerableTermini: " + this.numTolerableTermini + "\n");
 		buf.append("\tMinPeptideLength: " + this.minPeptideLength + "\n");
 		buf.append("\tMaxPeptideLength: " + this.maxPeptideLength + "\n");
