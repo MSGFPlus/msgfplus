@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import org.junit.Test;
 
@@ -128,11 +129,22 @@ public class TestMSGFPlus {
 	@Test
 	public void testProfieSpectraDetector()
 	{
-		File specFile = new File("/Users/kims336/Research/Data/Nikola/Athal0470_26Mar12_Jaguar_12-02-27_dta.txt");
+//		File specFile = new File("C:\\cygwin\\home\\kims336\\Data\\Centroiding\\QC_Shew_13_02_pt5_2_pH7p5_23Apr13_Frodo_12-12-04.mgf");
+		File specFile = new File("C:\\cygwin\\home\\kims336\\Data\\Centroiding\\H20120525_JQ_CPTAC2_Compref4_protfxn01.mgf");
 		SpectraAccessor specAcc = new SpectraAccessor(specFile);
-		Spectrum spec = specAcc.getSpectrumBySpecIndex(1);
-		spec.setIsCentroided();
-		System.out.println(spec.isCentroided());
+		Iterator<Spectrum> itr = specAcc.getSpecItr();
+		int numSpecs = 0;
+		int numProfileSpecs = 0;
+		while(itr.hasNext())
+		{
+			Spectrum spec = itr.next();
+			numSpecs++;
+			spec.determineIsCentroided();
+			if(!spec.isCentroided())
+				numProfileSpecs++;
+		}
+		System.out.println("NumSpecs: " + numSpecs);
+		System.out.println("NumProfileSpecs: " + numProfileSpecs);
 	}
 	
 	@Test
@@ -424,5 +436,4 @@ public class TestMSGFPlus {
 		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
 		
 	}
-	
 }

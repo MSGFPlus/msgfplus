@@ -2,6 +2,7 @@ package edu.ucsd.msjava.parser;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -154,6 +155,8 @@ public class PNNLSpectrumParser implements SpectrumParser {
 			return null;
 		
 		HashMap<Integer,ActivationMethod> scanNumActMethodMap = new HashMap<Integer,ActivationMethod>();
+		HashMap<Integer,Boolean> scanNumIsHighPrecisionMap = new HashMap<Integer,Boolean>();
+		
 		BufferedLineReader in = null;
 		try {
 			in = new BufferedLineReader(scanTypeFile.getPath());
@@ -183,9 +186,23 @@ public class PNNLSpectrumParser implements SpectrumParser {
 				method = ActivationMethod.HCD;
 			else if(scanType.contains("pqd"))
 				method = ActivationMethod.PQD;
-			
+
 			if(method != null)
 				scanNumActMethodMap.put(scanNum, method);
+			
+			boolean isHighPrecision = false;
+			if(scanType.contains("HMS"))
+				isHighPrecision = true;
+			scanNumIsHighPrecisionMap.put(scanNum, isHighPrecision);
+		}
+		
+		if(in != null)
+		{
+			try {
+				in.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		return scanNumActMethodMap;
 	}	

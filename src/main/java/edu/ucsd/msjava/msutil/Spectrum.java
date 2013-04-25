@@ -33,6 +33,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	private float rt = -1;                    // retention time
 	private ActivationMethod activationMethod = null;	// fragmentation method
 	private int msLevel = 2;	// ms level
+	private boolean isHighPrecision = false;
 	private Boolean isCentroided = true;
 
 	/***** CONSTRUCTORS *****/
@@ -162,6 +163,12 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	public boolean isCentroided() { return this.isCentroided; }
 	
 	/**
+	 * Returns whether this spectrum peaks are measured with high-precision.
+	 * @return true if this spectrum is centroided and false otherwise.
+	 */
+	public boolean isHighPrecision() { return this.isHighPrecision; }
+	
+	/**
 	 * Returns the ms level.
 	 * @return the ms level.
 	 */
@@ -264,22 +271,38 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	/**
 	 * Sets isCentroided by a simple testing.
 	 */
-	public void setIsCentroided()
+	public void determineIsCentroided()
 	{
 		this.isCentroided = true;
 		
-		if(this.size() > 100)
+//		if(this.size() > 100)
+//		{
+//			float[] diff = new float[100];
+//			float prevMz = this.get(0).getMz();
+//			for(int i=this.size()-100; i<this.size(); i++)
+//			{
+//				float curMz = this.get(i).getMz();
+//				diff[i-this.size()+100] = curMz - prevMz;
+//				prevMz = curMz;
+//			}
+//			Arrays.sort(diff);
+//			if(diff[diff.length/2] < 0.075f)
+//				isCentroided = false;
+//		}
+		if(this.size() > 0)
 		{
-			float[] diff = new float[100];
+			ArrayList<Float> diff = new ArrayList<Float>();
 			float prevMz = this.get(0).getMz();
-			for(int i=this.size()-100; i<this.size(); i++)
+			for(int i=1; i<this.size(); i++)
 			{
+				if(this.get(i).getIntensity() == 0)
+					continue;
 				float curMz = this.get(i).getMz();
-				diff[i-this.size()+100] = curMz - prevMz;
+				diff.add((curMz - prevMz)/curMz*1e6f);
 				prevMz = curMz;
 			}
-			Arrays.sort(diff);
-			if(diff[diff.length/2] < 0.075f)
+			Collections.sort(diff);
+			if(diff.get(diff.size()/2) < 50f)
 				isCentroided = false;
 		}
 	}

@@ -57,7 +57,7 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
 		}
 		else
 		{
-			currentSpectrum.setIsCentroided();
+			currentSpectrum.determineIsCentroided();
 			currentSpectrum.setSpecIndex(++specIndex);
 			currentSpectrum.setID("index="+String.valueOf(specIndex-1));
 		}
@@ -109,7 +109,7 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
 		if(currentSpectrum != null)
 		{
 			hasNext = true;
-			currentSpectrum.setIsCentroided();
+			currentSpectrum.determineIsCentroided();
 			currentSpectrum.setSpecIndex(++specIndex);
 			currentSpectrum.setID("index="+String.valueOf(specIndex-1));
 		}
