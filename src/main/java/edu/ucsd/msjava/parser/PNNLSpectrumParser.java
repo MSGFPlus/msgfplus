@@ -12,6 +12,7 @@ import java.util.Map;
 import edu.ucsd.msjava.msutil.ActivationMethod;
 import edu.ucsd.msjava.msutil.Composition;
 import edu.ucsd.msjava.msutil.Peak;
+import edu.ucsd.msjava.msutil.ScanType;
 import edu.ucsd.msjava.msutil.SpectraIterator;
 import edu.ucsd.msjava.msutil.SpectraMap;
 import edu.ucsd.msjava.msutil.Spectrum;
@@ -141,7 +142,26 @@ public class PNNLSpectrumParser implements SpectrumParser {
 		return specIndexMap;
 	}
 	
-	static HashMap<Integer,ActivationMethod> getScanTypeMap(String fileName)
+//	static class ScanType
+//	{
+//		public ScanType(ActivationMethod activationMethod,
+//				boolean isHighPrecision) {
+//			this.activationMethod = activationMethod;
+//			this.isHighPrecision = isHighPrecision;
+//		}
+//		
+//		ActivationMethod getActivationMethod() {
+//			return activationMethod;
+//		}
+//		boolean isHighPrecision() {
+//			return isHighPrecision;
+//		}
+//
+//		private ActivationMethod activationMethod;
+//		private boolean isHighPrecision;
+//	}
+	
+	static HashMap<Integer,ScanType> getScanTypeMap(String fileName)
 	{
 		File specFile = new File(fileName);
 		String scanTypeFileName = 
@@ -154,8 +174,7 @@ public class PNNLSpectrumParser implements SpectrumParser {
 		if(!scanTypeFile.exists())
 			return null;
 		
-		HashMap<Integer,ActivationMethod> scanNumActMethodMap = new HashMap<Integer,ActivationMethod>();
-		HashMap<Integer,Boolean> scanNumIsHighPrecisionMap = new HashMap<Integer,Boolean>();
+		HashMap<Integer,ScanType> scanNumScanTypeMap = new HashMap<Integer,ScanType>();
 		
 		BufferedLineReader in = null;
 		try {
@@ -171,7 +190,7 @@ public class PNNLSpectrumParser implements SpectrumParser {
 		while((s=in.readLine()) != null)
 		{
 			String[] token = s.split("\t");
-			if(token.length < 2)
+			if(token.length < 3)
 				continue;
 			
 			int scanNum = Integer.parseInt(token[0]);
@@ -187,13 +206,16 @@ public class PNNLSpectrumParser implements SpectrumParser {
 			else if(scanType.contains("pqd"))
 				method = ActivationMethod.PQD;
 
-			if(method != null)
-				scanNumActMethodMap.put(scanNum, method);
-			
 			boolean isHighPrecision = false;
-			if(scanType.contains("HMS"))
+			if(scanType.contains("hms"))
 				isHighPrecision = true;
-			scanNumIsHighPrecisionMap.put(scanNum, isHighPrecision);
+			
+			int msLevel = Integer.parseInt(token[2]);
+			
+			if(method != null)
+			{
+				scanNumScanTypeMap.put(scanNum, new ScanType(method, isHighPrecision, msLevel));
+			}
 		}
 		
 		if(in != null)
@@ -204,7 +226,7 @@ public class PNNLSpectrumParser implements SpectrumParser {
 				e.printStackTrace();
 			}
 		}
-		return scanNumActMethodMap;
+		return scanNumScanTypeMap;
 	}	
 	
 	public static void main(String argv[]) throws Exception

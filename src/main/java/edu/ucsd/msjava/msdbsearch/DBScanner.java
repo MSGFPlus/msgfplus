@@ -21,6 +21,7 @@ import edu.ucsd.msjava.msgf.GeneratingFunction;
 import edu.ucsd.msjava.msgf.GeneratingFunctionGroup;
 import edu.ucsd.msjava.msgf.MSGFDBResultGenerator;
 import edu.ucsd.msjava.msgf.NominalMass;
+import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msscorer.NewRankScorer;
 import edu.ucsd.msjava.msscorer.NewScorerFactory.SpecDataType;
 import edu.ucsd.msjava.msscorer.SimpleDBSearchScorer;
@@ -451,6 +452,12 @@ public class DBScanner {
 							
 							for(SpecKey specKey : matchedSpecKeyList)
 							{
+								Tolerance specSpecificTol;
+								if((specSpecificTol = specScanner.getSpectrumSpecificPrecursorTolerance(specKey)) != null)
+								{
+									// TODO: do something
+								}
+								
 								SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(specKey);
 //								if(sequence.getSubsequence(index, index+i+1).equalsIgnoreCase("SRDTAIKT"))
 //									System.out.println("Debug");

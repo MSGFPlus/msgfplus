@@ -1,11 +1,17 @@
 package msgfplus;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import org.junit.Test;
 
 import edu.ucsd.msjava.misc.MS2ToMgf;
 import edu.ucsd.msjava.misc.ParamToTxt;
+import edu.ucsd.msjava.msutil.SpectraIterator;
+import edu.ucsd.msjava.msutil.Spectrum;
+import edu.ucsd.msjava.parser.MgfSpectrumParser;
+import edu.ucsd.msjava.parser.PNNLSpectraIterator;
+import edu.ucsd.msjava.parser.PNNLSpectrumParser;
 
 public class TestParsers {
 	@Test
@@ -26,4 +32,55 @@ public class TestParsers {
 //			e.printStackTrace();
 //		}
 	}
+		
+	@Test
+	public void newDeconMSnTest()
+	{
+		int numSpecs = 0;
+		File mgfFile = new File("C:\\cygwin\\home\\kims336\\Data\\IPA\\QC_Shew_08_04-pt5-2_11Jan09_Sphinx_08-11-18_version2.mgf");
+		try {
+			SpectraIterator itr = new SpectraIterator(mgfFile.getPath(), new MgfSpectrumParser());
+			while(itr.hasNext())
+			{
+				Spectrum spec = itr.next();
+				float precursorMass = spec.getPrecursorPeak().getMass();
+				if(precursorMass <= 0)
+				{
+					System.out.println("ScanNum " + spec.getScanNum() + " " + precursorMass);
+				}
+				if(spec.getPrecursorTolerance() == null)
+				{
+					System.out.println("ScanNum " + spec.getScanNum() + " tolerance null.");
+				}
+				++numSpecs;
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		System.out.println("NumSpectra: " + numSpecs);
+	}
+	
+	@Test
+	public void testReadingDtaTxt()
+	{
+		int numSpecs = 0;
+		File mgfFile = new File("C:\\cygwin\\home\\kims336\\Data\\QCShewQE\\QC_Shew_13_02_2500ng_B_18Mar13_Jaguar_13-03-11_dta.txt");
+		try {
+			SpectraIterator itr = new PNNLSpectraIterator(mgfFile.getPath());
+			while(itr.hasNext())
+			{
+				Spectrum spec = itr.next();
+				boolean isHighPrecision = spec.isHighPrecision();
+				if(!isHighPrecision)
+				{
+					System.out.println("ScanNum " + spec.getScanNum());
+				}
+				++numSpecs;
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		System.out.println("NumSpectra: " + numSpecs);
+	}
+	
 }

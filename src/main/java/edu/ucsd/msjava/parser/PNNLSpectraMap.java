@@ -1,33 +1,37 @@
 package edu.ucsd.msjava.parser;
 
 import java.util.HashMap;
-import java.util.Iterator;
 
-import edu.ucsd.msjava.msutil.ActivationMethod;
+import edu.ucsd.msjava.msutil.ScanType;
 import edu.ucsd.msjava.msutil.SpectraMap;
 import edu.ucsd.msjava.msutil.Spectrum;
 
 public class PNNLSpectraMap extends SpectraMap {
 
-	private HashMap<Integer,ActivationMethod> scanNumActMethodMap;
+	private HashMap<Integer,ScanType> scanNumScanTypeMap;
 	
 	public PNNLSpectraMap(String fileName) 
 	{
 		super(fileName, new PNNLSpectrumParser());
-		scanNumActMethodMap = PNNLSpectrumParser.getScanTypeMap(fileName);	
+		scanNumScanTypeMap = PNNLSpectrumParser.getScanTypeMap(fileName);	
 	}
 
 	@Override
 	public synchronized Spectrum getSpectrumBySpecIndex(int specIndex)
 	{
-		if(scanNumActMethodMap == null)
+		if(scanNumScanTypeMap == null)
 			return super.getSpectrumBySpecIndex(specIndex);
 		else
 		{
 			Spectrum spec = super.getSpectrumBySpecIndex(specIndex);
-			ActivationMethod method = scanNumActMethodMap.get(spec.getScanNum());
-			if(method != null)
-				spec.setActivationMethod(method);
+			ScanType scanType = scanNumScanTypeMap.get(spec.getScanNum());
+			if(scanType != null)
+			{
+				spec.setActivationMethod(scanType.getActivationMethod());
+				spec.setIsHighPrecision(scanType.isHighPrecision());
+				spec.setMsLevel(scanType.getMsLevel());
+			}
+			
 			return spec;
 		}
 	}

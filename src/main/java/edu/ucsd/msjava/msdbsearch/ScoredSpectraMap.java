@@ -44,6 +44,8 @@ public class ScoredSpectraMap {
 	
 	private Map<SpecKey,NewRankScorer> specKeyRankScorerMap;
 	
+	private Map<SpecKey,Tolerance> specKeyToleranceMap;
+	
 	private boolean turnOffEdgeScoring = false;
 
 	public ScoredSpectraMap(
@@ -54,7 +56,8 @@ public class ScoredSpectraMap {
 			int minIsotopeError,
 			int maxIsotopeError,
 			SpecDataType specDataType,
-			boolean storeRankScorer
+			boolean storeRankScorer,
+			boolean supportSpectrumSpecificErrorTolerance
 			)
 	{
 		this.specAcc = specAcc;
@@ -69,8 +72,26 @@ public class ScoredSpectraMap {
 		specKeyScorerMap = Collections.synchronizedMap(new HashMap<SpecKey,SimpleDBSearchScorer<NominalMass>>());
 		specIndexChargeToSpecKeyMap = Collections.synchronizedMap(new HashMap<Pair<Integer,Integer>,SpecKey>());
 		
+		// To support spectrum-specific tolerance
+		if(supportSpectrumSpecificErrorTolerance)
+			specKeyToleranceMap = Collections.synchronizedMap(new HashMap<SpecKey,Tolerance>());
+		
 		if(storeRankScorer)
 			specKeyRankScorerMap = Collections.synchronizedMap(new HashMap<SpecKey,NewRankScorer>());
+	}
+
+	public ScoredSpectraMap(
+			SpectraAccessor specAcc,
+			List<SpecKey> specKeyList,			
+    		Tolerance leftParentMassTolerance, 
+    		Tolerance rightParentMassTolerance, 
+			int maxNum13C,
+			SpecDataType specDataType,
+			boolean storeRankScorer,
+			boolean supportSpectrumSpecificErrorTolerance
+			)
+	{
+		this(specAcc, specKeyList, leftParentMassTolerance, rightParentMassTolerance, 0, maxNum13C, specDataType, storeRankScorer, supportSpectrumSpecificErrorTolerance);
 	}
 
 	public ScoredSpectraMap(
@@ -83,9 +104,9 @@ public class ScoredSpectraMap {
 			boolean storeRankScorer
 			)
 	{
-		this(specAcc, specKeyList, leftParentMassTolerance, rightParentMassTolerance, 0, maxNum13C, specDataType, storeRankScorer);
+		this(specAcc, specKeyList, leftParentMassTolerance, rightParentMassTolerance, 0, maxNum13C, specDataType, storeRankScorer, false);
 	}
-	
+			
 	public ScoredSpectraMap turnOffEdgeScoring()
 	{
 		this.turnOffEdgeScoring = true;
@@ -116,6 +137,14 @@ public class ScoredSpectraMap {
 			return this.specKeyRankScorerMap.get(specKey);
 	}
 	
+	public Tolerance getSpectrumSpecificPrecursorTolerance(SpecKey specKey)
+	{
+		if(specKeyToleranceMap == null)
+			return null;
+		else
+			return specKeyToleranceMap.get(specKey);
+	}
+	
 	public ScoredSpectraMap makePepMassSpecKeyMap()
 	{
 		for(SpecKey specKey : specKeyList)
@@ -133,6 +162,8 @@ public class ScoredSpectraMap {
 				pepMassSpecKeyMap.put(mass1Key, specKey);
 			}
 			specIndexChargeToSpecKeyMap.put(new Pair<Integer,Integer>(specIndex, specKey.getCharge()), specKey);
+			if(specKeyToleranceMap != null && spec.getPrecursorTolerance() != null)
+				specKeyToleranceMap.put(specKey, spec.getPrecursorTolerance());
 		}
 		return this;
 	}

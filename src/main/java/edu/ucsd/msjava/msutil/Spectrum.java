@@ -28,13 +28,19 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	private int endScanNum = -1;
 	private int specIndex = -1;	// 
 	private String title = null;
+	
 	private Peptide annotation = null;
 	private ArrayList<String> seqList = null;	// SEQ fields of mgf spectrum
 	private float rt = -1;                    // retention time
 	private ActivationMethod activationMethod = null;	// fragmentation method
 	private int msLevel = 2;	// ms level
-	private boolean isHighPrecision = false;
+	
 	private Boolean isCentroided = true;
+	
+	private boolean isHighPrecision = false;
+	private Tolerance precursorTolerance = null;
+	private Integer minIsotopeError = null;
+	private Integer maxIsotopeError = null;
 
 	/***** CONSTRUCTORS *****/
 	/**
@@ -169,6 +175,24 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	public boolean isHighPrecision() { return this.isHighPrecision; }
 	
 	/**
+	 * Returns the precursor tolerance.
+	 * @return precursor tolerance
+	 */
+	public Tolerance getPrecursorTolerance() { return this.precursorTolerance; }
+	
+	/**
+	 * Returns the minimum isotope error.
+	 * @return minimum isotope error
+	 */
+	public Integer getMinIsotopeError() { return this.minIsotopeError; }
+	
+	/**
+	 * Returns the maximum isotope error.
+	 * @return maximum isotope error
+	 */
+	public Integer getMaxIsotopeError() { return this.maxIsotopeError; }
+	
+	/**
 	 * Returns the ms level.
 	 * @return the ms level.
 	 */
@@ -266,6 +290,36 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	public void setIsCentroided(boolean isCentroided)
 	{
 		this.isCentroided = isCentroided;
+	}
+
+	/**
+	 * Sets isHighPrecision.
+	 * @param isHighPrecision whether this spectrum (fragment peaks) is high-precision.
+	 */
+	public void setIsHighPrecision(boolean isHighPrecision)
+	{
+		this.isHighPrecision = isHighPrecision;
+	}
+	
+	
+	/**
+	 * Sets precursorTolerance.
+	 * @param precursorTolerance the precursor tolerance.
+	 */
+	public void setPrecursorTolerance(Tolerance precursorTolerance)
+	{
+		this.precursorTolerance = precursorTolerance;
+	}
+	
+	/**
+	 * Sets the isotope error range.
+	 * @param minIsotopeError minimum isotope error.
+	 * @param maxIsotopeError maximum isotope error.
+	 */
+	public void setIsotopeError(int minIsotopeError, int maxIsotopeError)
+	{
+		this.minIsotopeError = minIsotopeError;
+		this.maxIsotopeError = maxIsotopeError;
 	}
 	
 	/**

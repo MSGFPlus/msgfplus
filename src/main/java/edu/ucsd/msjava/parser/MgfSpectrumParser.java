@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Map;
 
+import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msutil.ActivationMethod;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Peak;
@@ -51,6 +52,8 @@ public class MgfSpectrumParser implements SpectrumParser {
 		float precursorIntensity = 0;
 		int precursorCharge = 0;
 		ActivationMethod activation = null;
+		Float toleranceVal = null;
+		Tolerance.Unit toleranceUnit = null;
 
 		String buf;
 		boolean parse = false;   // parse only after the BEGIN IONS
@@ -89,13 +92,15 @@ public class MgfSpectrumParser implements SpectrumParser {
   			else if(buf.startsWith("CHARGE"))
   			{
   				String chargeStr = buf.substring(buf.indexOf("=")+1).trim();
-  				if(chargeStr.startsWith("+"))
-  					chargeStr = chargeStr.substring(1);
-  				if(chargeStr.charAt(chargeStr.length()-1) == '+')
-  					chargeStr = chargeStr.substring(0, chargeStr.length()-1);
-  				precursorCharge = Integer.valueOf(chargeStr);
-//  				if(precursorCharge == 0)
-//  					precursorCharge = 2;
+  				String[] chargeStrToken = chargeStr.split("\\s+");
+  				if(chargeStrToken.length == 1)
+  				{
+  	  				if(chargeStr.startsWith("+"))
+  	  					chargeStr = chargeStr.substring(1);
+  	  				if(chargeStr.charAt(chargeStr.length()-1) == '+')
+  	  					chargeStr = chargeStr.substring(0, chargeStr.length()-1);
+  	  				precursorCharge = Integer.valueOf(chargeStr);
+  				}
   			}
   			else if(buf.startsWith("SEQ"))
   			{
@@ -131,6 +136,23 @@ public class MgfSpectrumParser implements SpectrumParser {
   				activation = ActivationMethod.get(activationName);
   				spec.setActivationMethod(activation);
   			}
+  			else if(buf.startsWith("TOL="))
+  			{
+  				String tolStr = buf.substring(buf.indexOf("=")+1);
+  				float toleranceValue = Float.parseFloat(tolStr);
+  				if(toleranceValue > 0)
+  				{
+  					toleranceVal = toleranceValue;
+  				}
+  			}
+  			else if(buf.startsWith("TOLU="))
+  			{
+  				String tolUnitStr = buf.substring(buf.indexOf("=")+1);
+  				if(tolUnitStr.equalsIgnoreCase("ppm"))
+  					toleranceUnit = Tolerance.Unit.PPM;
+  				else if(tolUnitStr.equalsIgnoreCase("Da"))
+  					toleranceUnit = Tolerance.Unit.Da;
+  			}
   			else if(buf.startsWith("END IONS"))
   			{
   				assert(spec != null);
@@ -141,6 +163,11 @@ public class MgfSpectrumParser implements SpectrumParser {
   					spec.setScanNum(scanNum);
   				}
   				spec.setPrecursor(new Peak(precursorMz, precursorIntensity, precursorCharge));
+  				if(toleranceVal != null && toleranceUnit != null)
+  				{
+  					Tolerance precursorTolerance = new Tolerance(toleranceVal, toleranceUnit);
+  					spec.setPrecursorTolerance(precursorTolerance);
+  				}
   				if(!sorted)
   					Collections.sort(spec);
   				return spec;
@@ -152,7 +179,7 @@ public class MgfSpectrumParser implements SpectrumParser {
 
 	/**
 	 * Implementation of getSpecIndexMap object. Reads the entire spectrum file and
-	 * generates a map from a spectrum index of a spectrum and the position of the spectrum.
+	 * generates a map from a spectrum index to the file position of the spectrum.
 	 * @param lineReader a LineReader object that points to the start of a file.
 	 * @return A map from spectrum indexes to the spectrum meta information.
 	 */

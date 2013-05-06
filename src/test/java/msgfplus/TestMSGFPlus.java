@@ -3,7 +3,6 @@ package msgfplus;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -434,6 +433,11 @@ public class TestMSGFPlus {
 		assertTrue(msg == null);
 		
 		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
+	}
+	
+	@Test
+	public void testReadingSpecType()
+	{
 		
 	}
 }

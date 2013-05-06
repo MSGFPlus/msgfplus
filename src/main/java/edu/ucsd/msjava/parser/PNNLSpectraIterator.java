@@ -4,30 +4,34 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import edu.ucsd.msjava.msutil.ActivationMethod;
+import edu.ucsd.msjava.msutil.ScanType;
 import edu.ucsd.msjava.msutil.SpectraIterator;
 import edu.ucsd.msjava.msutil.Spectrum;
 
 public class PNNLSpectraIterator extends SpectraIterator {
 
-	private HashMap<Integer,ActivationMethod> scanNumActMethodMap;
+	private HashMap<Integer,ScanType> scanNumScanTypeMap;
 	
 	public PNNLSpectraIterator(String fileName) throws FileNotFoundException 
 	{
 		super(fileName, new PNNLSpectrumParser());
-		scanNumActMethodMap = PNNLSpectrumParser.getScanTypeMap(fileName);	
+		scanNumScanTypeMap = PNNLSpectrumParser.getScanTypeMap(fileName);	
 	}
 
 	@Override
 	public Spectrum next() 
 	{
-		if(scanNumActMethodMap == null)
+		if(scanNumScanTypeMap == null)
 			return super.next();
 		
 		Spectrum spec = super.next();
-		ActivationMethod method = scanNumActMethodMap.get(spec.getScanNum());
-		if(method != null)
-			spec.setActivationMethod(method);
+		ScanType scanType = scanNumScanTypeMap.get(spec.getScanNum());
+		if(scanType != null)
+		{
+			spec.setActivationMethod(scanType.getActivationMethod());
+			spec.setIsHighPrecision(scanType.isHighPrecision());
+			spec.setMsLevel(scanType.getMsLevel());
+		}
 		return spec;
 	}
 	
