@@ -41,6 +41,8 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	private Tolerance precursorTolerance = null;
 	private Integer minIsotopeError = null;
 	private Integer maxIsotopeError = null;
+	private Float fractionIonCurrent = null;
+	private Integer numMS1Features = null;
 
 	/***** CONSTRUCTORS *****/
 	/**
@@ -321,6 +323,15 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 		this.minIsotopeError = minIsotopeError;
 		this.maxIsotopeError = maxIsotopeError;
 	}
+
+	/**
+	 * Sets fraction of ion current within the selection window explained by the MS1 feature 
+	 * @param fractionIonCurrent the precursor tolerance.
+	 */
+	public void setFractionIonCurrent(float fractionIonCurrent)
+	{
+		this.fractionIonCurrent = fractionIonCurrent;
+	}
 	
 	/**
 	 * Sets isCentroided by a simple testing.
@@ -356,7 +367,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 				prevMz = curMz;
 			}
 			Collections.sort(diff);
-			if(diff.get(diff.size()/2) < 50f)
+			if(diff.size() > 0 && diff.get(diff.size()/2) < 50f)
 				isCentroided = false;
 		}
 	}
