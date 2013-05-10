@@ -133,7 +133,9 @@ public class MZIdentMLGen {
 
 	public void writeResults(PrintStream out)
 	{
-		out.println(m.createXmlHeader());
+//		out.println(m.createXmlHeader());
+		String encoding = "UTF-8";
+		out.println("<?xml version=\"1.0\" encoding=\"" + encoding + "\"?>");
 		out.println(m.createMzIdentMLStartTag("MS-GF+"));
 		m.marshal(cvList, out);
 		out.println();
