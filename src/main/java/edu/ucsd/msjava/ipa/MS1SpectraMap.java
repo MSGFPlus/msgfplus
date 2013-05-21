@@ -2,7 +2,8 @@ package edu.ucsd.msjava.ipa;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import edu.ucsd.msjava.msgf.Tolerance;
@@ -11,20 +12,45 @@ import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.parser.BufferedLineReader;
 
 public class MS1SpectraMap {
-	TreeMap<Integer, Spectrum> ms1SpecMap;
+	private TreeMap<Integer, Spectrum> ms1SpecMap;
 	
 	public MS1SpectraMap(File peaksFile)
 	{
 		parsePeaksFile(peaksFile);
 	}
 	
-	public List<Peak> getMS1Peaks(int scanNum, float mz, Tolerance tol)
+	public Peak getPrecursorPeaks(int scanNum, float mz, Tolerance tol)
 	{
-		int precursorScan = ms1SpecMap.floorKey(scanNum);
+		Entry<Integer, Spectrum> precursorEntry = ms1SpecMap.floorEntry(scanNum);
 		
-		// TODO: implement it
-		return null;
+//		int precursorScan = precursorEntry.getKey();
+		Spectrum ms1Spec = precursorEntry.getValue();
+		if(ms1Spec == null)
+		{
+			System.out.println("MS1 spec null: " + scanNum);
+			return null;
+		}
 		
+		ArrayList<Peak> matchList = ms1Spec.getPeakListByMz(mz, tol);
+		if(matchList == null || matchList.size() == 0)
+			return null;
+		else
+		{
+			Peak bestPeak = null;
+			float distance = Float.MAX_VALUE;
+			for(Peak p : matchList)
+			{
+				float dis = p.getMz() - mz;
+				if(dis < 0)
+					dis = -dis;
+				if(dis < distance)
+				{
+					distance = dis;
+					bestPeak = p;
+				}
+			}
+			return bestPeak;
+		}
 	}
 	
 	private void parsePeaksFile(File peaksFile)

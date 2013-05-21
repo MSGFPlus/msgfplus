@@ -44,6 +44,8 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	private Float fractionIonCurrent = null;
 	private Integer numMS1Features = null;
 
+	private Float isolationWindowTargetMz = null;
+	
 	/***** CONSTRUCTORS *****/
 	/**
 	 * Empty constructor.
@@ -333,6 +335,16 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 		this.fractionIonCurrent = fractionIonCurrent;
 	}
 	
+	public void setIsolationWindowTargetMz(Float isolationWindowTargetMz)
+	{
+		this.isolationWindowTargetMz = isolationWindowTargetMz;
+	}
+
+	public Float getIsolationWindowTargetMz()
+	{
+		return isolationWindowTargetMz;
+	}
+	
 	/**
 	 * Sets isCentroided by a simple testing.
 	 */
@@ -529,6 +541,11 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 		return getPeakListByMassRange(mass-toleranceDa, mass+toleranceDa);
 	}
 
+	public ArrayList<Peak> getPeakListByMz(float mz, Tolerance tolerance) {
+		float toleranceDa = tolerance.getToleranceAsDa(mz);
+		return getPeakListByMassRange(mz-toleranceDa, mz+toleranceDa);
+	}
+	
 	/**
 	 * Returns the most intense peak that is within tolerance of the target mass.
 	 * The current implementation takes linear time.

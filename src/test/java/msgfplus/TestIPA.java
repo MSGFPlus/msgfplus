@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import edu.ucsd.msjava.ipa.IPA;
 import edu.ucsd.msjava.msutil.SpectraAccessor;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.params.ParamManager;
@@ -23,10 +24,15 @@ public class TestIPA {
 	@Test
 	public void testIPA() throws Exception
 	{
-		File peaksFile = new File("D:\\Research\\Data\\ASMS2013\\NewDeconMSn\\QC_Shew_12_02_2_1Aug12_Cougar_12-06-11_peaks.txt");
-		File msgfPlusTsvFile = new File("D:\\Research\\Data\\ASMS2013\\IPA\\Shew_PW_LL.tsv");
+		File dir = new File("C:\\cygwin\\home\\sangtaekim\\Research\\Data\\ASMS2013\\IPA\\");
+		File peaksFile = new File(dir.getPath() + "\\QC_Shew_12_02_2_1Aug12_Cougar_12-06-11_peaks.txt");
+		File msgfPlusTsvFile = new File(dir.getPath() + "\\QC_Shew_12_02_2_1Aug12_Cougar_12-06-11_NoCharge.tsv");
+
+		File ipaResultFile = new File(dir.getPath() + "\\IPA.tsv");
 		
-		
+		IPA ipa = new IPA(peaksFile, msgfPlusTsvFile);
+		ipa.writeTo(ipaResultFile);
+		System.out.println("Done");
 	}
 	
 	@Test
@@ -50,12 +56,40 @@ public class TestIPA {
 		System.out.println(lineNum);
 		System.out.println("Elapsed Time: " + (System.currentTimeMillis() - time));
 	}
+
+	@Test
+	public void compareIPAAndMSGFPlus()
+	{
+		File dir = new File("C:\\cygwin\\home\\sangtaekim\\Research\\Data\\ASMS2013\\");
+
+		File ipaResultFile = new File(dir.getPath() + "\\IPA\\IPA_OnePerScan.tsv");
+		TSVResultParser ipaParser = new TSVResultParser(ipaResultFile);
+		ipaParser.parse(0.01f);
+		Set<String> pepSet = ipaParser.getPepSet();
+		System.out.println("IPAPeptides: " + pepSet.size());
+
+		File msgfPlusResultFile = new File(dir.getPath() + "\\OldDeconMSn\\QC_Shew_12_02_2_1Aug12_Cougar_12-06-11_dta_OnePerScan.tsv");
+		TSVResultParser msgfplusParser = new TSVResultParser(msgfPlusResultFile);
+		msgfplusParser.parse(0.01f);
+		
+		int numMSGFPlusOnly = 0;
+		for(String pep : msgfplusParser.getPepSet())
+		{
+			if(!pepSet.contains(pep))
+			{
+				++numMSGFPlusOnly;
+				System.out.println(pep);
+			}
+		}
+		System.out.println("MSGFPlusOnly: " + numMSGFPlusOnly);
+	}
 	
 	@Test
 	public void compareMaxQuantAndMSGFPlus()
 	{
-		File dir = new File("D:\\Research\\Data\\ASMS2013");
-		File msgfPlusResultFile = new File(dir.getPath() + "\\OldDeconMSn\\QC_Shew_12_02_2_1Aug12_Cougar_12-06-11_dta.tsv");
+		File dir = new File("C:\\cygwin\\home\\sangtaekim\\Research\\Data\\ASMS2013\\");
+//		File msgfPlusResultFile = new File(dir.getPath() + "\\OldDeconMSn\\QC_Shew_12_02_2_1Aug12_Cougar_12-06-11_dta.tsv");
+		File msgfPlusResultFile = new File(dir.getPath() + "\\IPA\\IPA_OnePerScan.tsv");
 		TSVResultParser msConvertResParser = new TSVResultParser(msgfPlusResultFile);
 		msConvertResParser.parse(0.01f);
 		Set<String> pepSet = msConvertResParser.getPepSet();

@@ -8,14 +8,16 @@ import java.util.List;
 
 import edu.ucsd.msjava.parser.BufferedLineReader;
 
-public class MSGFPlusResultMap {
+public class MSGFPlusResultSet {
+	private String header;
 	private List<PSM> psmList;
 	
-	public MSGFPlusResultMap(File msgfPlusResultFile)
+	public MSGFPlusResultSet(File msgfPlusResultFile)
 	{
 		parse(msgfPlusResultFile);
 	}
 	
+	public String getHeader() { return header; }
 	public List<PSM> getPSMList() { return psmList; }
 	
 	private void parse(File msgfPlusResultFile)
@@ -29,7 +31,7 @@ public class MSGFPlusResultMap {
 		}
 		String s;
 		
-		in.readLine();	// header
+		header = in.readLine();	// header
 		while((s=in.readLine()) != null)
 		{
 			PSM psm = new PSM(s);

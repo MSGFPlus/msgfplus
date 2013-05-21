@@ -57,6 +57,17 @@ public class SpectrumConverter {
 		{
 			Precursor precursor = precursorList.getPrecursor().get(0);	// consider only the first precursor
 			
+			ParamGroup isolationWindowParams = precursor.getIsolationWindow();
+			Float isolationWindowTargetMz = null;
+			for(CVParam param : isolationWindowParams.getCvParam())
+			{
+				if(param.getAccession().equals("MS:1000744"))	// selected ion m/z
+				{
+					isolationWindowTargetMz = Float.parseFloat(param.getValue());	// assume that unit is m/z (MS:1000040)
+				}
+			}	
+			spec.setIsolationWindowTargetMz(isolationWindowTargetMz);
+			
 			// precursor mz, charge
 			float precursorMz = 0;
 			int precursorCharge = 0;

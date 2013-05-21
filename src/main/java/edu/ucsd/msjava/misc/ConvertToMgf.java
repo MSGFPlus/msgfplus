@@ -2,23 +2,16 @@ package edu.ucsd.msjava.misc;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Iterator;
 
 
 import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.SpecFileFormat;
+import edu.ucsd.msjava.msutil.Peak;
 import edu.ucsd.msjava.msutil.SpectraAccessor;
-import edu.ucsd.msjava.msutil.SpectraIterator;
 import edu.ucsd.msjava.msutil.Spectrum;
-import edu.ucsd.msjava.parser.MS2SpectrumParser;
-import edu.ucsd.msjava.parser.MgfSpectrumParser;
-import edu.ucsd.msjava.parser.MzXMLSpectraIterator;
-import edu.ucsd.msjava.parser.PNNLSpectrumParser;
-import edu.ucsd.msjava.parser.PklSpectrumParser;
-import edu.ucsd.msjava.parser.SpectrumParser;
+
 
 public class ConvertToMgf {
 	public static void main(String argv[]) throws Exception
@@ -174,7 +167,14 @@ public class ConvertToMgf {
 			if(eraseCharge)
 			{
 				if(spec.getCharge() <= 4)
-					spec.setCharge(0);
+				{
+					float precursorMz;
+					if(spec.getIsolationWindowTargetMz() != null)
+						precursorMz = spec.getIsolationWindowTargetMz();
+					else
+						precursorMz = spec.getPrecursorPeak().getMz();
+					spec.setPrecursor(new Peak(precursorMz, 0, 0));
+				}
 			}
 			spec.outputMgf(out, writeActivationMethod);
 //			System.out.println(spec.getID() + " " + spec.getScanNum());
