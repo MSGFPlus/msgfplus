@@ -1,4 +1,4 @@
-package ipa;
+package edu.ucsd.msjava.ipa;
 
 public class Feature {
 	public Feature(float mz, int charge, int ms2Scan) 

@@ -1,4 +1,4 @@
-package ipa;
+package edu.ucsd.msjava.ipa;
 
 import edu.ucsd.msjava.mzid.UnimodComposition;
 
