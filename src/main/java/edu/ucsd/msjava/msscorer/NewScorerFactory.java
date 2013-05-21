@@ -108,6 +108,7 @@ public class NewScorerFactory {
 		InputStream is = ClassLoader.getSystemResourceAsStream(IONSTAT_RESOURCE_DIR+condition+".param");
 		if(is != null)
 		{
+			System.out.println("Loading built-in param file: " + condition+".param");
 			scorer = new NewRankScorer(new BufferedInputStream(is));
 			scorerTable.put(condition, scorer);
 			return scorer;

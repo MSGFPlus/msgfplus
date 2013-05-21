@@ -30,6 +30,7 @@ public class ConvertToMgf {
 		int specIndex = -1;
 		int scanNum = -1;
 		String id = null;
+		boolean eraseCharge = false;
 		
 		for(int i=0; i<argv.length; i+=2)
 		{
@@ -90,6 +91,13 @@ public class ConvertToMgf {
 			{
 				id = argv[i+1];
 			}
+			else if(argv[i].equalsIgnoreCase("-eraseCharge"))
+			{
+				if(argv[i+1].equals("0"))
+					eraseCharge = false;
+				else if(argv[i+1].equals("1"))
+					eraseCharge = true;
+			}
 			else
 			{
 				printUsageAndExit("Invalid parameter: " + argv[i]);
@@ -98,7 +106,7 @@ public class ConvertToMgf {
 
 		if(source == null || target == null)
 			printUsageAndExit("Invalid parameters!");
-		convert(source, target, writeActivationMethod, activationMethod, id, scanNum, specIndex);
+		convert(source, target, writeActivationMethod, activationMethod, id, scanNum, specIndex, eraseCharge);
 	}
 	
 	public static void printUsageAndExit(String message)
@@ -116,7 +124,9 @@ public class ConvertToMgf {
 		System.exit(-1);
 	}
 	
-	public static void convert(File source, File target, boolean writeActivationMethod, ActivationMethod activationMethod, String id, int scanNum, int specIndex) throws Exception
+	public static void convert(File source, File target, boolean writeActivationMethod, 
+			ActivationMethod activationMethod, String id, int scanNum, int specIndex,
+			boolean eraseCharge) throws Exception
 	{
 		PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(target)));
 		
@@ -136,7 +146,7 @@ public class ConvertToMgf {
 			if(specItr != null)
 			{
 				System.out.print(sourceFile.getName() + ": ");
-				int numSpecs = convertFile(specItr, target, writeActivationMethod, activationMethod, id, scanNum, specIndex, out);
+				int numSpecs = convertFile(specItr, target, writeActivationMethod, activationMethod, id, scanNum, specIndex, eraseCharge, out);
 				System.out.println(numSpecs + " spectra converted.");
 				numFileConverted++;
 			}
@@ -145,7 +155,9 @@ public class ConvertToMgf {
 		System.out.println("Converted " + numFileConverted + " files.");
 	}
 	
-	public static int convertFile(Iterator<Spectrum> specItr, File target, boolean writeActivationMethod, ActivationMethod activationMethod, String id, int scanNum, int specIndex, PrintStream out) throws Exception
+	public static int convertFile(Iterator<Spectrum> specItr, File target, boolean writeActivationMethod, 
+			ActivationMethod activationMethod, String id, int scanNum, int specIndex, boolean eraseCharge,
+			PrintStream out) throws Exception
 	{
 		int numSpecs = 0;
 		while(specItr.hasNext())
@@ -159,6 +171,11 @@ public class ConvertToMgf {
 				continue;
 			if(activationMethod != null && spec.getActivationMethod() != activationMethod)
 				continue;
+			if(eraseCharge)
+			{
+				if(spec.getCharge() <= 4)
+					spec.setCharge(0);
+			}
 			spec.outputMgf(out, writeActivationMethod);
 //			System.out.println(spec.getID() + " " + spec.getScanNum());
 			numSpecs++;
