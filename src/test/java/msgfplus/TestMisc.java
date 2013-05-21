@@ -40,7 +40,7 @@ public class TestMisc {
 		File mzMLFile = new File(dir.getPath()+File.separator+"mam_042408o_CPTAC_study6_6B011.mzML");
 		File mgfFile = new File(dir.getPath()+File.separator+"test.mgf");
 		try {
-			ConvertToMgf.convert(mzMLFile, mgfFile, false, null, "controllerType=0 controllerNumber=1 scan=159", -1, -1);
+			ConvertToMgf.convert(mzMLFile, mgfFile, false, null, "controllerType=0 controllerNumber=1 scan=159", -1, -1, false);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
