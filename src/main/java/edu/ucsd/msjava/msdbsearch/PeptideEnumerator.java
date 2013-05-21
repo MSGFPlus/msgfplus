@@ -20,7 +20,7 @@ public class PeptideEnumerator {
 	private static final int MAX_PEPTIDE_LENGTH = 30;
 	private static final int MAX_NUM_MODS = 0;
 	private static final int MAX_NUM_MISSED_CLEAVAGES = 2;
-	private static final int NTT = 1;
+	private static final int NTT = 2;
 	
 	public static void main(String argv[]) throws Exception
 	{
@@ -64,13 +64,15 @@ public class PeptideEnumerator {
 		int i = Integer.MAX_VALUE - 1000;
 		int size = sa.getSize();
 		
-		ArrayList<Modification.Instance> mods = new ArrayList<Modification.Instance>();
+//		ArrayList<Modification.Instance> mods = new ArrayList<Modification.Instance>();
 //		mods.add(new Modification.Instance(Modification.get("Oxidation"), 'M'));
-		mods.add(new Modification.Instance(Modification.get("Carbamidomethyl"), 'C').fixedModification());
-		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSet(mods);
-		aaSet.setMaxNumberOfVariableModificationsPerPeptide(MAX_NUM_MODS);
+//		mods.add(new Modification.Instance(Modification.get("Carbamidomethyl"), 'C').fixedModification());
+//		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSet(mods);
+//		aaSet.setMaxNumberOfVariableModificationsPerPeptide(MAX_NUM_MODS);
+		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSet();
 		
 		Enzyme enzyme = Enzyme.TRYPSIN;
+		
 		CandidatePeptideGrid candidatePepGrid = new CandidatePeptideGrid(aaSet, MAX_PEPTIDE_LENGTH);
 		int[] numMissedCleavages = new int[MAX_PEPTIDE_LENGTH+1];
 		int nnet = 0;
@@ -128,7 +130,8 @@ public class PeptideEnumerator {
 				for(int j=0; j<candidatePepGrid.size(); j++)
 				{
 					char pre = sequence.getCharAt(index);
-					String pepSeq = candidatePepGrid.getPeptideSeq(j).replaceAll("m", "M@").replaceAll("C", "C!");
+//					String pepSeq = candidatePepGrid.getPeptideSeq(j).replaceAll("m", "M@").replaceAll("C", "C!");
+					String pepSeq = candidatePepGrid.getPeptideSeq(j);
 					out.println(pre+"."+pepSeq+"."+next);
 				}
 				if(numMissedCleavages[i] == MAX_NUM_MISSED_CLEAVAGES+1)
