@@ -36,11 +36,11 @@ public class TestMisc {
 	@Test
 	public void testMzMLParser()
 	{
-		File dir = new File("C:\\cygwin\\home\\sangtaekim\\Research\\Data\\Faviel");
-		File mzMLFile = new File(dir.getPath()+File.separator+"mam_042408o_CPTAC_study6_6B011.mzML");
-		File mgfFile = new File(dir.getPath()+File.separator+"test.mgf");
+		File dir = new File("/Users/kims336/Research/Data/ASMS2013");
+		File mzMLFile = new File(dir.getPath()+File.separator+"mzMLNoRefinement/QC_Shew_12_02_2_1Aug12_Cougar_12-06-11.mzML");
+		File mgfFile = new File(dir.getPath()+File.separator+"IPA/testIPA.mgf");
 		try {
-			ConvertToMgf.convert(mzMLFile, mgfFile, false, null, "controllerType=0 controllerNumber=1 scan=159", -1, -1, false);
+			ConvertToMgf.convert(mzMLFile, mgfFile, false, null, null, 10020, -1, true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

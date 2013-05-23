@@ -3,10 +3,13 @@ package edu.ucsd.msjava.ipa;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Map.Entry;
+import java.util.Collections;
+import java.util.List;
 import java.util.TreeMap;
 
 import edu.ucsd.msjava.msgf.Tolerance;
+import edu.ucsd.msjava.msutil.Composition;
+import edu.ucsd.msjava.msutil.Pair;
 import edu.ucsd.msjava.msutil.Peak;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.parser.BufferedLineReader;
@@ -21,15 +24,45 @@ public class MS1SpectraMap {
 	
 	public Peak getPrecursorPeaks(int scanNum, float mz, Tolerance tol)
 	{
-		Entry<Integer, Spectrum> precursorEntry = ms1SpecMap.floorEntry(scanNum);
+		int precursorScan = ms1SpecMap.lowerKey(scanNum);
+		return getMS1Peak(precursorScan, mz, tol);
+	}
+
+	public List<Pair<Integer,Float>> getXIC(int scanNum, float mz, Tolerance tol)
+	{
+		ArrayList<Pair<Integer,Float>> xic = new ArrayList<Pair<Integer,Float>>();
 		
-//		int precursorScan = precursorEntry.getKey();
-		Spectrum ms1Spec = precursorEntry.getValue();
-		if(ms1Spec == null)
+		Peak p;
+		
+		// Move down
+		Integer curScanNum = scanNum;
+		while(curScanNum != null && scanNum > 0)
 		{
-			System.out.println("MS1 spec null: " + scanNum);
-			return null;
+			curScanNum = ms1SpecMap.lowerKey(curScanNum);
+			if((p = getMS1Peak(curScanNum, mz, tol)) != null)
+				xic.add(new Pair<Integer,Float>(curScanNum, p.getIntensity()));
+			else
+				break;
 		}
+		
+		// Move up
+		curScanNum = scanNum;
+		while(curScanNum != null && curScanNum < 100000)
+		{
+			curScanNum = ms1SpecMap.higherKey(curScanNum);
+			if((p = getMS1Peak(curScanNum, mz, tol)) != null)
+				xic.add(new Pair<Integer,Float>(curScanNum, p.getIntensity()));
+			else
+				break;
+		}
+		Collections.sort(xic, new Pair.PairComparator<Integer, Float>());
+		return xic;
+	}
+	
+	public Peak getMS1Peak(int ms1ScanNum, float mz, Tolerance tol)
+	{
+		Spectrum ms1Spec = ms1SpecMap.get(ms1ScanNum);
+		if(ms1Spec == null)	return null;
 		
 		ArrayList<Peak> matchList = ms1Spec.getPeakListByMz(mz, tol);
 		if(matchList == null || matchList.size() == 0)
@@ -50,7 +83,65 @@ public class MS1SpectraMap {
 				}
 			}
 			return bestPeak;
+		}			
+	}	
+	public boolean checkMS1Peaks(int scanNum, float mz, int charge, Tolerance tol, int windowSize)
+	{
+		int precursorScanNum = ms1SpecMap.floorKey(scanNum);
+		
+		
+		if(checkMS1Peaks(precursorScanNum, mz, charge, tol))
+			return true;
+		
+		// Move down
+		Integer curScanNum = precursorScanNum;
+		for(int i=0; i<windowSize; i++)
+		{
+			curScanNum = ms1SpecMap.lowerKey(curScanNum);
+			if(curScanNum == null)
+				break;
+			else
+			{
+				if(checkMS1Peaks(curScanNum, mz, charge, tol))
+					return true;
+			}
 		}
+		
+		// Move up
+		curScanNum = precursorScanNum;
+		for(int i=0; i<windowSize; i++)
+		{
+			curScanNum = ms1SpecMap.higherKey(curScanNum);
+			if(curScanNum == null)
+				break;
+			else
+			{
+				if(checkMS1Peaks(curScanNum, mz, charge, tol))
+					return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean checkMS1Peaks(int ms1ScanNum, float mz, int charge, Tolerance tol)
+	{
+		Spectrum ms1Spec = ms1SpecMap.get(ms1ScanNum);
+		if(ms1Spec == null)	return false;
+		
+		ArrayList<Peak> matchList = ms1Spec.getPeakListByMz(mz, tol);
+		if(matchList == null || matchList.size() == 0)
+			return false;
+		else
+		{
+			for(Peak p : matchList)
+			{
+				float secondIsotopeMz = p.getMz() + (float)Composition.ISOTOPE/charge;
+				if(ms1Spec.getPeakListByMz(secondIsotopeMz, tol) != null)
+					return true;
+			}
+		}			
+		return false;
 	}
 	
 	private void parsePeaksFile(File peaksFile)

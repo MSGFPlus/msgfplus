@@ -61,7 +61,7 @@ public class SpectrumConverter {
 			Float isolationWindowTargetMz = null;
 			for(CVParam param : isolationWindowParams.getCvParam())
 			{
-				if(param.getAccession().equals("MS:1000744"))	// selected ion m/z
+				if(param.getAccession().equals("MS:1000827"))	// selected ion m/z
 				{
 					isolationWindowTargetMz = Float.parseFloat(param.getValue());	// assume that unit is m/z (MS:1000040)
 				}

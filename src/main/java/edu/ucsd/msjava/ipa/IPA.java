@@ -44,9 +44,13 @@ public class IPA {
 			float precursorMz = (float)(psm.getComposition().getMass()/psm.getCharge() + Composition.H);
 			float secondIsotopeMz = (float)((psm.getComposition().getMass()+Composition.ISOTOPE)/psm.getCharge() + Composition.H);
 			float specEValue = psm.getSpecEValue();
-			if(specEValue < 1e-10 || ms1SpecMap.getPrecursorPeaks(psm.getScanNum(), precursorMz, tol) != null 
+			float eValue = psm.getEValue();
+			// 1e-9: Shew, 1e-11: Human
+//			if(specEValue < 1e-11 || ms1SpecMap.getPrecursorPeaks(psm.getScanNum(), precursorMz, tol) != null 
+//			if(eValue < 0.001 || ms1SpecMap.getPrecursorPeaks(psm.getScanNum(), precursorMz, tol) != null 
 //					&& ms1SpecMap.getPrecursorPeaks(psm.getScanNum(), secondIsotopeMz, tol) != null
-				)
+//				)
+			if(ms1SpecMap.checkMS1Peaks(psm.getScanNum(), precursorMz, psm.getCharge(), tol, 5))
 			{
 				out.println(psm.getResultString());
 			}

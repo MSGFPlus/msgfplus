@@ -7,12 +7,16 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
 
 import edu.ucsd.msjava.ipa.IPA;
+import edu.ucsd.msjava.ipa.MS1SpectraMap;
+import edu.ucsd.msjava.msgf.Tolerance;
+import edu.ucsd.msjava.msutil.Pair;
 import edu.ucsd.msjava.msutil.SpectraAccessor;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.params.ParamManager;
@@ -22,13 +26,43 @@ import edu.ucsd.msjava.ui.MSGFPlus;
 
 public class TestIPA {
 	@Test
+	public void getXIC() throws Exception
+	{
+		File dir = new File("/Users/kims336/Research/Data/ASMS2013/IPA");
+		File peaksFile = new File(dir.getPath() + File.separator + "QC_Shew_12_02_2_1Aug12_Cougar_12-06-11_peaks.txt");
+
+		MS1SpectraMap ms1Map = new MS1SpectraMap(peaksFile);
+//		float targetMz = 693.3859f;
+//		int targetScan = 15831;
+		
+		float targetMz = 1385.764f;
+		int targetScan = 15831;
+		
+		List<Pair<Integer,Float>> xic = ms1Map.getXIC(targetScan, targetMz, new Tolerance(3, true));
+		System.out.println("Scan\tIntensity");
+		for(Pair<Integer,Float> xicPeak : xic)
+		{
+			System.out.println(xicPeak.getFirst()+"\t"+xicPeak.getSecond());
+		}
+	}
+	
+	@Test
 	public void testIPA() throws Exception
 	{
-		File dir = new File("C:\\cygwin\\home\\sangtaekim\\Research\\Data\\ASMS2013\\IPA\\");
-		File peaksFile = new File(dir.getPath() + "\\QC_Shew_12_02_2_1Aug12_Cougar_12-06-11_peaks.txt");
-		File msgfPlusTsvFile = new File(dir.getPath() + "\\QC_Shew_12_02_2_1Aug12_Cougar_12-06-11_NoCharge.tsv");
-
-		File ipaResultFile = new File(dir.getPath() + "\\IPA.tsv");
+		File dir = new File("/Users/kims336/Research/Data/ASMS2013/IPA");
+		
+//		File peaksFile = new File(dir.getPath() + File.separator + "QC_Shew_12_02_2_1Aug12_Cougar_12-06-11_peaks.txt");
+//		File msgfPlusTsvFile = new File(dir.getPath() + File.separator + "CPTAC_OvC_JB5427_iTRAQ_01_9Apr12_Cougar_12-03-21_NoCharge.tsv");
+//		File ipaResultFile = new File(dir.getPath() + File.separator + "IPA_Human.tsv");
+		
+//		File peaksFile = new File(dir.getPath() + File.separator + "CPTAC_OvC_JB5427_iTRAQ_01_9Apr12_Cougar_12-03-21_peaks.txt");
+//		File msgfPlusTsvFile = new File(dir.getPath() + File.separator + "NoCharge_IsoTarget_3.1Da.tsv");
+//		File ipaResultFile = new File(dir.getPath() + File.separator + "IPA_Shewanella.tsv");
+		
+		File peaksFile = new File(dir.getPath() + File.separator + "CPTAC_OvC_JB5427_iTRAQ_NiNTA_01_19Apr12_Lynx_12-02-29_peaks.txt");
+		File msgfPlusTsvFile = new File(dir.getPath() + File.separator + "CPTAC_OvC_JB5427_iTRAQ_NiNTA_01_19Apr12_Lynx_12-02-29_NoCharge.tsv");
+		File ipaResultFile = new File(dir.getPath() + File.separator + "IPA_HumanPhospho.tsv");
+		
 		
 		IPA ipa = new IPA(peaksFile, msgfPlusTsvFile);
 		ipa.writeTo(ipaResultFile);
@@ -58,30 +92,33 @@ public class TestIPA {
 	}
 
 	@Test
-	public void compareIPAAndMSGFPlus()
+	public void compareTwoMSGFPlusResults()
 	{
-		File dir = new File("C:\\cygwin\\home\\sangtaekim\\Research\\Data\\ASMS2013\\");
+//		File dir = new File("C:\\cygwin\\home\\sangtaekim\\Research\\Data\\ASMS2013\\");
+		File dir = new File("/Users/kims336/Research/Data/ASMS2013");
 
-		File ipaResultFile = new File(dir.getPath() + "\\IPA\\IPA_OnePerScan.tsv");
-		TSVResultParser ipaParser = new TSVResultParser(ipaResultFile);
-		ipaParser.parse(0.01f);
-		Set<String> pepSet = ipaParser.getPepSet();
-		System.out.println("IPAPeptides: " + pepSet.size());
-
-		File msgfPlusResultFile = new File(dir.getPath() + "\\OldDeconMSn\\QC_Shew_12_02_2_1Aug12_Cougar_12-06-11_dta_OnePerScan.tsv");
-		TSVResultParser msgfplusParser = new TSVResultParser(msgfPlusResultFile);
-		msgfplusParser.parse(0.01f);
+		File result2 = new File(dir.getPath() + File.separator + "IPA" + File.separator + "IPA_NoCharge_IsoTarget_3.1Da_OnePerScan.tsv");
+//		File result1 = new File(dir.getPath() + File.separator + "mzMLNoRefinement" + File.separator + "QC_Shew_12_02_2_1Aug12_Cougar_12-06-11.tsv");
+		File result1 = new File(dir.getPath() + File.separator + "OldDeconMSn" + File.separator + "QC_Shew_12_02_2_1Aug12_Cougar_12-06-11_dta.tsv");
 		
-		int numMSGFPlusOnly = 0;
-		for(String pep : msgfplusParser.getPepSet())
+		TSVResultParser parser1 = new TSVResultParser(result1);
+		parser1.parse(0.01f);
+
+		TSVResultParser parser2 = new TSVResultParser(result2);
+		parser2.parse(0.01f);
+
+		Set<String> pepSet1 = parser1.getPepSet();
+		
+		int numResult2Only = 0;
+		for(String pep : parser2.getPepSet())
 		{
-			if(!pepSet.contains(pep))
+			if(!pepSet1.contains(pep))
 			{
-				++numMSGFPlusOnly;
+				++numResult2Only;
 				System.out.println(pep);
 			}
 		}
-		System.out.println("MSGFPlusOnly: " + numMSGFPlusOnly);
+		System.out.println("Result2 only: " + numResult2Only);
 	}
 	
 	@Test

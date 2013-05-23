@@ -14,6 +14,7 @@ public class PSM {
 		this.composition = new UnimodComposition();
 		composition.add(token[10]);
 		this.specEValue = Float.parseFloat(token[14]);
+		this.eValue = Float.parseFloat(token[15]);
 	}
 
 	int getScanNum() {
@@ -34,6 +35,9 @@ public class PSM {
 	float getSpecEValue() {
 		return specEValue;
 	}
+	float getEValue() {
+		return eValue;
+	}
 	String getResultString() {
 		return resultStr;
 	}
@@ -44,4 +48,5 @@ public class PSM {
 	private String peptide;
 	private UnimodComposition composition;
 	private float specEValue;
+	private float eValue;
 }
