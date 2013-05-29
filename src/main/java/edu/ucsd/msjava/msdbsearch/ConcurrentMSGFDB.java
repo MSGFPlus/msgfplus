@@ -6,6 +6,7 @@ import java.util.List;
 import edu.ucsd.msjava.msgf.MSGFDBResultGenerator;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Enzyme;
+import edu.ucsd.msjava.sequences.Constants;
 
 public class ConcurrentMSGFDB {
 	public static class PreProcessSpectra implements Runnable {
@@ -101,7 +102,7 @@ public class ConcurrentMSGFDB {
 				)
 		{
 			this.specScanner = specScanner;
-			this.scanner = new DBScanner(specScanner, sa, enzyme, aaSet, numPeptidesPerSpec, minPeptideLength, maxPeptideLength);
+			this.scanner = new DBScanner(specScanner, sa, enzyme, aaSet, numPeptidesPerSpec, minPeptideLength, maxPeptideLength, Constants.NUM_VARIANTS_PER_PEPTIDE);
 			this.numberOfAllowableNonEnzymaticTermini = numberOfAllowableNonEnzymaticTermini;
 			this.storeScoreDist = storeScoreDist;
 			this.specFileName = specFileName;

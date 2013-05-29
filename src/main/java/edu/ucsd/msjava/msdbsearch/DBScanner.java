@@ -42,6 +42,8 @@ public class DBScanner {
 	private int minPeptideLength;
 	private int maxPeptideLength;
 	
+	private int maxNumVariantsPerPeptide;
+	
 	private AminoAcidSet aaSet;
 	private double[] aaMass;
 	private int[] intAAMass;
@@ -68,7 +70,8 @@ public class DBScanner {
 			AminoAcidSet aaSet,
 			int numPeptidesPerSpec,
 			int minPeptideLength,
-			int maxPeptideLength
+			int maxPeptideLength,
+			int maxNumVariantsPerPeptide
 			) 
 	{
 		this.specScanner = specScanner;
@@ -79,6 +82,7 @@ public class DBScanner {
 		this.numPeptidesPerSpec = numPeptidesPerSpec;
 		this.minPeptideLength = minPeptideLength;
 		this.maxPeptideLength = maxPeptideLength;
+		this.maxNumVariantsPerPeptide = maxNumVariantsPerPeptide;
 		
 		// Initialize mass arrays for a faster search
 		aaMass = new double[aaSet.getMaxResidue()];
@@ -183,9 +187,9 @@ public class DBScanner {
 		
 		CandidatePeptideGrid candidatePepGrid;
 		if(enzyme != null)
-			candidatePepGrid = new CandidatePeptideGridConsideringMetCleavage(aaSet, maxPeptideLength);
+			candidatePepGrid = new CandidatePeptideGridConsideringMetCleavage(aaSet, maxPeptideLength, maxNumVariantsPerPeptide);
 		else
-			candidatePepGrid = new CandidatePeptideGrid(aaSet, maxPeptideLength);
+			candidatePepGrid = new CandidatePeptideGrid(aaSet, maxPeptideLength, maxNumVariantsPerPeptide);
 		
 		int i = Integer.MAX_VALUE - 1000;
 		

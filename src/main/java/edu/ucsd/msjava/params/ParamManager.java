@@ -421,9 +421,14 @@ public class ParamManager {
 		addParameter(edgeScoreParam);
 		
 		IntParameter minNumPeaksParam = new IntParameter("minNumPeaks", "MinNumPeaksPerSpectrum", "Minimum number of peaks per spectrum, Default: " + Constants.MIN_NUM_PEAKS_PER_SPECTRUM);
-		minNumPeaksParam.defaultValue(-1);
+		minNumPeaksParam.defaultValue(Constants.MIN_NUM_PEAKS_PER_SPECTRUM);
 		minNumPeaksParam.setHidden();
 		addParameter(minNumPeaksParam);
+		
+		IntParameter isoParam = new IntParameter("iso", "NumIsoforms", "Number of isoforms to consider per peptide, Default: 128" + Constants.NUM_VARIANTS_PER_PEPTIDE);
+		isoParam.defaultValue(-1);
+		isoParam.setHidden();
+		addParameter(isoParam);
 	}
 	
 	public void addScoringParamGenParams()

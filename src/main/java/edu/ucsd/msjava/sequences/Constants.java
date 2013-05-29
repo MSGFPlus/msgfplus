@@ -76,6 +76,11 @@ public class Constants {
   public static final int MIN_NUM_PEAKS_PER_SPECTRUM = 20;
 
   /**
+   * Minumum number of peaks per spectrum.
+   */
+  public static final int NUM_VARIANTS_PER_PEPTIDE = 128;
+  
+  /**
    * Minumum number of peaks per spectrum for TOF spectra.
    */
   public static final int MIN_NUM_PEAKS_PER_SPECTRUM_TOF = 3;

@@ -1,16 +1,22 @@
 package edu.ucsd.msjava.msdbsearch;
 
 import edu.ucsd.msjava.msutil.AminoAcidSet;
+import edu.ucsd.msjava.sequences.Constants;
 
 public class CandidatePeptideGridConsideringMetCleavage extends CandidatePeptideGrid {
 
 	private final CandidatePeptideGrid candidatePepGridMetCleaved;		// For peptides with Met cleaved
 	boolean isProteinNTermWithHeadingMet = false;
 	
-	public CandidatePeptideGridConsideringMetCleavage(AminoAcidSet aaSet, int maxPeptideLength) 
+//	public CandidatePeptideGridConsideringMetCleavage(AminoAcidSet aaSet, int maxPeptideLength)
+//	{
+//		this(aaSet, maxPeptideLength, Constants.NUM_VARIANTS_PER_PEPTIDE);
+//	}
+	
+	public CandidatePeptideGridConsideringMetCleavage(AminoAcidSet aaSet, int maxPeptideLength, int maxNumVariantsPerPeptide) 
 	{
-		super(aaSet, maxPeptideLength);
-		candidatePepGridMetCleaved = new CandidatePeptideGrid(aaSet, maxPeptideLength);
+		super(aaSet, maxPeptideLength, maxNumVariantsPerPeptide);
+		candidatePepGridMetCleaved = new CandidatePeptideGrid(aaSet, maxPeptideLength, maxNumVariantsPerPeptide);
 	}
 
 	@Override

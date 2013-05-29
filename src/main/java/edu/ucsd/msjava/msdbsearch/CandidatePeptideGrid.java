@@ -3,14 +3,15 @@ package edu.ucsd.msjava.msdbsearch;
 import edu.ucsd.msjava.msutil.AminoAcid;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Modification.Location;
+import edu.ucsd.msjava.sequences.Constants;
 
 public class CandidatePeptideGrid {
-	private static final int MAX_NUM_VARIATIONS_PER_PEPTIDE = 128;
 	private static final int STANDARD_RESIDUE_MAX_RESIDUE = 128;
 	
 	private final AminoAcidSet aaSet;
 	private final int maxPeptideLength;
 	private final int numMaxMods;
+	private final int maxNumVariantsPerPeptide;
 	
 	private int[][] nominalPRM;
 	private double[][] prm;
@@ -48,18 +49,24 @@ public class CandidatePeptideGrid {
 	private int length;
 	private int[] size;
 	
-	public CandidatePeptideGrid(AminoAcidSet aaSet, int maxPeptideLength)
+//	public CandidatePeptideGrid(AminoAcidSet aaSet, int maxPeptideLength)
+//	{
+//		this(aaSet, maxPeptideLength, Constants.NUM_VARIANTS_PER_PEPTIDE);
+//	}
+	
+	public CandidatePeptideGrid(AminoAcidSet aaSet, int maxPeptideLength, int maxNumVariantsPerPeptide)
 	{
 		this.numMaxMods = aaSet.getMaxNumberOfVariableModificationsPerPeptide();
 		this.maxPeptideLength = maxPeptideLength;
+		this.maxNumVariantsPerPeptide = maxNumVariantsPerPeptide;
 		this.aaSet = aaSet;
 		
 		cacheAASet();
 		
-		nominalPRM = new int[MAX_NUM_VARIATIONS_PER_PEPTIDE][maxPeptideLength+1];
-		prm = new double[MAX_NUM_VARIATIONS_PER_PEPTIDE][maxPeptideLength+1];
-		numMods = new int[MAX_NUM_VARIATIONS_PER_PEPTIDE][maxPeptideLength+1];
-		peptide = new StringBuffer[MAX_NUM_VARIATIONS_PER_PEPTIDE];
+		nominalPRM = new int[maxNumVariantsPerPeptide][maxPeptideLength+1];
+		prm = new double[maxNumVariantsPerPeptide][maxPeptideLength+1];
+		numMods = new int[maxNumVariantsPerPeptide][maxPeptideLength+1];
+		peptide = new StringBuffer[maxNumVariantsPerPeptide];
 		size = new int[maxPeptideLength+1];
 		
 		initializeNTerm();
@@ -67,7 +74,7 @@ public class CandidatePeptideGrid {
 	
 	private void initializeNTerm()
 	{
-		for(int i=0; i<MAX_NUM_VARIATIONS_PER_PEPTIDE; i++)
+		for(int i=0; i<maxNumVariantsPerPeptide; i++)
 		{
 			nominalPRM[i][0] = 0;
 			prm[i][0] = 0.;
@@ -195,7 +202,7 @@ public class CandidatePeptideGrid {
 		size[length] = parentSize;
 		
 		// modified residue: copy prms up to length-1 into new array		
-		if(aaMassArr.length > 1 && parentSize < MAX_NUM_VARIATIONS_PER_PEPTIDE)	
+		if(aaMassArr.length > 1 && parentSize < maxNumVariantsPerPeptide)	
 		{
 			int newIndex = parentSize;
 			for(int parentIndex=0; parentIndex<parentSize; parentIndex++)
@@ -216,11 +223,11 @@ public class CandidatePeptideGrid {
 						numMods[newIndex][length] = numModParent+1;
 						peptide[newIndex].append(aaResidueArr[j]);
 						newIndex++;
-						if(newIndex >= MAX_NUM_VARIATIONS_PER_PEPTIDE)
+						if(newIndex >= maxNumVariantsPerPeptide)
 							break;
 					}
 				}
-				if(newIndex >= MAX_NUM_VARIATIONS_PER_PEPTIDE)
+				if(newIndex >= maxNumVariantsPerPeptide)
 					break;
 			}
 			size[length] = newIndex;

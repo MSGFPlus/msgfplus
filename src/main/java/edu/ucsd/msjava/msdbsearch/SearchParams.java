@@ -39,6 +39,7 @@ public class SearchParams {
 //	private boolean showDecoy;
 	private int minPeptideLength;
 	private int maxPeptideLength;
+	private int maxNumVariatsPerPeptide;
 	private int minCharge;
 	private int maxCharge;
 	private int numThreads;
@@ -131,6 +132,10 @@ public class SearchParams {
 		return maxPeptideLength;
 	}
 
+	public int getMaxNumVariatsPerPeptide() {
+		return maxNumVariatsPerPeptide;
+	}
+	
 	public int getMinCharge() {
 		return minCharge;
 	}
@@ -287,6 +292,9 @@ public class SearchParams {
 		
 		minPeptideLength = paramManager.getIntValue("minLength");
 		maxPeptideLength = paramManager.getIntValue("maxLength");
+		
+		maxNumVariatsPerPeptide = paramManager.getIntValue("iso");
+		
 		if(minPeptideLength > maxPeptideLength)
 		{
 			return "MinPepLength must not be larger than MaxPepLength";
