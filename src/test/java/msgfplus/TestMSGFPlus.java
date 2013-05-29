@@ -21,6 +21,53 @@ import edu.ucsd.msjava.ui.ScoringParamGen;
 public class TestMSGFPlus {
 	
 	@Test
+	public void testSingleSpec()
+	{
+		File dir = new File("C:\\cygwin\\home\\kims336\\Data\\QCShew");
+
+		File specFile = new File(dir.getPath()+File.separator+"test.mgf");
+		File dbFile = new File(dir.getPath()+File.separator+"test.fasta");
+		File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
+		String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
+				"-mod", modFile.getPath(), "-t", "10ppm", "-tda", "1", "-m", "1", "-ti", "0,1"
+//				, "-maxLength", "250"
+				}; 
+
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		paramManager.addMSGFPlusParams();
+		
+		String msg = paramManager.parseParams(argv);
+		assertTrue(msg == null);
+		
+		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
+		
+	}
+
+	@Test
+	public void testQCShew()
+	{
+		File dir = new File("C:\\cygwin\\home\\kims336\\Data\\QCShew");
+
+		File specFile = new File(dir.getPath()+File.separator+"QC_Shew_12_02_2_1Aug12_Cougar_12-06-11_dta.txt");
+		File dbFile = new File(dir.getPath()+File.separator+"ID_003456_9B916A8B.fasta");
+		File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
+		String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
+				"-mod", modFile.getPath(), "-t", "10ppm", "-tda", "1", "-m", "1", "-ti", "0,1"
+//				, "-maxLength", "250"
+				}; 
+
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		paramManager.addMSGFPlusParams();
+		
+		String msg = paramManager.parseParams(argv);
+		if(msg != null)
+			System.err.println("Error: " + msg);
+		assertTrue(msg == null);
+		
+		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
+	}
+	
+	@Test
 	public void testMzIdGen()
 	{
 //		File specFile = new File("/Users/kims336/Research/Data/CPTAC/test.mgf");

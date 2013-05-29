@@ -426,7 +426,7 @@ public class ParamManager {
 		addParameter(minNumPeaksParam);
 		
 		IntParameter isoParam = new IntParameter("iso", "NumIsoforms", "Number of isoforms to consider per peptide, Default: 128" + Constants.NUM_VARIANTS_PER_PEPTIDE);
-		isoParam.defaultValue(-1);
+		isoParam.defaultValue(Constants.NUM_VARIANTS_PER_PEPTIDE);
 		isoParam.setHidden();
 		addParameter(isoParam);
 	}
