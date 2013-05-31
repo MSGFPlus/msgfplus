@@ -384,6 +384,24 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 		}
 	}
 	
+	public void setChargeIfSinglyCharged()
+	{
+		if(precursor == null || precursor.getCharge() != 0)
+			return;
+		float tic = 0;
+		float ticBelowPrecursor = 0;
+		float precursorMz = this.precursor.getMz();
+		for(Peak p : this)
+		{
+			tic += p.getIntensity();
+			if(p.getMz() < precursorMz)
+				ticBelowPrecursor += p.getIntensity();
+		}
+		
+		if(ticBelowPrecursor/tic > 0.9f)
+			precursor.setCharge(1);
+	}
+	
 	/****** FUNCTIONS *****/
 	@Override
 	public String toString() {

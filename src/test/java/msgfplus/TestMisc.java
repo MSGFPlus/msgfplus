@@ -40,7 +40,7 @@ public class TestMisc {
 		File mzMLFile = new File(dir.getPath()+File.separator+"mzMLNoRefinement/QC_Shew_12_02_2_1Aug12_Cougar_12-06-11.mzML");
 		File mgfFile = new File(dir.getPath()+File.separator+"IPA/testIPA.mgf");
 		try {
-			ConvertToMgf.convert(mzMLFile, mgfFile, false, null, null, 10020, -1, true);
+			ConvertToMgf.convert(mzMLFile, mgfFile, false, null, null, 10020, -1, -1, true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

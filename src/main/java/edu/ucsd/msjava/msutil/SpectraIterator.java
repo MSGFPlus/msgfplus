@@ -110,7 +110,7 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
 		{
 			hasNext = true;
 			currentSpectrum.determineIsCentroided();
-			currentSpectrum.setSpecIndex(++specIndex);
+			currentSpectrum.setChargeIfSinglyCharged();
 			currentSpectrum.setID("index="+String.valueOf(specIndex-1));
 		}
 		else

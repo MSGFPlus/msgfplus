@@ -157,6 +157,8 @@ public class SpectrumConverter {
 		
 		// sort peaks by increasing order of m/z
 		Collections.sort(spec);
+
+		spec.determineIsCentroided();
 		
 		// ScanNum is currently missing
 		return spec;

@@ -93,6 +93,7 @@ public class SpecKey extends Pair<Integer, Integer> {
 				numSpectraWithTooFewPeaks++;
 				continue;
 			}
+			spec.setChargeIfSinglyCharged();
 			if(charge == 0)
 			{
 				for(int c=minCharge; c<=maxCharge; c++)

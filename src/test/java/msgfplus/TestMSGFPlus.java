@@ -8,8 +8,10 @@ import java.util.Iterator;
 
 import org.junit.Test;
 
+import edu.ucsd.msjava.msgf.Histogram;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.IonType;
+import edu.ucsd.msjava.msutil.Peak;
 import edu.ucsd.msjava.msutil.SpectraAccessor;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.mzml.MzMLAdapter;
@@ -502,14 +504,15 @@ public class TestMSGFPlus {
 	@Test
 	public void testNumVariantsPerPeptide()
 	{
-		File dir = new File("C:\\cygwin\\home\\kims336\\Data\\QCShew");
+		File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug");
 
-		File specFile = new File(dir.getPath()+File.separator+"QC_Shew_12_02_pt5_a4_10Apr13_Draco_13-02-14_dta.txt");
-		File dbFile = new File(dir.getPath()+File.separator+"ID_003456_9B916A8B.fasta");
+		File specFile = new File(dir.getPath()+File.separator+"test.mgf");
+		File dbFile = new File(dir.getPath()+File.separator+"test.fasta");
 		File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
 		String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
-				"-mod", modFile.getPath(), "-t", "10ppm", "-tda", "1", "-m", "3",
-				"-maxLength", "250"}; 
+				"-mod", modFile.getPath(), "-t", "10ppm", "-tda", "1", "-m", "1", "-ti", "0,1"
+//					, "-maxLength", "250"
+				}; 
 
 		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
 		paramManager.addMSGFPlusParams();
@@ -520,4 +523,31 @@ public class TestMSGFPlus {
 		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
 	}
 	
+	@Test
+	public void charge1Detection()
+	{
+		File specFile = new File("D:\\Research\\Data\\QCShew\\QC_Shew_12_02_2_1Aug12_Cougar_12-06-11_mzML.mgf");
+		SpectraAccessor specAcc = new SpectraAccessor(specFile);
+		Histogram<Integer> ticHist = new Histogram<Integer>();
+		while(specAcc.getSpecItr().hasNext())
+		{
+			Spectrum spec = specAcc.getSpecItr().next();
+			int charge = spec.getCharge();
+
+			if(charge == 1)
+			{
+				float tic = 0;
+				float ticBelowPrecursor = 0;
+				float precursorMz = spec.getPrecursorPeak().getMz();
+				for(Peak p : spec)
+				{
+					tic += p.getIntensity();
+					if(p.getMz() < precursorMz)
+						ticBelowPrecursor += p.getIntensity();
+				}
+				ticHist.add(Math.round(ticBelowPrecursor/tic*100));
+			}
+		}
+		ticHist.printSortedRatio();
+	}
 }
