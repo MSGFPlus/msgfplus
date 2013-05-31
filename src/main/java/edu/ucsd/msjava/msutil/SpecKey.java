@@ -75,6 +75,7 @@ public class SpecKey extends Pair<Integer, Integer> {
 			if(specIndex >= endSpecIndex)
 				continue;
 			
+			spec.setChargeIfSinglyCharged();
 			int charge = spec.getCharge();
 			
 			if(activationMethod != ActivationMethod.ASWRITTEN && spec.getActivationMethod() != null && spec.getActivationMethod() != activationMethod)
@@ -93,7 +94,6 @@ public class SpecKey extends Pair<Integer, Integer> {
 				numSpectraWithTooFewPeaks++;
 				continue;
 			}
-			spec.setChargeIfSinglyCharged();
 			if(charge == 0)
 			{
 				for(int c=minCharge; c<=maxCharge; c++)
