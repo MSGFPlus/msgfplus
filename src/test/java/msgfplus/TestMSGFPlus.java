@@ -524,7 +524,7 @@ public class TestMSGFPlus {
 	}
 	
 	@Test
-	public void charge1Detection()
+	public void charge1Hisgogram()
 	{
 		File specFile = new File("D:\\Research\\Data\\QCShew\\QC_Shew_12_02_2_1Aug12_Cougar_12-06-11_mzML.mgf");
 		SpectraAccessor specAcc = new SpectraAccessor(specFile);
@@ -550,4 +550,25 @@ public class TestMSGFPlus {
 		}
 		ticHist.printSortedRatio();
 	}
+	
+	@Test
+	public void testCharge1Detection()
+	{
+		File dir = new File("D:\\Research\\Data\\QCShew\\");
+
+		File specFile = new File(dir.getPath()+File.separator+"charge1.mgf");
+		File dbFile = new File(dir.getPath()+File.separator+"charge1.fasta");
+		String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
+				"-t", "20ppm"
+				}; 
+
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		paramManager.addMSGFPlusParams();
+		
+		String msg = paramManager.parseParams(argv);
+		assertTrue(msg == null);
+		
+		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);		
+	}
+	
 }
