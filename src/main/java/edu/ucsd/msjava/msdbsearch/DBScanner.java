@@ -455,11 +455,11 @@ public class DBScanner {
 							
 							for(SpecKey specKey : matchedSpecKeyList)
 							{
-								Tolerance specSpecificTol;
-								if((specSpecificTol = specScanner.getSpectrumSpecificPrecursorTolerance(specKey)) != null)
-								{
-									// TODO: do something
-								}
+//								Tolerance specSpecificTol;
+//								if((specSpecificTol = specScanner.getSpectrumSpecificPrecursorTolerance(specKey)) != null)
+//								{
+//									// TODO: do something
+//								}
 								
 								SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(specKey);
 //								if(sequence.getSubsequence(index, index+i+1).equalsIgnoreCase("SRDTAIKT"))
