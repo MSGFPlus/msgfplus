@@ -100,10 +100,13 @@ public class Chores {
 //		System.out.println(".BCDEF.-".matches("[A-Z\\-_]?\\..+\\.[A-Z\\-_]?"));
 //		System.out.println(System.getProperty("user.home"));
 
-		String unimod = "-123.12";
-		System.out.println(unimod.matches("-?\\d+\\.?\\d*"));
-		float f = 1.007825035f;
-		System.out.println(f);
+//		String unimod = "-123.12";
+//		System.out.println(unimod.matches("-?\\d+\\.?\\d*"));
+//		float f = 1.007825035f;
+//		System.out.println(f);
+		
+		String msgf = "MSGFDB";
+		System.out.println(msgf.matches("MS-?GF[+-]?(DB)?"));
 	}
 
 	public static void recombCPReg() throws Exception

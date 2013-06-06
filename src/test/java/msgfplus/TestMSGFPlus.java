@@ -594,5 +594,14 @@ public class TestMSGFPlus {
 		
 		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
 	}
+
+	@Test
+	public void testCCMSXMLParsing()
+	{
+		File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug");
+		File paramFile = new File(dir.getPath()+File.separator+"params.xml");
+		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile(paramFile.getPath());
+		aaSet.printAASet();
+	}
 	
 }

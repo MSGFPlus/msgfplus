@@ -49,7 +49,8 @@ public class TestIPA {
 	@Test
 	public void testIPA() throws Exception
 	{
-		File dir = new File("/Users/kims336/Research/Data/ASMS2013/IPA");
+//		File dir = new File("/Users/kims336/Research/Data/ASMS2013/IPA");
+		File dir = new File("D:\\Research\\Data\\ASMS2013\\IPA");
 		
 //		File peaksFile = new File(dir.getPath() + File.separator + "QC_Shew_12_02_2_1Aug12_Cougar_12-06-11_peaks.txt");
 //		File msgfPlusTsvFile = new File(dir.getPath() + File.separator + "CPTAC_OvC_JB5427_iTRAQ_01_9Apr12_Cougar_12-03-21_NoCharge.tsv");
@@ -62,7 +63,6 @@ public class TestIPA {
 		File peaksFile = new File(dir.getPath() + File.separator + "CPTAC_OvC_JB5427_iTRAQ_NiNTA_01_19Apr12_Lynx_12-02-29_peaks.txt");
 		File msgfPlusTsvFile = new File(dir.getPath() + File.separator + "CPTAC_OvC_JB5427_iTRAQ_NiNTA_01_19Apr12_Lynx_12-02-29_NoCharge.tsv");
 		File ipaResultFile = new File(dir.getPath() + File.separator + "IPA_HumanPhospho.tsv");
-		
 		
 		IPA ipa = new IPA(peaksFile, msgfPlusTsvFile);
 		ipa.writeTo(ipaResultFile);

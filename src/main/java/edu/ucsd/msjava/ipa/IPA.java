@@ -5,7 +5,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.HashSet;
 import java.util.List;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msutil.Composition;
@@ -37,6 +40,34 @@ public class IPA {
 			e.printStackTrace();
 		}
 
+		class Ion implements Comparable<Ion>
+		{
+			float mz;
+			int charge;
+			float specEValue;
+			
+			@Override
+			public int compareTo(Ion ion) {
+				if(mz > ion.mz)	return 1;
+				else if(mz < ion.mz) return 0;
+				else return charge - ion.charge;
+			}
+			
+			@Override
+			public boolean equals(Object obj)
+			{
+				if(obj instanceof Ion)
+				{
+					Ion ion = (Ion)obj;
+					if(mz == ion.mz && charge == ion.charge)
+						return true;
+				}
+				return false;
+			}
+		}
+		
+		TreeMap<Float,Ion> precursorMap = new TreeMap<Float,Ion>();
+		
 		out.println(resultSet.getHeader());
 		List<PSM> psmList = resultSet.getPSMList();
 		for(PSM psm : psmList)

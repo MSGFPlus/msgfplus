@@ -857,14 +857,14 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 				if(value.equals("c57"))
 				{
 					char residue = 'C';
-					Modification mod = Modification.get("Carbamidomethylation");
+					Modification mod = Modification.get("Carbamidomethyl");
 					Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere).fixedModification();
 					mods.add(modIns);
 				}
 				else if(value.equals("c58"))
 				{
 					char residue = 'C';
-					Modification mod = Modification.get("Carboxymethylation");
+					Modification mod = Modification.get("Carboxymethyl");
 					Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere).fixedModification();
 					mods.add(modIns);
 				}
