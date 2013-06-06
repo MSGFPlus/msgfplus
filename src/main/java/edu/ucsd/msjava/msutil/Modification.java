@@ -51,22 +51,33 @@ public class Modification {
 		return mod;
 	}
 	
-	public static Modification get(String name) { return modTable.get(name); }
-
+//	public static Modification get(String name) { return modTable.get(name); }
+	public static Modification Carbamidomethyl = new Modification("Carbamidomethyl", new Composition(2,3,1,1,0));
+	public static Modification Carboxymethyl = new Modification("Carboxymethyl", new Composition(2,2,2,0,0));
+	public static Modification NIPCAM = new Modification("NIPCAM", new Composition(5,9,1,1,0));
+	public static Modification Oxidation = new Modification("Oxidation", new Composition(0,0,0,1,0));
+	public static Modification Phospho = new Modification("Phospho", Composition.getMass("HO3P"));
+	public static Modification Methyl = new Modification("Methyl", new Composition(1,2,0,0,0));
+	public static Modification PyroGluQ = new Modification("Gln->pyro-Glu", Composition.getMass("H-3N-1"));	// Pyro-glu from Q
+	public static Modification PyroGluE = new Modification("Glu->pyro-Glu", Composition.getMass("H-2O-1"));	// Pyro-glu from E
+	public static Modification Carbamyl = new Modification("Carbamyl", new Composition(1,1,1,1,0));
+	public static Modification Acetyl = new Modification("Acetyl", new Composition(2,2,0,1,0));
+	public static Modification PyroCarbamidomethyl = new Modification("Pyro-carbamidomethyl", Composition.getMass("H-3N-1"));
+	
 	// static member
 	private static Modification[] modList = 
 	{
-		new Modification("Carbamidomethyl", new Composition(2,3,1,1,0)),
-		new Modification("Carboxymethyl", new Composition(2,2,2,0,0)),
-		new Modification("NIPCAM", new Composition(5,9,1,1,0)),
-		new Modification("Oxidation", new Composition(0,0,0,1,0)),
-		new Modification("Phospho", Composition.getMass("HO3P")),
-		new Modification("Methyl", new Composition(1,2,0,0,0)),
-		new Modification("Gln->pyro-Glu", Composition.getMass("H-3N-1")),
-		new Modification("Glu->pyro-Glu", Composition.getMass("H-2O-1")),
-		new Modification("Carbamyl", new Composition(1,1,1,1,0)),
-		new Modification("Acetyl", new Composition(2,2,0,1,0)),
-		new Modification("Pyro-carbamidomethyl", Composition.getMass("H-3N-1")),
+		Carbamidomethyl,
+		Carboxymethyl,
+		NIPCAM,
+		Oxidation,
+		Phospho,
+		Methyl,
+		PyroGluQ,
+		PyroGluE,
+		Carbamyl,
+		Acetyl,
+		PyroCarbamidomethyl
 	};
 	
 	private static Hashtable<String,Modification> modTable; 

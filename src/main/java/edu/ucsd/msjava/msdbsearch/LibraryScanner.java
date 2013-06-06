@@ -661,29 +661,29 @@ public class LibraryScanner {
 		modTable = new HashMap<String,Double>();
 		//		modTable.put("Carbamidomethyl", Modification.get("Carbamidomethylation").getAccurateMass());
 		modTable.put("Carbamidomethyl", 0.);
-		modTable.put("Pyro-carbamidomethyl", Modification.get("PyroCarbamidomethyl").getAccurateMass());
-		modTable.put("Oxidation", Modification.get("Oxidation").getAccurateMass());
-		modTable.put("Acetyl", Modification.get("Acetylation").getAccurateMass());
-		modTable.put("Gln->pyro-Glu", Modification.get("PyrogluQ").getAccurateMass());
-		modTable.put("Glu->pyro-Glu", Modification.get("PyrogluE").getAccurateMass());
+		modTable.put("Pyro-carbamidomethyl", Modification.PyroCarbamidomethyl.getAccurateMass());
+		modTable.put("Oxidation", Modification.Oxidation.getAccurateMass());
+		modTable.put("Acetyl", Modification.Acetyl.getAccurateMass());
+		modTable.put("Gln->pyro-Glu", Modification.PyroGluQ.getAccurateMass());
+		modTable.put("Glu->pyro-Glu", Modification.PyroGluE.getAccurateMass());
 
 		modResidueTable = new HashMap<String,String>();
 		//		modResidueTable.put("Carbamidomethyl", String.format("%.3f", "+"+Modification.get("Carbamidomethylation").getMass()));
 		modResidueTable.put("Carbamidomethyl", "");
-		modResidueTable.put("Pyro-carbamidomethyl", String.format("%.3f", Modification.get("PyroCarbamidomethyl").getMass()));
-		modResidueTable.put("Oxidation", String.format("+%.3f", Modification.get("Oxidation").getMass()));
-		modResidueTable.put("Acetyl", String.format("+%.3f", Modification.get("Acetylation").getMass()));
-		modResidueTable.put("Gln->pyro-Glu", String.format("%.3f", Modification.get("PyrogluQ").getMass()));
-		modResidueTable.put("Glu->pyro-Glu", String.format("%.3f", Modification.get("PyrogluE").getMass()));
+		modResidueTable.put("Pyro-carbamidomethyl", String.format("%.3f", Modification.PyroCarbamidomethyl.getMass()));
+		modResidueTable.put("Oxidation", String.format("+%.3f", Modification.Oxidation.getMass()));
+		modResidueTable.put("Acetyl", String.format("+%.3f", Modification.Acetyl.getMass()));
+		modResidueTable.put("Gln->pyro-Glu", String.format("%.3f", Modification.PyroGluQ.getMass()));
+		modResidueTable.put("Glu->pyro-Glu", String.format("%.3f", Modification.PyroGluE.getMass()));
 
 		// set up aaSet
 		ArrayList<Modification.Instance> mods = new ArrayList<Modification.Instance>();
-		mods.add(new Modification.Instance(Modification.get("Carbamidomethylation"), 'C').fixedModification());
-		mods.add(new Modification.Instance(Modification.get("PyroCarbamidomethyl"), 'C', Location.N_Term));
-		mods.add(new Modification.Instance(Modification.get("Oxidation"), 'M', Location.Anywhere));
-		mods.add(new Modification.Instance(Modification.get("Acetylation"), '*', Location.N_Term));
-		mods.add(new Modification.Instance(Modification.get("PyrogluQ"), 'Q', Location.N_Term));
-		mods.add(new Modification.Instance(Modification.get("PyrogluE"), 'E', Location.N_Term));
+		mods.add(new Modification.Instance(Modification.Carbamidomethyl, 'C').fixedModification());
+		mods.add(new Modification.Instance(Modification.PyroCarbamidomethyl, 'C', Location.N_Term));
+		mods.add(new Modification.Instance(Modification.Oxidation, 'M', Location.Anywhere));
+		mods.add(new Modification.Instance(Modification.Acetyl, '*', Location.N_Term));
+		mods.add(new Modification.Instance(Modification.PyroGluQ, 'Q', Location.N_Term));
+		mods.add(new Modification.Instance(Modification.PyroGluE, 'E', Location.N_Term));
 
 		aaSet = AminoAcidSet.getAminoAcidSet(mods);
 	}

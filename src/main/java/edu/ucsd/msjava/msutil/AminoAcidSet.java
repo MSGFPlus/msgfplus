@@ -857,21 +857,21 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 				if(value.equals("c57"))
 				{
 					char residue = 'C';
-					Modification mod = Modification.get("Carbamidomethyl");
+					Modification mod = Modification.Carbamidomethyl;
 					Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere).fixedModification();
 					mods.add(modIns);
 				}
 				else if(value.equals("c58"))
 				{
 					char residue = 'C';
-					Modification mod = Modification.get("Carboxymethyl");
+					Modification mod = Modification.Carboxymethyl;
 					Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere).fixedModification();
 					mods.add(modIns);
 				}
 				else if(value.equals("c99"))
 				{
 					char residue = 'C';
-					Modification mod = Modification.get("NIPCAM");
+					Modification mod = Modification.NIPCAM;
 					Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere).fixedModification();
 					mods.add(modIns);
 				}
@@ -990,7 +990,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			else if(s.startsWith(oxidationKey))	// predefined Oxidation
 			{
 				String residueStr = "M";
-				Modification mod = Modification.get("Oxidation");
+				Modification mod = Modification.Oxidation;
 				for(int i=0; i<residueStr.length(); i++)
 				{
 					char residue = residueStr.charAt(i);
@@ -1001,7 +1001,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			else if(s.startsWith(lysMetKey))	// predefined
 			{
 				String residueStr = "K";
-				Modification mod = Modification.get("Methylation");
+				Modification mod = Modification.Methyl;
 				for(int i=0; i<residueStr.length(); i++)
 				{
 					char residue = residueStr.charAt(i);
@@ -1012,7 +1012,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			else if(s.startsWith(pyrogluKey))	// predefined
 			{
 				String residueStr = "Q";
-				Modification mod = Modification.get("PyrogluQ");
+				Modification mod = Modification.PyroGluQ;
 				for(int i=0; i<residueStr.length(); i++)
 				{
 					char residue = residueStr.charAt(i);
@@ -1023,7 +1023,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			else if(s.startsWith(phosphoKey))	// predefined
 			{
 				String residueStr = "STY";
-				Modification mod = Modification.get("Phosphorylation");
+				Modification mod = Modification.Phospho;
 				for(int i=0; i<residueStr.length(); i++)
 				{
 					char residue = residueStr.charAt(i);
@@ -1034,7 +1034,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			else if(s.startsWith(ntermCarbamyKey))	// predefined
 			{
 				String residueStr = "*";
-				Modification mod = Modification.get("Carbamylation");
+				Modification mod = Modification.Carbamyl;
 				for(int i=0; i<residueStr.length(); i++)
 				{
 					char residue = residueStr.charAt(i);
@@ -1045,7 +1045,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			else if(s.startsWith(ntermAcetylKey))	// predefined
 			{
 				String residueStr = "*";
-				Modification mod = Modification.get("Acetylation");
+				Modification mod = Modification.Acetyl;
 				for(int i=0; i<residueStr.length(); i++)
 				{
 					char residue = residueStr.charAt(i);
@@ -1200,7 +1200,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		if(standardAASetWithCarbamidomethylatedCys == null)
 		{
 			ArrayList<Modification.Instance> mods = new ArrayList<Modification.Instance>();
-			mods.add(new Modification.Instance(Modification.get("Carbamidomethyl"), 'C').fixedModification());
+			mods.add(new Modification.Instance(Modification.Carbamidomethyl, 'C').fixedModification());
 			standardAASetWithCarbamidomethylatedCys = AminoAcidSet.getAminoAcidSet(mods); 
 		}
 		return standardAASetWithCarbamidomethylatedCys;
@@ -1211,7 +1211,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		if(standardAASetWithCarboxyomethylatedCys == null)
 		{
 			ArrayList<Modification.Instance> mods = new ArrayList<Modification.Instance>();
-			mods.add(new Modification.Instance(Modification.get("Carboxymethyl"), 'C').fixedModification());
+			mods.add(new Modification.Instance(Modification.Carboxymethyl, 'C').fixedModification());
 			standardAASetWithCarboxyomethylatedCys = AminoAcidSet.getAminoAcidSet(mods);
 		}
 		return standardAASetWithCarboxyomethylatedCys;
@@ -1225,7 +1225,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	public static AminoAcidSet getStandardAminoAcidSetWithFixedCarbamidomethylatedCysWithTerm() {
 		if(standardAASetWithCarbamidomethylatedCysWithTerm == null) {
 			Modification.Instance[] mods = { 
-					new Modification.Instance(Modification.get("Carbamidomethyl"), 'C').fixedModification()
+					new Modification.Instance(Modification.Carbamidomethyl, 'C').fixedModification()
 			};
 
 			HashMap<Character,Modification.Instance> modTable = new HashMap<Character,Modification.Instance>();
