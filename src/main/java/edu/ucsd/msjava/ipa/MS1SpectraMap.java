@@ -22,9 +22,14 @@ public class MS1SpectraMap {
 		parsePeaksFile(peaksFile);
 	}
 	
+	public Integer getPrecursorScan(int scanNum)
+	{
+		return ms1SpecMap.floorKey(scanNum);
+	}
+	
 	public Peak getPrecursorPeaks(int scanNum, float mz, Tolerance tol)
 	{
-		int precursorScan = ms1SpecMap.lowerKey(scanNum);
+		int precursorScan = getPrecursorScan(scanNum);
 		return getMS1Peak(precursorScan, mz, tol);
 	}
 
@@ -136,8 +141,12 @@ public class MS1SpectraMap {
 		{
 			for(Peak p : matchList)
 			{
+				float minusOne = p.getMz() - (float)Composition.ISOTOPE/charge;
+				
 				float secondIsotopeMz = p.getMz() + (float)Composition.ISOTOPE/charge;
-				if(ms1Spec.getPeakListByMz(secondIsotopeMz, tol) != null)
+				if(!ms1Spec.getPeakListByMz(secondIsotopeMz, new Tolerance(5,true)).isEmpty()
+						&& ms1Spec.getPeakListByMz(minusOne, new Tolerance(1,true)).isEmpty() 	// no peak at -1
+						)
 					return true;
 			}
 		}			

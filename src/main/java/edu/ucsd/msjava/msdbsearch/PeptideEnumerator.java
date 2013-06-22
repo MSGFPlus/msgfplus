@@ -10,7 +10,9 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 
 import edu.ucsd.msjava.msutil.AminoAcidSet;
+import edu.ucsd.msjava.msutil.Composition;
 import edu.ucsd.msjava.msutil.Enzyme;
+import edu.ucsd.msjava.msutil.Ion;
 import edu.ucsd.msjava.msutil.Modification;
 import edu.ucsd.msjava.sequences.Constants;
 
@@ -20,7 +22,7 @@ public class PeptideEnumerator {
 	private static final int MAX_PEPTIDE_LENGTH = 30;
 	private static final int MAX_NUM_MODS = 0;
 	private static final int MAX_NUM_MISSED_CLEAVAGES = 2;
-	private static final int NTT = 2;
+	private static final int NTT = 1;
 	
 	public static void main(String argv[]) throws Exception
 	{
@@ -69,7 +71,8 @@ public class PeptideEnumerator {
 //		mods.add(new Modification.Instance(Modification.get("Carbamidomethyl"), 'C').fixedModification());
 //		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSet(mods);
 //		aaSet.setMaxNumberOfVariableModificationsPerPeptide(MAX_NUM_MODS);
-		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSet();
+//		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSet();
+		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
 		
 		Enzyme enzyme = Enzyme.TRYPSIN;
 		
@@ -132,7 +135,9 @@ public class PeptideEnumerator {
 					char pre = sequence.getCharAt(index);
 //					String pepSeq = candidatePepGrid.getPeptideSeq(j).replaceAll("m", "M@").replaceAll("C", "C!");
 					String pepSeq = candidatePepGrid.getPeptideSeq(j);
-					out.println(pre+"."+pepSeq+"."+next);
+					float peptideMass = candidatePepGrid.getPeptideMass(j) + (float)Composition.H2O;
+					out.println(pepSeq+"\t"+new Ion(peptideMass,1).getMz()+"\t"+new Ion(peptideMass,2).getMz()+"\t"+new Ion(peptideMass,3).getMz()+"\t"+new Ion(peptideMass,4).getMz());
+//					out.println(pre+"."+pepSeq+"."+next);
 				}
 				if(numMissedCleavages[i] == MAX_NUM_MISSED_CLEAVAGES+1)
 					break;
