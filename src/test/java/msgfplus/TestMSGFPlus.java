@@ -9,6 +9,7 @@ import java.util.Iterator;
 import org.junit.Test;
 
 import edu.ucsd.msjava.msgf.Histogram;
+import edu.ucsd.msjava.msutil.AminoAcid;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.IonType;
 import edu.ucsd.msjava.msutil.Peak;
@@ -604,4 +605,11 @@ public class TestMSGFPlus {
 		aaSet.printAASet();
 	}
 	
+	@Test
+	public void testDoubleMods()
+	{
+		File mod = new File("C:\\cygwin\\home\\kims336\\Data\\Debug\\Mods.txt");
+		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(mod.getPath());
+		aaSet.printAASet();
+	}
 }
