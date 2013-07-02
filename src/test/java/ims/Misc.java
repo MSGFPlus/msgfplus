@@ -18,7 +18,7 @@ public class Misc {
 	public void generateBSAPeptides()
 	{
 		File bsaFastaFile = new File("C:\\cygwin\\home\\kims336\\Data\\IMS_BSA\\BSA.fasta");
-		File outputFile = new File("C:\\cygwin\\home\\kims336\\Data\\IMS_BSA\\BSAPeptidesAndMzNTT1.tsv");
+		File outputFile = new File("C:\\cygwin\\home\\kims336\\Data\\SuffixArray\\MSJavaBSAPeptides.tsv");
 		try {
 			PeptideEnumerator.enumerate(bsaFastaFile, outputFile);
 		} catch (Exception e) {

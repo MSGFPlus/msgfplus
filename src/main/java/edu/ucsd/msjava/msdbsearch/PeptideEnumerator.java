@@ -99,6 +99,8 @@ public class PeptideEnumerator {
 						continue;
 					}
 				}
+				else
+					nnet = 0;
 			}			
 			if(lcp == 0)
 				i = 1;
@@ -121,7 +123,12 @@ public class PeptideEnumerator {
 					break;
 				
 				if(i < MIN_PEPTIDE_LENGTH)
-					continue;
+				{
+					if(numMissedCleavages[i] == MAX_NUM_MISSED_CLEAVAGES+1)
+						break;
+					else
+						continue;
+				}
 				
 				char next = sequence.getCharAt(index+i+1);
 				if(!enzyme.isCleavable(residue) && next != Constants.TERMINATOR_CHAR)
@@ -136,8 +143,9 @@ public class PeptideEnumerator {
 //					String pepSeq = candidatePepGrid.getPeptideSeq(j).replaceAll("m", "M@").replaceAll("C", "C!");
 					String pepSeq = candidatePepGrid.getPeptideSeq(j);
 					float peptideMass = candidatePepGrid.getPeptideMass(j) + (float)Composition.H2O;
-					out.println(pepSeq+"\t"+new Ion(peptideMass,1).getMz()+"\t"+new Ion(peptideMass,2).getMz()+"\t"+new Ion(peptideMass,3).getMz()+"\t"+new Ion(peptideMass,4).getMz());
+//					out.println(pepSeq+"\t"+new Ion(peptideMass,1).getMz()+"\t"+new Ion(peptideMass,2).getMz()+"\t"+new Ion(peptideMass,3).getMz()+"\t"+new Ion(peptideMass,4).getMz());
 //					out.println(pre+"."+pepSeq+"."+next);
+					out.println(pre+"."+pepSeq);
 				}
 				if(numMissedCleavages[i] == MAX_NUM_MISSED_CLEAVAGES+1)
 					break;
