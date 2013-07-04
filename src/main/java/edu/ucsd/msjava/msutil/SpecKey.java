@@ -7,15 +7,19 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 import edu.ucsd.msjava.parser.MzXMLSpectraIterator;
-import edu.ucsd.msjava.sequences.Constants;
-
 
 public class SpecKey extends Pair<Integer, Integer> {
 
 	private ArrayList<Integer> specIndexList;
+	private float precursorMz;
 
 	public SpecKey(int specIndex, int charge) {
 		super(specIndex, charge);
+	}
+	
+	public void setPrecursorMz(float precursorMz)
+	{
+		this.precursorMz = precursorMz;
 	}
 	
 	public int getSpecIndex()
@@ -26,6 +30,11 @@ public class SpecKey extends Pair<Integer, Integer> {
 	public int getCharge()
 	{
 		return super.getSecond();
+	}
+	
+	public float getPrecursorMz()
+	{
+		return precursorMz;
 	}
 	
 	public String getSpecKeyString()

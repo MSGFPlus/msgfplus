@@ -44,7 +44,7 @@ public class ScoredSpectraMap {
 	
 	private Map<SpecKey,NewRankScorer> specKeyRankScorerMap;
 	
-	private Map<SpecKey,Tolerance> specKeyToleranceMap;
+//	private Map<SpecKey,Tolerance> specKeyToleranceMap;
 	
 	private boolean turnOffEdgeScoring = false;
 
@@ -72,9 +72,9 @@ public class ScoredSpectraMap {
 		specKeyScorerMap = Collections.synchronizedMap(new HashMap<SpecKey,SimpleDBSearchScorer<NominalMass>>());
 		specIndexChargeToSpecKeyMap = Collections.synchronizedMap(new HashMap<Pair<Integer,Integer>,SpecKey>());
 		
-		// To support spectrum-specific tolerance
-		if(supportSpectrumSpecificErrorTolerance)
-			specKeyToleranceMap = Collections.synchronizedMap(new HashMap<SpecKey,Tolerance>());
+//		// To support spectrum-specific tolerance
+//		if(supportSpectrumSpecificErrorTolerance)
+//			specKeyToleranceMap = Collections.synchronizedMap(new HashMap<SpecKey,Tolerance>());
 		
 		if(storeRankScorer)
 			specKeyRankScorerMap = Collections.synchronizedMap(new HashMap<SpecKey,NewRankScorer>());
@@ -137,13 +137,13 @@ public class ScoredSpectraMap {
 			return this.specKeyRankScorerMap.get(specKey);
 	}
 	
-	public Tolerance getSpectrumSpecificPrecursorTolerance(SpecKey specKey)
-	{
-		if(specKeyToleranceMap == null)
-			return null;
-		else
-			return specKeyToleranceMap.get(specKey);
-	}
+//	public Tolerance getSpectrumSpecificPrecursorTolerance(SpecKey specKey)
+//	{
+//		if(specKeyToleranceMap == null)
+//			return null;
+//		else
+//			return specKeyToleranceMap.get(specKey);
+//	}
 	
 	public ScoredSpectraMap makePepMassSpecKeyMap()
 	{
@@ -162,8 +162,8 @@ public class ScoredSpectraMap {
 				pepMassSpecKeyMap.put(mass1Key, specKey);
 			}
 			specIndexChargeToSpecKeyMap.put(new Pair<Integer,Integer>(specIndex, specKey.getCharge()), specKey);
-			if(specKeyToleranceMap != null && spec.getPrecursorTolerance() != null)
-				specKeyToleranceMap.put(specKey, spec.getPrecursorTolerance());
+//			if(specKeyToleranceMap != null && spec.getPrecursorTolerance() != null)
+//				specKeyToleranceMap.put(specKey, spec.getPrecursorTolerance());
 		}
 		return this;
 	}

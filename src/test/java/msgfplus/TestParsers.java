@@ -33,54 +33,27 @@ public class TestParsers {
 //		}
 	}
 		
-	@Test
-	public void newDeconMSnTest()
-	{
-		int numSpecs = 0;
-		File mgfFile = new File("C:\\cygwin\\home\\kims336\\Data\\IPA\\QC_Shew_08_04-pt5-2_11Jan09_Sphinx_08-11-18_version2.mgf");
-		try {
-			SpectraIterator itr = new SpectraIterator(mgfFile.getPath(), new MgfSpectrumParser());
-			while(itr.hasNext())
-			{
-				Spectrum spec = itr.next();
-				float precursorMass = spec.getPrecursorPeak().getMass();
-				if(precursorMass <= 0)
-				{
-					System.out.println("ScanNum " + spec.getScanNum() + " " + precursorMass);
-				}
-				if(spec.getPrecursorTolerance() == null)
-				{
-					System.out.println("ScanNum " + spec.getScanNum() + " tolerance null.");
-				}
-				++numSpecs;
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		System.out.println("NumSpectra: " + numSpecs);
-	}
-	
-	@Test
-	public void testReadingDtaTxt()
-	{
-		int numSpecs = 0;
-		File mgfFile = new File("C:\\cygwin\\home\\kims336\\Data\\QCShewQE\\QC_Shew_13_02_2500ng_B_18Mar13_Jaguar_13-03-11_dta.txt");
-		try {
-			SpectraIterator itr = new PNNLSpectraIterator(mgfFile.getPath());
-			while(itr.hasNext())
-			{
-				Spectrum spec = itr.next();
-				boolean isHighPrecision = spec.isHighPrecision();
-				if(!isHighPrecision)
-				{
-					System.out.println("ScanNum " + spec.getScanNum());
-				}
-				++numSpecs;
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		System.out.println("NumSpectra: " + numSpecs);
-	}
+//	@Test
+//	public void testReadingDtaTxt()
+//	{
+//		int numSpecs = 0;
+//		File mgfFile = new File("C:\\cygwin\\home\\kims336\\Data\\QCShewQE\\QC_Shew_13_02_2500ng_B_18Mar13_Jaguar_13-03-11_dta.txt");
+//		try {
+//			SpectraIterator itr = new PNNLSpectraIterator(mgfFile.getPath());
+//			while(itr.hasNext())
+//			{
+//				Spectrum spec = itr.next();
+//				boolean isHighPrecision = spec.isHighPrecision();
+//				if(!isHighPrecision)
+//				{
+//					System.out.println("ScanNum " + spec.getScanNum());
+//				}
+//				++numSpecs;
+//			}
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		}
+//		System.out.println("NumSpectra: " + numSpecs);
+//	}
 	
 }

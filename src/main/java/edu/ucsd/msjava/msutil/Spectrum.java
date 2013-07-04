@@ -38,11 +38,11 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	private Boolean isCentroided = true;
 	
 	private boolean isHighPrecision = false;
-	private Tolerance precursorTolerance = null;
-	private Integer minIsotopeError = null;
-	private Integer maxIsotopeError = null;
-	private Float fractionIonCurrent = null;
-	private Integer numMS1Features = null;
+//	private Tolerance precursorTolerance = null;
+//	private Integer minIsotopeError = null;
+//	private Integer maxIsotopeError = null;
+//	private Float fractionIonCurrent = null;
+//	private Integer numMS1Features = null;
 
 	private Float isolationWindowTargetMz = null;
 	
@@ -178,23 +178,23 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	 */
 	public boolean isHighPrecision() { return this.isHighPrecision; }
 	
-	/**
-	 * Returns the precursor tolerance.
-	 * @return precursor tolerance
-	 */
-	public Tolerance getPrecursorTolerance() { return this.precursorTolerance; }
-	
-	/**
-	 * Returns the minimum isotope error.
-	 * @return minimum isotope error
-	 */
-	public Integer getMinIsotopeError() { return this.minIsotopeError; }
-	
-	/**
-	 * Returns the maximum isotope error.
-	 * @return maximum isotope error
-	 */
-	public Integer getMaxIsotopeError() { return this.maxIsotopeError; }
+//	/**
+//	 * Returns the precursor tolerance.
+//	 * @return precursor tolerance
+//	 */
+//	public Tolerance getPrecursorTolerance() { return this.precursorTolerance; }
+//	
+//	/**
+//	 * Returns the minimum isotope error.
+//	 * @return minimum isotope error
+//	 */
+//	public Integer getMinIsotopeError() { return this.minIsotopeError; }
+//	
+//	/**
+//	 * Returns the maximum isotope error.
+//	 * @return maximum isotope error
+//	 */
+//	public Integer getMaxIsotopeError() { return this.maxIsotopeError; }
 	
 	/**
 	 * Returns the ms level.
@@ -305,35 +305,34 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 		this.isHighPrecision = isHighPrecision;
 	}
 	
-	
-	/**
-	 * Sets precursorTolerance.
-	 * @param precursorTolerance the precursor tolerance.
-	 */
-	public void setPrecursorTolerance(Tolerance precursorTolerance)
-	{
-		this.precursorTolerance = precursorTolerance;
-	}
-	
-	/**
-	 * Sets the isotope error range.
-	 * @param minIsotopeError minimum isotope error.
-	 * @param maxIsotopeError maximum isotope error.
-	 */
-	public void setIsotopeError(int minIsotopeError, int maxIsotopeError)
-	{
-		this.minIsotopeError = minIsotopeError;
-		this.maxIsotopeError = maxIsotopeError;
-	}
-
-	/**
-	 * Sets fraction of ion current within the selection window explained by the MS1 feature 
-	 * @param fractionIonCurrent the precursor tolerance.
-	 */
-	public void setFractionIonCurrent(float fractionIonCurrent)
-	{
-		this.fractionIonCurrent = fractionIonCurrent;
-	}
+//	/**
+//	 * Sets precursorTolerance.
+//	 * @param precursorTolerance the precursor tolerance.
+//	 */
+//	public void setPrecursorTolerance(Tolerance precursorTolerance)
+//	{
+//		this.precursorTolerance = precursorTolerance;
+//	}
+//	
+//	/**
+//	 * Sets the isotope error range.
+//	 * @param minIsotopeError minimum isotope error.
+//	 * @param maxIsotopeError maximum isotope error.
+//	 */
+//	public void setIsotopeError(int minIsotopeError, int maxIsotopeError)
+//	{
+//		this.minIsotopeError = minIsotopeError;
+//		this.maxIsotopeError = maxIsotopeError;
+//	}
+//
+//	/**
+//	 * Sets fraction of ion current within the selection window explained by the MS1 feature 
+//	 * @param fractionIonCurrent the precursor tolerance.
+//	 */
+//	public void setFractionIonCurrent(float fractionIonCurrent)
+//	{
+//		this.fractionIonCurrent = fractionIonCurrent;
+//	}
 	
 	public void setIsolationWindowTargetMz(Float isolationWindowTargetMz)
 	{
