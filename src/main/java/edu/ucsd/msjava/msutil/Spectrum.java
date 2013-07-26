@@ -765,7 +765,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		out.println(this.getParentMass()+Composition.H+"\t"+this.getPrecursorPeak().getCharge());
+		out.println(this.getParentMass()+Composition.PROTON+"\t"+this.getPrecursorPeak().getCharge());
 		for(Peak p : this)
 			out.println(p.getMz() + "\t" + p.getIntensity());
 		out.close();
@@ -777,7 +777,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	 */
 	public String toDta() {
 		StringBuffer sb = new StringBuffer();
-		sb.append(this.getParentMass()+Composition.H+"\t"+this.getPrecursorPeak().getCharge()+"\n");
+		sb.append(this.getParentMass()+Composition.PROTON+"\t"+this.getPrecursorPeak().getCharge()+"\n");
 		for(Peak p : this) sb.append(p.getMz() + "\t" + p.getIntensity() + "\n");
 		return sb.toString();
 	}

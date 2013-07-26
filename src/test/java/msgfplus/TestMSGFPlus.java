@@ -26,13 +26,13 @@ public class TestMSGFPlus {
 	@Test
 	public void testSingleSpec()
 	{
-		File dir = new File("C:\\cygwin\\home\\kims336\\Data\\QCShew");
+		File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug");
 
 		File specFile = new File(dir.getPath()+File.separator+"test.mgf");
 		File dbFile = new File(dir.getPath()+File.separator+"test.fasta");
 		File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
 		String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
-				"-mod", modFile.getPath(), "-t", "10ppm", "-tda", "1", "-m", "1", "-ti", "0,1"
+				"-mod", modFile.getPath(), "-t", "25ppm", "-ti", "0,1"//, "-tda", "1", "-m", "1"
 //				, "-maxLength", "250"
 				}; 
 
@@ -43,7 +43,6 @@ public class TestMSGFPlus {
 		assertTrue(msg == null);
 		
 		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
-		
 	}
 
 	@Test
@@ -54,6 +53,7 @@ public class TestMSGFPlus {
 		File specFile = new File(dir.getPath()+File.separator+"QC_Shew_12_02_2_1Aug12_Cougar_12-06-11_dta.txt");
 		File dbFile = new File(dir.getPath()+File.separator+"ID_003456_9B916A8B.fasta");
 		File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
+//		File outputFile = new File(dir.getPath()+File.separator+"Test"+"2013-07-26"+".txt");
 		String versionString = MSGFPlus.VERSION.split("\\s+")[1];
 		versionString = versionString.substring(versionString.indexOf('(')+1, versionString.lastIndexOf(')'));
 		String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 

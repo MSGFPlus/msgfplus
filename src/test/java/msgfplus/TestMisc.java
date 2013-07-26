@@ -6,8 +6,15 @@ import org.junit.Test;
 
 import edu.ucsd.msjava.misc.ConvertToMgf;
 import edu.ucsd.msjava.misc.VennDiagram;
+import edu.ucsd.msjava.msutil.Composition;
 
 public class TestMisc {
+	@Test
+	public void testMasses()
+	{
+		System.out.println(Composition.H - Composition.PROTON);
+	}
+	
 	@Test
 	public void testMisc()
 	{

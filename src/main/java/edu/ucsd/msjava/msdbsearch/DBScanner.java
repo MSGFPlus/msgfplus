@@ -378,7 +378,7 @@ public class DBScanner {
 						continue;
 					
 //					System.out.println(sequence.getSubsequence(index+1, index+i+1));
-//					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("ACPLDQAIGLLVAIFHK"))
+//					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("QVSDGVAHIHASFNNTIVTITDR"))
 //						System.out.println("Debug");
 					
 					int cTermCleavageScore = 0;
@@ -422,6 +422,9 @@ public class DBScanner {
 					for(int j=0; j<candidatePepGrid.size(); j++)
 					{
 						float theoPeptideMass = candidatePepGrid.getPeptideMass(j);
+//						/// Debug
+//						System.out.println("PepStr: " + candidatePepGrid.getPeptideSeq(j) + " GridSize:" + candidatePepGrid.size());
+//						///
 						int nominalPeptideMass = candidatePepGrid.getNominalPeptideMass(j);
 						float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(theoPeptideMass);
 						float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(theoPeptideMass);
@@ -458,7 +461,6 @@ public class DBScanner {
 //								Tolerance specSpecificTol;
 //								if((specSpecificTol = specScanner.getSpectrumSpecificPrecursorTolerance(specKey)) != null)
 //								{
-//									// TODO: do something
 //								}
 								
 								SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(specKey);
@@ -801,6 +803,7 @@ public class DBScanner {
 						pmError = error;
 					}
 				}
+//				if(pmError > )
 				if(specScanner.getRightParentMassTolerance().isTolerancePPM())
 					pmError = pmError/theoMass*1e6f;
 				

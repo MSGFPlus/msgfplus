@@ -8,7 +8,7 @@ public class Ion {
 	}
 
 	public float getMz() {
-		return (mass + charge * (float)Composition.H) / charge;
+		return (mass + charge * (float)Composition.PROTON) / charge;
 	}
 	
 	public float getMass() {

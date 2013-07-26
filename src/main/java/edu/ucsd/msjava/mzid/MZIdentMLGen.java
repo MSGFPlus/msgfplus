@@ -216,7 +216,7 @@ public class MZIdentMLGen {
 				float peptideMass = match.getPeptideMass();
 //				float theoMass = peptideMass + (float)Composition.H2O;
 //				float theoMz = theoMass/charge;
-				float theoMz = (peptideMass + (float)Composition.H2O)/charge + (float)Composition.H;
+				float theoMz = (peptideMass + (float)Composition.H2O)/charge + (float)Composition.PROTON;
 				
 				int score = match.getScore();
 				double specEValue = match.getSpecEValue();
@@ -296,7 +296,8 @@ public class MZIdentMLGen {
 				UserParam isotopeErrorParam = Constants.makeUserParam("IsotopeError");
 				float expMass = precursorMz*charge;
 				float theoMass = theoMz*charge;
-				int isotopeError = NominalMass.toNominalMass(expMass) - NominalMass.toNominalMass(theoMass);
+//				int isotopeError = NominalMass.toNominalMass(expMass) - NominalMass.toNominalMass(theoMass);
+				int isotopeError = Math.round((expMass-theoMass)/(float)Composition.ISOTOPE);
 				isotopeErrorParam.setValue(String.valueOf(isotopeError));
 				userList.add(isotopeErrorParam);
 

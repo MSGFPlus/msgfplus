@@ -439,8 +439,8 @@ public class Zubarev {
 			
 			intSRM += Math.round(peptide.get(0).getMass()*Constants.INTEGER_MASS_SCALER);
 			assert(intSRM == intPeptideMass): peptide+": " + intSRM + " != " + intPeptideMass + " " + (spec.getParentMass()-(float)Composition.H2O);
-			b[peptide.size()] = spec.getParentMass()-(float)Composition.H2O+(float)Composition.H;
-			y[peptide.size()] = spec.getParentMass()+(float)Composition.H;
+			b[peptide.size()] = spec.getParentMass()-(float)Composition.H2O+(float)Composition.PROTON;
+			y[peptide.size()] = spec.getParentMass()+(float)Composition.PROTON;
 			
 			boolean useY = true;
 			float[] mainIon;
