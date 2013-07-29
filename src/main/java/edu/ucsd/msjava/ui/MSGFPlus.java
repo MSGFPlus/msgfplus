@@ -40,8 +40,8 @@ import edu.ucsd.msjava.sequences.Constants;
 
 
 public class MSGFPlus {
-	public static final String VERSION = "Beta (v9671)";
-	public static final String RELEASE_DATE = "06/06/2013";
+	public static final String VERSION = "Beta (v9699)";
+	public static final String RELEASE_DATE = "07/26/2013";
 	
 	public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
 	public static final String DECOY_PROTEIN_PREFIX = "XXX";
@@ -258,10 +258,15 @@ public class MSGFPlus {
 		
 		// determine the number of spectra to be scanned together 
 		long maxMemory = Runtime.getRuntime().maxMemory() - sa.getSize() - 1<<28;
-		
 		int avgPeptideMass = 2000;
 		int numBytesPerMass = 12;
-		int numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
+		
+		int numSpecScannedTogether;
+		if(maxMemory > Integer.MAX_VALUE)
+			numSpecScannedTogether = Integer.MAX_VALUE;
+		else
+			numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
+		
 		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specAcc.getSpecItr(), 
 				startSpecIndex, endSpecIndex, minCharge, maxCharge, activationMethod, minNumPeaksPerSpectrum);
 		int specSize = specKeyList.size();
@@ -272,8 +277,9 @@ public class MSGFPlus {
 		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
 		
 		numThreads = Math.min(numThreads, Math.round(Math.min(specSize, numSpecScannedTogether)/1000f));
-		if(numThreads == 0)
+		if(numThreads <= 0)
 			numThreads = 1;
+			
 		System.out.println("Using " + numThreads + (numThreads == 1 ? " thread." : " threads."));
 		
 		// Print out parameters
