@@ -12,8 +12,8 @@ public class IMSResultProcessor {
 	@Test
 	public void filterIMSResults() throws Exception
 	{
-		File result = new File("/Users/sangtaekim/Downloads/SarcCtrl_P21_1mgml_IMS6_AgTOF07_210min_CID_01_05Oct12_Frodo_Precursors_Removed_Collision_Energy_Collapsed_0801.tsv");
-		File output = new File("/Users/sangtaekim/Downloads/SarcCtrl_P21_1mgml_IMS6_AgTOF07_210min_CID_01_05Oct12_Frodo_Precursors_Removed_Collision_Energy_Collapsed_0801_filtered.tsv");
+		File result = new File("C:\\cygwin\\home\\kims336\\Data\\IMS_Sarc\\SarcCtrl_P21_1mgml_IMS6_AgTOF07_210min_CID_01_05Oct12_Frodo_Precursors_Removed_Collision_Energy_Collapsed_0801.tsv");
+		File output = new File("C:\\cygwin\\home\\kims336\\Data\\IMS_Sarc\\SarcCtrl_P21_1mgml_IMS6_AgTOF07_210min_CID_01_05Oct12_Frodo_Precursors_Removed_Collision_Energy_Collapsed_0801_filtered.tsv");
 
 		PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(output)));
 		
