@@ -5,8 +5,10 @@ import java.io.FileNotFoundException;
 
 import org.junit.Test;
 
+import edu.ucsd.msjava.misc.ConvertToMgf;
 import edu.ucsd.msjava.misc.MS2ToMgf;
 import edu.ucsd.msjava.misc.ParamToTxt;
+import edu.ucsd.msjava.msutil.ActivationMethod;
 import edu.ucsd.msjava.msutil.SpectraIterator;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.parser.MgfSpectrumParser;
@@ -14,6 +16,19 @@ import edu.ucsd.msjava.parser.PNNLSpectraIterator;
 import edu.ucsd.msjava.parser.PNNLSpectrumParser;
 
 public class TestParsers {
+	@Test
+	public void testReadingTripleTOFFile()
+	{
+		File mzMLFile = new File("/Users/kims336/Research/Data/ImmunoPeptidomics/MHC_class1_TripleTOF_5600/mzML/carone_L130326_003_pMHC_1-5ug.mzML");
+		File mgfFile = new File("/Users/kims336/Research/Data/ImmunoPeptidomics/MHC_class1_TripleTOF_5600/mzML/carone_L130326_003_pMHC_1-5ug.mgf");
+		try {
+			ConvertToMgf.convert(mzMLFile, mgfFile, false, null, null, -1, -1, -1, false); 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
 	@Test
 	public void testParamToTxt()
 	{
