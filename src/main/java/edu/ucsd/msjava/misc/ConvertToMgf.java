@@ -119,7 +119,8 @@ public class ConvertToMgf {
 				"\t[-index SpecIndex] (only write the spectrum of the specified index will be converted)\n" +
 				"\t[-scan ScanNum] (only write the spectrum of the specified scan number will be converted)\n" +
 				"\t[-id id] (only write the spectrum of the specified id will be converted)\n" +
-				"\t[-charge charge] (only write the spectrum with the specified charge)\n"
+				"\t[-charge charge] (only write the spectrum with the specified charge)\n" +
+				"\t[-eraseCharge 0/1] (0: Don't erase charge, 1: Erase precursor charge)\n"
 		);
 		System.exit(-1);
 	}
