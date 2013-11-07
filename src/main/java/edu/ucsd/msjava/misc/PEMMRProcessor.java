@@ -15,8 +15,8 @@ public class PEMMRProcessor {
 	
 	public static void process() throws Exception
 	{
-		String resultFileName = "/Users/kims336/Research/Data/PEMMR/iTRAQ_N33T34_10ug_100cm_300min_C2_061213_MX_PEMMR.tsv";
-		String outputFileName = "/Users/kims336/Research/Data/PEMMR/iTRAQ_N33T34_10ug_100cm_300min_C2_061213_MX_PEMMR_UMCID.tsv";
+		String resultFileName = "/Users/kims336/Research/Data/PEMMR/NewSpectra/iTRAQ_N33T34_10ug_100cm_300min_C2_061213_MX_PEMMR.tsv";
+		String outputFileName = "/Users/kims336/Research/Data/PEMMR/NewSpectra/iTRAQ_N33T34_10ug_100cm_300min_C2_061213_MX_PEMMR_UMCID.tsv";
 		
 		PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFileName)));
 		

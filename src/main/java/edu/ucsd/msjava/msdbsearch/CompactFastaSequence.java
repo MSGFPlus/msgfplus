@@ -22,6 +22,7 @@ import edu.ucsd.msjava.ui.MSGFPlus;
  */
 public class CompactFastaSequence implements Sequence {
 
+	public static final int COMPACT_FASTA_SEQUENCE_FILE_FORMAT_ID = 9873;
 	public static final String SEQ_FILE_EXTENSION = ".cseq";
 	public static final String ANNOTATION_FILE_EXTENSION = ".canno";
 	
@@ -90,31 +91,33 @@ public class CompactFastaSequence implements Sequence {
 			createObjectFromRawFile(filepath, alphabet);
 		}
 
-		Pair<Integer,Long> metaIdPair = null;
-		Pair<Integer,Long> seqIdPair = null;
+		FileSignature metaIdSignature = null;
+		FileSignature seqIdSignature = null;
 		try {
-			metaIdPair = readMetaInfo();
-			seqIdPair = readSequence();
+			metaIdSignature = readMetaInfo();
+			seqIdSignature = readSequence();
 		} catch (NumberFormatException e)
 		{
 			createObjectFromRawFile(filepath, alphabet);
-			metaIdPair = readMetaInfo();
-			seqIdPair = readSequence();
+			metaIdSignature = readMetaInfo();
+			seqIdSignature = readSequence();
 		}
 		
-		if(metaIdPair == null || metaIdPair == null 
-				|| !metaIdPair.getFirst().equals(seqIdPair.getFirst())
-				|| metaIdPair.getSecond() != lastModified
-				|| seqIdPair.getSecond() != lastModified
+		if(metaIdSignature == null || seqIdSignature == null 
+				|| metaIdSignature.getFormatId() != COMPACT_FASTA_SEQUENCE_FILE_FORMAT_ID
+				|| seqIdSignature.getFormatId() != COMPACT_FASTA_SEQUENCE_FILE_FORMAT_ID
+				|| metaIdSignature.getId() != seqIdSignature.getId()
+				|| metaIdSignature.getLastModified() != lastModified
+				|| seqIdSignature.getLastModified() != lastModified
 				)
 		{
 			createObjectFromRawFile(filepath, alphabet);
-			metaIdPair = readMetaInfo();
-			seqIdPair = readSequence();
+			metaIdSignature = readMetaInfo();
+			seqIdSignature = readSequence();
 		}
 
 		initializeAlphabet(this.alphabetString);
-		this.id = metaIdPair.getFirst();
+		this.id = metaIdSignature.getId();
 	}
 	
 	public long getLastModified()
@@ -289,6 +292,7 @@ public class CompactFastaSequence implements Sequence {
 	private void createObjectFromRawFile(String filepath, String alphabet) {
 		initializeAlphabet(alphabet);
 		int size = 0;
+		int formatId = COMPACT_FASTA_SEQUENCE_FILE_FORMAT_ID;
 		int id = UUID.randomUUID().hashCode();
 //		System.out.println("ID: " + id);
 
@@ -304,10 +308,12 @@ public class CompactFastaSequence implements Sequence {
 
 			DataOutputStream seqOut = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(seqFilepath)));
 			seqOut.writeInt(size);
+			seqOut.writeInt(formatId);	// added
 			seqOut.writeInt(id);
 			seqOut.writeLong(lastModified);
 			
 			PrintStream metaOut = new PrintStream(new BufferedOutputStream(new FileOutputStream(metaFilepath)));
+			metaOut.println(formatId);	// added
 			metaOut.println(id);
 			metaOut.println(lastModified);
 			metaOut.println(alphabet);
@@ -374,10 +380,11 @@ public class CompactFastaSequence implements Sequence {
 	}
 
 	// read the metainformation file
-	private Pair<Integer,Long> readMetaInfo() {
+	private FileSignature readMetaInfo() {
 		String filepath = this.baseFilepath + ANNOTATION_FILE_EXTENSION;
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(filepath));
+			int formatId = Integer.parseInt(in.readLine());
 			int id = Integer.parseInt(in.readLine());
 			long lastModified = Long.parseLong(in.readLine());
 			this.alphabetString = in.readLine().trim();
@@ -392,7 +399,7 @@ public class CompactFastaSequence implements Sequence {
 				this.annotations.put(Integer.parseInt(tokens[0]), tokens[1]);
 			}
 			in.close();
-			return new Pair<Integer,Long>(id, lastModified);
+			return new FileSignature(formatId, id, lastModified);
 		}
 		catch(IOException e) {
 			e.printStackTrace();
@@ -402,13 +409,14 @@ public class CompactFastaSequence implements Sequence {
 	}
 
 	// read the sequence in binary
-	private Pair<Integer,Long> readSequence() {
+	private FileSignature readSequence() {
 		String filepath = this.baseFilepath + SEQ_FILE_EXTENSION;
 		try {
 			// read the first integer which encodes for the size of the file
 			DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(filepath)));
 			int size = in.readInt();
 			this.size = size;
+			int formatId = in.readInt();
 			int id = in.readInt(); 
 			long lastModified = in.readLong();
 
@@ -416,13 +424,36 @@ public class CompactFastaSequence implements Sequence {
 			in.read(sequence);
 
 			in.close();
-			return new Pair<Integer,Long>(id, lastModified);
+			return new FileSignature(formatId, id, lastModified);
 		}
 		catch(IOException e) {
 			e.printStackTrace();
 			System.exit(-1);
 		}
 		return null;
+	}
+	
+	private class FileSignature
+	{
+		public FileSignature(int formatId, int id, long lastModified) {
+			this.formatId = formatId;
+			this.id = id;
+			this.lastModified = lastModified;
+		}
+		
+		public int getFormatId() {
+			return formatId;
+		}
+		public int getId() {
+			return id;
+		}
+		public long getLastModified() {
+			return lastModified;
+		}
+		
+		int formatId;
+		int id;
+		long lastModified;
 	}
 	
 	public int getNumProteins()

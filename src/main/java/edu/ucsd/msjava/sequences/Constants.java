@@ -13,7 +13,7 @@ public class Constants {
 	  /**
 	   * This string contains the all capital letters. 
 	   */
-	  public static final String CAPITAL_LETTERS_26 = "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:Y:Z";
+	  public static final String CAPITAL_LETTERS_26 = "A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:X:Y:Z";
 	  
   /**
    * This string contains the 20 standard amino acids. 
