@@ -59,7 +59,7 @@ public class CompactFastaSequence implements Sequence {
 	 * @param filepath the path to the fasta file.
 	 */
 	public CompactFastaSequence(String filepath) {
-		this(filepath, Constants.AMINO_ACIDS_20);
+		this(filepath, Constants.CAPITAL_LETTERS_26);
 	}
 
 	/**
