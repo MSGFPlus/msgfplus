@@ -15,6 +15,7 @@ import edu.ucsd.msjava.msutil.IonType;
 import edu.ucsd.msjava.msutil.Peak;
 import edu.ucsd.msjava.msutil.SpectraAccessor;
 import edu.ucsd.msjava.msutil.Spectrum;
+import edu.ucsd.msjava.mzid.MzIDTest;
 import edu.ucsd.msjava.mzml.MzMLAdapter;
 import edu.ucsd.msjava.params.ParamManager;
 import edu.ucsd.msjava.parser.BufferedLineReader;
@@ -612,4 +613,40 @@ public class TestMSGFPlus {
 		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(mod.getPath());
 		aaSet.printAASet();
 	}
+	
+	@Test
+	public void testMzIdOutput()
+	{
+//		File mzidFile = new File("C:\\cygwin\\home\\kims336\\Data\\Mayo\\reproducibilitySample.mzid");
+		File mzidFile = new File("C:\\cygwin\\home\\kims336\\Data\\Mayo\\test.mzid");
+		MzIDTest test = new MzIDTest(mzidFile);
+		boolean isValid;
+		try {
+			isValid = test.isValid();
+			System.out.println("IsValid? " + isValid);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void testDuplicatePepEv()
+	{
+		File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Mayo");
+
+		File specFile = new File(dir.getPath()+File.separator+"test.mgf");
+		File dbFile = new File(dir.getPath()+File.separator+"H_sapiens_Uniprot_SPROT_2013-05-01_withContam.fasta");
+		String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
+				"-n", "5"
+				}; 
+
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		paramManager.addMSGFPlusParams();
+		
+		String msg = paramManager.parseParams(argv);
+		assertTrue(msg == null);
+		
+		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
+	}
+	
 }

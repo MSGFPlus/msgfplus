@@ -378,8 +378,10 @@ public class DBScanner {
 						continue;
 					
 //					System.out.println(sequence.getSubsequence(index+1, index+i+1));
-//					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("QVSDGVAHIHASFNNTIVTITDR"))
-//						System.out.println("Debug");
+//					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("QLEEEVK"))
+//					{
+//						System.out.println("DebugSequence: " + sequence.getSubsequence(index, index+i+1));
+//					}
 					
 					int cTermCleavageScore = 0;
 					if(enzyme != null)
@@ -485,9 +487,10 @@ public class DBScanner {
 								}
 								else if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
 								{
-									if(score > prevMatchQueue.peek().getScore())
+									int worstScore = prevMatchQueue.peek().getScore();
+									if(score > worstScore)
 									{
-										while(!prevMatchQueue.isEmpty() && prevMatchQueue.peek().getScore() < score)
+										while(!prevMatchQueue.isEmpty() && prevMatchQueue.peek().getScore() == worstScore)
 											prevMatchQueue.poll();
 										DatabaseMatch dbMatch = new DatabaseMatch(index, (byte)(pepLength+2), score, theoPeptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j), scorer.getActivationMethodArr()).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm);
 										dbMatch.setNTermMetCleaved(isNTermMetCleaved);
