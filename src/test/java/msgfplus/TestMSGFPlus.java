@@ -618,7 +618,7 @@ public class TestMSGFPlus {
 	public void testMzIdOutput()
 	{
 //		File mzidFile = new File("C:\\cygwin\\home\\kims336\\Data\\Mayo\\reproducibilitySample.mzid");
-		File mzidFile = new File("C:\\cygwin\\home\\kims336\\Data\\Mayo\\test.mzid");
+		File mzidFile = new File("C:\\cygwin\\home\\kims336\\Data\\Mayo\\AllAll.mzid");
 		MzIDTest test = new MzIDTest(mzidFile);
 		boolean isValid;
 		try {
@@ -634,10 +634,11 @@ public class TestMSGFPlus {
 	{
 		File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Mayo");
 
-		File specFile = new File(dir.getPath()+File.separator+"test.mgf");
+//		File specFile = new File(dir.getPath()+File.separator+"test.mgf");
+		File specFile = new File(dir.getPath()+File.separator+"reproducibilitySample.mgf");
 		File dbFile = new File(dir.getPath()+File.separator+"H_sapiens_Uniprot_SPROT_2013-05-01_withContam.fasta");
 		String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
-				"-n", "5"
+				"-n", "5", "-o", dir.getPath()+File.separator+"AllAll.mzid"
 				}; 
 
 		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");

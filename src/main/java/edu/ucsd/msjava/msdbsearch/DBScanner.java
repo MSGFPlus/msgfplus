@@ -378,7 +378,7 @@ public class DBScanner {
 						continue;
 					
 //					System.out.println(sequence.getSubsequence(index+1, index+i+1));
-//					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("QLEEEVK"))
+//					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("KYPCRYCEK"))
 //					{
 //						System.out.println("DebugSequence: " + sequence.getSubsequence(index, index+i+1));
 //					}
@@ -490,11 +490,21 @@ public class DBScanner {
 									int worstScore = prevMatchQueue.peek().getScore();
 									if(score > worstScore)
 									{
+										List<DatabaseMatch> removed = new ArrayList<DatabaseMatch>();
 										while(!prevMatchQueue.isEmpty() && prevMatchQueue.peek().getScore() == worstScore)
-											prevMatchQueue.poll();
+										{
+											removed.add(prevMatchQueue.poll());
+										}
 										DatabaseMatch dbMatch = new DatabaseMatch(index, (byte)(pepLength+2), score, theoPeptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j), scorer.getActivationMethodArr()).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm);
 										dbMatch.setNTermMetCleaved(isNTermMetCleaved);
 										prevMatchQueue.add(dbMatch);
+										
+										if(prevMatchQueue.size() < this.numPeptidesPerSpec)
+										{
+											for(DatabaseMatch m : removed)
+												prevMatchQueue.add(m);
+										}
+										
 										if(prevMatchList[i] == null)
 											prevMatchList[i] = new MatchList();
 										prevMatchList[i].add(dbMatch);
@@ -646,7 +656,10 @@ public class DBScanner {
 					if(existingMatch == null)
 						pepSeqMap.put(key, m);
 					else
-						existingMatch.addIndex(m.getIndex());
+					{
+						for(int index : m.getIndices())
+							existingMatch.addIndex(index);
+					}
 				}
 				matchQueue = new PriorityQueue<DatabaseMatch>(pepSeqMap.values());
 				pepSeqMap = null;
