@@ -511,7 +511,7 @@ public class CompactFastaSequence implements Sequence {
 					if(isIdentical)
 					{
 						isRedundant[i] = isRedundant[j] = true;
-						System.out.println(annotations.get(toIndex1).split("\\s+")[0] + " = " + annotations.get(toIndex2).split("\\s+")[0]);
+//						System.out.println(annotations.get(toIndex1).split("\\s+")[0] + " = " + annotations.get(toIndex2).split("\\s+")[0]);
 						break;
 					}
 				}
