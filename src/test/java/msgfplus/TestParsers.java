@@ -2,6 +2,7 @@ package msgfplus;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Iterator;
 
 import org.junit.Test;
 
@@ -9,6 +10,7 @@ import edu.ucsd.msjava.misc.ConvertToMgf;
 import edu.ucsd.msjava.misc.MS2ToMgf;
 import edu.ucsd.msjava.misc.ParamToTxt;
 import edu.ucsd.msjava.msutil.ActivationMethod;
+import edu.ucsd.msjava.msutil.SpectraAccessor;
 import edu.ucsd.msjava.msutil.SpectraIterator;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.parser.MgfSpectrumParser;
@@ -16,6 +18,21 @@ import edu.ucsd.msjava.parser.PNNLSpectraIterator;
 import edu.ucsd.msjava.parser.PNNLSpectrumParser;
 
 public class TestParsers {
+	@Test
+	public void testReadingIPRG2014Mgf()
+	{
+		File mgfFile = new File("D:\\Research\\Data\\IPRG2014\\MGF\\C~~data~iPRG 2014~130716_iPRG14_004.raw.-1.mgf");
+		SpectraAccessor specAcc = new SpectraAccessor(mgfFile);
+		Iterator<Spectrum> itr = specAcc.getSpecItr();
+		int numSpecs = 0;
+		while(itr.hasNext())
+		{
+			Spectrum spec = itr.next();
+			numSpecs++;
+		}
+		System.out.println("NumSpcs: " + numSpecs);
+	}
+	
 	@Test
 	public void testReadingTripleTOFFile()
 	{
