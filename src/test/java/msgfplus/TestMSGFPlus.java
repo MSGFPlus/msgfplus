@@ -32,6 +32,7 @@ public class TestMSGFPlus {
 		File specFile = new File(dir.getPath()+File.separator+"QC_Shew_12_02_2_1Aug12_Cougar_12-06-11_dta.txt");
 		File dbFile = new File(dir.getPath()+File.separator+"ID_003456_9B916A8B.fasta");
 		File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
+		
 //		File outputFile = new File(dir.getPath()+File.separator+"Test"+"2013-07-26"+".txt");
 		String versionString = MSGFPlus.VERSION.split("\\s+")[1];
 		versionString = versionString.substring(versionString.indexOf('(')+1, versionString.lastIndexOf(')'));
