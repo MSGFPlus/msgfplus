@@ -95,11 +95,15 @@ public class MgfSpectrumParser implements SpectrumParser {
   				String[] chargeStrToken = chargeStr.split("\\s+");
   				if(chargeStrToken.length == 1)
   				{
-  	  				if(chargeStr.startsWith("+"))
-  	  					chargeStr = chargeStr.substring(1);
-  	  				if(chargeStr.charAt(chargeStr.length()-1) == '+')
-  	  					chargeStr = chargeStr.substring(0, chargeStr.length()-1);
-  	  				precursorCharge = Integer.valueOf(chargeStr);
+  					String[] multipleChargeToken = chargeStr.split(",");
+  					if(multipleChargeToken.length == 1)
+  					{
+  	  	  				if(chargeStr.startsWith("+"))
+  	  	  					chargeStr = chargeStr.substring(1);
+  	  	  				if(chargeStr.charAt(chargeStr.length()-1) == '+')
+  	  	  					chargeStr = chargeStr.substring(0, chargeStr.length()-1);
+  	  	  				precursorCharge = Integer.valueOf(chargeStr);
+  					}
   				}
   			}
   			else if(buf.startsWith("SEQ"))
