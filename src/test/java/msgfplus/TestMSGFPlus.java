@@ -650,5 +650,26 @@ public class TestMSGFPlus {
 		
 		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
 	}
-	
+
+	@Test
+	public void testNTermMods()
+	{
+//		-s Nterm_GBSA_50_Try_24h_11Oct13_Leopard_13-05-21_dta.txt -d DB/ID_003532_E796316B.fasta -mod Mods.txt -ntt 1		
+		File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug");
+		File specFile = new File(dir.getPath()+File.separator+"test.mgf");
+		File dbFile = new File(dir.getPath()+File.separator+"test.fasta");
+		File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
+		String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
+				"-mod", modFile.getPath(), "-ntt", "1"
+				}; 
+
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		paramManager.addMSGFPlusParams();
+		
+		String msg = paramManager.parseParams(argv);
+		assertTrue(msg == null);
+		
+		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
+
+	}
 }

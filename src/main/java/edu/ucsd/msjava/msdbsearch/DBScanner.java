@@ -468,7 +468,7 @@ public class DBScanner {
 								SimpleDBSearchScorer<NominalMass> scorer = specScanner.getSpecKeyScorerMap().get(specKey);
 //								if(sequence.getSubsequence(index, index+i+1).equalsIgnoreCase("SRDTAIKT"))
 //									System.out.println("Debug");
-								int score = cleavageScore + scorer.getScore(candidatePepGrid.getPRMGrid(j), candidatePepGrid.getNominalPRMGrid(j), 1, pepLength+1, candidatePepGrid.getNumMods(j)); 
+								int score = cleavageScore + scorer.getScore(candidatePepGrid.getPRMGrid(j), candidatePepGrid.getNominalPRMGrid(j), 1, pepLength+1, candidatePepGrid.getNumMods(j));
 								PriorityQueue<DatabaseMatch> prevMatchQueue = curSpecKeyDBMatchMap.get(specKey);
 								if(prevMatchQueue == null)
 								{
