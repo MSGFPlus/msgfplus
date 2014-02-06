@@ -230,6 +230,7 @@ public class NewRankScorer implements NewAdditiveScorer {
 			for(byte i=0; i<lenActMethod; i++)
 				bufMet.append(in.readChar());
 			ActivationMethod activationMethod = ActivationMethod.get(bufMet.toString());
+			assert(activationMethod != null);
 			
 			// Read instrument type
 			StringBuffer bufInst = new StringBuffer();
@@ -237,6 +238,7 @@ public class NewRankScorer implements NewAdditiveScorer {
 			for(byte i=0; i<lenInst; i++)
 				bufInst.append(in.readChar());
 			InstrumentType instType = InstrumentType.get(bufInst.toString());
+			assert(instType != null);
 
 			// Read enzyme
 			Enzyme enzyme;
@@ -247,6 +249,7 @@ public class NewRankScorer implements NewAdditiveScorer {
 				for(byte i=0; i<lenEnz; i++)
 					bufEnz.append(in.readChar());
 				enzyme = Enzyme.getEnzymeByName(bufEnz.toString());
+				assert(instType != null);
 			}
 			else
 				enzyme = null;
@@ -268,6 +271,8 @@ public class NewRankScorer implements NewAdditiveScorer {
 			}
 			else
 				protocol = Protocol.NOPROTOCOL;
+
+			assert(protocol != null);
 			
 			this.dataType = new SpecDataType(activationMethod, instType, enzyme, protocol);
 			
@@ -275,6 +280,7 @@ public class NewRankScorer implements NewAdditiveScorer {
 			boolean isTolerancePPM = in.readBoolean();
 			float mmeVal = in.readFloat();
 			mme = new Tolerance(mmeVal, isTolerancePPM);
+			assert(mmeVal > 0);			
 			
 			// Apply deconvolution
 			boolean applyDeconvolution = in.readBoolean();
@@ -403,6 +409,7 @@ public class NewRankScorer implements NewAdditiveScorer {
 						frequencies[i] = in.readFloat();
 						if(verbose)
 							System.out.print("\t"+frequencies[i]);
+						assert(frequencies[i] > 0);			
 					}
 					table.put(ion, frequencies);
 					if(verbose)
@@ -429,15 +436,30 @@ public class NewRankScorer implements NewAdditiveScorer {
 						System.out.println(partition.getCharge()+"\t"+partition.getSegNum()+"\t"+partition.getParentMass());
 					Float[] ionErrDist = new Float[errorScalingFactor*2+1];
 					for(int i=0; i<ionErrDist.length; i++)
+					{
 						ionErrDist[i] = in.readFloat();
+						assert(ionErrDist[i] > 0);			
+					}
 					ionErrDistTable.put(partition, ionErrDist);
 					Float[] noiseErrDist = new Float[errorScalingFactor*2+1];
 					for(int i=0; i<noiseErrDist.length; i++)
+					{
 						noiseErrDist[i] = in.readFloat();
+						assert(noiseErrDist[i] > 0);			
+					}
 					noiseErrDistTable.put(partition, noiseErrDist);
 					Float[] ionExTable = new Float[4];
 					for(int i=0; i<ionExTable.length; i++)
+					{
 						ionExTable[i] = in.readFloat();
+						if(ionExTable[i] == 0)
+						{
+//							System.out.println("IonExTable: " + partition.getCharge() + " " + partition.getSegNum() 
+//									+ " " + partition.getParentMass() + " " + ionExTable[i]);
+							ionExTable[i] = 0.001f;
+						}
+						assert(ionExTable[i] > 0);			
+					}
 					ionExistenceTable.put(partition, ionExTable);
 				}				
 			}
