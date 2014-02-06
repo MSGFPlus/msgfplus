@@ -252,6 +252,7 @@ public class AminoAcid extends Matter {
 		new AminoAcid('M',  "Methionine", new Composition(5,9,1,1,1)),
 		new AminoAcid('H',  "Histidine", new Composition(6,7,3,1,0)),
 		new AminoAcid('F',  "Phenylalanine", new Composition(9,9,1,1,0)),
+//		new AminoAcid('U',  "Selenocysteine", 150.0379),
 		new AminoAcid('R',  "Arginine", new Composition(6,12,4,1,0)),
 		new AminoAcid('Y',  "Tyrosine", new Composition(9,9,1,2,0)),
 		new AminoAcid('W',  "Tryptophan", new Composition(11,10,2,1,0)),

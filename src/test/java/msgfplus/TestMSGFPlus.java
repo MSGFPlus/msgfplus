@@ -9,7 +9,6 @@ import java.util.Iterator;
 import org.junit.Test;
 
 import edu.ucsd.msjava.msgf.Histogram;
-import edu.ucsd.msjava.msutil.AminoAcid;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.IonType;
 import edu.ucsd.msjava.msutil.Peak;

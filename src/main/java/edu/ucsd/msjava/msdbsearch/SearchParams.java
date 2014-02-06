@@ -269,6 +269,10 @@ public class SearchParams {
 					else
 						protocol = Protocol.ITRAQ;
 				}
+				else if(aaSet.containsTMT())
+				{
+					protocol = Protocol.TMT;
+				}
 				else
 				{
 					if(aaSet.containsPhosphorylation())
