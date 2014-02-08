@@ -503,6 +503,10 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			.filter(filter)
 			.segment(seg, numSegments);
 
+//			if(partition.getCharge() == 2 && partition.getSegNum() == 1 && partition.getParentMass() >= 1008 && partition.getParentMass() < 1009)
+//			{
+//				System.out.println("Debug");
+//			}
 			float[] ionProb = probGen.getIonProb();
 
 			float signalThreshold = MIN_ION_OFFSET_PROBABILITY;
@@ -551,6 +555,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 			IonType[] ionTypes = getIonTypes(partition);
 			if(ionTypes == null || ionTypes.length == 0)
 				continue;
+			
 			Pair<Float,Float> parentMassRange = getParentMassRange(partition);
 			int seg = partition.getSegNum();
 
@@ -613,6 +618,11 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 						else
 							theoMass = ion.getMz(srm);
 
+//						if(ion.getName().equals("z-H-TMT"))
+//						{
+//							System.out.println("Debug");
+//						}
+						
 						int segNum = super.getSegmentNum(theoMass, curParentMass);
 						if(segNum == seg)
 						{

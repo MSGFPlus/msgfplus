@@ -317,7 +317,7 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 		
 		if(minScore < -10000 || maxScore > 10000)
 		{
-			System.err.println("Error! MinScore: " + minScore + ", MaxScore: " + maxScore);
+			System.err.println("Error! MinScore: " + minScore + ", MaxScore: " + maxScore + " ");
 			System.exit(-1);
 		}
 		
@@ -390,7 +390,7 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 				return;
 			curMinScore = min;
 		}
-		
+	
 		// determine minScore and maxScore
 		ArrayList<DeNovoGraph.Edge<T>> edges = new ArrayList<DeNovoGraph.Edge<T>>(); // modified by kyowon
 		for(DeNovoGraph.Edge<T> edge : graph.getEdges(curNode))
@@ -416,7 +416,9 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
 
 		if(curMinScore < -10000 || curMaxScore > 10000)
 		{
-			System.err.println("Error! MinScore: " + curMinScore + ", MaxScore: " + curMaxScore);
+			System.err.println("Error! MinScore: " + curMinScore + ", MaxScore: " + curMaxScore + ", "
+					+ "CurNode: " + curNode.getNominalMass() 
+					+ ", CurNodeScore: " + curNodeScore);
 			System.exit(-1);
 		}
 

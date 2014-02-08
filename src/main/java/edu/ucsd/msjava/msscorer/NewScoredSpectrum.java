@@ -94,6 +94,16 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 		float edgeScore = scorer.getIonExistenceScore(partition, ionExistenceIndex, probPeak);
 		if(ionExistenceIndex == 3)
 			edgeScore += scorer.getErrorScore(partition, curNodeMass-prevNodeMass-theoMass);
+		
+//		// debug
+//		if(edgeScore < -1000 || edgeScore > 1000)
+//		{
+//			System.out.println("Error! EdgeScore = " + edgeScore);
+//			System.out.println("Spectrum ScanNum: " + spec.getScanNum());
+//			System.out.println("Partition: " + partition.getCharge() + " " + partition.getSegNum() + " " + partition.getParentMass());
+//			System.out.println("IonExistence: " + scorer.getIonExistenceScore(partition, ionExistenceIndex, probPeak));
+//			System.out.println("Error: " + scorer.getErrorScore(partition, curNodeMass-prevNodeMass-theoMass));
+//		}
 		return Math.round(edgeScore);
 	}
 

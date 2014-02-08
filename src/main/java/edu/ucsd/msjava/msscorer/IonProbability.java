@@ -128,7 +128,7 @@ public class IonProbability {
 		
 		for(int i=0; i<ions.length; i++)
 		{
-			if(numObservedPeaks[i]+numMissingPeaks[i] == 0)
+			if(numObservedPeaks[i]+numMissingPeaks[i] <= 1000)
 				ionProbArr[i] = 0;
 			else
 				ionProbArr[i] = numObservedPeaks[i]/(float)(numObservedPeaks[i]+numMissingPeaks[i]);

@@ -669,6 +669,26 @@ public class TestMSGFPlus {
 		assertTrue(msg == null);
 		
 		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
-
 	}
+	
+	@Test
+	public void testTMTNewParam()
+	{
+		File specPath = new File("D:\\Research\\Data\\Ansong_TMT_Velos\\test.mgf");
+		File dbFile = new File("D:\\Research\\Data\\Ansong_TMT_Velos\\test.fasta");
+		File modFile = new File("/Research/Data/Tabb/TCGA-7D-HCD-QExactive/testMod.txt");
+		File outputFile = new File("D:\\Research\\Data\\Ansong_TMT_Velos\\debug.mzid");
+
+		String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "10ppm", "-ntt", "2", "-ti", "0,0", "-m", "3", "-inst", "1", "-protocol", "4" 
+				,"-mod", modFile.getPath()
+				,"-o", outputFile.getPath()
+				};
+		
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		paramManager.addMSGFPlusParams();
+		paramManager.parseParams(argv);
+		MSGFPlus.runMSGFPlus(paramManager);
+		System.out.println("Done");		
+	}		
+	
 }

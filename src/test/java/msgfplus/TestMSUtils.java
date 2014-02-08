@@ -5,16 +5,16 @@ import java.io.File;
 import org.junit.Test;
 
 import edu.ucsd.msjava.misc.CountPSMs;
+import edu.ucsd.msjava.msutil.IonType;
 
 public class TestMSUtils {
 	@Test
-	public void countPSMs()
+	public void getKnownIonTypes()
 	{
-//		File tsvFile = new File("/Users/kims336/Research/Data/SangLee/NewData/N3_2/PEMMR/N3_5ug_100cm_300min_2_091212.tsv");
-//		try {
-//			CountPSMs.countID(tsvFile.getPath(), 0.01f);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
+		for(IonType ionType : IonType.getAllKnownIonTypes(3, true, false, true, true))
+		{
+			if(ionType.getName().contains("y") && Math.round(ionType.getOffset()) == -227)
+				System.out.println(ionType);
+		}
 	}
 }
