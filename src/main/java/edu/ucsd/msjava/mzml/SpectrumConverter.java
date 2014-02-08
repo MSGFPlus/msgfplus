@@ -7,6 +7,8 @@ import uk.ac.ebi.jmzml.model.mzml.CVParam;
 import uk.ac.ebi.jmzml.model.mzml.ParamGroup;
 import uk.ac.ebi.jmzml.model.mzml.Precursor;
 import uk.ac.ebi.jmzml.model.mzml.PrecursorList;
+import uk.ac.ebi.jmzml.model.mzml.ScanList;
+import uk.ac.ebi.jmzml.model.mzml.UserParam;
 import edu.ucsd.msjava.msutil.ActivationMethod;
 import edu.ucsd.msjava.msutil.Peak;
 
@@ -48,6 +50,22 @@ public class SpectrumConverter {
 		
 		spec.setIsCentroided(isCentroided);
 		
+		float precursorMz = -1;
+		// Scan list to get monoisotopic m/z
+		ScanList scanList = jmzMLSpec.getScanList();
+		if(scanList != null && scanList.getCount().intValue() > 0
+				&& scanList.getScan().size() > 0 && scanList.getScan().get(0).getUserParam().size() > 0)
+		{
+			for(UserParam param : scanList.getScan().get(0).getUserParam())
+			{
+				if(param.getName().equals("[Thermo Trailer Extra]Monoisotopic M/Z:"))
+				{
+					precursorMz = Float.parseFloat(param.getValue());
+					break;
+				}
+			}
+		}
+		
 		int msLevel = msLevelParam != null ? Integer.parseInt(msLevelParam.getValue()) : 0;
 		spec.setMsLevel(msLevel);
 
@@ -72,14 +90,13 @@ public class SpectrumConverter {
 			}
 			
 			// precursor mz, charge
-			float precursorMz = 0;
 			int precursorCharge = 0;
 			float precursorIntensity = 0;
 			
 			ParamGroup paramGroup = precursor.getSelectedIonList().getSelectedIon().get(0);
 			for(CVParam param : paramGroup.getCvParam())
 			{
-				if(param.getAccession().equals("MS:1000744"))	// selected ion m/z
+				if(precursorMz < 0 && param.getAccession().equals("MS:1000744"))	// selected ion m/z
 				{
 					precursorMz = Float.parseFloat(param.getValue());	// assume that unit is m/z (MS:1000040)
 				}
