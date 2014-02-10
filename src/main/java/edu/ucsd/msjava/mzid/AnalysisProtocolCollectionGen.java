@@ -110,6 +110,7 @@ public class AnalysisProtocolCollectionGen {
         userParamList.add(Constants.makeUserParam("NumTolerableTermini", String.valueOf(ntt)));
         userParamList.add(Constants.makeUserParam("NumMatchesPerSpec", String.valueOf(params.getNumMatchesPerSpec())));
         // ModificationFile
+        userParamList.add(Constants.makeUserParam("MaxNumModifications", String.valueOf(aaSet.getMaxNumberOfVariableModificationsPerPeptide())));
         userParamList.add(Constants.makeUserParam("MinPepLength", String.valueOf(params.getMinPeptideLength())));
         userParamList.add(Constants.makeUserParam("MaxPepLength", String.valueOf(params.getMaxPeptideLength())));
         userParamList.add(Constants.makeUserParam("MinCharge", String.valueOf(params.getMinCharge())));
