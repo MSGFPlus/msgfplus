@@ -263,8 +263,8 @@ public class DBScanner {
 						prevMatchList[peptideLength] = null;
 				}
 
-				if(lcp > peptideLengthIndex+1 ||
-						lcp == peptideLengthIndex+1 && enzyme == null) //(enzyme == null || enzyme.isCTerm()))		
+				if(lcp >= peptideLengthIndex+2 ||
+						lcp == peptideLengthIndex+1 && (enzyme == null || enzyme.isCTerm()))		
 				{
 					continue;
 				}

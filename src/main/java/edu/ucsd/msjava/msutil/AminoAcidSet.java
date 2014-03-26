@@ -262,6 +262,10 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		{
 			char residue = sequence.charAt(i);
 			AminoAcid aa = this.getAminoAcid(residue);
+			if(aa == null)
+			{
+				System.out.println(sequence + ": " + residue + " is null!");
+			}
 			assert(aa != null): sequence + ": " + residue + " is null!";
 			if(aa.isModified())
 				isModified = true;
