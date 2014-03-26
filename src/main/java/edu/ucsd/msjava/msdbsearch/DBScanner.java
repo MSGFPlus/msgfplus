@@ -190,7 +190,7 @@ public class DBScanner {
 		else
 			candidatePepGrid = new CandidatePeptideGrid(aaSet, maxPeptideLength, maxNumVariantsPerPeptide);
 		
-		int i = Integer.MAX_VALUE - 1000;
+		int peptideLengthIndex = Integer.MAX_VALUE - 1000;
 		
 		boolean enzymaticSearch;
 		if(numberOfAllowableNonEnzymaticTermini == 2)
@@ -245,22 +245,26 @@ public class DBScanner {
 //					System.out.println("Debug");
 				// skip redundant peptides
 				
-				for(int prevMatchIndex=minPeptideLength; prevMatchIndex<prevMatchList.length; prevMatchIndex++)
+				
+				// lcp: shared prefix length
+				for(int peptideLength=minPeptideLength; peptideLength<prevMatchList.length; peptideLength++)
 				{
-					if(prevMatchIndex<lcp)
+					if(lcp >= peptideLength + 2)	// peptide, N-term, C-term are shared
 					{
-						if(prevMatchList[prevMatchIndex] != null)
+						if(prevMatchList[peptideLength] != null)
 						{
-							for(DatabaseMatch m : prevMatchList[prevMatchIndex])
+							for(DatabaseMatch m : prevMatchList[peptideLength])
+							{
 								m.addIndex(index);
+							}
 						}
 					}
 					else
-						prevMatchList[prevMatchIndex] = null;
+						prevMatchList[peptideLength] = null;
 				}
 
-				if(lcp > i+1 ||
-						lcp == i+1 && (enzyme == null || enzyme.isCTerm()))		
+				if(lcp > peptideLengthIndex+1 ||
+						lcp == peptideLengthIndex+1 && enzyme == null) //(enzyme == null || enzyme.isCTerm()))		
 				{
 					continue;
 				}
@@ -293,7 +297,7 @@ public class DBScanner {
 								numNonEnzTermini = 1;
 								if(numNonEnzTermini > numberOfAllowableNonEnzymaticTermini)
 								{
-									i=0;
+									peptideLengthIndex=0;
 									continue;
 								}
 							}
@@ -302,15 +306,16 @@ public class DBScanner {
 				}	// end lcp=0
 				
 				if(lcp == 0)
-					i = 1;
-				else if(lcp < i+1)
-					i = lcp;
+					peptideLengthIndex = 1;
+				//else if(lcp < peptideLengthIndex + 1)
+				else
+					peptideLengthIndex = lcp;
 					
-				for(; i<maxPeptideLength+1 && index+i<size-1; i++)	// ith character of a peptide
+				for(; peptideLengthIndex<=maxPeptideLength && index+peptideLengthIndex<size-1; peptideLengthIndex++)	// ith character of a peptide
 				{
-					char residue = sequence.getCharAt(index+i);
+					char residue = sequence.getCharAt(index+peptideLengthIndex);
 					boolean isProteinCTerm = false;
-					if(i==1)	// N-term residue
+					if(peptideLengthIndex==1)	// N-term residue
 					{
 						if(enzyme != null && enzyme.isNTerm())
 						{
@@ -347,34 +352,34 @@ public class DBScanner {
 					{
 						if(!containsCTermMod)
 						{
-							if(candidatePepGrid.addResidue(i, residue) == false)
+							if(candidatePepGrid.addResidue(peptideLengthIndex, residue) == false)
 								break;
 						}
 						else
 						{
-							if(i < minPeptideLength)
+							if(peptideLengthIndex < minPeptideLength)
 							{
-								if(candidatePepGrid.addResidue(i, residue) == false)
+								if(candidatePepGrid.addResidue(peptideLengthIndex, residue) == false)
 									break;
 								else
 									continue;
 							}
 							else
 							{
-								if(isExtensionAtTheSameIndex && i > minPeptideLength)
-									candidatePepGrid.addResidue(i-1, sequence.getCharAt(index+i-1));
+								if(isExtensionAtTheSameIndex && peptideLengthIndex > minPeptideLength)
+									candidatePepGrid.addResidue(peptideLengthIndex-1, sequence.getCharAt(index+peptideLengthIndex-1));
 								boolean success;
-								if(isProteinCTerm = (sequence.getCharAt(index+i+1) == Constants.TERMINATOR_CHAR))	// protein C-term
-									success = candidatePepGrid.addProtCTermResidue(i, residue);
+								if(isProteinCTerm = (sequence.getCharAt(index+peptideLengthIndex+1) == Constants.TERMINATOR_CHAR))	// protein C-term
+									success = candidatePepGrid.addProtCTermResidue(peptideLengthIndex, residue);
 								else	// peptide C-term
-									success = candidatePepGrid.addCTermResidue(i, residue);
+									success = candidatePepGrid.addCTermResidue(peptideLengthIndex, residue);
 								if(!success)
 									break;
 							}
 						}
 					}
 					
-					if(i < minPeptideLength)
+					if(peptideLengthIndex < minPeptideLength)
 						continue;
 					
 //					System.out.println(sequence.getSubsequence(index+1, index+i+1));
@@ -386,7 +391,7 @@ public class DBScanner {
 					int cTermCleavageScore = 0;
 					if(enzyme != null)
 					{
-						char cTermNeighboringResidue = sequence.getCharAt(index+i+1);
+						char cTermNeighboringResidue = sequence.getCharAt(index+peptideLengthIndex+1);
 						isProteinCTerm = (cTermNeighboringResidue == Constants.TERMINATOR_CHAR);						
 						if(enzyme.isCTerm())
 						{
@@ -451,9 +456,9 @@ public class DBScanner {
 //							int pepLength = i;
 							int pepLength;
 							if(!isNTermMetCleaved)
-								pepLength = i;
+								pepLength = peptideLengthIndex;
 							else
-								pepLength = i-1;
+								pepLength = peptideLengthIndex-1;
 							
 							if(pepLength < minPeptideLength)
 								continue;
@@ -481,9 +486,9 @@ public class DBScanner {
 									DatabaseMatch dbMatch = new DatabaseMatch(index, (byte)(pepLength+2), score, theoPeptideMass, nominalPeptideMass, specKey.getCharge(), candidatePepGrid.getPeptideSeq(j), scorer.getActivationMethodArr()).setProteinNTerm(isProteinNTerm).setProteinCTerm(isProteinCTerm);
 									dbMatch.setNTermMetCleaved(isNTermMetCleaved);
 									prevMatchQueue.add(dbMatch);
-									if(prevMatchList[i] == null)
-										prevMatchList[i] = new MatchList();
-									prevMatchList[i].add(dbMatch);
+									if(prevMatchList[peptideLengthIndex] == null)
+										prevMatchList[peptideLengthIndex] = new MatchList();
+									prevMatchList[peptideLengthIndex].add(dbMatch);
 								}
 								else if(prevMatchQueue.size() >= this.numPeptidesPerSpec)
 								{
@@ -505,9 +510,9 @@ public class DBScanner {
 												prevMatchQueue.add(m);
 										}
 										
-										if(prevMatchList[i] == null)
-											prevMatchList[i] = new MatchList();
-										prevMatchList[i].add(dbMatch);
+										if(prevMatchList[peptideLengthIndex] == null)
+											prevMatchList[peptideLengthIndex] = new MatchList();
+										prevMatchList[peptideLengthIndex].add(dbMatch);
 									}
 								}
 							}

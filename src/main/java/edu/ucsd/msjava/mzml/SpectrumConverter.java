@@ -96,7 +96,7 @@ public class SpectrumConverter {
 			ParamGroup paramGroup = precursor.getSelectedIonList().getSelectedIon().get(0);
 			for(CVParam param : paramGroup.getCvParam())
 			{
-				if(precursorMz < 0 && param.getAccession().equals("MS:1000744"))	// selected ion m/z
+				if(precursorMz < 0.01 && param.getAccession().equals("MS:1000744"))	// selected ion m/z
 				{
 					precursorMz = Float.parseFloat(param.getValue());	// assume that unit is m/z (MS:1000040)
 				}

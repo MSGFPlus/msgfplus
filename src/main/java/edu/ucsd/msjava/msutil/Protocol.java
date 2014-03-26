@@ -31,11 +31,12 @@ public class Protocol implements ParamObject {
 		return table.get(name);
 	}
 	
-	public static final Protocol NOPROTOCOL;
+	public static final Protocol AUTOMATIC;
 	public static final Protocol PHOSPHORYLATION;
 	public static final Protocol ITRAQ;
 	public static final Protocol ITRAQPHOSPHO;
 	public static final Protocol TMT;
+	public static final Protocol STANDARD;
 	
 	public static Protocol[] getAllRegisteredProtocols()
 	{
@@ -51,20 +52,22 @@ public class Protocol implements ParamObject {
 	}
 	
 	static {
-		NOPROTOCOL = new Protocol("NoProtocol", "No protocol");
+		AUTOMATIC = new Protocol("Automatic", "Automatic");
 		PHOSPHORYLATION = new Protocol("Phosphorylation", "Phospho-enriched");
 		ITRAQ = new Protocol("iTRAQ", "iTRAQ");
 		ITRAQPHOSPHO = new Protocol("iTRAQPhospho", "iTRAQPhospho");
 		TMT = new Protocol("TMT", "TMT");
+		STANDARD = new Protocol("Standard", "Standard");
 		
 		table = new HashMap<String, Protocol>();
 		protocolList = new ArrayList<Protocol>();
 		
-		protocolList.add(NOPROTOCOL);
+		protocolList.add(AUTOMATIC);
 		add(PHOSPHORYLATION);
 		add(ITRAQ);
 		add(ITRAQPHOSPHO);
 		add(TMT);
+		add(STANDARD);
 		
 		// Parse activation methods defined by a user
 		File protocolFile = new File("params/protocols.txt");

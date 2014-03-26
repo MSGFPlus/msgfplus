@@ -165,7 +165,7 @@ public class MSGFPlusPaper {
 	public static void aLPModel() throws Exception
 	{
 		File specFile = new File("/home/sangtaekim/Research/Data/IonStat/SpectraForTraining/ETD_LowRes_aLP.mgf");
-		SpecDataType dataType = new SpecDataType(ActivationMethod.ETD, InstrumentType.LOW_RESOLUTION_LTQ, Enzyme.ALP, Protocol.NOPROTOCOL);
+		SpecDataType dataType = new SpecDataType(ActivationMethod.ETD, InstrumentType.LOW_RESOLUTION_LTQ, Enzyme.ALP, Protocol.AUTOMATIC);
 		
 //		File specFile = new File("/home/sangtaekim/Research/Data/IonStat/SpectraForTraining/ETD_LowRes_Tryp.mgf");
 //		SpecDataType dataType = new SpecDataType(ActivationMethod.ETD, InstrumentType.LOW_RESOLUTION_LTQ, Enzyme.TRYPSIN, Protocol.NOPROTOCOL);

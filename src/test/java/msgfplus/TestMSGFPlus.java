@@ -54,13 +54,13 @@ public class TestMSGFPlus {
 	@Test
 	public void testSingleSpec()
 	{
-		File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug");
+		File dir = new File("C:\\cygwin\\home\\kims336\\Data\\MSGFPlusTest");
 
 		File specFile = new File(dir.getPath()+File.separator+"test.mgf");
 		File dbFile = new File(dir.getPath()+File.separator+"test.fasta");
 		File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
 		String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
-				"-mod", modFile.getPath(), "-t", "25ppm", "-ti", "0,1"//, "-tda", "1", "-m", "1"
+				"-mod", modFile.getPath()//, "-t", "25ppm", "-ti", "0,1"//, "-tda", "1", "-m", "1"
 //				, "-maxLength", "250"
 				}; 
 
@@ -73,6 +73,53 @@ public class TestMSGFPlus {
 		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
 	}
 
+	@Test
+	public void testCTermNTT()
+	{
+		File dir = new File("C:\\cygwin\\home\\kims336\\Data\\MSGFPlusTest\\");
+
+		File specFile = new File(dir.getPath()+File.separator+"testNTT.mgf");
+		File dbFile = new File(dir.getPath()+File.separator+"testNTT.fasta");
+		String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath() 
+//				"-mod", modFile.getPath(), "-t", "20ppm"//, "-ti", "0,1"//, "-tda", "1", "-m", "1"
+//				, "-maxLength", "250"
+				}; 
+
+//		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
+//		aaSet.printAASet();
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		paramManager.addMSGFPlusParams();
+		
+		String msg = paramManager.parseParams(argv);
+		assertTrue(msg == null);
+		
+		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
+	}
+	
+	@Test
+	public void testTerminomics()
+	{
+		File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug\\");
+
+		File specFile = new File(dir.getPath()+File.separator+"testCTermFixedMod.mgf");
+		File dbFile = new File(dir.getPath()+File.separator+"testCTermFixedMod.fasta");
+		File modFile = new File(dir.getPath()+File.separator+"testCTermFixedMod_Mods.txt");
+		String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
+				"-mod", modFile.getPath(), "-t", "20ppm"//, "-ti", "0,1"//, "-tda", "1", "-m", "1"
+//				, "-maxLength", "250"
+				}; 
+
+//		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
+//		aaSet.printAASet();
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		paramManager.addMSGFPlusParams();
+		
+		String msg = paramManager.parseParams(argv);
+		assertTrue(msg == null);
+		
+		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
+	}
+	
 	@Test
 	public void testMzIdGen()
 	{

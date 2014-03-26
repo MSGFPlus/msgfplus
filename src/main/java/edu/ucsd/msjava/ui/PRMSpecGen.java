@@ -298,7 +298,7 @@ public class PRMSpecGen {
 			}
 			
 			if(activationMethod == null || activationMethod == ActivationMethod.FUSION)
-				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, Protocol.NOPROTOCOL);
+				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, Protocol.AUTOMATIC);
 			
 			scorer.doNotUseError();
 			NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);

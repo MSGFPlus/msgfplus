@@ -16,7 +16,7 @@ public class NewScorerFactory {
 	
 	public static class SpecDataType {
 		public SpecDataType(ActivationMethod method, InstrumentType instType, Enzyme enzyme) {
-			this(method, instType, enzyme, Protocol.NOPROTOCOL);
+			this(method, instType, enzyme, Protocol.STANDARD);
 		}
 
 		public SpecDataType(ActivationMethod method, InstrumentType instType, Enzyme enzyme, Protocol protocol) {
@@ -48,7 +48,7 @@ public class NewScorerFactory {
 		
 		@Override
 		public String toString() {
-			if(protocol == Protocol.NOPROTOCOL)
+			if(protocol == Protocol.STANDARD)
 				return method.getName()+"_"+instType.getName()+"_"+(enzyme == null ? "null" : enzyme.getName());
 			else
 				return method.getName()+"_"+instType.getName()+"_"+(enzyme == null ? "null" : enzyme.getName())+"_"+protocol.getName();
@@ -76,9 +76,9 @@ public class NewScorerFactory {
 	public static NewRankScorer get(ActivationMethod method, Enzyme enzyme)
 	{
 		if(method != ActivationMethod.HCD)
-			return get(method, InstrumentType.LOW_RESOLUTION_LTQ, enzyme, Protocol.NOPROTOCOL);
+			return get(method, InstrumentType.LOW_RESOLUTION_LTQ, enzyme, Protocol.STANDARD);
 		else
-			return get(method, InstrumentType.HIGH_RESOLUTION_LTQ, enzyme, Protocol.NOPROTOCOL);
+			return get(method, InstrumentType.HIGH_RESOLUTION_LTQ, enzyme, Protocol.STANDARD);
 	}
 	
 	public static NewRankScorer get(ActivationMethod method, InstrumentType instType, Enzyme enzyme, Protocol protocol)

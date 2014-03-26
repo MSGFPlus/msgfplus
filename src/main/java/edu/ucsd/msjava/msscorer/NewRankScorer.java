@@ -270,7 +270,7 @@ public class NewRankScorer implements NewAdditiveScorer {
 //				}
 			}
 			else
-				protocol = Protocol.NOPROTOCOL;
+				protocol = Protocol.AUTOMATIC;
 
 			assert(protocol != null);
 			
@@ -710,7 +710,7 @@ public class NewRankScorer implements NewAdditiveScorer {
 	
 			// Write protocol
 			Protocol protocol = dataType.getProtocol();
-			if(protocol != null && protocol != Protocol.NOPROTOCOL)
+			if(protocol != null && protocol != Protocol.AUTOMATIC)
 			{
 				out.writeByte(protocol.getName().length());
 				out.writeChars(protocol.getName());

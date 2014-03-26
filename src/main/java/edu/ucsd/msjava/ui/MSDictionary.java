@@ -108,7 +108,7 @@ public class MSDictionary {
 		String scoringParamFile = params.getParameter("ScoringParams");
 		NewAdditiveScorer scorer;
 		if(scoringParamFile == null)
-			scorer = NewScorerFactory.get(ActivationMethod.CID, InstrumentType.LOW_RESOLUTION_LTQ, Enzyme.TRYPSIN, Protocol.NOPROTOCOL);
+			scorer = NewScorerFactory.get(ActivationMethod.CID, InstrumentType.LOW_RESOLUTION_LTQ, Enzyme.TRYPSIN, Protocol.AUTOMATIC);
 		else
 			scorer = new NewRankScorer(scoringParamFile);
 		

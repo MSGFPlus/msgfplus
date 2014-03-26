@@ -331,7 +331,7 @@ public class MSProfile {
 			if(customScorer != null)
 				scorer = customScorer;
 			else
-				scorer = NewScorerFactory.get(spec.getActivationMethod(), InstrumentType.LOW_RESOLUTION_LTQ, enzyme, Protocol.NOPROTOCOL);
+				scorer = NewScorerFactory.get(spec.getActivationMethod(), InstrumentType.LOW_RESOLUTION_LTQ, enzyme, Protocol.AUTOMATIC);
 			ScoredSpectrum<NominalMass> curScoredSpec = scorer.getScoredSpectrum(spec);
 			
 			ScoredSpectrum<NominalMass> scoredSpec = null;		

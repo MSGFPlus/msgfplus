@@ -175,7 +175,7 @@ public class MSGFLib {
 		
 		NewRankScorer scorer = null;
 		if(activationMethod != ActivationMethod.ASWRITTEN)
-			scorer  = NewScorerFactory.get(activationMethod, instType, enzyme, Protocol.NOPROTOCOL);
+			scorer  = NewScorerFactory.get(activationMethod, instType, enzyme, Protocol.AUTOMATIC);
 
 		File sptxtFile = paramManager.getFile("l");
 		
@@ -305,7 +305,7 @@ public class MSGFLib {
 			}
 			
 			if(activationMethod == ActivationMethod.ASWRITTEN)
-				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, Protocol.NOPROTOCOL);
+				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, Protocol.AUTOMATIC);
 
 			Spectrum processedSpec = new ProcessedSpectrum(spec, libSpec).getSpectrum();
 

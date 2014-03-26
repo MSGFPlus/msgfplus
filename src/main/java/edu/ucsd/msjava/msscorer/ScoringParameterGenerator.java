@@ -193,7 +193,7 @@ public class ScoringParameterGenerator extends NewRankScorer {
 		if(instType == null)
 			printUsageAndExit("missing instrumentType!");
 		
-		generateParameters(specFile, activationMethod, instType, enzyme, Protocol.NOPROTOCOL, numSpecsPerPeptide, errorScalingFactor, outputFile, aaSet, isText, false);
+		generateParameters(specFile, activationMethod, instType, enzyme, Protocol.AUTOMATIC, numSpecsPerPeptide, errorScalingFactor, outputFile, aaSet, isText, false);
 	}
 	
 	public static void printUsageAndExit(String message)

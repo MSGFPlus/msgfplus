@@ -208,7 +208,7 @@ public class ParamManager {
 
 	public void addMzIdOutputFileParam() 
 	{
-		FileParameter outputParam = new FileParameter("o", "OutputFile (*.mzid)", "Default: SpectrumFileName.mzid");
+		FileParameter outputParam = new FileParameter("o", "OutputFile (*.mzid)", "Default: [SpectrumFileName].mzid");
 		outputParam.addFileFormat(new FileFormat(".mzid").setCaseSensitive());
 		outputParam.setAsOptional();
 //		outputParam.fileMustNotExist();
@@ -250,7 +250,7 @@ public class ParamManager {
 	
 	public void addInstTypeParam(InstrumentType defaultInst)
 	{
-		ObjectEnumParameter<InstrumentType> instParam = new ObjectEnumParameter<InstrumentType>("inst", "InstrumentID");
+		ObjectEnumParameter<InstrumentType> instParam = new ObjectEnumParameter<InstrumentType>("inst", "MS2DetectorID");
 		InstrumentType[] allInstTypes = InstrumentType.getAllRegisteredInstrumentTypes();
 		for(InstrumentType inst : allInstTypes)
 		{
@@ -281,7 +281,7 @@ public class ParamManager {
 	
 	public void addProtocolParam()
 	{
-		addProtocolParam(Protocol.NOPROTOCOL);
+		addProtocolParam(Protocol.AUTOMATIC);
 	}
 	
 	public void addProtocolParam(Protocol defaultProtocol)

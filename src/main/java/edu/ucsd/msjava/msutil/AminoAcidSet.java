@@ -420,7 +420,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 			Location location = mod.getLocation();
 			if(!containsNTermModification && (location == Location.N_Term || location == Location.Protein_N_Term))
 				this.containsNTermModification = true;
-			if(!containsNTermModification && (location == Location.C_Term || location == Location.Protein_C_Term))
+			if(!containsCTermModification && (location == Location.C_Term || location == Location.Protein_C_Term))
 				this.containsCTermModification = true;
 			if(location != Location.Anywhere || !mod.isFixedModification())
 				this.containsModification = true;

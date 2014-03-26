@@ -59,7 +59,7 @@ public class InstrumentType implements ParamObject {
 	
 	static {
 		LOW_RESOLUTION_LTQ = new InstrumentType("LowRes", "Low-res LCQ/LTQ", false);
-		HIGH_RESOLUTION_LTQ = new InstrumentType("HighRes", "High-res LTQ", true);
+		HIGH_RESOLUTION_LTQ = new InstrumentType("HighRes", "Orbitrap/FTICR", true);
 		TOF = new InstrumentType("TOF", "TOF", true);
 		QEXACTIVE = new InstrumentType("QExactive", "Q-Exactive", true);
 //		TRIPLETOF = new InstrumentType("TripleTOF", "TripleTOF 5600", true);

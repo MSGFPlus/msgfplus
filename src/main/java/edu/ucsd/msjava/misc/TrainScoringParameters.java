@@ -143,7 +143,7 @@ public class TrainScoringParameters {
 					}
 				}
 				else
-					protocol = Protocol.NOPROTOCOL;
+					protocol = Protocol.AUTOMATIC;
 				
 				if(actMethod == null || instType == null || enzyme == null || protocol == null)
 				{

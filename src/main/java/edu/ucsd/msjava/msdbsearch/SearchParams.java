@@ -260,7 +260,7 @@ public class SearchParams {
 				aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile(modFile.getPath());
 			else
 				aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
-			if(protocol == Protocol.NOPROTOCOL)
+			if(protocol == Protocol.AUTOMATIC)
 			{
 				if(aaSet.containsITRAQ())
 				{
@@ -278,10 +278,9 @@ public class SearchParams {
 					if(aaSet.containsPhosphorylation())
 						protocol = Protocol.PHOSPHORYLATION;
 					else
-						protocol = Protocol.NOPROTOCOL;
+						protocol = Protocol.STANDARD;
 				}
 			}
-			
 		}
 		
 		numMatchesPerSpec = paramManager.getIntValue("n");

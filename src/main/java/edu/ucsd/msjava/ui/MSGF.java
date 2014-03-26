@@ -162,7 +162,7 @@ public class MSGF {
 		
 		NewRankScorer scorer = null;
 		if(activationMethod != ActivationMethod.ASWRITTEN)
-			scorer  = NewScorerFactory.get(activationMethod, instType, enzyme, Protocol.NOPROTOCOL);
+			scorer  = NewScorerFactory.get(activationMethod, instType, enzyme, Protocol.AUTOMATIC);
 		
 		for(InsPecTPSM psm : psmList)
 		{
@@ -279,7 +279,7 @@ public class MSGF {
 			}
 			
 			if(activationMethod == ActivationMethod.ASWRITTEN)
-				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, Protocol.NOPROTOCOL);
+				scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, Protocol.AUTOMATIC);
 			NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
 			
 			AminoAcidSet modAASet = psm.getAASet(aaSet);
