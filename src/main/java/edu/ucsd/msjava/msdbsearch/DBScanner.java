@@ -259,6 +259,42 @@ public class DBScanner {
 							}
 						}
 					}
+					else if(lcp == peptideLength + 1)
+					{
+						if(prevMatchList[peptideLength] != null)
+						{
+							for(DatabaseMatch m : prevMatchList[peptideLength])
+							{
+								if(!m.isProteinCTerm() || enzyme == null || enzyme.isNTerm() || numberOfAllowableNonEnzymaticTermini == 2)	
+								{
+									m.addIndex(index);
+									continue;
+								}
+								
+								char pre = sequence.getCharAt(index);
+								if(numberOfAllowableNonEnzymaticTermini == 1 && enzyme.isCleavable(pre))
+								{
+									m.addIndex(index);
+									continue;
+								}
+								
+								// C-term should be enzymatic
+								char cTermResidue = sequence.getCharAt(index+peptideLength);
+								if(enzyme.isCleavable(cTermResidue))
+								{
+									m.addIndex(index);
+									continue;
+								}
+								
+								// post should be protein c term
+								char post = sequence.getCharAt(index+peptideLength+1);
+								if(post == Constants.TERMINATOR_CHAR)
+								{
+									m.addIndex(index);
+								}
+							}
+						}
+					}
 					else
 						prevMatchList[peptideLength] = null;
 				}
