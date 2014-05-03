@@ -37,6 +37,7 @@ public class TestSA {
 		System.out.println("NumPeptides: " + sa.getNumCandidatePeptides(aaSet, 2364.981689453125f, new Tolerance(10, true)));
 	}
 
+	
 	@Test
 	public void testRedundantProteins()
 	{
