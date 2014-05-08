@@ -74,6 +74,29 @@ public class TestMSGFPlus {
 	}
 
 	@Test
+	public void testNTermMetCleavage()
+	{
+		File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug\\2014-04-30msgf-bug");
+
+		File specFile = new File(dir.getPath()+File.separator+"6456.ms2");
+		File dbFile = new File(dir.getPath()+File.separator+"sample1.fa");
+		File outputFile = new File(dir.getPath()+File.separator+"6456.sample1.sangtae.mzid");
+		//File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
+		String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), "-o", outputFile.getPath(), "-ignoreMetCleavage", "0", "-n", "2"
+//				"-mod", modFile.getPath()//, "-t", "25ppm", "-ti", "0,1"//, "-tda", "1", "-m", "1"
+//				, "-maxLength", "250"
+				}; 
+
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		paramManager.addMSGFPlusParams();
+		
+		String msg = paramManager.parseParams(argv);
+		assertTrue(msg == null);
+		
+		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
+	}
+	
+	@Test
 	public void testCTermNTT()
 	{
 		File dir = new File("C:\\cygwin\\home\\kims336\\Data\\MSGFPlusTest\\");
@@ -160,19 +183,6 @@ public class TestMSGFPlus {
 //		paramManager.addMSGFPlusParams();
 //		paramManager.parseParams(argv);
 //		MSGFPlus.runMSGFPlus(paramManager);
-	}
-	
-	@Test
-	public void testNTermMetCleavage()
-	{
-		File specPath = new File("C:\\cygwin\\home\\kims336\\Research\\Data\\Bug\\test.mgf");
-		File dbFile = new File("C:\\cygwin\\home\\kims336\\Research\\Data\\Bug\\test.fasta");
-
-		String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-ti", "0,0", "-tda", "0", "-ntt", "2", "-protocol", "2"};
-		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
-		paramManager.addMSGFPlusParams();
-		paramManager.parseParams(argv);
-		MSGFPlus.runMSGFPlus(paramManager);
 	}
 	
 	@Test

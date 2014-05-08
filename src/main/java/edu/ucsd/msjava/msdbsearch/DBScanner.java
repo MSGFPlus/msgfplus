@@ -56,6 +56,8 @@ public class DBScanner {
 	// Input spectra
 	private final ScoredSpectraMap specScanner;
 	
+	private boolean ignoreNTermMetCleavage;
+	
 	// DB search results
 	private Map<SpecKey,PriorityQueue<DatabaseMatch>> specKeyDBMatchMap;
 	private Map<Integer,PriorityQueue<DatabaseMatch>> specIndexDBMatchMap;
@@ -70,7 +72,8 @@ public class DBScanner {
 			int numPeptidesPerSpec,
 			int minPeptideLength,
 			int maxPeptideLength,
-			int maxNumVariantsPerPeptide
+			int maxNumVariantsPerPeptide,
+			boolean ignoreNTermMetCleavage
 			) 
 	{
 		this.specScanner = specScanner;
@@ -82,6 +85,7 @@ public class DBScanner {
 		this.minPeptideLength = minPeptideLength;
 		this.maxPeptideLength = maxPeptideLength;
 		this.maxNumVariantsPerPeptide = maxNumVariantsPerPeptide;
+		this.ignoreNTermMetCleavage = ignoreNTermMetCleavage;
 		
 		// Initialize mass arrays for a faster search
 		aaMass = new double[aaSet.getMaxResidue()];
@@ -185,7 +189,7 @@ public class DBScanner {
 		Map<SpecKey,PriorityQueue<DatabaseMatch>> curSpecKeyDBMatchMap = new HashMap<SpecKey,PriorityQueue<DatabaseMatch>>();
 		
 		CandidatePeptideGrid candidatePepGrid;
-		if(enzyme != null)
+		if(enzyme != null && !ignoreNTermMetCleavage)
 			candidatePepGrid = new CandidatePeptideGridConsideringMetCleavage(aaSet, maxPeptideLength, maxNumVariantsPerPeptide);
 		else
 			candidatePepGrid = new CandidatePeptideGrid(aaSet, maxPeptideLength, maxNumVariantsPerPeptide);

@@ -429,6 +429,12 @@ public class ParamManager {
 		isoParam.defaultValue(Constants.NUM_VARIANTS_PER_PEPTIDE);
 		isoParam.setHidden();
 		addParameter(isoParam);
+		
+		EnumParameter metCleavageParam = new EnumParameter("ignoreMetCleavage");
+		metCleavageParam.registerEntry("consider protein N-term Met cleavage").setDefault();
+		metCleavageParam.registerEntry("ignore protein N-term Met cleavage");
+		metCleavageParam.setHidden();
+		addParameter(metCleavageParam);
 	}
 	
 	public void addScoringParamGenParams()

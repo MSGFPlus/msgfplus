@@ -462,13 +462,24 @@ public class MZIdentMLGen {
 			CompactFastaSequence seq = sa.getSequence();
 			for(int index : indices)
 			{
+				boolean isNTermMetCleaved;
+				if(match.isNTermMetCleaved() && sa.getSequence().getCharAt(index+1) == 'M') 
+					isNTermMetCleaved = true;
+				else 
+					isNTermMetCleaved = false;
+				
 				PeptideEvidence pepEv = new PeptideEvidence();
 				
 				char pre = sa.getSequence().getCharAt(index);
 				if(pre == '_')
-					pre = '-';
+				{
+					if(isNTermMetCleaved)
+						pre = 'M';
+					else
+						pre = '-';
+				}
 				char post;
-				if(match.isNTermMetCleaved())
+				if(isNTermMetCleaved)
 					post = sa.getSequence().getCharAt(index+length);
 				else
 					post = sa.getSequence().getCharAt(index+length-1);
@@ -483,7 +494,7 @@ public class MZIdentMLGen {
 				pepEv.setPeptide(peptide);
 				
 				int start = index-protStartIndex+1;
-				if(match.isNTermMetCleaved())
+				if(isNTermMetCleaved)
 					++start;
 				
 				int end = start+length-2-1;
