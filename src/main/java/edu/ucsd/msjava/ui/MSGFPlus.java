@@ -40,8 +40,8 @@ import edu.ucsd.msjava.sequences.Constants;
 
 
 public class MSGFPlus {
-	public static final String VERSION = "Beta (v9979)";
-	public static final String RELEASE_DATE = "3/26/2014";
+	public static final String VERSION = "Beta (v9980)";
+	public static final String RELEASE_DATE = "5/8/2014";
 	
 	public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
 	public static final String DECOY_PROTEIN_PREFIX = "XXX";
@@ -257,15 +257,17 @@ public class MSGFPlus {
 			return "Error while parsing spectrum file: " + specFile.getPath();
 		
 		// determine the number of spectra to be scanned together 
-		long maxMemory = Runtime.getRuntime().maxMemory() - sa.getSize() - 1<<28;
-		int avgPeptideMass = 2000;
-		int numBytesPerMass = 12;
+//		long maxMemory = Runtime.getRuntime().maxMemory() - sa.getSize() - 1<<28;
+//		int avgPeptideMass = 2000;
+//		int numBytesPerMass = 12;
 		
-		int numSpecScannedTogether;
-		if(maxMemory > Integer.MAX_VALUE)
-			numSpecScannedTogether = Integer.MAX_VALUE;
-		else
-			numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
+//		int numSpecScannedTogether;
+//		if(maxMemory > Integer.MAX_VALUE)
+//			numSpecScannedTogether = Integer.MAX_VALUE;
+//		else
+//			numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
+		
+		int numSpecScannedTogether = Integer.MAX_VALUE;
 		
 		ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specAcc.getSpecItr(), 
 				startSpecIndex, endSpecIndex, minCharge, maxCharge, activationMethod, minNumPeaksPerSpectrum);
@@ -276,7 +278,8 @@ public class MSGFPlus {
 		System.out.print("Reading spectra finished ");
 		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);
 		
-		numThreads = Math.min(numThreads, Math.round(Math.min(specSize, numSpecScannedTogether)/1000f));
+		//numThreads = Math.min(numThreads, Math.round(Math.min(specSize, numSpecScannedTogether)/1000f));
+		numThreads = Math.min(numThreads, Math.round(specSize/1000f));
 		if(numThreads <= 0)
 			numThreads = 1;
 			
@@ -339,8 +342,6 @@ public class MSGFPlus {
 					else
 						break;
 				}
-//				System.out.println("Size: " + specKeyList.size() + " EndIndex: " + endIndex[i]);
-//				System.out.println(specKeyList.get(startIndex[i]).getSpecKeyString() + " - " + specKeyList.get(endIndex[i]-1).getSpecKeyString());
 			}
 			
 			for(int i=0; i<numThreads; i++)

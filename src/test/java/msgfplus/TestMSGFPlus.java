@@ -36,7 +36,7 @@ public class TestMSGFPlus {
 		String versionString = MSGFPlus.VERSION.split("\\s+")[1];
 		versionString = versionString.substring(versionString.indexOf('(')+1, versionString.lastIndexOf(')'));
 		String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
-				"-mod", modFile.getPath(), "-t", "10ppm", "-tda", "1", "-m", "1", "-ti", "0,1", "-ntt", "1",
+				"-mod", modFile.getPath(), "-t", "10ppm", "-tda", "1", "-m", "1", "-ti", "0,1", "-ntt", "1", "-thread", "2",
 				"-o", dir.getPath()+File.separator+"Test_"+versionString+".mzid"
 				}; 
 
