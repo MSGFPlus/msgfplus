@@ -374,7 +374,7 @@ public class TestMSGFPlus {
 		MSGFPlus.runMSGFPlus(paramManager);
 		System.out.println("Done");
 	}
-	
+
 	@Test
 	public void testScoringParamGenETD()
 	{

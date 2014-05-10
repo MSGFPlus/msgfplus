@@ -770,7 +770,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 					
 				// Location
 				Modification.Location location = null;
-				String locStr = token[3].split("\\s+")[0].trim();
+				String locStr = token[3].trim().split("\\s+")[0].trim();
 				if(locStr.equalsIgnoreCase("any"))
 					location = Modification.Location.Anywhere;
 				else if(locStr.equalsIgnoreCase("N-Term") || locStr.equalsIgnoreCase("NTerm"))
@@ -787,8 +787,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 					System.exit(-1);
 				}
 
-				String name = token[4].split("\\s+")[0].trim();
-				
+				String name = token[4].trim().split("\\s+")[0].trim();
 				Modification mod = Modification.register(name, modMass);
 				
 				for(int i=0; i<residueStr.length(); i++)
