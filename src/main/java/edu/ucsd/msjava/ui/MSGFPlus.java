@@ -40,7 +40,7 @@ import edu.ucsd.msjava.sequences.Constants;
 
 
 public class MSGFPlus {
-	public static final String VERSION = "Beta (v10023)";
+	public static final String VERSION = "Beta (v10024)";
 	public static final String RELEASE_DATE = "5/9/2014";
 	
 	public static final String DECOY_DB_EXTENSION = ".revCat.fasta";

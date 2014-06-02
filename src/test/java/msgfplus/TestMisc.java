@@ -6,7 +6,9 @@ import org.junit.Test;
 
 import edu.ucsd.msjava.misc.ConvertToMgf;
 import edu.ucsd.msjava.misc.VennDiagram;
+import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Composition;
+import edu.ucsd.msjava.msutil.Enzyme;
 
 public class TestMisc {
 	@Test
@@ -43,14 +45,26 @@ public class TestMisc {
 	@Test
 	public void testMzMLParser()
 	{
-		File dir = new File("/Users/kims336/Research/Data/ASMS2013");
-		File mzMLFile = new File(dir.getPath()+File.separator+"mzMLNoRefinement/QC_Shew_12_02_2_1Aug12_Cougar_12-06-11.mzML");
-		File mgfFile = new File(dir.getPath()+File.separator+"IPA/testIPA.mgf");
+		File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug");
+		File mzMLFile = new File(dir.getPath()+File.separator+"PTSS4105SN15613_c_ms2_rt100.mzML");
+		File mgfFile = new File(dir.getPath()+File.separator+"PTSS4105SN15613_c_ms2_rt100.mgf");
 		try {
-			ConvertToMgf.convert(mzMLFile, mgfFile, false, null, null, 10020, -1, -1, true);
+			ConvertToMgf.convert(mzMLFile, mgfFile, false, null, null, -1, -1, -1, false);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@Test
+	public void testTrypsinCredit()
+	{
+		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCysWithTerm();
+		aaSet.registerEnzyme(Enzyme.TRYPSIN);
+		System.out.println("PeptideCleavageCredit: " + aaSet.getPeptideCleavageCredit());
+		System.out.println("PeptideCleavagePenalty: " + aaSet.getPeptideCleavagePenalty());
+		System.out.println("NeighborCredit: " + aaSet.getNeighboringAACleavageCredit());
+		System.out.println("NeighborPenalty: " + aaSet.getNeighboringAACleavagePenalty());
+		
 	}
 
 }

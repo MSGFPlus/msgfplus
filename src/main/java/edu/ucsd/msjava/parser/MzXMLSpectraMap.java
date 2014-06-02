@@ -124,6 +124,8 @@ public class MzXMLSpectraMap implements SpectrumAccessorBySpecIndex {
 		}
 		if(!sorted)    Collections.sort(spec);
 
+		spec.determineIsCentroided();
+
 		return spec;
 	}
 	

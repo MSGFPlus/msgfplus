@@ -54,6 +54,22 @@ public class TestParsers {
 	}
 	
 	@Test
+	public void testReadingMzXML()
+	{
+		File mzXMLFile = new File("D:\\Research\\Data\\Nuno\\1to1.mzXML");
+		SpectraAccessor specAccessor = new SpectraAccessor(mzXMLFile);
+		Iterator<Spectrum> specItr = specAccessor.getSpecItr();
+		while(specItr.hasNext())
+		{
+			Spectrum spec = specItr.next();
+			if(!spec.isCentroided())
+			{
+				System.out.println(spec.getScanNum() + " is not centroided.");
+			}
+		}
+	}
+	
+	@Test
 	public void ms2ToMgfTest()
 	{
 //		File ms2File = new File(System.getProperty("user.home")+"/Research/Data/Viktor/103111-Yeast-2hr-01.ANNOTATED.ms2");

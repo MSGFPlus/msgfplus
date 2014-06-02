@@ -68,7 +68,9 @@ public class MzXMLSpectraIterator implements Iterator<Spectrum> {
 		{
 			spec = map.getSpectrumBySpecIndex(scanNum);
 			if(spec != null)
+			{
 				break;
+			}
 		}
 		return spec;
 	}

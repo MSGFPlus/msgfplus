@@ -5,6 +5,13 @@ import java.io.File;
 import org.junit.Test;
 
 import edu.ucsd.msjava.msscorer.NewRankScorer;
+import edu.ucsd.msjava.msscorer.ScoringParameterGeneratorWithErrors;
+import edu.ucsd.msjava.msscorer.NewScorerFactory.SpecDataType;
+import edu.ucsd.msjava.msutil.ActivationMethod;
+import edu.ucsd.msjava.msutil.AminoAcidSet;
+import edu.ucsd.msjava.msutil.Enzyme;
+import edu.ucsd.msjava.msutil.InstrumentType;
+import edu.ucsd.msjava.msutil.Protocol;
 import edu.ucsd.msjava.mzml.MzMLAdapter;
 import edu.ucsd.msjava.params.ParamManager;
 import edu.ucsd.msjava.ui.MSGFPlus;
@@ -21,11 +28,11 @@ public class TestScoring {
 	@Test
 	public void testScoringParamGen()
 	{
-		File resultPath = new File("D:\\Research\\Data\\Ansong_TMT_Velos\\TMT_QE");
-		File specPath = new File("D:\\Research\\Data\\Ansong_TMT_Velos\\dta");
+		File resultPath = new File("C:\\cygwin\\home\\kims336\\Data\\Scoring");
+		File specPath = new File("C:\\cygwin\\home\\kims336\\Data\\Scoring");
 
-		String[] argv = {"-i", resultPath.getPath(), "-d", specPath.getPath(), "-m", "2", "-inst", "1", "-e", "0" 
-				,"-protocol", "4"
+		String[] argv = {"-i", resultPath.getPath(), "-d", specPath.getPath(), "-m", "2", "-inst", "3", "-e", "0" 
+				,"-protocol", "5"
 				};
 		
 		ParamManager paramManager = new ParamManager("ScoringParamGen", "Test", "Test",
@@ -37,4 +44,27 @@ public class TestScoring {
 		ScoringParamGen.runScoringParamGen(paramManager);
 		System.out.println("Done");		
 	}		
+	
+	@Test
+	public void testScoringParamGenFromMgf()
+	{
+		ActivationMethod actMethod = ActivationMethod.HCD;
+		InstrumentType instType = InstrumentType.QEXACTIVE;
+		Enzyme enzyme = Enzyme.TRYPSIN;
+		Protocol protocol = Protocol.STANDARD;
+		File specFile = new File("D:\\Research\\Data\\TrainingMSGFPlus\\AnnotatedSpectra\\HCD_QExactive_Tryp.mgf");
+		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
+		
+		SpecDataType dataType = new SpecDataType(actMethod, instType, enzyme, protocol);
+		System.out.println("Processing " + dataType.toString());
+		ScoringParameterGeneratorWithErrors.generateParameters(
+				specFile,
+				dataType,
+				aaSet, 
+				new File("C:\\cygwin\\home\\kims336\\Data\\Scoring"),
+				false, 
+				false,
+				false);
+		
+	}
 }

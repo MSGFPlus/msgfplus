@@ -38,16 +38,16 @@ import edu.ucsd.msjava.parser.MgfSpectrumParser;
 public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 	private static final float MIN_PRECURSOR_OFFSET = -300f;	// for precursors
 	private static final float MAX_PRECURSOR_OFFSET = 30f;
-	private static final int MIN_NUM_SPECTRA_PER_PARTITION = 400;	// 400
+	private static final int MIN_NUM_SPECTRA_PER_PARTITION = 23041;	// 400
 	private static final int MIN_NUM_SPECTRA_FOR_PRECURSOR_OFF = 150;
 	private static final int MAX_NUM_PARTITIONS_PER_CHARGE = 30;	// 400
 
 	private static final float MIN_PRECURSOR_OFFSET_PROBABILITY = 0.15f;	// 0.15
-	private static final float MIN_ION_OFFSET_PROBABILITY = 0.15f;	// 0.15, for ion types
-	private static final float MIN_MAIN_ION_OFFSET_PROBABILITY = 0.01f;	// ion of probability below this number will be ignored 
+	private static final float MIN_ION_OFFSET_PROBABILITY = 0f;	// 0.15, for ion types
+	private static final float MIN_MAIN_ION_OFFSET_PROBABILITY = 0.01f;	// ions with probabilities below this number will be ignored 
 
 	private static final int MAX_RANK = 150;
-	private static final int NUM_SEGMENTS_PER_SPECTRUM = 2;	// 2
+	private static final int NUM_SEGMENTS_PER_SPECTRUM = 1;	// 2
 
 	private static final int[] smoothingRanks = {3, 5, 10, 20, 50, Integer.MAX_VALUE}; //Ranks around which smoothing occurs
 	private static final int[] smoothingWindowSize = {0, 1, 2, 3, 4, 5}; //Smoothing windows for each smoothing rank
