@@ -12,6 +12,7 @@ import edu.ucsd.msjava.msgf.Histogram;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.IonType;
 import edu.ucsd.msjava.msutil.Peak;
+import edu.ucsd.msjava.msutil.Peptide;
 import edu.ucsd.msjava.msutil.SpectraAccessor;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.mzid.MzIDTest;
@@ -748,4 +749,12 @@ public class TestMSGFPlus {
 		System.out.println("Done");		
 	}		
 	
+	@Test
+	public void testAspN()
+	{
+		File modFile = new File("C:\\cygwin\\home\\kims336\\Data\\Debug\\MSGFDB_Mods.txt");
+		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
+		Peptide peptide = aaSet.getPeptide("DmASRCWRWWGWSAWPRTRLPPAGSTPSFCHHFSTQEK");
+		System.out.println(peptide.toString());
+	}
 }
