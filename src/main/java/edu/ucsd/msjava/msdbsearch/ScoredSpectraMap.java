@@ -212,7 +212,7 @@ public class ScoredSpectraMap {
 			
 			float peptideMass = spec.getParentMass() - (float)Composition.H2O;
 			float tolDaLeft = leftParentMassTolerance.getToleranceAsDa(peptideMass);
-			int maxNominalPeptideMass = NominalMass.toNominalMass(peptideMass) + Math.round(tolDaLeft-0.4999f) + 1;
+			int maxNominalPeptideMass = NominalMass.toNominalMass(peptideMass) + Math.round(tolDaLeft-0.4999f) - this.minIsotopeError;
 			
 			if(scorer.supportEdgeScores())
 				specKeyScorerMap.put(specKey, new DBScanScorer(scoredSpec, maxNominalPeptideMass));

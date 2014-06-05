@@ -6,9 +6,19 @@ import org.junit.Test;
 
 import edu.ucsd.msjava.misc.ConvertToMgf;
 import edu.ucsd.msjava.misc.VennDiagram;
+import edu.ucsd.msjava.msgf.NominalMass;
+import edu.ucsd.msjava.msscorer.NewRankScorer;
+import edu.ucsd.msjava.msscorer.NewScoredSpectrum;
+import edu.ucsd.msjava.msscorer.NewScorerFactory;
+import edu.ucsd.msjava.msutil.ActivationMethod;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Composition;
 import edu.ucsd.msjava.msutil.Enzyme;
+import edu.ucsd.msjava.msutil.InstrumentType;
+import edu.ucsd.msjava.msutil.Pair;
+import edu.ucsd.msjava.msutil.Protocol;
+import edu.ucsd.msjava.msutil.SpectraAccessor;
+import edu.ucsd.msjava.msutil.Spectrum;
 
 public class TestMisc {
 	@Test
@@ -66,5 +76,42 @@ public class TestMisc {
 		System.out.println("NeighborPenalty: " + aaSet.getNeighboringAACleavagePenalty());
 		
 	}
-
+	
+	@Test
+	public void generateTRexPRMSpectrum()
+	{
+		File specFile = new File("D:\\Research\\Data\\TRex\\TRex_GLVGAPGLRGLPGK.mgf");
+		SpectraAccessor accessor = new SpectraAccessor(specFile);
+		Spectrum spec = accessor.getSpecItr().next();
+		
+		NewRankScorer scorer = NewScorerFactory.get(ActivationMethod.CID, InstrumentType.LOW_RESOLUTION_LTQ, Enzyme.TRYPSIN, Protocol.STANDARD);
+		
+		scorer.doNotUseError();
+		NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
+		int maxNominalMass = NominalMass.toNominalMass(spec.getParentMass());
+		
+		// PRM spectrum
+		System.out.println("BEGIN IONS");
+		System.out.print("TITLE=PRM_SpecIndex="+spec.getSpecIndex());
+	    if(spec.getTitle() != null)
+	        System.out.println(" " + spec.getTitle());
+	    else
+	    	System.out.println();
+	    if(spec.getAnnotation() != null)
+	    	System.out.println("SEQ=" + spec.getAnnotationStr());
+		System.out.println("PEPMASS=" + spec.getPrecursorPeak().getMz());
+		System.out.println("SCANS=" + spec.getScanNum());
+		System.out.println("CHARGE="+spec.getCharge()+"+");
+		int peptideNominalMass = 1272;
+		for(int m=1; m<maxNominalMass; m++)
+		{
+			NominalMass prm = new NominalMass(m);
+			NominalMass srm = new NominalMass(peptideNominalMass-m);
+			float prefixScore = scoredSpec.getNodeScore(prm, true);
+			float suffixScore = scoredSpec.getNodeScore(srm, false);
+			System.out.format("%d\t%d\n", m, Math.round(prefixScore+suffixScore));
+			
+		}
+		System.out.println("END IONS");
+	}		
 }

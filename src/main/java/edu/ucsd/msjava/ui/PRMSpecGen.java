@@ -273,7 +273,7 @@ public class PRMSpecGen {
 		
 		NewRankScorer scorer = null;
 		if(activationMethod != null)
-			scorer = NewScorerFactory.get(activationMethod, instType, enzyme, null);
+			scorer = NewScorerFactory.get(activationMethod, instType, enzyme, Protocol.STANDARD);
 
 		System.out.println("Total number of spectra: " + totalNumSpecs);
 		int numSpecs = 0;
@@ -326,6 +326,8 @@ public class PRMSpecGen {
 				else
 					out.format("%f", peakDerivedMass);
 				out.format("\t%.3f\n",score);
+//				out.format("%d\t%d", m, Math.round(score));
+				
 			}
 			out.println("END IONS");
 

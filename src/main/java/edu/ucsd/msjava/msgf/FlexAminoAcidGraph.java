@@ -165,6 +165,10 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
 		{
 			NominalMass node = intermediateNodes.get(i);
 			NominalMass compNode = this.getComplementNode(node);
+			if(node.getNominalMass() < 0 || compNode.getNominalMass() < 0)
+			{
+				System.out.println("Debug");
+			}
 			int score;
 			if(isReverse())
 				score = scoredSpec.getNodeScore(compNode, node);
