@@ -56,6 +56,7 @@ public class DBScanner {
 	// Input spectra
 	private final ScoredSpectraMap specScanner;
 	
+	private int minDeNovoScore;
 	private boolean ignoreNTermMetCleavage;
 	
 	// DB search results
@@ -73,6 +74,7 @@ public class DBScanner {
 			int minPeptideLength,
 			int maxPeptideLength,
 			int maxNumVariantsPerPeptide,
+			int minDeNovoScore,
 			boolean ignoreNTermMetCleavage
 			) 
 	{
@@ -85,6 +87,7 @@ public class DBScanner {
 		this.minPeptideLength = minPeptideLength;
 		this.maxPeptideLength = maxPeptideLength;
 		this.maxNumVariantsPerPeptide = maxNumVariantsPerPeptide;
+		this.minDeNovoScore = minDeNovoScore;
 		this.ignoreNTermMetCleavage = ignoreNTermMetCleavage;
 		
 		// Initialize mass arrays for a faster search
@@ -837,7 +840,7 @@ public class DBScanner {
 			{
 				DatabaseMatch match = matchList.get(i);
 				
-				if(match.getDeNovoScore() < 0)
+				if(match.getDeNovoScore() < minDeNovoScore)
 					continue;
 				
 				int index = match.getIndex();

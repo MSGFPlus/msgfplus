@@ -435,6 +435,12 @@ public class ParamManager {
 		metCleavageParam.registerEntry("ignore protein N-term Met cleavage");
 		metCleavageParam.setHidden();
 		addParameter(metCleavageParam);
+		
+		IntParameter minDeNovoScoreParam = new IntParameter("minDeNovoScore", "MinDeNovoScore", "Minimum de Novo score, Default: " + Constants.MIN_DE_NOVO_SCORE);
+		minDeNovoScoreParam.defaultValue(Constants.MIN_DE_NOVO_SCORE);
+		minDeNovoScoreParam.setHidden();
+		addParameter(minDeNovoScoreParam);
+		
 	}
 	
 	public void addScoringParamGenParams()

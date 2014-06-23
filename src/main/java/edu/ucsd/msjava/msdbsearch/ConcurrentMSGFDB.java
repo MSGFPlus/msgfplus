@@ -102,7 +102,7 @@ public class ConcurrentMSGFDB {
 				)
 		{
 			this.specScanner = specScanner;
-			this.scanner = new DBScanner(specScanner, sa, enzyme, aaSet, numPeptidesPerSpec, minPeptideLength, maxPeptideLength, Constants.NUM_VARIANTS_PER_PEPTIDE, false);
+			this.scanner = new DBScanner(specScanner, sa, enzyme, aaSet, numPeptidesPerSpec, minPeptideLength, maxPeptideLength, Constants.NUM_VARIANTS_PER_PEPTIDE, 0, false);
 			this.numberOfAllowableNonEnzymaticTermini = numberOfAllowableNonEnzymaticTermini;
 			this.storeScoreDist = storeScoreDist;
 			this.specFileName = specFileName;

@@ -81,6 +81,11 @@ public class Constants {
   public static final int MIN_NUM_PEAKS_PER_SPECTRUM = 10;
 
   /**
+   * Minumum de novo score.
+   */
+  public static final int MIN_DE_NOVO_SCORE = 0;
+  
+  /**
    * Minumum number of peaks per spectrum.
    */
   public static final int NUM_VARIANTS_PER_PEPTIDE = 128;

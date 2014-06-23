@@ -49,6 +49,7 @@ public class SearchParams {
 	private File dbIndexDir;
 	private boolean outputAdditionalFeatures;
 	private int minNumPeaksPerSpectrum;
+	private int minDeNovoScore;
 	
 	
 	public SearchParams()	{}
@@ -165,6 +166,11 @@ public class SearchParams {
 	public int getMinNumPeaksPerSpectrum()
 	{
 		return minNumPeaksPerSpectrum;
+	}
+
+	public int getMinDeNovoScore()
+	{
+		return minDeNovoScore;
 	}
 	
 	public String parse(ParamManager paramManager)
@@ -312,6 +318,8 @@ public class SearchParams {
 		dbIndexDir = paramManager.getFile("dd");
 		
 		minNumPeaksPerSpectrum = paramManager.getIntValue("minNumPeaks");
+		
+		minDeNovoScore = paramManager.getIntValue("minDeNovoScore");
 		
 		return null;
 	}
