@@ -206,7 +206,7 @@ public class MZIdentMLGen {
 				++rank;
 				DatabaseMatch match = matchList.get(i);
 				
-				if(match.getDeNovoScore() < 0)
+				if(match.getDeNovoScore() < params.getMinDeNovoScore())
 					break;
 				
 //				int pepIndex = match.getIndex();	// Position of preAA

@@ -40,7 +40,7 @@ import edu.ucsd.msjava.sequences.Constants;
 
 
 public class MSGFPlus {
-	public static final String VERSION = "Beta (v10042)";
+	public static final String VERSION = "Beta (v10063)";
 	public static final String RELEASE_DATE = "6/23/2014";
 	
 	public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
@@ -187,8 +187,6 @@ public class MSGFPlus {
 			else
 				minNumPeaksPerSpectrum = Constants.MIN_NUM_PEAKS_PER_SPECTRUM;
 		}
-		
-		int minDeNovoScore = params.getMinDeNovoScore();
 		
 		System.out.println("Loading database files...");
 		

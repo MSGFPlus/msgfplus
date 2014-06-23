@@ -21,7 +21,6 @@ import edu.ucsd.msjava.msgf.GeneratingFunction;
 import edu.ucsd.msjava.msgf.GeneratingFunctionGroup;
 import edu.ucsd.msjava.msgf.MSGFDBResultGenerator;
 import edu.ucsd.msjava.msgf.NominalMass;
-import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msscorer.NewRankScorer;
 import edu.ucsd.msjava.msscorer.SimpleDBSearchScorer;
 import edu.ucsd.msjava.msutil.AminoAcid;

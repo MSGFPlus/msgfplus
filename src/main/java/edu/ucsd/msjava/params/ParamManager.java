@@ -437,6 +437,7 @@ public class ParamManager {
 		addParameter(metCleavageParam);
 		
 		IntParameter minDeNovoScoreParam = new IntParameter("minDeNovoScore", "MinDeNovoScore", "Minimum de Novo score, Default: " + Constants.MIN_DE_NOVO_SCORE);
+		minDeNovoScoreParam.minValue(Integer.MIN_VALUE);
 		minDeNovoScoreParam.defaultValue(Constants.MIN_DE_NOVO_SCORE);
 		minDeNovoScoreParam.setHidden();
 		addParameter(minDeNovoScoreParam);

@@ -61,6 +61,7 @@ public class TestMSGFPlus {
 		File dbFile = new File(dir.getPath()+File.separator+"test.fasta");
 		File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
 		String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
+				"-minDeNovoScore", "-1000",
 				"-mod", modFile.getPath()//, "-t", "25ppm", "-ti", "0,1"//, "-tda", "1", "-m", "1"
 //				, "-maxLength", "250"
 				}; 
@@ -74,6 +75,30 @@ public class TestMSGFPlus {
 		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
 	}
 
+	@Test
+	public void testNegativeDeNovoScore()
+	{
+		File dir = new File("C:\\cygwin\\home\\kims336\\Data\\MSGFPlusTest");
+
+		File specFile = new File(dir.getPath()+File.separator+"NegDeNovoScore.mgf");
+		File dbFile = new File(dir.getPath()+File.separator+"test.fasta");
+//		File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
+		String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
+				"-minDeNovoScore", "-1000",
+				"-minNumPeaks", "5",
+//				"-mod", modFile.getPath()//, "-t", "25ppm", "-ti", "0,1"//, "-tda", "1", "-m", "1"
+//				, "-maxLength", "250"
+				}; 
+
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		paramManager.addMSGFPlusParams();
+		
+		String msg = paramManager.parseParams(argv);
+		assertTrue(msg == null);
+		
+		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
+	}
+	
 	@Test
 	public void testNTermMetCleavage()
 	{
