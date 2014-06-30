@@ -8,10 +8,11 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+
+import java.util.concurrent.TimeUnit;
 
 import edu.ucsd.msjava.fdr.ComputeFDR;
 import edu.ucsd.msjava.msdbsearch.CompactFastaSequence;
@@ -40,7 +41,8 @@ import edu.ucsd.msjava.sequences.Constants;
 
 
 public class MSGFPlus {
-	public static final String VERSION = "Beta (v10063)";
+	public static final String VERSION = "Beta (v10064)";
+//	public static final String VERSION = "Test_Multithreading (v10064)";
 	public static final String RELEASE_DATE = "6/23/2014";
 	
 	public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
@@ -371,7 +373,14 @@ public class MSGFPlus {
 			}
 			
 			executor.shutdown();
-			while(!executor.isTerminated()) {}	// wait until all threads terminate
+			
+			try {
+				executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+			} catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+			//while(!executor.isTerminated()) {}	// wait until all threads terminate
 			
 			fromIndexGlobal += numSpecScannedTogether;
 		}

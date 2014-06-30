@@ -30,7 +30,7 @@ public class ConcurrentMSGFPlus {
 					params.getMinDeNovoScore(),
 					params.ignoreMetCleavage()
 					);
-			this.resultList = resultList;
+			//this.resultList = resultList;
 		}
 		
 		public void run() 
@@ -70,7 +70,7 @@ public class ConcurrentMSGFPlus {
 			if(params.outputAdditionalFeatures())
 				scanner.addAdditionalFeatures();
 			
-			scanner.addResultsToList(resultList);
+			//scanner.addResultsToList(resultList);
 //			gen.addSpectrumIdentificationResults(scanner.getSpecIndexDBMatchMap());
 		}
 	}	
