@@ -41,7 +41,7 @@ import edu.ucsd.msjava.sequences.Constants;
 
 
 public class MSGFPlus {
-	public static final String VERSION = "Beta (v10071)";
+	public static final String VERSION = "Beta (v10072)";
 //	public static final String VERSION = "Test_Multithreading (v10064)";
 	public static final String RELEASE_DATE = "6/30/2014";
 	
