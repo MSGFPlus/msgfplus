@@ -77,6 +77,9 @@ public class FastScorer implements SimpleDBSearchScorer<NominalMass> {
 //		if(prefixMass.getNominalMass() >= prefixScore.length ||
 //				suffixMass.getNominalMass() >= suffixScore.length)
 //			System.out.println("Debug");
+		int preNormMass = prefixMass.getNominalMass();
+		int sufNormMass = suffixMass.getNominalMass();
+		if(preNormMass >= prefixScore.length || sufNormMass >= suffixScore.length) return 0;
 		return Math.round(prefixScore[prefixMass.getNominalMass()]+suffixScore[suffixMass.getNominalMass()]);
 	}
 

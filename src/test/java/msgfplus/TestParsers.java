@@ -70,6 +70,19 @@ public class TestParsers {
 	}
 	
 	@Test
+	public void testMzMLParser()
+	{
+		File dir = new File("H:\\Research\\DDAPlus\\mzML");
+		File mzMLFile = new File(dir.getPath()+File.separator+"20140701_yeast_DDAp_binCharge_01.mzML");
+		File mgfFile = new File(dir.getPath()+File.separator+"scan43536.mgf");
+		try {
+			ConvertToMgf.convert(mzMLFile, mgfFile, false, null, null, 43536, -1, -1, false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
 	public void ms2ToMgfTest()
 	{
 //		File ms2File = new File(System.getProperty("user.home")+"/Research/Data/Viktor/103111-Yeast-2hr-01.ANNOTATED.ms2");

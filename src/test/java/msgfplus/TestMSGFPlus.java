@@ -205,6 +205,7 @@ public class TestMSGFPlus {
 		
 		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
 	}
+
 	
 	@Test
 	public void testMzIdGen()
@@ -424,12 +425,15 @@ public class TestMSGFPlus {
 	@Test
 	public void testCTermFixedMod() throws Exception
 	{
-		File specPath = new File(System.getProperty("user.home")+"/Research/Data/Joe/test.mgf");
-		File dbFile = new File(System.getProperty("user.home")+"/Research/Data/Joe/test.fasta");
-		File modFile = new File(System.getProperty("user.home")+"/Research/Data/Joe/testMods.txt");
+		File dir = new File("C:\\cygwin\\home\\kims336\\Data\\MSGFPlusTest");
+
+		File specFile = new File(dir.getPath()+File.separator+"testHwang.mgf");
+		File dbFile = new File(dir.getPath()+File.separator+"testHwang.fasta");
+		File modFile = new File(dir.getPath()+File.separator+"testHwang.txt");
+
 
 //		String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "2.5Da,2.5Da", "-n", "1", "-ntt", "2", "-mod", modFile.getPath(), "-ti", "1"};
-		String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "10ppm", "-n", "1", "-ntt", "2", "-mod", modFile.getPath(), "-ti", "1"};
+		String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), "-t", "10ppm", "-n", "1", "-ntt", "2", "-mod", modFile.getPath(), "-ti", "1"};
 		
 		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
 		paramManager.addMSGFPlusParams();

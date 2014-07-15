@@ -152,6 +152,13 @@ public class MSGFPlus {
     {
 		long time = System.currentTimeMillis();
 		
+		// Check the outputFile is valid for writing
+		File parent = outputFile.getParentFile();
+		if(!parent.exists())
+		{
+			return "Cannot create " + outputFile.getPath() + "!";
+		}
+		
 		// DB file
 		File databaseFile = params.getDatabaseFile();
 		
