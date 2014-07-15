@@ -62,6 +62,7 @@ public class DBScanScorer extends FastScorer {
 		// Debug
 //		if(curNominalMass == 114 && prevNominalMass == 57)
 //			System.out.println("Debug");
+		if(curNominalMass >= nodeMass.length) return 0;
 		int ionExistenceIndex = 0;
 		float curMass = nodeMass[curNominalMass];
 		if(curMass >= 0)

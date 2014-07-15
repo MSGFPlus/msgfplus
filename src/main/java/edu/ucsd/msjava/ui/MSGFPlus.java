@@ -41,9 +41,9 @@ import edu.ucsd.msjava.sequences.Constants;
 
 
 public class MSGFPlus {
-	public static final String VERSION = "Beta (v10072)";
+	public static final String VERSION = "Beta (v10081)";
 //	public static final String VERSION = "Test_Multithreading (v10064)";
-	public static final String RELEASE_DATE = "6/30/2014";
+	public static final String RELEASE_DATE = "7/14/2014";
 	
 	public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
 	public static final String DECOY_PROTEIN_PREFIX = "XXX";
@@ -154,7 +154,7 @@ public class MSGFPlus {
 		
 		// Check the outputFile is valid for writing
 		File parent = outputFile.getParentFile();
-		if(!parent.exists())
+		if(parent != null && !parent.exists())
 		{
 			return "Cannot create " + outputFile.getPath() + "!";
 		}
