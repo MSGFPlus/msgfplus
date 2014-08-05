@@ -5,8 +5,26 @@ import java.io.File;
 import org.junit.Test;
 
 import edu.ucsd.msjava.fdr.ComputeFDR;
+import edu.ucsd.msjava.fdr.ComputeQValue;
 
 public class TestFDR {
+	@Test
+	public void testComputeQValue()
+	{
+		File dir = new File(System.getProperty("user.home")+"/Research/Data/QCShew");
+		File inputFile = new File(dir.getPath()+File.separator+"TestComputeQValue.tsv");
+		File outputFile = new File(dir.getPath()+File.separator+"TestComputeQValueWithQValue.tsv");;
+
+		String[] argv = {"-f", inputFile.getPath(), "-o", outputFile.getPath()};
+		
+		try {
+			ComputeQValue.main(argv);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Done");		
+	}
+	
 	@Test
 	public void testPepFDR()
 	{
@@ -23,4 +41,5 @@ public class TestFDR {
 		}
 		System.out.println("Done");		
 	}
+	
 }
