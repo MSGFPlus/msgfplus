@@ -13,6 +13,8 @@ import edu.ucsd.msjava.msutil.ActivationMethod;
 import edu.ucsd.msjava.msutil.SpectraAccessor;
 import edu.ucsd.msjava.msutil.SpectraIterator;
 import edu.ucsd.msjava.msutil.Spectrum;
+import edu.ucsd.msjava.mzml.MzMLAdapter;
+import edu.ucsd.msjava.mzml.MzMLSpectraIterator;
 import edu.ucsd.msjava.parser.MgfSpectrumParser;
 import edu.ucsd.msjava.parser.PNNLSpectraIterator;
 import edu.ucsd.msjava.parser.PNNLSpectrumParser;
@@ -81,6 +83,22 @@ public class TestParsers {
 			e.printStackTrace();
 		}
 	}
+
+//	@Test
+//	public void testReadingCompressedMzML()
+//	{
+//		File dir = new File("C:\\cygwin\\home\\kims336\\Data\\QCShew");
+//		File mzMLFile = new File(dir.getPath()+File.separator+"QC_Shew_12_02_2_1Aug12_Cougar_12-06-11.mzid.gz");
+//		MzMLAdapter mzmlAdapter = new MzMLAdapter(mzMLFile);
+//		MzMLSpectraIterator specItr = new MzMLSpectraIterator(mzmlAdapter);
+//		int numSpecs = 0;
+//		while(specItr.hasNext())
+//		{
+//			specItr.next();
+//			numSpecs++;
+//		}
+//		System.out.println(numSpecs);
+//	}
 	
 	@Test
 	public void ms2ToMgfTest()
