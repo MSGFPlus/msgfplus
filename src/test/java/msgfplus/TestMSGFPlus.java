@@ -848,5 +848,34 @@ public class TestMSGFPlus {
 		assertTrue(msg == null);
 		
 		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
+	}
+	
+	@Test
+	public void testNewPeptideMzId()
+	{
+		File dir = new File("C:\\cygwin\\home\\kims336\\Research\\MSGFPlusTest");
+
+		File specFile = new File(dir.getPath()+File.separator+"testPTM.mgf");
+		File dbFile = new File(dir.getPath()+File.separator+"testPTM.fasta");
+		File outputFile = new File(dir.getPath()+File.separator+"testPTM.mzid");
+		File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
+		String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), "-o", outputFile.getPath(),
+				"-mod", modFile.getPath()
+				//"-ti", "0,1"//, "-tda", "1", "-m", "1"
+//				, "-maxLength", "250"
+				}; 
+
+		ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+		paramManager.addMSGFPlusParams();
+		
+		String msg = paramManager.parseParams(argv);
+		if(msg != null)
+		{
+			System.out.println(msg);
+		}
+		assertTrue(msg == null);
+		
+		assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
 	}	
+	
 }

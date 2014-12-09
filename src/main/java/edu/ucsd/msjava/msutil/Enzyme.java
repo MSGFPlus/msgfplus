@@ -271,6 +271,8 @@ public class Enzyme implements ParamObject {
 	/** Endogenous peptides */
 	public static final Enzyme NoCleavage;
 	
+//	public static final Enzyme NoInternalCleavage;
+	
 	public static Enzyme getEnzymeByName(String name)
 	{
 		return enzymeTable.get(name);
@@ -327,6 +329,8 @@ public class Enzyme implements ParamObject {
 		ALP = new Enzyme("aLP", null, false, "alphaLP", null);
 		
 		NoCleavage = new Enzyme("NoCleavage", null, false, "no cleavage", "MS:1001955");
+		
+//		NoInternalCleavage = new Enzyme("NoInternalCleavage", "", false, "no cleavage", "MS:1001955");
 		
 		enzymeTable = new HashMap<String,Enzyme>();
 		registeredEnzymeList = new ArrayList<Enzyme>();

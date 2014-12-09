@@ -360,6 +360,7 @@ public class MZIdentMLGen {
 			List<Modification> modList = mzidPeptide.getModification();
 			edu.ucsd.msjava.msutil.Peptide peptide = aaSet.getPeptide(pepStr); 
 			StringBuffer unmodPepStr = new StringBuffer();
+			StringBuffer modPepStr = new StringBuffer();
 			int location = 1;
 			for(edu.ucsd.msjava.msutil.AminoAcid aa : peptide)
 			{
@@ -372,6 +373,12 @@ public class MZIdentMLGen {
 					loc = Location.Anywhere;
 				
 				unmodPepStr.append(aa.getUnmodResidue());
+				
+				char residue = aa.getResidue();
+				if(Character.isLetter(residue))
+					modPepStr.append(residue);
+				else
+					modPepStr.append((int)residue);
 				if(loc == Location.N_Term || loc == Location.C_Term)
 				{
 					List<edu.ucsd.msjava.msutil.Modification> fixedTermMods = apcGen.getTerminalFixedModifications(aa.getUnmodResidue(), loc);
@@ -435,7 +442,8 @@ public class MZIdentMLGen {
 
 			mzidPeptide.setPeptideSequence(unmodPepStr.toString());
 			pepMap.put(pepStr, mzidPeptide);
-			mzidPeptide.setId(Constants.pepIDPrefix+pepMap.size());
+			//mzidPeptide.setId(Constants.pepIDPrefix+pepMap.size());
+			mzidPeptide.setId(modPepStr.toString());
 			peptideList.add(mzidPeptide);
 		}
 		

@@ -41,5 +41,22 @@ public class TestFDR {
 		}
 		System.out.println("Done");		
 	}
+
+	@Test
+	public void testTRexFDR()
+	{
+		File dir = new File("D:\\Research\\Data\\TRex\\MaxCharge4");
+		File inputFile = new File(dir.getPath()+File.separator+"TRex48216_uniprot_NTT2_MaxCharge4.tsv");
+		File outputFile = new File(dir.getPath()+File.separator+"TestWithDecoy.tsv");;
+
+		String[] argv = {"-f", inputFile.getPath(), "-o", outputFile.getPath(), "-decoy", "1"};
+		
+		try {
+			ComputeQValue.main(argv);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Done");		
+	}
 	
 }

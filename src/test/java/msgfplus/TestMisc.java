@@ -1,6 +1,13 @@
 package msgfplus;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import org.junit.Test;
 
@@ -16,9 +23,11 @@ import edu.ucsd.msjava.msutil.Composition;
 import edu.ucsd.msjava.msutil.Enzyme;
 import edu.ucsd.msjava.msutil.InstrumentType;
 import edu.ucsd.msjava.msutil.Pair;
+import edu.ucsd.msjava.msutil.Peptide;
 import edu.ucsd.msjava.msutil.Protocol;
 import edu.ucsd.msjava.msutil.SpectraAccessor;
 import edu.ucsd.msjava.msutil.Spectrum;
+import edu.ucsd.msjava.parser.TSVParser;
 
 public class TestMisc {
 	@Test
@@ -114,4 +123,78 @@ public class TestMisc {
 		}
 		System.out.println("END IONS");
 	}		
+
+	@Test
+	public void generateTRexPRMSpectra()
+	{
+		File outputFile = new File("D:\\Research\\Data\\TRex\\MaxCharge4\\TRex48216_Vectors.txt");
+		PrintStream out = null;
+		try {
+			out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFile)));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSet();
+		File idFile = new File("D:\\Research\\Data\\TRex\\MaxCharge4\\NoDecoy.tsv");
+		HashMap<String, Integer> titleToNominalMass = new HashMap<String, Integer>();
+		TSVParser parser = new TSVParser();
+		parser.parse(idFile.getPath());
+		ArrayList<String> titleList = parser.getList("Title");
+		ArrayList<String> peptideList = parser.getList("Peptide");
+		ArrayList<String> specEValueList = parser.getList("SpecEValue");
+		for(int i=0; i<specEValueList.size(); i++)
+		{
+			double specEValue = Double.parseDouble(specEValueList.get(i));
+			if(specEValue > 1E-10) continue;
+			Peptide peptide = new Peptide(peptideList.get(i), aaSet);
+			int nominalMass = peptide.getNominalMass();
+			String title = titleList.get(i);
+			titleToNominalMass.put(title, nominalMass);
+		}
+		
+		NewRankScorer scorer = NewScorerFactory.get(ActivationMethod.CID, InstrumentType.LOW_RESOLUTION_LTQ, Enzyme.TRYPSIN, Protocol.STANDARD);
+		scorer.doNotUseError();
+		
+		File specFile = new File("D:\\Research\\Data\\TRex\\TRex48216.mgf");
+		SpectraAccessor accessor = new SpectraAccessor(specFile);
+		Iterator<Spectrum> itr = accessor.getSpecItr();
+		while(itr.hasNext())
+		{
+			Spectrum spec = accessor.getSpecItr().next();
+			String title = spec.getTitle();
+			int nominalMass;
+			if(titleToNominalMass.containsKey(title)) nominalMass = titleToNominalMass.get(title);
+			else nominalMass = NominalMass.toNominalMass(spec.getParentMass()) - 18;
+			
+			NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
+			
+			// PRM spectrum
+			//out.println("BEGIN IONS");
+			out.println("SCAN="+spec.getScanNum());
+//		    if(spec.getTitle() != null)
+//		        out.println(" " + spec.getTitle());
+//		    else
+//		    	out.println();
+//		    if(spec.getAnnotation() != null)
+//		    	out.println("SEQ=" + spec.getAnnotationStr());
+//			out.println("PEPMASS=" + spec.getPrecursorPeak().getMz());
+			out.println("PEPTIDE_MASS=" + nominalMass);
+//			out.println("SCANS=" + spec.getScanNum());
+//			out.println("CHARGE="+spec.getCharge()+"+");
+			
+			int peptideNominalMass = 1272;
+			for(int m=1; m<nominalMass; m++)
+			{
+				NominalMass prm = new NominalMass(m);
+				NominalMass srm = new NominalMass(peptideNominalMass-m);
+				float prefixScore = scoredSpec.getNodeScore(prm, true);
+				float suffixScore = scoredSpec.getNodeScore(srm, false);
+				out.println(m+"\t"+Math.round(prefixScore+suffixScore));
+			}
+			out.println(nominalMass+"\t"+0);
+		}
+		System.out.println("Done.");			
+	}		
+	
 }

@@ -130,8 +130,14 @@ public class MgfSpectrumParser implements SpectrumParser {
   				else
   				{
   	  				// for mgf files, scan number is set as the zero based sequence number of the spectrum
-  	  				int scanNum = Integer.valueOf(buf.substring(buf.indexOf("=")+1));
-  	  				spec.setScanNum(scanNum);
+  					try
+  					{
+  	  	  				int scanNum = Integer.valueOf(buf.substring(buf.indexOf("=")+1));
+  	  	  				spec.setScanNum(scanNum);
+  					}
+  					catch (NumberFormatException e)
+  					{
+  					}
   				}
   			}
   			else if(buf.startsWith("ACTIVATION"))
