@@ -9,6 +9,12 @@ import edu.ucsd.msjava.fdr.ComputeQValue;
 
 public class TestFDR {
 	@Test
+	public void testFdrMultipleMatches()
+	{
+		File dir = new File("C:\\cygwin\\home\\kims336\\Data\\MSGFPlusTest");
+	}
+	
+	@Test
 	public void testComputeQValue()
 	{
 		File dir = new File(System.getProperty("user.home")+"/Research/Data/QCShew");
