@@ -199,6 +199,15 @@ public class MZIdentMLGen {
 				sir.getCvParam().add(cvParam);
 			}
 			
+			// add retention time
+			float scanStartTime = spec.getRt();
+			if(scanStartTime >= 0)
+			{
+				CvParam cvParam = Constants.makeCvParam("MS:1000016", "scan start time");
+				cvParam.setValue(String.valueOf(scanStartTime));
+				sir.getCvParam().add(cvParam);
+			}
+			
 			
 			int rank = 0;
 			for(int i=matchList.size()-1; i>=0; --i)
