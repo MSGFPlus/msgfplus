@@ -22,7 +22,7 @@ public class TestMSUtils {
 	@Test
 	public void testParsingModFile()
 	{
-		File modFile = new File("C:\\cygwin\\home\\kims336\\Data\\Debug\\MSGF_Plus_invalid_files\\Mods_second_step_toxo.txt");
+		File modFile = new File("H:\\Research\\Charles_TEDDY\\MSGFDB_Mods.txt");
 		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
 		aaSet.printAASet();
 	}

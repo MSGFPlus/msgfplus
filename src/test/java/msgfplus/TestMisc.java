@@ -183,11 +183,11 @@ public class TestMisc {
 //			out.println("SCANS=" + spec.getScanNum());
 //			out.println("CHARGE="+spec.getCharge()+"+");
 			
-			int peptideNominalMass = 1272;
+//			int peptideNominalMass = 1272;
 			for(int m=1; m<nominalMass; m++)
 			{
 				NominalMass prm = new NominalMass(m);
-				NominalMass srm = new NominalMass(peptideNominalMass-m);
+				NominalMass srm = new NominalMass(nominalMass-m);
 				float prefixScore = scoredSpec.getNodeScore(prm, true);
 				float suffixScore = scoredSpec.getNodeScore(srm, false);
 				out.println(m+"\t"+Math.round(prefixScore+suffixScore));

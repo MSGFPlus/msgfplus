@@ -17,6 +17,18 @@ import edu.ucsd.msjava.ui.MzIDToTsv;
 
 public class TestMzIDToTsv {
 	@Test
+	public void testConversionError()
+	{
+		File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug");
+		
+		File mzidFile = new File(dir.getPath()+File.separator+"Cb_A19397_BHI_TCA_BR4_5d_A_FIXED_dta-nr_30x_01.mzid");
+		File tsvFile = new File(dir.getPath()+File.separator+"test.tsv");
+		
+		String[] argv = {"-i", mzidFile.getPath(), "-o", tsvFile.getPath()};
+		MzIDToTsv.main(argv);
+	}
+
+	@Test
 	public void testReadingUnimodCompositions()
 	{
 		String deltaComposition = Unimod.getUnimod().getDeltaComposition("UNIMOD:1379");
