@@ -81,7 +81,7 @@ public class MzIDTest {
 	
 	public static void main(String argv[]) throws Exception
 	{
-		File mzidFile = new File("C:\\cygwin\\home\\kims336\\Data\\Debug\\MSGF_Plus_invalid_files_non_unique_key_errors\\testAll.mzid");
+		File mzidFile = new File("C:\\cygwin\\home\\kims336\\Data\\Debug\\Scaffold\\test.mzid");
 		//mzidFile = new File("/Users/kims336/Research/Data/CompRef/Phospho/H20120518_JQ_CPTAC2_COMPREF4_IMAC_02.mzid");
 		MzIDTest test = new MzIDTest(mzidFile);
 		boolean isValid = test.isValid();
