@@ -45,7 +45,7 @@ public class SearchParams {
 	private int maxCharge;
 	private int numThreads;
 	private boolean replicateMergedResults;
-	private boolean doNotDseEdgeScore;
+	private boolean doNotUseEdgeScore;
 	private File dbIndexDir;
 	private boolean outputAdditionalFeatures;
 	private int minNumPeaksPerSpectrum;
@@ -150,8 +150,8 @@ public class SearchParams {
 		return replicateMergedResults;
 	}
 
-	public boolean doNotDseEdgeScore() {
-		return doNotDseEdgeScore;
+	public boolean doNotUseEdgeScore() {
+		return doNotUseEdgeScore;
 	}
 
 	public File getDBIndexDir() {
@@ -313,7 +313,7 @@ public class SearchParams {
 		}
 		
 		numThreads = paramManager.getIntValue("thread");
-		doNotDseEdgeScore = paramManager.getIntValue("edgeScore") == 1 ? true : false;
+		doNotUseEdgeScore = paramManager.getIntValue("edgeScore") == 1 ? true : false;
 		
 		dbIndexDir = paramManager.getFile("dd");
 		

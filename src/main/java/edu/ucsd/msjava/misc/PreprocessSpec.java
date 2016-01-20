@@ -70,29 +70,7 @@ public class PreprocessSpec {
 				}
 				else
 					printUsageAndExit("Illegal activation method: " + argv[i+1]);
-			}			
-			else if(argv[i].equalsIgnoreCase("-m"))	// Fragmentation method
-			{
-				// (0: written in the spectrum, 1: CID , 2: ETD, 3: HCD)
-				if(argv[i+1].equalsIgnoreCase("0"))
-				{
-					activationMethod = null;
-				}
-				else if(argv[i+1].equalsIgnoreCase("1"))
-				{
-					activationMethod = ActivationMethod.CID;
-				}
-				else if(argv[i+1].equalsIgnoreCase("2"))
-				{
-					activationMethod = ActivationMethod.ETD;
-				}
-				else if(argv[i+1].equalsIgnoreCase("3"))
-				{
-					activationMethod = ActivationMethod.HCD;
-				}
-				else
-					printUsageAndExit("Illegal activation method: " + argv[i+1]);
-			}			
+			}
 			else if(argv[i].equalsIgnoreCase("-inst"))	// Instrument type
 			{
 				if(argv[i+1].equalsIgnoreCase("0"))

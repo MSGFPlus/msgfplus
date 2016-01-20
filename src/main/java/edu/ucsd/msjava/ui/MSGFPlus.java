@@ -186,7 +186,7 @@ public class MSGFPlus {
 		int maxCharge = params.getMaxCharge();
 		
 		int numThreads = params.getNumThreads();
-		boolean doNotDseEdgeScore = params.doNotDseEdgeScore();
+		boolean doNotUseEdgeScore = params.doNotUseEdgeScore();
 		
 		int minNumPeaksPerSpectrum = params.getMinNumPeaksPerSpectrum();
 		if(minNumPeaksPerSpectrum == -1)	// not specified
@@ -367,7 +367,7 @@ public class MSGFPlus {
 		    			params.outputAdditionalFeatures(),
 		    			false
 		    			);
-		    	if(doNotDseEdgeScore)
+		    	if(doNotUseEdgeScore)
 		    		specScanner.turnOffEdgeScoring();
 		    	
 				ConcurrentMSGFPlus.RunMSGFPlus msgfdbExecutor = new ConcurrentMSGFPlus.RunMSGFPlus(
