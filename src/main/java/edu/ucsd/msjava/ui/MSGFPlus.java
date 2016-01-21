@@ -326,7 +326,7 @@ public class MSGFPlus {
 			// Thread pool
 			ThreadPoolExecutorWithExceptions executor = ThreadPoolExecutorWithExceptions.newFixedThreadPool(numThreads);
 			
-            int numTasks = Math.min(Math.max(numThreads * 10, 128), Math.round(specSize/1000f));
+            int numTasks = Math.min(Math.min(numThreads * 10, 64), Math.round(specSize/250f));
             if (numThreads <= 1) {
                 numTasks = 1;
             }
