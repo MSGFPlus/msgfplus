@@ -8,13 +8,12 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 
 import java.util.concurrent.TimeUnit;
 
 import edu.ucsd.msjava.fdr.ComputeFDR;
+import edu.ucsd.msjava.misc.ProgressData;
 import edu.ucsd.msjava.misc.ThreadPoolExecutorWithExceptions;
 import edu.ucsd.msjava.msdbsearch.CompactFastaSequence;
 import edu.ucsd.msjava.msdbsearch.CompactSuffixArray;
@@ -39,14 +38,13 @@ import edu.ucsd.msjava.mzid.MZIdentMLGen;
 import edu.ucsd.msjava.mzml.MzMLAdapter;
 import edu.ucsd.msjava.params.ParamManager;
 import edu.ucsd.msjava.sequences.Constants;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
 public class MSGFPlus {
-	public static final String VERSION = "Release (v2016.01.20)";
-	public static final String RELEASE_DATE = "1/20/2016";
+	public static final String VERSION = "Release (v2016.01.21)";
+	public static final String RELEASE_DATE = "1/21/2016";
 	
 	public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
 	public static final String DECOY_PROTEIN_PREFIX = "XXX";
@@ -329,6 +327,9 @@ public class MSGFPlus {
 			ThreadPoolExecutorWithExceptions executor = ThreadPoolExecutorWithExceptions.newFixedThreadPool(numThreads);
 			
             int numTasks = Math.min(Math.max(numThreads * 10, 128), Math.round(specSize/1000f));
+            if (numThreads <= 1) {
+                numTasks = 1;
+            }
             System.out.println("Splitting work into " + numTasks + " tasks.");
             
 			// Partition specKeyList
@@ -402,10 +403,12 @@ public class MSGFPlus {
                     }
                         
                     try {
-                        double completed = executor.getCompletedTaskCount();
-                        double total = executor.getTaskCount();
-                        double progress = (completed / total) * 100.0;
-                        System.out.format("Search progress: %.0f / %.0f tasks, %.1f%%%n", completed, total, progress);
+                        //double completed = executor.getCompletedTaskCount();
+                        //double total = executor.getTaskCount();
+                        //double progressAdjust = executor.getProgressAdjustment();
+                        //double progress = (completed / total) * 100.0;
+                        //System.out.format("Search progress: %.0f / %.0f tasks, %.2f%%%n", completed, total, progress + progressAdjust);
+                        executor.outputProgressReport();
                         Thread.sleep(60000); // Output every minute
                     } catch (InterruptedException ex) {
                         Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, ex);

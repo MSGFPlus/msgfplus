@@ -1,5 +1,6 @@
 package edu.ucsd.msjava.msdbsearch;
 
+import edu.ucsd.msjava.misc.ProgressData;
 import java.io.DataInputStream;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -61,6 +62,8 @@ public class DBScanner {
 	// DB search results
 	private Map<SpecKey,PriorityQueue<DatabaseMatch>> specKeyDBMatchMap;
 	private Map<Integer,PriorityQueue<DatabaseMatch>> specIndexDBMatchMap;
+    
+    private ProgressData progress;
 
 	// For output
 	private String threadName = "";
@@ -105,6 +108,8 @@ public class DBScanner {
 		
 		specKeyDBMatchMap = Collections.synchronizedMap(new HashMap<SpecKey,PriorityQueue<DatabaseMatch>>());
 		specIndexDBMatchMap = Collections.synchronizedMap(new HashMap<Integer,PriorityQueue<DatabaseMatch>>());
+        
+        progress = null;
 	}
 
 	// builder
@@ -160,6 +165,14 @@ public class DBScanner {
 	{
 		return specIndexDBMatchMap;
 	}
+    
+    public void setProgressObj(ProgressData progObj) {
+        progress = progObj;
+    }
+    
+    public ProgressData getProgressObj() {
+        return progress;
+    }
 	
 	public void dbSearchCTermEnzymeNoMod(int numberOfAllowableNonEnzymaticTermini, boolean verbose)
 	{
@@ -188,6 +201,10 @@ public class DBScanner {
 	
 	public void dbSearch(int numberOfAllowableNonEnzymaticTermini, int fromIndex, int toIndex, boolean verbose)
 	{
+        if (progress == null) {
+            progress = new ProgressData();
+        }
+        
 		Map<SpecKey,PriorityQueue<DatabaseMatch>> curSpecKeyDBMatchMap = new HashMap<SpecKey,PriorityQueue<DatabaseMatch>>();
 		
 		CandidatePeptideGrid candidatePepGrid;
@@ -239,6 +256,7 @@ public class DBScanner {
 					System.out.print(threadName + ": Database search progress... "); 
 					System.out.format("%.1f%% complete\n", bufferIndex/(float)numIndices*100);
 				}
+                progress.report(bufferIndex, numIndices);
 				isExtensionAtTheSameIndex = false;
 				int index = indices.readInt();
 				int lcp = nlcps.readByte();
@@ -587,6 +605,9 @@ public class DBScanner {
 	
 	public void computeSpecEValue(boolean storeScoreDist, int fromIndex, int toIndex)
 	{
+        if (progress == null) {
+            progress = new ProgressData();
+        }
 		List<SpecKey> specKeyList = specScanner.getSpecKeyList().subList(fromIndex, toIndex);
 		
 		int numSpecs = toIndex-fromIndex;
@@ -599,6 +620,7 @@ public class DBScanner {
 				System.out.print(threadName + ": Computing spectral E-values... "); 
 				System.out.format("%.1f%% complete\n", numProcessedSpecs/(float)numSpecs*100);
 			}
+            progress.report(numProcessedSpecs, numSpecs);
 			
 			PriorityQueue<DatabaseMatch> matchQueue = specKeyDBMatchMap.get(specKey);
 			if(matchQueue == null)

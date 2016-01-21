@@ -1,5 +1,6 @@
 package edu.ucsd.msjava.msdbsearch;
 
+import edu.ucsd.msjava.misc.ProgressData;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +48,8 @@ public class ScoredSpectraMap {
 //	private Map<SpecKey,Tolerance> specKeyToleranceMap;
 	
 	private boolean turnOffEdgeScoring = false;
+    
+    private ProgressData progress;
 
 	public ScoredSpectraMap(
 			SpectraAccessor specAcc,
@@ -78,6 +81,7 @@ public class ScoredSpectraMap {
 		
 		if(storeRankScorer)
 			specKeyRankScorerMap = Collections.synchronizedMap(new HashMap<SpecKey,NewRankScorer>());
+        progress = null;
 	}
 
 	public ScoredSpectraMap(
@@ -167,6 +171,14 @@ public class ScoredSpectraMap {
 		}
 		return this;
 	}
+    
+    public void setProgressObj(ProgressData progObj) {
+        progress = progObj;
+    }
+    
+    public ProgressData getProgressObj() {
+        return progress;
+    }
 	
 	public void preProcessSpectra()
 	{
@@ -175,6 +187,9 @@ public class ScoredSpectraMap {
 	
 	public void preProcessSpectra(int fromIndex, int toIndex)
 	{
+        if (progress == null) {
+            progress = new ProgressData();
+        }
 		if(specDataType.getActivationMethod() != ActivationMethod.FUSION)
 			preProcessIndividualSpectra(fromIndex, toIndex);
 		else
@@ -195,7 +210,8 @@ public class ScoredSpectraMap {
 			if(this.turnOffEdgeScoring)
 				scorer.doNotUseError();
 		}
-		
+		int count = 0;
+        int total = toIndex - fromIndex;
 		for(SpecKey specKey : specKeyList.subList(fromIndex, toIndex))
 		{
 			int specIndex = specKey.getSpecIndex();
@@ -220,6 +236,8 @@ public class ScoredSpectraMap {
 				specKeyScorerMap.put(specKey, new FastScorer(scoredSpec, maxNominalPeptideMass));
 			if(specKeyRankScorerMap != null)
 				specKeyRankScorerMap.put(specKey, scorer);
+            count++;
+            progress.report(count, total);
 		}				
 	}
 	
