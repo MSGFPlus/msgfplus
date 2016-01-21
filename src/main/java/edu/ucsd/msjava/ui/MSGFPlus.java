@@ -15,6 +15,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import edu.ucsd.msjava.fdr.ComputeFDR;
+import edu.ucsd.msjava.misc.ThreadPoolExecutorWithExceptions;
 import edu.ucsd.msjava.msdbsearch.CompactFastaSequence;
 import edu.ucsd.msjava.msdbsearch.CompactSuffixArray;
 import edu.ucsd.msjava.msdbsearch.ConcurrentMSGFPlus;
@@ -325,7 +326,7 @@ public class MSGFPlus {
 			System.out.println("Spectrum " + fromIndexGlobal + "-" + (toIndexGlobal-1) + " (total: " + specSize + ")");
 			
 			// Thread pool
-			ThreadPoolExecutor executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(numThreads);
+			ThreadPoolExecutorWithExceptions executor = ThreadPoolExecutorWithExceptions.newFixedThreadPool(numThreads);
 			
             int numTasks = Math.min(Math.max(numThreads * 10, 128), Math.round(specSize/1000f));
             System.out.println("Splitting work into " + numTasks + " tasks.");
@@ -359,59 +360,83 @@ public class MSGFPlus {
 				}
 			}
 			
-			for(int i=0; i<numTasks; i++)
-			{
-		    	ScoredSpectraMap specScanner = new ScoredSpectraMap(
-		    			specAcc,
-		    			Collections.synchronizedList(specKeyList.subList(startIndex[i], endIndex[i])),
-		    			leftParentMassTolerance,
-		    			rightParentMassTolerance,
-		    			minIsotopeError,
-		    			maxIsotopeError,
-		    			specDataType,
-		    			params.outputAdditionalFeatures(),
-		    			false
-		    			);
-		    	if(doNotUseEdgeScore)
-		    		specScanner.turnOffEdgeScoring();
-		    	
-				ConcurrentMSGFPlus.RunMSGFPlus msgfdbExecutor = new ConcurrentMSGFPlus.RunMSGFPlus(
-						specScanner,
-						sa,
-						params,
-						resultList,
-                        i + 1
-						);
-				executor.execute(msgfdbExecutor);
-			}
-			
-			executor.shutdown();
-            
-            // TODO: Detect exceptions in the threads, and exit early.
-            // One thread got interrupted, so all of the results will be incomplete. Exit.
-            //return "Task terminated; results incomplete. Please run again with a greater amount of memory, using \"-Xmx4G\", for example.";
-            
-            while (executor.getActiveCount() > 1) {
-                try {
-                    double completed = executor.getCompletedTaskCount();
-                    double total = executor.getTaskCount();
-                    double progress = (completed / total) * 100.0;
-                    System.out.format("Search progress: %.0f / %.0f tasks, %.1f%%%n", completed, total, progress);
-                    Thread.sleep(60000); // Output every minute
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, ex);
+            try {
+                for(int i=0; i<numTasks; i++)
+                {
+                	ScoredSpectraMap specScanner = new ScoredSpectraMap(
+    		    			specAcc,
+    		    			Collections.synchronizedList(specKeyList.subList(startIndex[i], endIndex[i])),
+    		    			leftParentMassTolerance,
+    		    			rightParentMassTolerance,
+    		    			minIsotopeError,
+    		    			maxIsotopeError,
+    		    			specDataType,
+    		    			params.outputAdditionalFeatures(),
+    		    			false
+    		    			);
+    		    	if(doNotUseEdgeScore)
+    		    		specScanner.turnOffEdgeScoring();
+                    
+                    ConcurrentMSGFPlus.RunMSGFPlus msgfdbExecutor = new ConcurrentMSGFPlus.RunMSGFPlus(
+    						specScanner,
+    						sa,
+    						params,
+    						resultList,
+                            i + 1
+    						);
+    				executor.execute(msgfdbExecutor);
+    			}
+                
+                executor.shutdown();
+                
+                while (executor.getActiveCount() > 1) {
+                    if (executor.HasThrownData()) {
+                        // One task threw an exception, so all of the results will be incomplete. Exit.
+                        Throwable data = executor.getThrownData();
+                        if (data instanceof OutOfMemoryError) {
+                            throw (OutOfMemoryError)data;
+                        }
+                        else {
+                            throw data;
+                        }
+                    }
+                        
+                    try {
+                        double completed = executor.getCompletedTaskCount();
+                        double total = executor.getTaskCount();
+                        double progress = (completed / total) * 100.0;
+                        System.out.format("Search progress: %.0f / %.0f tasks, %.1f%%%n", completed, total, progress);
+                        Thread.sleep(60000); // Output every minute
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
+                
+                try {
+    				executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+    			} catch (InterruptedException e)
+    			{
+    				e.printStackTrace();
+                    Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, e);
+    			}
+    			//while(!executor.isTerminated()) {}	// wait until all threads terminate
+            } catch (OutOfMemoryError ex) {
+                ex.printStackTrace();
+                Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, ex);
+                executor.shutdownNow();
+                return "Task terminated; results incomplete. Please run again with a greater amount of memory, using \"-Xmx4G\", for example.";
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, ex);
+                executor.shutdownNow();
+                return "Task terminated; results incomplete. Please run again.";
+            } catch (Throwable ex) {
+                ex.printStackTrace();
+                Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, ex);
+                executor.shutdownNow();
+                return "Task terminated; results incomplete. Please run again.";
             }
-			
-			try {
-				executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-			} catch (InterruptedException e)
-			{
-				e.printStackTrace();
-                Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, e);
-			}
-			//while(!executor.isTerminated()) {}	// wait until all threads terminate
-			
+            
 			fromIndexGlobal += numSpecScannedTogether;
 		}
 		
