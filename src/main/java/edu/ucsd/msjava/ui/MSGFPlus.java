@@ -328,6 +328,7 @@ public class MSGFPlus {
 			ThreadPoolExecutor executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(numThreads);
 			
             int numTasks = Math.min(Math.max(numThreads * 10, 128), Math.round(specSize/1000f));
+            System.out.println("Splitting work into " + numTasks + " tasks.");
             
 			// Partition specKeyList
 			int size = toIndexGlobal - fromIndexGlobal;

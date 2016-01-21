@@ -77,7 +77,7 @@ public class ConcurrentMSGFPlus {
 			
 			scanner.addResultsToList(resultList);
 //			gen.addSpectrumIdentificationResults(scanner.getSpecIndexDBMatchMap());
-			System.out.print(threadName+": Task " + taskNum + " completed.");
+			System.out.println(threadName+": Task " + taskNum + " completed.");
 		}
 	}	
 }
