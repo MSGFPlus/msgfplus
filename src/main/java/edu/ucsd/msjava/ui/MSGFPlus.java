@@ -38,12 +38,14 @@ import edu.ucsd.msjava.mzid.MZIdentMLGen;
 import edu.ucsd.msjava.mzml.MzMLAdapter;
 import edu.ucsd.msjava.params.ParamManager;
 import edu.ucsd.msjava.sequences.Constants;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class MSGFPlus {
-	public static final String VERSION = "Beta (v10282)";
-//	public static final String VERSION = "Test_Multithreading (v10064)";
-	public static final String RELEASE_DATE = "12/19/2014";
+	public static final String VERSION = "Release (v2016.01.20)";
+	public static final String RELEASE_DATE = "1/20/2016";
 	
 	public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
 	public static final String DECOY_PROTEIN_PREFIX = "XXX";
@@ -323,22 +325,24 @@ public class MSGFPlus {
 			System.out.println("Spectrum " + fromIndexGlobal + "-" + (toIndexGlobal-1) + " (total: " + specSize + ")");
 			
 			// Thread pool
-			ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+			ThreadPoolExecutor executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(numThreads);
 			
+            int numTasks = Math.min(Math.max(numThreads * 10, 128), Math.round(specSize/1000f));
+            
 			// Partition specKeyList
 			int size = toIndexGlobal - fromIndexGlobal;
-			int residue = size % numThreads;
+			int residue = size % numTasks;
 			
-			int[] startIndex = new int[numThreads];
-			int[] endIndex = new int[numThreads];
+			int[] startIndex = new int[numTasks];
+			int[] endIndex = new int[numTasks];
 			
-			int subListSize = size/numThreads;
-			for(int i=0; i<numThreads; i++)
+			int subListSize = size/numTasks;
+			for(int i=0; i<numTasks; i++)
 			{
 				startIndex[i] =  i > 0 ? endIndex[i-1] : fromIndexGlobal;
 				endIndex[i] = startIndex[i] + subListSize + (i < residue ? 1 : 0);
 
-				subListSize = size/numThreads;
+				subListSize = size/numTasks;
 				while(endIndex[i] < specKeyList.size())
 				{
 					SpecKey lastSpecKey = specKeyList.get(endIndex[i]-1);
@@ -354,7 +358,7 @@ public class MSGFPlus {
 				}
 			}
 			
-			for(int i=0; i<numThreads; i++)
+			for(int i=0; i<numTasks; i++)
 			{
 		    	ScoredSpectraMap specScanner = new ScoredSpectraMap(
 		    			specAcc,
@@ -371,21 +375,39 @@ public class MSGFPlus {
 		    		specScanner.turnOffEdgeScoring();
 		    	
 				ConcurrentMSGFPlus.RunMSGFPlus msgfdbExecutor = new ConcurrentMSGFPlus.RunMSGFPlus(
-							specScanner,
-							sa,
-							params,
-							resultList
-							);
+						specScanner,
+						sa,
+						params,
+						resultList,
+                        i + 1
+						);
 				executor.execute(msgfdbExecutor);
 			}
 			
 			executor.shutdown();
+            
+            // TODO: Detect exceptions in the threads, and exit early.
+            // One thread got interrupted, so all of the results will be incomplete. Exit.
+            //return "Task terminated; results incomplete. Please run again with a greater amount of memory, using \"-Xmx4G\", for example.";
+            
+            while (executor.getActiveCount() > 1) {
+                try {
+                    double completed = executor.getCompletedTaskCount();
+                    double total = executor.getTaskCount();
+                    double progress = (completed / total) * 100.0;
+                    System.out.format("Search progress: %.0f / %.0f tasks, %.1f%%%n", completed, total, progress);
+                    Thread.sleep(60000); // Output every minute
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
 			
 			try {
 				executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 			} catch (InterruptedException e)
 			{
 				e.printStackTrace();
+                Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, e);
 			}
 			//while(!executor.isTerminated()) {}	// wait until all threads terminate
 			

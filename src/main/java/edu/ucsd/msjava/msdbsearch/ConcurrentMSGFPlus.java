@@ -8,12 +8,14 @@ public class ConcurrentMSGFPlus {
 		private final DBScanner scanner;
 		SearchParams params;
 		List<MSGFPlusMatch> resultList;
+        private final int taskNum;
 		
 		public RunMSGFPlus(
 				ScoredSpectraMap specScanner,
 				CompactSuffixArray sa,
 				SearchParams params,
-				List<MSGFPlusMatch> resultList
+				List<MSGFPlusMatch> resultList,
+                int taskNum
 				)
 		{
 			this.specScanner = specScanner;
@@ -31,11 +33,14 @@ public class ConcurrentMSGFPlus {
 					params.ignoreMetCleavage()
 					);
 			this.resultList = resultList;
+            this.taskNum = taskNum;
 		}
 		
+        @Override
 		public void run() 
 		{
 			String threadName = Thread.currentThread().getName();
+			System.out.println(threadName+": Starting task " + taskNum);
 			
 			// Pre-process spectra
 			long time = System.currentTimeMillis();
@@ -72,6 +77,7 @@ public class ConcurrentMSGFPlus {
 			
 			scanner.addResultsToList(resultList);
 //			gen.addSpectrumIdentificationResults(scanner.getSpecIndexDBMatchMap());
+			System.out.print(threadName+": Task " + taskNum + " completed.");
 		}
 	}	
 }
