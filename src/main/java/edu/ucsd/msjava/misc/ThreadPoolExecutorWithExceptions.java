@@ -93,6 +93,10 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
                 progressSum += data.getProgress();
             }
         }
+        if (count < 1) {
+            // No active tasks, prevent divide by zero
+            return 0.0;
+        }
         double progress = progressSum / count;
         double weight = count / this.getTaskCount();
         return progress * weight;
@@ -104,6 +108,10 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
     public void outputProgressReport() {
         double completed = getCompletedTaskCount();
         double total = getTaskCount();
+        if (total < 1) {
+            // prevent divide by zero - should never be zero (unless someone rearranges code), but here just in case.
+            total = 1;
+        }
         double progress = (completed / total) * 100.0;
         System.out.format("Search progress: %.0f / %.0f tasks, %.2f%%%n", completed, total, progress + getProgressAdjustment());
     }
