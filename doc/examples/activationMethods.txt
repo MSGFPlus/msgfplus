@@ -1,0 +1,14 @@
+# This file specifies additional fragmentation methods considered for MS-GFDB and MS-GF
+#
+# Format: ShortName,FullName
+# - ShortName: abbreviation of the fragmentation method (e.g. CID)
+# - FullName: full name of the fragmentation method (e.g. collision-induced dissociation)
+#
+# The following fragmentation methods are pre-configured:
+# CID,collision-induced dissociation
+# ETD,electron transfer dissociation
+# HCD,high-energy collision-induced dissociation
+#
+# Specify one framentation method per line
+# Example:
+# FragMethod=PQD,pulsed q dissociation

@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <title>MS-GFDB Modification File Example</title>
+    <link type="text/css" rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <h1 class="pagetitle">MS-GFDB Modification File Example</h1>
+    <div class="pageEditData">
+      Added by Sangtae Kim, last edited by Sangtae Kim on May 17, 2011
+    </div>
+    <a href="index.html">MS-GF+ Documentation home</a>
+    <a href="MS-GFDB.html">MS-GFDB help page</a>
+    <p>&#35; This file is used to specify modifications<br/>
+      &#35; # for comments<br/>
+      &#35;<br/>
+      &#35; Max Number of Modifications per peptide (default 2). If this value is large, the search takes long.<br/>
+      <b>NumMods=2</b>
+    </p>
+    <p>&#35; To input a modification, use the following command:<br/>
+      &#35; Mass or CompositionStr, Residues, ModType, Position, Name (all the five fields are required).<br/>
+      &#35; <b>CompositionStr</b> (C[Num]H[Num]N[Num]O[Num]S[Num]P[Num])<br/>
+      &#35; &nbsp;&nbsp; &nbsp;&#45; C (Carbon), H (Hydrogen), N (Nitrogen), O (Oxygen), S (Sulfer) and P (Phosphorus) are allowed.<br/>
+      &#35; &nbsp;&nbsp; &nbsp;&#45; Atom can be omitted. The sequence of atoms must be followed.<br/>
+      &#35; &nbsp;&nbsp; &nbsp;&#45; Negative numbers are allowed.<br/>
+      &#35; &nbsp;&nbsp; &nbsp;&#45; E.g. C2H2O1 (valid), H2C1O1 (invalid)<br/>
+      &#35; <b>Mass</b> can be used instead of CompositionStr. It is important to specify accurate masses (integer masses are insufficient).<br/>
+      &#35; &nbsp;&nbsp; &nbsp;&#45; E.g. 15.994915<br/>
+      &#35; <b>Residues</b>: affected amino acids (must be upper letters)<br/>
+      &#35; &nbsp;&nbsp; &nbsp;&#45; Must be uppor letters or *<br/>
+      &#35; &nbsp;&nbsp; &nbsp;&#45; Use * if this modification is applicable to any residue.<br/>
+      &#35; &nbsp;&nbsp; &nbsp;&#45; * should not be "anywhere" modification (e.g. "15.994915, &#42;, opt, any, Oxidation" is not allowed.)<br/>
+      &#35; &nbsp;&nbsp; &nbsp;&#45; E.g. NQ, *<br/>
+      &#35; <b>ModType</b>: "fix" for fixed modifications, "opt" for variable modifications (case insensitive)<br/>
+      &#35; <b>Position</b>: position in the peptide where the modification can be attached.<br/>
+      &#35; &nbsp;&nbsp; &nbsp;&#45; One of the following five values should be used:<br/>
+      &#35; &nbsp;&nbsp; &nbsp;&#45; any (anywhere), N-term (peptide N-term), C-term (peptide C-term), Prot-N-term (protein N-term), Prot-C-term (protein C-term)<br/>
+      &#35; &nbsp;&nbsp; &nbsp;&#45; Case insensitive<br/>
+      &#35; &nbsp;&nbsp; &nbsp;&#45; "-" can be omitted<br/>
+      &#35; &nbsp;&nbsp; &nbsp;&#45; E.g. any, Any, Prot-n-Term, ProtNTerm =&gt; all valid<br/>
+      &#35; <b>Name</b>: name of the modification<br/>
+      &#35; &nbsp;&nbsp; &nbsp;&#45; E.g. Oxidation
+    </p>
+    <p>C2H3N1O1,C,fix,any,Carbamidomethylation &nbsp;&nbsp; &nbsp;# Fixed Carbamidomethyl C</p>
+    <p>&#35; Variable Modifications (default: none)<br/>
+      <b>O1,M,opt,any,Oxidation</b>&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;# Oxidation M<br/>
+      &#35;15.994915,M,opt,any,Oxidation&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;# Oxidation M (mass is used instead of CompositionStr)<br/>
+      &#35;H-1N-1O1,NQ,opt,any,Deamidation&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;# Negative numbers are allowed.<br/>
+      &#35;C2H3NO,*,opt,N-term,Carbamidomethylation&nbsp;&nbsp; &nbsp;# Variable Carbamidomethyl N-term<br/>
+      &#35;H-2O-1,E,opt,N-term,Pyro-glu&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;# Pyro-glu from E<br/>
+      &#35;H-3N-1,Q,opt,N-term,Pyro-glu&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;# Pyro-glu from Q<br/>
+      &#35;C2H2O,*,opt,Prot-N-term,Acetylation&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;# Acetylation Protein N-term<br/>
+      &#35;C2H2O1,K,opt,any,Acetylation&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;# Acetylation K<br/>
+      &#35;CH2,K,opt,any,Methylation&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;# Methylation K<br/>
+      &#35;H3O4P,STY,opt,any,Phosphorylation&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;# Phosphorylation STY
+    </p>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+# This file specifies protocols considered for MS-GFDB and MS-GF
+#
+# Protocols are used to invoke user-defined scoring models.
+#
+# Format: ShortName,Description
+# - ShortName: an unique short name of the protocol (e.g. Phosphorylation)
+# - Description: description of the protocol
+#
+# The following protocols are pre-configured:
+# Phosphorylation,Phospho-enriched sample
+#
+# Specify one protocol per line
+#
+# Example:
+# KimLab,Hidden protocol used in the Kim lab

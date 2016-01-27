@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <title>ScoringParamGen</title>
+    <link type="text/css" rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1 class="pagetitle">ScoringParamGen</h1>
+    <div class="pageEditData">
+      Created by Sangtae Kim, last edited by Sangtae Kim on Jan 31, 2014
+    </div>
+    <a href="index.html">MS-GF+ Documentation home</a>
+    <h5>Creates a scoring parameter file (UserParam) to be used for MS-GF+.</h5>
+    <p>
+      <b>Installation</b>
+    </p>
+    <ul>
+      <li>ScoringParamGen is included in MSGFPlus.jar.</li>
+    </ul>
+
+    <div class="codePanel">
+      <pre class="code">Usage: java -Xmx3500M -cp MSGFPlus.jar edu.ucsd.msjava.ui.ScoringParamGen
+        <span class="code-keyword">-i ResultPath</span> (MSGFDBResultFile (*.mzid) or MSGFDBResultDir)
+        <span class="code-keyword">-d SpecDir</span> (Path to directory containing spectrum files)
+        <span class="code-keyword">-m FragmentMethodID</span> (0: CID, 1: ETD, 2: HCD)
+        <span class="code-keyword">-inst InstrumentID</span> (0: Low-res LCQ/LTQ, 1: High-res LTQ, 2: TOF, 3: Q-Exactive)
+        <span class="code-keyword">-e EnzymeID</span> (0: Trypsin, 1: Chymotrypsin, 2: Lys-C, 3: Lys-N, 4: glutamyl endopeptidase, 5: Arg-C, 6: Asp-N, 7: alphaLP, 8: no cleavage)
+        <span class="code-keyword">[-protocol ProtocolID]</span> (<span class="code-object">0: NoProtocol (Default)</span>, 1: Phosphorylation, 2: iTRAQ, 3: iTRAQPhospho, 4: TMT)</pre>
+    </div>
+    <h5>Parameters:</h5>
+    <ul>
+      <li>
+        <b>-i ResultPath</b> - Required
+        <ul>
+          <li>Path to the folder containing MS-GF+ result files (*.mzid or *.tsv).</li>
+        </ul>
+      </li>
+      <li>
+        <b>-d SpecDir</b> - Required
+        <ul>
+          <li>Path to the folder containing spectrum files used to generate MS-GF+ results.</li>
+        </ul>
+      </li>
+      <li>
+        <b>-m FragmentationMethodID</b> - Required
+        <ul>
+          <li>Fragmentation method ID (0: CID, 1: ETD, 2: HCD)</li>
+        </ul>
+      </li>
+      <li>
+        <b>-inst InstrumentID</b> - Required
+        <ul>
+          <li>ID specifying the instrument to measure product ions, i.e. MS/MS</li>
+          <li>0: Low-res LCQ/LTQ, 1: High-res LTQ, 2: TOF, 3: Q-Exactive</li>
+        </ul>
+      </li>
+      <li>
+        <b>-e EnzymeID</b> - Required
+        <ul>
+          <li>EnzymeID</li>
+          <li>0: Trypsin, 1: Chymotrypsin, 2: Lys-C, 3: Lys-N, 4: glutamyl endopeptidase, 5: Arg-C, 6: Asp-N, 7: alphaLP, 8: no cleavage</li>
+        </ul>
+      </li>
+      <li>
+        <b>-protocol ProtocolID</b> - optional
+        <ul>
+          <li>Protocol ID</li>
+          <li>0: NoProtocol (Default), 1: Phosphorylation, 2: iTRAQ, 3: iTRAQPhospho, 4: TMT</li>
+        </ul>
+      </li>
+    </ul>
+
+    <p>
+      <b>Output</b>
+    </p>
+
+    <ul>
+      <li>A scoring parameter file containing scoring parameters (*.param).</li>
+      <li>The name of the scoring parameter file represents the spectrum type (FragmentationMethod, InstrumentType, Enzyme, Protocol) used to generate the spectrum.
+        <ul>
+          <li>FragmentationMethod_InstrumentType_Enzyme.param</li>
+          <li>FragmentationMethod_InstrumentType_Enzyme_Protocol.param</li>
+          <li>E.g. ETD_LowRes_GluC.param, HCD_HighRes_Tryp_Phosphorylation.param</li>
+        </ul>
+      </li>
+    </ul>
+
+    <p>
+      <b>How to use a custom scoring parameter file?</b>
+    </p>
+
+    <ul>
+      <li>Place scoring parameter files in the "params" directory.</li>
+      <li>MS-GF+ uses the (user-defined) scoring parameter files to analyze spectra of the specified type.</li>
+    </ul>
+
+    <p>
+      <b>How to make a parameter file for a new fragmentation method or a new enzyme?</b>
+    </p>
+
+    <ul>
+      <li>Define new fragmentation methods in <a href="examples/activationMethods.txt" title="activationMethods.txt">params/activationMethods.txt</a> or new enzymes in&nbsp;<a href="examples/enzymes.txt" title="enzymes.txt">params/enzymes.txt</a>.</li>
+      <li>Run ScoringParamGen with no parameter: "-cp MSGFPlus.jar edu.ucsd.msjava.ui.ScoringParamGen". It will now print out the ID of the new enzyme or the new fragmentation method.</li>
+      <li>Run ScoringParamGen with new FragmentationMethodID or new EnzymeID</li>
+    </ul>
+
+    <p>
+      <b>What is "protocol" and how to define it?</b>
+    </p>
+
+    <ul>
+      <li>Protocol is a user-defined tag associated with a scoring parameter file.</li>
+      <li>For example, one may want to create a scoring parameter file for phosphorylation-enriched sample because the fragmentation propensities of phosphopeptides are different from other peptides even if the exact same condition (CID_LowRes_Tryp) is used to generate them. In such a case, one can define a protocol "Phosphorylation" and create CID_LowRes_Tryp_Phosphorylation.param.</li>
+      <li>Define new protocols in&nbsp;<a href="examples/protocols.txt" title="protocols.txt">params/protocols.txt</a>.</li>
+      <li>New protocols will show up in the usage information.</li>
+    </ul>
+
+    <h5>
+      <a name="ScoringParamGen-Example"/>
+      <b>Example</b>
+    </h5>
+
+    <ul>
+      <li>Purpose: creating a scoring parameter file for HCD, HighRes, CNBr</li>
+      <li>Add "CNBr,M,C,CNBr" in the params/enzyme.txt file.</li>
+      <li>Run MS-GF+ with no parameter and check the id of CNBr (assume the id is 10).</li>
+      <li>Run MS-GF+ by specifying -m 3 (HCD), -inst 2 (HighRes), -e 10 (CNBr). Suppose that the spectrum file name is test.mzML and the MS-GF+ result file is "test.mzid".</li>
+      <li>Create a folder "results" and move test.mzid into it.</li>
+      <li>Run ScoringParamGen:</li>
+    </ul>
+
+    <div class="codePanel">
+      <pre class="code">java -Xmx3500M -cp MSGFPlus.jar edu.ucsd.msjava.ui.ScoringParamGen -i results -d . -m 2 -inst 1 -e 10</pre>
+    </div>
+
+    <ul>
+      <li>Check if "HCD_HighRes_CNBr.param" is created. Create a directory named "params" and move "HCD_HighRes_CNBr.param" into "params".</li>
+      <li>From now on, running MS-GF+ with "-m 3 -inst 2 -e 10" will use HCD_HighRes_CNBr.param.</li>
+    </ul>
+  </body>
+</html>
