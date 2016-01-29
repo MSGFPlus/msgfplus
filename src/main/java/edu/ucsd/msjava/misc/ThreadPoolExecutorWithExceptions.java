@@ -52,6 +52,7 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
     @Override
     public void afterExecute(Runnable r, Throwable t) {
         super.afterExecute(r, t);
+        outputProgressReport();
         if (r instanceof ConcurrentMSGFPlus.RunMSGFPlus) {
             ConcurrentMSGFPlus.RunMSGFPlus run = (ConcurrentMSGFPlus.RunMSGFPlus)r;
             progressObjects.remove(run.getProgressData());
