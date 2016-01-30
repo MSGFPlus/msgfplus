@@ -390,7 +390,8 @@ public class MSGFPlus {
                 
                 executor.shutdown();
                 
-                while (executor.getActiveCount() > 1) {
+                int outputLimitCounter = 0;
+                while (executor.getActiveCount() > 0) {
                     if (executor.HasThrownData()) {
                         // One task threw an exception, so all of the results will be incomplete. Exit.
                         Throwable data = executor.getThrownData();
@@ -401,15 +402,15 @@ public class MSGFPlus {
                             throw data;
                         }
                     }
+                    
+                    if (outputLimitCounter % 60 == 0) {
+                        // Output every minute
+                        executor.outputProgressReport();
+                    }
+                    outputLimitCounter++;
                         
                     try {
-                        //double completed = executor.getCompletedTaskCount();
-                        //double total = executor.getTaskCount();
-                        //double progressAdjust = executor.getProgressAdjustment();
-                        //double progress = (completed / total) * 100.0;
-                        //System.out.format("Search progress: %.0f / %.0f tasks, %.2f%%%n", completed, total, progress + progressAdjust);
-                        executor.outputProgressReport();
-                        Thread.sleep(60000); // Output every minute
+                        Thread.sleep(1000); // sleep for one second; don't busy wait.
                     } catch (InterruptedException ex) {
                         Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -422,6 +423,8 @@ public class MSGFPlus {
     				e.printStackTrace();
                     Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, e);
     			}
+                // Output completed progress report.
+                executor.outputProgressReport();
     			//while(!executor.isTerminated()) {}	// wait until all threads terminate
             } catch (OutOfMemoryError ex) {
                 ex.printStackTrace();
