@@ -175,6 +175,29 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 	public boolean contains(char residue) {
 		return residueMap.containsKey(residue);  
 	}
+    
+    /**
+     * Returns a list of all residues without mods
+     * @return 
+     */
+    public ArrayList<Character> getResidueListWithoutMods() {
+        ArrayList<Character> residues = new ArrayList<Character>();
+        for(Map.Entry<Character, AminoAcid> aa : residueMap.entrySet()) {
+            char residue = aa.getValue().getUnmodResidue();
+            if(!residues.contains(residue)) {
+                residues.add(residue);
+            }
+        }
+        return residues;
+    }
+    
+    /**
+     * Returns a list of all residues, including modified residues
+     * @return 
+     */
+    public ArrayList<Character> getResidueList() {
+        return new ArrayList<Character>(residueMap.keySet());
+    }
 
 	/**
 	 * Get the amino acid mass of the residue.

@@ -280,9 +280,11 @@ public class CandidatePeptideGrid {
 			stdResidue2Residues = protCTermAAResidue = new char[STANDARD_RESIDUE_MAX_RESIDUE][];
 		}
 		
-		for(AminoAcid aa : AminoAcidSet.getStandardAminoAcidSet())
+		//for(AminoAcid aa : AminoAcidSet.getStandardAminoAcidSet())
+		for(Character aa : aaSet.getResidueListWithoutMods())
 		{
-			char residue = aa.getResidue();
+			//char residue = aa.getResidue();
+            char residue = aa.charValue();
 			AminoAcid[] aaArr = aaSet.getAminoAcids(location, residue);
 			stdResidue2NominalMasses[residue] = new int[aaArr.length];
 			stdResidue2Masses[residue] = new double[aaArr.length];
