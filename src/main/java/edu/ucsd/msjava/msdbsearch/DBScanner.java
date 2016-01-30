@@ -992,7 +992,8 @@ public class DBScanner {
 			for(int i=0; i<s.length(); i++)
 			{
 				char residue = s.charAt(i);
-				if(aaSet.getAminoAcid(residue) != null)
+				//if(aaSet.getAminoAcid(residue) != null)
+				if(Character.isLetter(residue))
 					aaCount[residue]++;
 			}
 		}
@@ -1005,13 +1006,20 @@ public class DBScanner {
 		for(AminoAcid aa : aaSet.getAllAminoAcidArr())
 		{
 			long count = aaCount[aa.getUnmodResidue()];
-			if(count == 0)
+			if(count == 0 && AminoAcid.isStdAminoAcid(aa.getUnmodResidue()))
 			{
 				success = false;
 				break;
 			}
 			aa.setProbability(count/(float)totalAACount);
 		}
+        for(int i = 0; i < 128; i++)
+        {
+            if(!aaSet.contains((char)i) && aaCount[i] > 0)
+            {
+                System.out.println("Warning: Sequence database contains " + aaCount[i] + " counts of letter '" + (char)i + "', which does not correspond to an amino acid.");
+            }
+        }
 		
 		if(!success)
 		{
