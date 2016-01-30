@@ -18,7 +18,7 @@ NumMods=2
 # 	- Use * if this modification is applicable to any residue. 
 # 	- * should not be "anywhere" modification (e.g. "15.994915, *, opt, any, Oxidation" is not allowed.) 
 # 	- E.g. NQ, *
-# ModType: "fix" for fixed modifications, "opt" for variable modifications (case insensitive)
+# ModType: "fix" for fixed modifications, "opt" for variable modifications, "custom" for custom amino acids (case insensitive)
 # Position: position in the peptide where the modification can be attached. 
 # 	- One of the following five values should be used:
 # 	- any (anywhere), N-term (peptide N-term), C-term (peptide C-term), Prot-N-term (protein N-term), Prot-C-term (protein C-term) 
@@ -43,3 +43,8 @@ C2H2O,*,opt,Prot-N-term,Acetyl			# Acetylation Protein N-term
 #C2H2O1,K,opt,any,Acetyl			# Acetylation K
 #CH2,K,opt,any,Methyl				# Methylation K
 #HO3P,STY,opt,any,Phospho			# Phosphorylation STY
+
+# Custom amino acids: only supports empirical formulas of elements C H N O S.
+# If other elements are needed, or a specific mass is needed, they can be added as fixed modifications to the custom amino acid on following lines.
+# Warning: maximum 255 C, 255 H, 63 N, 63 O, 15 S
+C5H7N1O2S0,J,custom,P,Hydroxylation     # Hydroxyproline

@@ -684,6 +684,8 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		
 		// parse modifications
 		ArrayList<Modification.Instance> mods = new ArrayList<Modification.Instance>();
+        ArrayList<AminoAcid> customAA = new ArrayList<AminoAcid>();
+        String customAAResidues = "";
 		String s;
 		int lineNum = 0;
 		while((s=in.readLine()) != null)
@@ -734,13 +736,20 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 				// Residues
 				String residueStr = token[1].trim();
 				boolean isResidueStrLegitimate = true;
+                boolean matchesCustomAA = false;
 				if(!residueStr.equals("*"))
 				{
 					if(residueStr.length() > 0)
 					{
 						for(int i=0; i<residueStr.length(); i++)
 						{
-							if(!AminoAcid.isStdAminoAcid(residueStr.charAt(i)))
+                            boolean matchesCustom = customAAResidues.indexOf(residueStr.charAt(i)) > -1;
+                            if(matchesCustom)
+                            {
+                                matchesCustomAA = true;
+                            }
+                            if(!matchesCustom 
+                                    && !AminoAcid.isStdAminoAcid(residueStr.charAt(i)))
 							{
 								isResidueStrLegitimate = false;
 								break;
@@ -750,26 +759,46 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 					else
 						isResidueStrLegitimate = false;
 				}
-				if(!isResidueStrLegitimate)
-				{
-					System.err.println(fileName + ": AminoAcidSet: Illegal Residue(s) at line " + lineNum + ": " + s);
-					System.exit(-1);
-				}
 				
 				// isFixedModification
 				boolean isFixedModification = false;
+                boolean isCustomAminoAcid = false;
+                boolean modTypeParseFailed = false;
 				if(token[2].trim().equalsIgnoreCase("fix"))
 					isFixedModification = true;
 				else if(token[2].trim().equalsIgnoreCase("opt"))
 					isFixedModification = false;
+                else if(token[2].trim().equalsIgnoreCase("custom"))
+                    isCustomAminoAcid = true;
 				else
+                    modTypeParseFailed = true;
+                
+				if((!isResidueStrLegitimate && !isCustomAminoAcid) || (isCustomAminoAcid && matchesCustomAA))
 				{
-					System.err.println(fileName + ": AminoAcidSet: Modification must be either fix or opt at line " + lineNum + ": " + s);
+					System.err.println(fileName + ": AminoAcidSet: Illegal Residue(s) at line " + lineNum + ": " + s);
+					System.exit(-1);
+				}
+                if(isCustomAminoAcid && (residueStr.length() > 1 || !residueStr.toLowerCase().matches("[bjouxz]")))
+				{
+					System.err.println(fileName + ": AminoAcidSet: Illegal Residue(s) at line " + lineNum + ": " + s);
+                    System.err.println("Custom Amino acids are only allowed using B, J, O, U, X, or Z as the custom symbol.");
+					System.exit(-1);
+				}
+                if(isCustomAminoAcid && !compStr.matches("([CcHhNnOoSs][0-9]{1,3})+"))
+                {
+					System.err.println(fileName + ": AminoAcidSet: Illegal composition/mass at line " + lineNum + ": " + s);
+                    System.err.println("Custom Amino acids must supply a composition string, and must not use elements other than C H N O S.");
+					System.exit(-1);
+                }
+                if (modTypeParseFailed)
+				{
+					System.err.println(fileName + ": AminoAcidSet: Modification must be either fix, opt, or custom at line " + lineNum + ": " + s);
 					System.exit(-1);
 				}
 					
 				// Location
 				Modification.Location location = null;
+                String customResidueBase = "";
 				String locStr = token[3].trim().split("\\s+")[0].trim();
 				if(locStr.equalsIgnoreCase("any"))
 					location = Modification.Location.Anywhere;
@@ -781,6 +810,8 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 					location = Modification.Location.Protein_N_Term;
 				else if(locStr.equalsIgnoreCase("Prot-C-Term") || locStr.equalsIgnoreCase("ProtCTerm"))
 					location = Modification.Location.Protein_C_Term;
+                else if(isCustomAminoAcid)
+                    customResidueBase = locStr;
 				else
 				{
 					System.err.println(fileName + ": AminoAcidSet: Illegal Location at line " + lineNum + ": " + s);
@@ -788,20 +819,27 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 				}
 
 				String name = token[4].trim().split("\\s+")[0].trim();
-				Modification mod = Modification.register(name, modMass);
-				
-				for(int i=0; i<residueStr.length(); i++)
-				{
-					char residue = residueStr.charAt(i);
-					Modification.Instance modIns = new Modification.Instance(mod, residue, location);
-					if(isFixedModification)
-						modIns.fixedModification();
-					mods.add(modIns);
-				}				
+                if(!isCustomAminoAcid) {
+                    Modification mod = Modification.register(name, modMass);
+                    
+                    for(int i=0; i<residueStr.length(); i++)
+                    {
+                    	char residue = residueStr.charAt(i);
+                    	Modification.Instance modIns = new Modification.Instance(mod, residue, location);
+                    	if(isFixedModification)
+                    		modIns.fixedModification();
+                    	mods.add(modIns);
+                    }
+                }
+                else {
+                    AminoAcid aa = new AminoAcid(residueStr.charAt(0), name, new Composition(compStr));
+                    customAAResidues += residueStr.charAt(0);
+                    customAA.add(aa);
+                }
 			}
 		}
 		
-		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSet(mods);
+		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSet(mods, customAA);
 		aaSet.setMaxNumberOfVariableModificationsPerPeptide(numMods);
 		
 		try {
@@ -1261,6 +1299,21 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 		AminoAcidSet aaSet = new AminoAcidSet();
 		for(AminoAcid aa : getStandardAminoAcidSet())
 			aaSet.addAminoAcid(aa);
+		
+		aaSet.applyModifications(mods);
+		aaSet.finalizeSet();
+		
+		return aaSet;
+	}	
+	
+	public static AminoAcidSet getAminoAcidSet(ArrayList<Modification.Instance> mods, ArrayList<AminoAcid> customAminoAcids)
+	{
+		AminoAcidSet aaSet = new AminoAcidSet();
+		for(AminoAcid aa : getStandardAminoAcidSet())
+			aaSet.addAminoAcid(aa);
+        
+        for(AminoAcid aa : customAminoAcids)
+            aaSet.addAminoAcid(aa);
 		
 		aaSet.applyModifications(mods);
 		aaSet.finalizeSet();
