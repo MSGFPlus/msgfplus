@@ -197,7 +197,11 @@ public class PNNLSpectrumParser implements SpectrumParser {
 			String scanType = token[1].toLowerCase();
 			
 			ActivationMethod method = null;
-			if(scanType.contains("cid"))
+			if(scanType.contains("etcid"))
+				method = ActivationMethod.ETD;
+			else if(scanType.contains("ethcd"))
+				method = ActivationMethod.ETD;
+            else if(scanType.contains("cid"))
 				method = ActivationMethod.CID;
 			else if(scanType.contains("etd"))
 				method = ActivationMethod.ETD;
