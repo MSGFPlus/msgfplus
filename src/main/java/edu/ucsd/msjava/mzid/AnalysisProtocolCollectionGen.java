@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.ucsd.msjava.msdbsearch.SearchParams;
+import edu.ucsd.msjava.msutil.AminoAcid;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Modification.Location;
 
@@ -152,7 +153,30 @@ public class AnalysisProtocolCollectionGen {
 
         spectrumIdentificationProtocol.setEnzymes(enzymes);
 
-        // MassTable: skip
+        // MassTable: Only output custom residues
+        ArrayList<Character> defaultResidues = AminoAcidSet.getStandardAminoAcidSet().getResidueListWithoutMods();
+        ArrayList<Character> usedResidues = this.aaSet.getResidueListWithoutMods();
+        if (usedResidues.size() > defaultResidues.size())
+        {
+            MassTable massTable = new MassTable();
+            massTable.setId(Constants.massTableID);
+            massTable.setName("Custom Residues");
+            massTable.getMsLevel().add(1);
+            massTable.getMsLevel().add(2);
+            for (Character c : usedResidues)
+            {
+                // Only outputting the masses of non-standard residues
+                if (!defaultResidues.contains(c))
+                {
+                    AminoAcid aa = this.aaSet.getAminoAcid(c);
+                    Residue residue = new Residue();
+                    residue.setCode(aa.getResidueStr());
+                    residue.setMass(aa.getMass());
+                    massTable.getResidue().add(residue);
+                }
+            }
+            spectrumIdentificationProtocol.getMassTable().add(massTable);
+        }
         
         // Fragment tolerance: N/A
         

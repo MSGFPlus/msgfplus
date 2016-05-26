@@ -16,6 +16,7 @@ public class Constants {
     static String spectraDataID = "SID_1";
     static String psiCvID = "PSI-MS";
     static String siProtocolID = "SearchProtocol_1";
+    static String massTableID = "MassTable_1";
     static String searchDBID = "SearchDB_1";
     static String pepEvidenceListID = "PepEvidList_1";
     static String specIdentID = "SpecIdent_1";
@@ -41,7 +42,7 @@ public class Constants {
     
     static {
 		psiCV = new Cv();
-		psiCV.setUri("http://psidev.cvs.sourceforge.net/viewvc/*checkout*/psidev/psi/psi-ms/mzML/controlledVocabulary/psi-ms.obo");
+		psiCV.setUri("https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo");
 		psiCV.setId(psiCvID);
 		psiCV.setVersion("3.30.0");
 		psiCV.setFullName("PSI-MS");
@@ -52,7 +53,7 @@ public class Constants {
 		unimodCV.setFullName("UNIMOD");
 
 		unitCV = new Cv();
-		unitCV.setUri("http://obo.cvs.sourceforge.net/*checkout*/obo/obo/ontology/phenotype/unit.obo");
+		unitCV.setUri("https://raw.githubusercontent.com/bio-ontology-research-group/unit-ontology/master/unit.obo");
 		unitCV.setId(unitCvID);
 		unitCV.setFullName("UNIT-ONTOLOGY");
 		
