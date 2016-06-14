@@ -114,8 +114,8 @@ public class Pair<A, B> {
     	}
         /**
          * Determines the order of Pair objects. If useSecondForComparison is set, use B for comparison, otherwise A is used.
-         * @param o1 the first element.
-         * @param o2 the second element.
+         * @param p1 the first element.
+         * @param p2 the second element.
          * @return 1 if p1 > p2, -1 if p2 > p1 and 0 otherwise.
          */
         public int compare(Pair<A,B> p1, Pair<A,B> p2) {

@@ -95,7 +95,10 @@ public class UnimodComposition {
 				continue;
 			Atom atom = Atom.get(element);
 			if(atom == null)
-				return null;
+            {
+                System.out.println("Error: Could not parse element/molecule \"" + element + "\"");
+                return null;
+            }
 			mass += atom.getMass()*num;
 		}
 		
