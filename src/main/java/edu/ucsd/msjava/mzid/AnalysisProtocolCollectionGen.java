@@ -232,8 +232,9 @@ public class AnalysisProtocolCollectionGen {
     		else	// does not exist in Unimod
     		{
     			cvParam.setAccession("MS:1001460");	// unknown modification
-    			cvParam.setCv(Constants.unimodCV);
+    			cvParam.setCv(Constants.psiCV);
     			cvParam.setName("unknown modification");
+                cvParam.setValue(modName);
     		}
     		modCvParamList.add(cvParam);
 
