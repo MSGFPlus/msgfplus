@@ -1,7 +1,6 @@
 package edu.ucsd.msjava.mzid;
 
 import java.io.File;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -24,6 +23,12 @@ import edu.ucsd.msjava.msutil.Pair;
 import edu.ucsd.msjava.msutil.SpecFileFormat;
 import edu.ucsd.msjava.msutil.SpectraAccessor;
 import edu.ucsd.msjava.ui.MSGFPlus;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 
 import uk.ac.ebi.jmzidml.model.mzidml.AnalysisCollection;
 import uk.ac.ebi.jmzidml.model.mzidml.AnalysisData;
@@ -131,31 +136,53 @@ public class MZIdentMLGen {
 		generateAnalysisCollection();
 	}
 
-	public void writeResults(PrintStream out)
+	public void writeResults(File file)
 	{
-//		out.println(m.createXmlHeader());
-		String encoding = "UTF-8";
-		out.println("<?xml version=\"1.0\" encoding=\"" + encoding + "\"?>");
-		out.println(m.createMzIdentMLStartTag("MS-GF+"));
-		m.marshal(cvList, out);
-		out.println();
-		m.marshal(analysisSoftwareList, out);
-		out.println();
+        OutputStream os = null;
+        try
+        {
+            os = new FileOutputStream(file);
+        }
+        catch (FileNotFoundException e)
+        {
+            System.out.println("Could not find file \"" + file.getAbsolutePath() + "\" to write to. Writing to console...");
+            os = System.out;
+        }
+        try
+        {
+            OutputStreamWriter out = new OutputStreamWriter(os, StandardCharsets.UTF_8);
 
-		m.marshal(sequenceCollection, out);
-		out.println();
+            //out.write(m.createXmlHeader());
+            String encoding = "UTF-8";
+            out.write("<?xml version=\"1.0\" encoding=\"" + encoding + "\"?>\n");
+            out.write(m.createMzIdentMLStartTag("MS-GF+") + "\n");
+            m.marshal(cvList, out);
+            out.write("\n");
+            m.marshal(analysisSoftwareList, out);
+            out.write("\n");
 
-		m.marshal(analysisCollection, out);
-		out.println();
+            m.marshal(sequenceCollection, out);
+            out.write("\n");
 
-		m.marshal(analysisProtocolCollection, out);
-		out.println();
+            m.marshal(analysisCollection, out);
+            out.write("\n");
 
-		m.marshal(dataCollection, out);
-		out.println();
-		
-		out.println(m.createMzIdentMLClosingTag());
-	}	
+            m.marshal(analysisProtocolCollection, out);
+            out.write("\n");
+
+            m.marshal(dataCollection, out);
+            out.flush();
+            out.write("\n");
+
+            out.write(m.createMzIdentMLClosingTag() + "\n");
+            out.flush();
+            out.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+	}
 	
 	public MZIdentMLGen setEValueThreshold(float eValueThreshold)
 	{

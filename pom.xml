@@ -73,60 +73,60 @@
         <dependency>
             <groupId>uk.ac.ebi.pride.tools</groupId>
             <artifactId>jmzreader</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.4</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>uk.ac.ebi.pride.tools</groupId>
             <artifactId>pkl-parser</artifactId>
-            <version>1.2.2</version>
+            <version>1.2.5</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>uk.ac.ebi.pride.tools</groupId>
             <artifactId>dta-parser</artifactId>
-            <version>1.2.2</version>
+            <version>1.2.5</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>uk.ac.ebi.pride.tools</groupId>
             <artifactId>ms2-parser</artifactId>
-            <version>1.2.3</version>
+            <version>1.2.6</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>uk.ac.ebi.pride.tools</groupId>
             <artifactId>mgf-parser</artifactId>
-            <version>1.2.2</version>
+            <version>1.3.8</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>uk.ac.ebi.pride.tools</groupId>
             <artifactId>mzdata-parser</artifactId>
-            <version>1.2.2</version>
+            <version>1.2.5</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>uk.ac.ebi.pride.tools</groupId>
             <artifactId>mzml-wrapper</artifactId>
-            <version>1.2</version>
+            <version>1.3.2</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>uk.ac.ebi.pride.tools</groupId>
             <artifactId>pride-wrapper</artifactId>
-            <version>1.2.3</version>
+            <version>1.2.5</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>uk.ac.ebi.pride.tools</groupId>
             <artifactId>mzxml-parser</artifactId>
-            <version>1.3.4</version>
+            <version>1.3.8</version>
         </dependency>
         <dependency>
             <groupId>uk.ac.ebi.jmzidml</groupId>
             <artifactId>jmzidentml</artifactId>
-            <version>1.2.3</version>
+            <version>1.2.4</version>
         </dependency>
         <dependency>
             <groupId>org.systemsbiology.jrap</groupId>
@@ -144,9 +144,9 @@
   
     <repositories>
         <repository>
-            <id>nexus-ebi-repo</id>
-            <name>The EBI Maven 2 Nexus repository</name>
-            <url>http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo</url>
+            <id>nexus-ebi-release-repo</id>
+            <name>The EBI Maven 2 Nexus release repository</name>
+            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-repo/</url>
         </repository>
         <repository>
             <id>internal-repo</id>

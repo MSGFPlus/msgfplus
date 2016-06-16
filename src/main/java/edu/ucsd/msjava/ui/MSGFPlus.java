@@ -1,10 +1,6 @@
 package edu.ucsd.msjava.ui;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,8 +39,8 @@ import java.util.logging.Logger;
 
 
 public class MSGFPlus {
-	public static final String VERSION = "Release (v2016.06.14)";
-	public static final String RELEASE_DATE = "6/14/2016";
+	public static final String VERSION = "Release (v2016.06.15)";
+	public static final String RELEASE_DATE = "6/15/2016";
 	
 	public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
 	public static final String DECOY_PROTEIN_PREFIX = "XXX";
@@ -466,23 +462,7 @@ public class MSGFPlus {
 		MZIdentMLGen mzidGen = new MZIdentMLGen(params, aaSet, sa, specAcc, ioIndex);
 		mzidGen.addSpectrumIdentificationResults(resultList);
     	
-		PrintStream out = null;
-		if(outputFile == null)
-			out = System.out;
-		else
-		{
-			try {
-				out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFile)));
-//				out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFile)), false, "UTF8");
-//				System.setOut(out);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-    	mzidGen.writeResults(out);
-
-    	out.close();
+        mzidGen.writeResults(outputFile);
 
 		System.out.print("Writing results finished ");
 		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);

@@ -4,7 +4,7 @@ import java.io.*;
 import java.math.*;
 import java.util.*;
 
-import org.systemsbiology.jrap.stax.*;
+//import org.systemsbiology.jrap.stax.*;
 
 import edu.ucsd.msjava.msdbsearch.*;
 import edu.ucsd.msjava.msgf.*;
