@@ -157,7 +157,13 @@ public class MZIdentMLGen {
      */
     public void writeResults(File file)
     {
-        // Original function - produces e.g. <cvParam ...></cvParam> after updating jmzidentml from 1.1.3 to 1.2.3 or newer
+        // Original function - produces e.g. <cvParam ...></cvParam> after updating jmzidentml from 1.1.3 to 1.2.0 or newer
+        /*
+        jmzidentml version notes: 
+        1.1.3 & 1.1.4 produce good output, use self-closing tags, use 4 space indents
+        1.1.5-1.1.9 produce bad output (missing elements), use self-closing tags, 2 space indents
+        1.2.0+ produce good output, use closing tags instead of self-closing tags, 2 space indents
+        */
         //writeResultsOriginal(file);
         //writeResultsCleanerTempString(file);
         writeResultsCleanerTempFile(file);
