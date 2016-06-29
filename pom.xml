@@ -67,6 +67,102 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.4.3</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>${project.artifactId}-${project.version}-jar-w-reduced-deps</finalName>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>edu.ucsd.msjava.ui.MSGFPlus</mainClass>
+                                </transformer>
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>it.unimi.dsi:fastutil</artifact>
+                                    <includes>
+                                        <!-- Added a maven shade plugin step with minimize-jar set to true to mzIdentML pom to determine the needed fastutil classes.
+                                             Then used Beyond Compare 4 to compare the resulting jar vs. the result of this step until the fastutil classes matched. -->
+                                        <!-- booleans -->
+                                        <include>it/unimi/dsi/fastutil/booleans/BooleanArrays**</include>
+                                        <include>it/unimi/dsi/fastutil/booleans/BooleanComparator**</include>
+                                        <!-- chars -->
+                                        <include>it/unimi/dsi/fastutil/chars/AbstractCharBidirectionalIterator**</include>
+                                        <include>it/unimi/dsi/fastutil/chars/AbstractCharCollection**</include>
+                                        <include>it/unimi/dsi/fastutil/chars/AbstractCharIterator**</include>
+                                        <include>it/unimi/dsi/fastutil/chars/AbstractCharList**</include>
+                                        <include>it/unimi/dsi/fastutil/chars/AbstractCharListIterator**</include>
+                                        <include>it/unimi/dsi/fastutil/chars/AbstractCharSet**</include>
+                                        <include>it/unimi/dsi/fastutil/chars/CharArrayList**</include>
+                                        <include>it/unimi/dsi/fastutil/chars/CharArrays**</include>
+                                        <include>it/unimi/dsi/fastutil/chars/CharBidirectionalIterator**</include>
+                                        <include>it/unimi/dsi/fastutil/chars/CharCollection**</include>
+                                        <include>it/unimi/dsi/fastutil/chars/CharComparator**</include>
+                                        <include>it/unimi/dsi/fastutil/chars/CharIterable**</include>
+                                        <include>it/unimi/dsi/fastutil/chars/CharIterator**</include>
+                                        <include>it/unimi/dsi/fastutil/chars/CharIterators**</include>
+                                        <include>it/unimi/dsi/fastutil/chars/CharList**</include>
+                                        <include>it/unimi/dsi/fastutil/chars/CharListIterator**</include>
+                                        <include>it/unimi/dsi/fastutil/chars/CharOpenHashSet**</include>
+                                        <include>it/unimi/dsi/fastutil/chars/CharSet**</include>
+                                        <include>it/unimi/dsi/fastutil/chars/CharStack**</include>
+                                        <!-- ints -->
+                                        <include>it/unimi/dsi/fastutil/ints/IntArrays**</include>
+                                        <include>it/unimi/dsi/fastutil/ints/IntComparator**</include>
+                                        <!-- objects -->
+                                        <include>it/unimi/dsi/fastutil/objects/AbstractObjectBidirectionalIterator**</include>
+                                        <include>it/unimi/dsi/fastutil/objects/AbstractObjectCollection**</include>
+                                        <include>it/unimi/dsi/fastutil/objects/AbstractObjectIterator**</include>
+                                        <include>it/unimi/dsi/fastutil/objects/AbstractObjectList**</include>
+                                        <include>it/unimi/dsi/fastutil/objects/AbstractObjectListIterator**</include>
+                                        <include>it/unimi/dsi/fastutil/objects/ObjectArrayList**</include>
+                                        <include>it/unimi/dsi/fastutil/objects/ObjectArrays**</include>
+                                        <include>it/unimi/dsi/fastutil/objects/ObjectBidirectionalIterator**</include>
+                                        <include>it/unimi/dsi/fastutil/objects/ObjectCollection**</include>
+                                        <include>it/unimi/dsi/fastutil/objects/ObjectIterable**</include>
+                                        <include>it/unimi/dsi/fastutil/objects/ObjectIterator**</include>
+                                        <include>it/unimi/dsi/fastutil/objects/ObjectIterators**</include>
+                                        <include>it/unimi/dsi/fastutil/objects/ObjectList**</include>
+                                        <include>it/unimi/dsi/fastutil/objects/ObjectListIterator**</include>
+                                        <!-- base-level objects -->
+                                        <include>it/unimi/dsi/fastutil/Arrays**</include>
+                                        <include>it/unimi/dsi/fastutil/BidirectionalIterator**</include>
+                                        <include>it/unimi/dsi/fastutil/Hash**</include>
+                                        <include>it/unimi/dsi/fastutil/HashCommon**</include>
+                                        <include>it/unimi/dsi/fastutil/Stack**</include>
+                                        <include>it/unimi/dsi/fastutil/Swapper**</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>it/unimi/dsi/fastutil/chars/AbstractChar2**</exclude>
+                                        <exclude>it/unimi/dsi/fastutil/chars/Char2**</exclude>
+                                        <exclude>it/unimi/dsi/fastutil/ints/IntComparators**</exclude>
+                                        <exclude>it/unimi/dsi/fastutil/objects/ObjectCollections**</exclude>
+                                        <exclude>it/unimi/dsi/fastutil/objects/ObjectLists**</exclude>
+                                        <exclude>it/unimi/dsi/fastutil/chars/CharCollections**</exclude>
+                                        <exclude>it/unimi/dsi/fastutil/chars/CharComparators**</exclude>
+                                        <exclude>it/unimi/dsi/fastutil/chars/CharLists**</exclude>
+                                        <exclude>it/unimi/dsi/fastutil/chars/CharSets**</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>**/.svn/**</exclude>
+                                        <!-- <exclude>**/*.java</exclude> -->
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <dependencies>
