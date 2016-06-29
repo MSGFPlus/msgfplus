@@ -23,12 +23,24 @@ import edu.ucsd.msjava.msutil.Pair;
 import edu.ucsd.msjava.msutil.SpecFileFormat;
 import edu.ucsd.msjava.msutil.SpectraAccessor;
 import edu.ucsd.msjava.ui.MSGFPlus;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import uk.ac.ebi.jmzidml.model.mzidml.AnalysisCollection;
 import uk.ac.ebi.jmzidml.model.mzidml.AnalysisData;
@@ -107,6 +119,9 @@ public class MZIdentMLGen {
 	private Map<String, List<PeptideEvidenceRef>> evRefListMap;
 	
 	private AnalysisProtocolCollectionGen apcGen;
+    
+    public static final String encoding = "UTF-8";
+    public static final Charset charset = StandardCharsets.UTF_8;
 	
 	public MZIdentMLGen(SearchParams params, AminoAcidSet aaSet, CompactSuffixArray sa, SpectraAccessor specAcc, int ioIndex)
 	{
@@ -135,8 +150,24 @@ public class MZIdentMLGen {
 		initDataCollection();
 		generateAnalysisCollection();
 	}
+    
+    /**
+     * Output the results to the specified mzIdentML file.
+     * @param file 
+     */
+    public void writeResults(File file)
+    {
+        // Original function - produces e.g. <cvParam ...></cvParam> after updating jmzidentml from 1.1.3 to 1.2.3 or newer
+        //writeResultsOriginal(file);
+        //writeResultsCleanerTempString(file);
+        writeResultsCleanerTempFile(file);
+    }
 
-	public void writeResults(File file)
+    /**
+     * Original writeResults; after a dependency update, this is no longer writing self-closing tags, resulting in larger mzid files.
+     * @param file 
+     */
+	public void writeResultsOriginal(File file)
 	{
         OutputStream os = null;
         try
@@ -148,12 +179,19 @@ public class MZIdentMLGen {
             System.out.println("Could not find file \"" + file.getAbsolutePath() + "\" to write to. Writing to console...");
             os = System.out;
         }
+        OutputStreamWriter out = new OutputStreamWriter(os, charset);
+        writeResults(out);
+	}
+    
+    /**
+     * Single function to handle the writing of the results to a Writer
+     * @param out 
+     */
+    private void writeResults(Writer out)
+    {
         try
         {
-            OutputStreamWriter out = new OutputStreamWriter(os, StandardCharsets.UTF_8);
-
             //out.write(m.createXmlHeader());
-            String encoding = "UTF-8";
             out.write("<?xml version=\"1.0\" encoding=\"" + encoding + "\"?>\n");
             out.write(m.createMzIdentMLStartTag("MS-GF+") + "\n");
             m.marshal(cvList, out);
@@ -179,6 +217,95 @@ public class MZIdentMLGen {
             out.close();
         }
         catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Output results to a StringWriter, then pipe that string through a transform to make empty elements into self-closing elements
+     * @param file 
+     */
+	public void writeResultsCleanerTempString(File file)
+	{
+        OutputStream os = null;
+        try
+        {
+            os = new FileOutputStream(file);
+        }
+        catch (FileNotFoundException e)
+        {
+            System.out.println("Could not find file \"" + file.getAbsolutePath() + "\" to write to. Writing to console...");
+            os = System.out;
+        }
+        try
+        {
+            StringWriter out = new StringWriter();
+            writeResults(out);
+            
+            OutputStreamWriter out2 = new OutputStreamWriter(os, charset);
+            StringReader sin = new StringReader(out.toString());
+            TransformerFactory transFactory = TransformerFactory.newInstance();
+            Transformer transformer = transFactory.newTransformer();
+            transformer.transform(new StreamSource(sin), new StreamResult(out2));
+            out2.flush();
+            out2.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        catch (TransformerException e)
+        {
+            e.printStackTrace();
+        }
+	}
+
+    /**
+     * Output results to a temp file, then pipe that file through a transform to make empty elements into self-closing elements
+     * @param file 
+     */
+	public void writeResultsCleanerTempFile(File file)
+	{
+        FileInputStream is = null;
+        FileOutputStream os = null;
+        String newFileName = file.getAbsolutePath();
+        int decimal = newFileName.lastIndexOf(".");
+        String ext = newFileName.substring(decimal + 1);
+        newFileName = newFileName.substring(0, decimal) + "_dirty." + ext;
+        File tempFile = new File(newFileName);
+        
+        writeResultsOriginal(tempFile);
+        try
+        {
+            is = new FileInputStream(tempFile);
+            os = new FileOutputStream(file);
+            
+            InputStreamReader tempIn = new InputStreamReader(is, charset);
+            OutputStreamWriter out2 = new OutputStreamWriter(os, charset);
+            // Manually output the xml declaration so that it is on its own line
+            out2.write("<?xml version=\"1.0\" encoding=\"" + encoding + "\"?>\n");
+            out2.flush();
+            TransformerFactory transFactory = TransformerFactory.newInstance();
+            Transformer transformer = transFactory.newTransformer();
+            // Some options to do reformatting of the xml output; they don't seem to do anything to the mzid data.
+            //transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            //transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+            // Prevent automatic output of the xml declaration (also removes it if it is already present in the input)
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            // Another way to make the xml declaration be on a separate line, but it also adds the string 'standalone="yes"' to the xml declaration
+            //transformer.setOutputProperty(OutputKeys.STANDALONE, "yes");
+            transformer.transform(new StreamSource(tempIn), new StreamResult(out2));
+            out2.flush();
+            out2.close();
+            tempFile.deleteOnExit();
+        }
+        catch (IOException e)
+        {
+            System.out.println("Could not reprocess temp file \"" + tempFile + "\". Will not delete file (if file exists).");
+            e.printStackTrace();
+        }
+        catch (TransformerException e)
         {
             e.printStackTrace();
         }
