@@ -237,7 +237,7 @@ public abstract class IonType {
     public static ArrayList<IonType> getAllKnownIonTypes(int maxCharge, boolean removeRedundancy, String nlString)
     {
         String[] base ={
-                "x","y","z","a","b","c", //"x2","y2","z2","a2","b2","c2",
+                "x","x.","y","z","a","a.","b","c" //"x2","y2","z2","a2","b2","c2"
             };
         String[] extension={
           "", "-H2O", "-H2O-H2O", "-NH3", "-NH3-NH3", "-NH3-H2O","+n", "+n2", "-H"
@@ -260,7 +260,7 @@ public abstract class IonType {
         {
             for (int i = 0; i < base.length; i++) {
                 for (int j = 0; j < extension.length; j++) {
-                	if(i==5 && j == 3)// c-NH3
+                	if(i==8 && j == 3)// c-NH3
                 		continue;
                		for(int k=0; k<nlExt.length; k++)
                 	{
@@ -306,11 +306,14 @@ public abstract class IonType {
 
     protected static Hashtable<String, IonType> ionTable;
     protected static Hashtable<String, Float> compositionOffsetTable;
+    protected static Hashtable<String, IonType> offsetToIonTable;
     public final static IonType Y = new SuffixIon("y", 1, (float)Composition.OFFSET_Y);
     public final static IonType Z = new SuffixIon("z", 1, (float)(Y.offset-(Composition.NH2)));
     public final static IonType X = new SuffixIon("x", 1, (float)(Y.offset+Composition.CO));
+    public final static IonType Xr = new SuffixIon("x.", 1, (float)(X.offset + Composition.H));
     public final static IonType B = new PrefixIon("b", 1, (float)Composition.OFFSET_B);
     public final static IonType A = new PrefixIon("a", 1, (float)(B.offset-Composition.CO));
+    public final static IonType Ar = new PrefixIon("a.", 1, (float)(A.offset + Composition.H));
     public final static IonType C = new PrefixIon("c", 1, (float)(B.offset+Composition.NH3));
     public final static IonType NOISE = new PrefixIon("noise", 0, 0);
     
@@ -319,18 +322,22 @@ public abstract class IonType {
     static {
         ionTable = new Hashtable<String, IonType>();
         ionTable.put("x", X); //+63.03697
+        ionTable.put("x.", Xr);
         ionTable.put("y", Y); //+19.01839
         ionTable.put("z", Z); //+4.012321 => +3
         ionTable.put("a", A); //-27.00246
+        ionTable.put("a.", Ar);
         ionTable.put("b", B); //+1.00794
         ionTable.put("c", C); //+16.0188
         
         for(int charge=2; charge<=4; charge++)
         {
             ionTable.put("x"+charge, new SuffixIon("x"+charge, charge, (float)((X.offset+Composition.PROTON*(charge-1))/charge)));
+            ionTable.put("x."+charge, new SuffixIon("x."+charge, charge, (float)((Xr.offset+Composition.PROTON*(charge-1))/charge)));
             ionTable.put("y"+charge, new SuffixIon("y"+charge, charge, (float)((Y.offset+Composition.PROTON*(charge-1))/charge)));
             ionTable.put("z"+charge, new SuffixIon("z"+charge, charge, (float)((Z.offset+Composition.PROTON*(charge-1))/charge)));
             ionTable.put("a"+charge, new PrefixIon("a"+charge, charge, (float)((A.offset+Composition.PROTON*(charge-1))/charge)));
+            ionTable.put("a."+charge, new PrefixIon("a."+charge, charge, (float)((Ar.offset+Composition.PROTON*(charge-1))/charge)));            
             ionTable.put("b"+charge, new PrefixIon("b"+charge, charge, (float)((B.offset+Composition.PROTON*(charge-1))/charge)));
             ionTable.put("c"+charge, new PrefixIon("c"+charge, charge, (float)((C.offset+Composition.PROTON*(charge-1))/charge)));
         	

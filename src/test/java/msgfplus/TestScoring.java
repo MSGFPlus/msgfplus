@@ -28,6 +28,8 @@ import edu.ucsd.msjava.mzml.MzMLAdapter;
 import edu.ucsd.msjava.params.ParamManager;
 import edu.ucsd.msjava.ui.MSGFPlus;
 import edu.ucsd.msjava.ui.ScoringParamGen;
+import java.nio.file.Paths;
+import java.nio.file.Path;
 
 public class TestScoring {
 	@Test
@@ -36,6 +38,20 @@ public class TestScoring {
 		String paramFile = "D:\\Research\\Data\\Ansong_TMT_Velos\\params\\HCD_HighRes_Tryp_TMT.param";
 		NewRankScorer scorer = new NewRankScorer(paramFile);
 	}
+        
+        @Test
+        public void testWritingParamAsPlainText()
+        {
+            String paramFile = "D:\\Data\\UVPD_MSGF_Training\\MSGFPlus\\HCD_QExactive_Tryp.param";
+            NewRankScorer scorer = new NewRankScorer(paramFile);
+            
+            Path paramPath = Paths.get(paramFile);
+            String fileName = paramPath.getFileName().toString();
+            String path = paramPath.getParent().toString();
+            
+            String output = String.format("%1s\\%2s.txt", path, fileName);
+            scorer.writeParametersPlainText(new File(output));
+        }
 	
 	@Test
 	public void testScoringParamGen()
