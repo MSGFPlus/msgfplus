@@ -51,6 +51,7 @@ public class ActivationMethod implements ParamObject {
 	public static final ActivationMethod HCD;
 	public static final ActivationMethod PQD;
 	public static final ActivationMethod FUSION;
+        public static final ActivationMethod UVPD;
 	
 	public static ActivationMethod get(String name)
 	{
@@ -127,6 +128,7 @@ public class ActivationMethod implements ParamObject {
 		HCD = new ActivationMethod("HCD", "high-energy collision-induced dissociation", "MS:1000422");
 		FUSION = new ActivationMethod("Merge spectra from the same precursor", "Merge spectra from the same precursor");
 		PQD = new ActivationMethod("PQD", "pulsed q dissociation", "MS:1000599");
+                UVPD = new ActivationMethod("UVPD", "Ultraviolet photo dissociation.", "UVPD");
 
 		table = new HashMap<String, ActivationMethod>();
 		
@@ -138,6 +140,7 @@ public class ActivationMethod implements ParamObject {
 		add(HCD);
 		addToList(FUSION);
 		addAlias("ETD+SA", ETD);
+                add(UVPD);
 		
 		// Parse activation methods defined by a user
 		File actMethodFile = new File("params/activationMethods.txt");

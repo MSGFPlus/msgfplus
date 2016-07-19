@@ -122,7 +122,7 @@ public class ScoringParameterGenerator extends NewRankScorer {
 			}
 			else if(argv[i].equalsIgnoreCase("-m"))	// Fragmentation method
 			{
-				// (0: written in the spectrum, 1: CID , 2: ETD, 3: HCD)
+				// (0: written in the spectrum, 1: CID , 2: ETD, 3: HCD, 4: UVPD)
 				if(argv[i+1].equalsIgnoreCase("1"))
 				{
 					activationMethod = ActivationMethod.CID;
@@ -135,6 +135,10 @@ public class ScoringParameterGenerator extends NewRankScorer {
 				{
 					activationMethod = ActivationMethod.HCD;
 				}
+                                else if (argv[i+1].equalsIgnoreCase("4"))
+                                {
+                                    activationMethod = ActivationMethod.UVPD;
+                                }
 				else
 				{
 					printUsageAndExit("Illegal activation method: " + argv[i+1]);
@@ -202,7 +206,7 @@ public class ScoringParameterGenerator extends NewRankScorer {
 		System.out.println("usage: java -Xmx2000M -cp MSGF.jar msscorer.ScoringParameterGenerator\n" +
 				"\t-i annotatedMgfFileName (*.mgf)\n" +
 				"\t-o outputFileName (e.g. CID_Tryp.param)\n" +
-				"\t-m FragmentationMethodID (1: CID, 2: ETD, 3: HCD)\n" +
+				"\t-m FragmentationMethodID (1: CID, 2: ETD, 3: HCD, 4: UVPD)\n" +
 				"\t-inst InstrumentID (0: Low-res LCQ/LTQ, 1: TOF , 2: High-res LTQ)\n" +
 				"\t-e EnzymeID (0: No enzyme, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N)\n" +
 				"\t[-fixMod 0/1/2] (0: NoCysteineProtection, 1: CarbamidomethyC (default), 2: CarboxymethylC)\n" +
