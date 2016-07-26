@@ -260,7 +260,7 @@ public abstract class IonType {
         {
             for (int i = 0; i < base.length; i++) {
                 for (int j = 0; j < extension.length; j++) {
-                	if(i==8 && j == 3)// c-NH3
+                	if(i==7 && j == 3)// c-NH3
                 		continue;
                		for(int k=0; k<nlExt.length; k++)
                 	{
