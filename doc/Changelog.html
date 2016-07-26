@@ -8,20 +8,29 @@
   <body>
     <h1 class="pagetitle">MS-GF+ ChangeLog</h1>
     <div class="pageEditData">
-      Added by Sangtae Kim, last edited by Sangtae Kim on Jul 16, 2014
+      Added by Sangtae Kim
     </div>
     <a href="index.html">MS-GF+ Documentation home</a>
     
     <p>
-      <b>06/29/2016 v20160629</b>
+      <b>07/26/2016 v2016.07.26</b>
     </p>
     <ul>
-      <li>Clean up the mzid output a little, reducing file size (v20160615 introduced a change that resulted in larger mzid files)</li>
+      <li>Add UVPD as a dissociation method</li>
+      <li>Add new ions: a. and x.</li>
+      <li>Fix off-by-one error in IonType code that ignores c-NH3</li>
+    </ul>
+
+    <p>
+      <b>06/29/2016 v2016.06.29</b>
+    </p>
+    <ul>
+      <li>Clean up the mzid output a little, reducing file size (v2016.06.15 introduced a change that resulted in larger mzid files)</li>
       <li>Reduced the amount of unnecessary data in the .jar file, cutting size by ~1/2</li>
     </ul>
     
     <p>
-      <b>06/15/2016 v20160615</b>
+      <b>06/15/2016 v2016.06.15</b>
     </p>
     <ul>
       <li>Fix the mzid output when the modification is unknown to unimod. (cvRef now correctly references PSI-MS, and the value will be the name provided in the Mods.txt file)</li>
@@ -30,7 +39,7 @@
     </ul>
     
     <p>
-      <b>05/25/2016 v20160525</b>
+      <b>05/25/2016 v2016.05.25</b>
     </p>
     <ul>
       <li>Output the residue letter and mass of any custom amino acids to the "MassTable" portion of the mzid.</li>
@@ -38,21 +47,21 @@
     </ul>
     
     <p>
-      <b>02/12/2016 v20160212</b>
+      <b>02/12/2016 v2016.02.12</b>
     </p>
     <ul>
       <li>Ensure that ETciD and EThcD are handled as ETD when using a _dta.txt file with a _ScanType.txt file</li>
     </ul>
     
     <p>
-      <b>01/29/2016 v20160129</b>
+      <b>01/29/2016 v2016.01.29</b>
     </p>
     <ul>
       <li>Added ability to enter custom amino acids using the Mods.txt file.</li>
     </ul>
     
     <p>
-      <b>01/21/2016 v20160121</b>
+      <b>01/21/2016 v2016.01.21</b>
     </p>
     <ul>
       <li>Changed the versioning system - SVN revisions don't work for Git repositories. Now commit date is used for the version.</li>

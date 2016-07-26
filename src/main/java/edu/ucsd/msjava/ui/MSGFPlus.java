@@ -39,8 +39,8 @@ import java.util.logging.Logger;
 
 
 public class MSGFPlus {
-	public static final String VERSION = "Release (v2016.06.29)";
-	public static final String RELEASE_DATE = "6/29/2016";
+	public static final String VERSION = "Release (v2016.07.26)";
+	public static final String RELEASE_DATE = "7/26/2016";
 	
 	public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
 	public static final String DECOY_PROTEIN_PREFIX = "XXX";
