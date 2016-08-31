@@ -8,6 +8,14 @@ public class ScanType
 		this.msLevel = msLevel;
 		this.isHighPrecision = isHighPrecision;
 	}
+    
+	public ScanType(ActivationMethod activationMethod, boolean isHighPrecision, int msLevel, float scanStartTime) 
+	{
+		this.activationMethod = activationMethod;
+		this.msLevel = msLevel;
+		this.isHighPrecision = isHighPrecision;
+        this.scanStartTime = scanStartTime;
+	}
 	
 	public ActivationMethod getActivationMethod() 
 	{
@@ -21,9 +29,14 @@ public class ScanType
 	{
 		return isHighPrecision;
 	}
+    public float getScanStartTime()
+    {
+        return scanStartTime;
+    }
 	
 	private ActivationMethod activationMethod;
 	private int msLevel;
 	private boolean isHighPrecision;
+    private float scanStartTime;
 }
 

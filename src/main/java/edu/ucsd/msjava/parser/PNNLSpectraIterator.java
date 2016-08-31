@@ -31,6 +31,8 @@ public class PNNLSpectraIterator extends SpectraIterator {
 			spec.setActivationMethod(scanType.getActivationMethod());
 			spec.setIsHighPrecision(scanType.isHighPrecision());
 			spec.setMsLevel(scanType.getMsLevel());
+            spec.setRt(scanType.getScanStartTime());
+            spec.setRtIsSeconds(false);
 		}
 		return spec;
 	}

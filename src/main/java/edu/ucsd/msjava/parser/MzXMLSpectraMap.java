@@ -89,7 +89,11 @@ public class MzXMLSpectraMap implements SpectrumAccessorBySpecIndex {
 				float rtFloat = Float.parseFloat(rtStr.substring(matcher.start(1), matcher.end(1)));
 				if (matcher.groupCount() > 1) {
 					String timeScale = rtStr.substring(matcher.start(2), matcher.end(2));
-					if (timeScale.equals("M") || timeScale.equals("m"))    rtFloat *= 60.0;
+					if (timeScale.equals("M") || timeScale.equals("m"))
+                    {
+                        //rtFloat *= 60.0;
+                        spec.setRtIsSeconds(false);
+                    }
 				}
 				spec.setRt(rtFloat);
 			}

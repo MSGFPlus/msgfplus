@@ -365,6 +365,16 @@ public class MZIdentMLGen {
 			{
 				CvParam cvParam = Constants.makeCvParam("MS:1000016", "scan start time");
 				cvParam.setValue(String.valueOf(scanStartTime));
+                if(spec.getRtIsSeconds())
+                {
+                    cvParam.setUnitAccession("UO:0000010");
+                    cvParam.setUnitName("second");
+                }
+                else
+                {
+                    cvParam.setUnitAccession("UO:0000031");
+                    cvParam.setUnitName("minute");
+                }
 				sir.getCvParam().add(cvParam);
 			}
 			

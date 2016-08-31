@@ -185,7 +185,13 @@ public class PNNLSpectrumParser implements SpectrumParser {
 		
 		String s;
 		
-		in.readLine();	// header
+		s = in.readLine();	// header
+        boolean hasScanTimes = false;
+        String[] hTokens = s.split("\t");
+        if (hTokens.length > 3 && hTokens[3].toLowerCase().contains("time"))
+        {
+            hasScanTimes = true;
+        }
 		
 		while((s=in.readLine()) != null)
 		{
@@ -215,10 +221,16 @@ public class PNNLSpectrumParser implements SpectrumParser {
 				isHighPrecision = true;
 			
 			int msLevel = Integer.parseInt(token[2]);
+            
+            float scanTime = -1;
+            if (hasScanTimes && token.length > 3)
+            {
+                scanTime = Float.parseFloat(token[3]);
+            }
 			
 			if(method != null)
 			{
-				scanNumScanTypeMap.put(scanNum, new ScanType(method, isHighPrecision, msLevel));
+				scanNumScanTypeMap.put(scanNum, new ScanType(method, isHighPrecision, msLevel, scanTime));
 			}
 		}
 		

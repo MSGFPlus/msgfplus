@@ -32,6 +32,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	private Peptide annotation = null;
 	private ArrayList<String> seqList = null;	// SEQ fields of mgf spectrum
 	private float rt = -1;                    // retention time
+    private boolean rtIsSeconds = true;      // retention time units - false, is minutes, true, is seconds
 	private ActivationMethod activationMethod = null;	// fragmentation method
 	private int msLevel = 2;	// ms level
 	
@@ -155,10 +156,16 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	public String getTitle() { return title; }
 
 	/**
-	 * Returns the retention time in seconds.
+	 * Returns the retention time; see getRtIsSeconds for the units.
 	 * @return the retention time if set, negative value otherwise.
 	 */
 	public float getRt() { return this.rt; }
+    
+    /**
+     * Returns the retention time units - true if in seconds, false if in minutes
+     * @return true if retention time is in seconds, false if in minutes
+     */
+    public boolean getRtIsSeconds() { return this.rtIsSeconds; }
 
 	/**
 	 * Returns the activation method.
@@ -265,9 +272,15 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 
 	/**
 	 * Sets the retention time of this Spectrum.
-	 * @param rt the retention time in seconds.
+	 * @param rt the retention time. See setRtIsSeconds to specify the units correctly to minutes or seconds
 	 */
 	public void setRt(float rt) { this.rt = rt; }
+    
+    /**
+     * Sets the units of the retention time - true for seconds, false for minutes
+     * @param isSeconds 
+     */
+    public void setRtIsSeconds(boolean isSeconds) { this.rtIsSeconds = isSeconds; }
 
 	/**
 	 * Sets the fragmentation method of this Spectrum.
