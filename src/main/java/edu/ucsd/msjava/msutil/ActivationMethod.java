@@ -128,19 +128,20 @@ public class ActivationMethod implements ParamObject {
 		HCD = new ActivationMethod("HCD", "high-energy collision-induced dissociation", "MS:1000422");
 		FUSION = new ActivationMethod("Merge spectra from the same precursor", "Merge spectra from the same precursor");
 		PQD = new ActivationMethod("PQD", "pulsed q dissociation", "MS:1000599");
-                UVPD = new ActivationMethod("UVPD", "Ultraviolet photo dissociation.", "UVPD");
+		UVPD = new ActivationMethod("UVPD", "Ultraviolet photo dissociation.", "MS:1000435");	// Photodissociation ontology term for now
 
 		table = new HashMap<String, ActivationMethod>();
 		
 		registeredActMethods = new ArrayList<ActivationMethod>();
-		
-		addToList(ASWRITTEN);
-		add(CID);
-		add(ETD);
-		add(HCD);
-		addToList(FUSION);
+
+		// Fragmentation Method
+		addToList(ASWRITTEN);	// -m 0
+		add(CID);				// -m 1
+		add(ETD);				// -m 2
+		add(HCD);				// -m 3
+		addToList(FUSION);		// -m 4
 		addAlias("ETD+SA", ETD);
-                add(UVPD);
+		add(UVPD);				// -m 5
 		
 		// Parse activation methods defined by a user
 		File actMethodFile = new File("params/activationMethods.txt");
