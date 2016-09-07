@@ -3,10 +3,15 @@ package edu.ucsd.msjava.msutil;
 import java.util.ArrayList;
 
 public interface SpectrumAccessorBySpecIndex {
-	public	Spectrum			getSpectrumBySpecIndex(int specIndex);
-	public	Spectrum			getSpectrumById(String specId);
-	public	String				getID(int specIndex);
-	public	Float				getPrecursorMz(int specIndex); 
-	public 	String				getTitle(int specIndex);
-	public	ArrayList<Integer>	getSpecIndexList();
+    Spectrum getSpectrumBySpecIndex(int specIndex);
+
+    Spectrum getSpectrumById(String specId);
+
+    String getID(int specIndex);
+
+    Float getPrecursorMz(int specIndex);
+
+    String getTitle(int specIndex);
+
+    ArrayList<Integer> getSpecIndexList();
 }

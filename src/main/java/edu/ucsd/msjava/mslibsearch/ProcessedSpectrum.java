@@ -5,17 +5,15 @@ import edu.ucsd.msjava.msutil.Peak;
 import edu.ucsd.msjava.msutil.Spectrum;
 
 public class ProcessedSpectrum {
-	private final Spectrum expSpec;
-	private final Spectrum libSpec;
-	
-	public ProcessedSpectrum(Spectrum expSpec, Spectrum libSpec)
-	{
-		this.expSpec = expSpec;
-		this.libSpec = libSpec;
-	}
-	
-	public Spectrum getSpectrum()
-	{
+    private final Spectrum expSpec;
+    private final Spectrum libSpec;
+
+    public ProcessedSpectrum(Spectrum expSpec, Spectrum libSpec) {
+        this.expSpec = expSpec;
+        this.libSpec = libSpec;
+    }
+
+    public Spectrum getSpectrum() {
 //		boolean[] expPeak = new boolean[NominalMass.toNominalMass(expSpec.getParentMass())];
 //		for(Peak p : libSpec)
 //		{
@@ -32,6 +30,6 @@ public class ProcessedSpectrum {
 //				spec.add(p);
 //		}
 //		return spec;
-		return expSpec;
-	}
+        return expSpec;
+    }
 }

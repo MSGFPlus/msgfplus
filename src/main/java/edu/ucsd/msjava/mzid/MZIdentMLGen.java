@@ -23,6 +23,7 @@ import edu.ucsd.msjava.msutil.Pair;
 import edu.ucsd.msjava.msutil.SpecFileFormat;
 import edu.ucsd.msjava.msutil.SpectraAccessor;
 import edu.ucsd.msjava.ui.MSGFPlus;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -76,87 +77,85 @@ import uk.ac.ebi.jmzidml.model.mzidml.UserParam;
 import uk.ac.ebi.jmzidml.xml.io.MzIdentMLMarshaller;
 
 public class MZIdentMLGen {
-	private MzIdentMLMarshaller m;
-	
+    private MzIdentMLMarshaller m;
+
 //	private Person docOwner;
 //	private Organization org;
-	
-	private final SearchParams params;
-	private AminoAcidSet aaSet;
-	private CompactSuffixArray sa;
-	private SpectraAccessor specAcc;
-	private final int ioIndex;
-	 
-	private float eValueThreshold = Float.MAX_VALUE;
 
-	// highest level objects
-	private CvList cvList;
-	
-	private AnalysisSoftwareList analysisSoftwareList;
+    private final SearchParams params;
+    private AminoAcidSet aaSet;
+    private CompactSuffixArray sa;
+    private SpectraAccessor specAcc;
+    private final int ioIndex;
 
-	// skip Provider and AuditCollection
+    private float eValueThreshold = Float.MAX_VALUE;
+
+    // highest level objects
+    private CvList cvList;
+
+    private AnalysisSoftwareList analysisSoftwareList;
+
+    // skip Provider and AuditCollection
 //	private Provider provider;
 //	private AuditCollection auditCollection;
-	
-	private SequenceCollection sequenceCollection;
-	private List<DBSequence> dbSequenceList;	// list of proteins
-	private List<Peptide> peptideList;			// list of peptides
-	private List<PeptideEvidence> peptideEvidenceList;	// list of peptide to protein matches
-	
-	private AnalysisCollection analysisCollection;
-	
-	private AnalysisProtocolCollection analysisProtocolCollection;
-	private SpectrumIdentificationProtocol siProtocol;
-	
-	private DataCollection dataCollection;
-	private SpectraData spectraData;
-	private SpectrumIdentificationList siList;	// set of PSMs
-	private SearchDatabase searchDatabase;
-	
-	private Map<Integer, DBSequence> dbSeqMap;
-	private Map<Integer, Boolean> isDecoyMap;
-	private Map<String, Peptide> pepMap;
-	private Map<String, List<PeptideEvidenceRef>> evRefListMap;
-	
-	private AnalysisProtocolCollectionGen apcGen;
-    
+
+    private SequenceCollection sequenceCollection;
+    private List<DBSequence> dbSequenceList;    // list of proteins
+    private List<Peptide> peptideList;            // list of peptides
+    private List<PeptideEvidence> peptideEvidenceList;    // list of peptide to protein matches
+
+    private AnalysisCollection analysisCollection;
+
+    private AnalysisProtocolCollection analysisProtocolCollection;
+    private SpectrumIdentificationProtocol siProtocol;
+
+    private DataCollection dataCollection;
+    private SpectraData spectraData;
+    private SpectrumIdentificationList siList;    // set of PSMs
+    private SearchDatabase searchDatabase;
+
+    private Map<Integer, DBSequence> dbSeqMap;
+    private Map<Integer, Boolean> isDecoyMap;
+    private Map<String, Peptide> pepMap;
+    private Map<String, List<PeptideEvidenceRef>> evRefListMap;
+
+    private AnalysisProtocolCollectionGen apcGen;
+
     public static final String encoding = "UTF-8";
     public static final Charset charset = StandardCharsets.UTF_8;
-	
-	public MZIdentMLGen(SearchParams params, AminoAcidSet aaSet, CompactSuffixArray sa, SpectraAccessor specAcc, int ioIndex)
-	{
-		m = new MzIdentMLMarshaller();
-		this.params = params;
-		this.aaSet = aaSet;
-		this.sa = sa;
-		this.specAcc = specAcc;
-		this.ioIndex = ioIndex;
 
-		dbSeqMap = new HashMap<Integer, DBSequence>();
-		isDecoyMap = new HashMap<Integer, Boolean>();
-		pepMap = new LinkedHashMap<String, Peptide>();
-		evRefListMap = new HashMap<String, List<PeptideEvidenceRef>>();
+    public MZIdentMLGen(SearchParams params, AminoAcidSet aaSet, CompactSuffixArray sa, SpectraAccessor specAcc, int ioIndex) {
+        m = new MzIdentMLMarshaller();
+        this.params = params;
+        this.aaSet = aaSet;
+        this.sa = sa;
+        this.specAcc = specAcc;
+        this.ioIndex = ioIndex;
 
-		init();
-	}
+        dbSeqMap = new HashMap<Integer, DBSequence>();
+        isDecoyMap = new HashMap<Integer, Boolean>();
+        pepMap = new LinkedHashMap<String, Peptide>();
+        evRefListMap = new HashMap<String, List<PeptideEvidenceRef>>();
 
-	private void init()
-	{
-		generateCvList();
-		generateAnalysisSoftwareList();
-		generateAnalysisProtocolCollection();
-		// skip Provider, AuditCollection
-		initSequenceCollection();
-		initDataCollection();
-		generateAnalysisCollection();
-	}
-    
+        init();
+    }
+
+    private void init() {
+        generateCvList();
+        generateAnalysisSoftwareList();
+        generateAnalysisProtocolCollection();
+        // skip Provider, AuditCollection
+        initSequenceCollection();
+        initDataCollection();
+        generateAnalysisCollection();
+    }
+
     /**
      * Output the results to the specified mzIdentML file.
-     * @param file 
+     *
+     * @param file
      */
-    public void writeResults(File file)
-    {
+    public void writeResults(File file) {
         // Original function - produces e.g. <cvParam ...></cvParam> after updating jmzidentml from 1.1.3 to 1.2.0 or newer
         /*
         jmzidentml version notes: 
@@ -171,32 +170,28 @@ public class MZIdentMLGen {
 
     /**
      * Original writeResults; after a dependency update, this is no longer writing self-closing tags, resulting in larger mzid files.
-     * @param file 
+     *
+     * @param file
      */
-	public void writeResultsOriginal(File file)
-	{
+    public void writeResultsOriginal(File file) {
         OutputStream os = null;
-        try
-        {
+        try {
             os = new FileOutputStream(file);
-        }
-        catch (FileNotFoundException e)
-        {
+        } catch (FileNotFoundException e) {
             System.out.println("Could not find file \"" + file.getAbsolutePath() + "\" to write to. Writing to console...");
             os = System.out;
         }
         OutputStreamWriter out = new OutputStreamWriter(os, charset);
         writeResults(out);
-	}
-    
+    }
+
     /**
      * Single function to handle the writing of the results to a Writer
-     * @param out 
+     *
+     * @param out
      */
-    private void writeResults(Writer out)
-    {
-        try
-        {
+    private void writeResults(Writer out) {
+        try {
             //out.write(m.createXmlHeader());
             out.write("<?xml version=\"1.0\" encoding=\"" + encoding + "\"?>\n");
             out.write(m.createMzIdentMLStartTag("MS-GF+") + "\n");
@@ -221,34 +216,28 @@ public class MZIdentMLGen {
             out.write(m.createMzIdentMLClosingTag() + "\n");
             out.flush();
             out.close();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     /**
      * Output results to a StringWriter, then pipe that string through a transform to make empty elements into self-closing elements
-     * @param file 
+     *
+     * @param file
      */
-	public void writeResultsCleanerTempString(File file)
-	{
+    public void writeResultsCleanerTempString(File file) {
         OutputStream os = null;
-        try
-        {
+        try {
             os = new FileOutputStream(file);
-        }
-        catch (FileNotFoundException e)
-        {
+        } catch (FileNotFoundException e) {
             System.out.println("Could not find file \"" + file.getAbsolutePath() + "\" to write to. Writing to console...");
             os = System.out;
         }
-        try
-        {
+        try {
             StringWriter out = new StringWriter();
             writeResults(out);
-            
+
             OutputStreamWriter out2 = new OutputStreamWriter(os, charset);
             StringReader sin = new StringReader(out.toString());
             TransformerFactory transFactory = TransformerFactory.newInstance();
@@ -256,23 +245,19 @@ public class MZIdentMLGen {
             transformer.transform(new StreamSource(sin), new StreamResult(out2));
             out2.flush();
             out2.close();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (TransformerException e) {
             e.printStackTrace();
         }
-        catch (TransformerException e)
-        {
-            e.printStackTrace();
-        }
-	}
+    }
 
     /**
      * Output results to a temp file, then pipe that file through a transform to make empty elements into self-closing elements
-     * @param file 
+     *
+     * @param file
      */
-	public void writeResultsCleanerTempFile(File file)
-	{
+    public void writeResultsCleanerTempFile(File file) {
         FileInputStream is = null;
         FileOutputStream os = null;
         String newFileName = file.getAbsolutePath();
@@ -280,13 +265,12 @@ public class MZIdentMLGen {
         String ext = newFileName.substring(decimal + 1);
         newFileName = newFileName.substring(0, decimal) + "_dirty." + ext;
         File tempFile = new File(newFileName);
-        
+
         writeResultsOriginal(tempFile);
-        try
-        {
+        try {
             is = new FileInputStream(tempFile);
             os = new FileOutputStream(file);
-            
+
             InputStreamReader tempIn = new InputStreamReader(is, charset);
             OutputStreamWriter out2 = new OutputStreamWriter(os, charset);
             // Manually output the xml declaration so that it is on its own line
@@ -305,132 +289,118 @@ public class MZIdentMLGen {
             out2.flush();
             out2.close();
             tempFile.deleteOnExit();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             System.out.println("Could not reprocess temp file \"" + tempFile + "\". Will not delete file (if file exists).");
             e.printStackTrace();
-        }
-        catch (TransformerException e)
-        {
+        } catch (TransformerException e) {
             e.printStackTrace();
         }
-	}
-	
-	public MZIdentMLGen setEValueThreshold(float eValueThreshold)
-	{
-		this.eValueThreshold = eValueThreshold;
-		return this;
-	}
-	
-	public synchronized void addSpectrumIdentificationResults(List<MSGFPlusMatch> resultList)
-	{
-		for(MSGFPlusMatch mpMatch : resultList)
-		{
-			int specIndex = mpMatch.getSpecIndex();
-			List<DatabaseMatch> matchList = mpMatch.getMatchList();
-			if(matchList == null || matchList.size() == 0)
-				continue;
+    }
 
-			edu.ucsd.msjava.msutil.Spectrum spec = specAcc.getSpecMap().getSpectrumBySpecIndex(specIndex);
-			String specID = spec.getID();
-			float precursorMz = spec.getPrecursorPeak().getMz();
+    public MZIdentMLGen setEValueThreshold(float eValueThreshold) {
+        this.eValueThreshold = eValueThreshold;
+        return this;
+    }
 
-			SpectrumIdentificationResult sir = new SpectrumIdentificationResult();
-			sir.setId(Constants.sirID+specIndex);
-			sir.setSpectraData(spectraData);
-			sir.setSpectrumID(specID);
-			
-			// add title
-			String title = spec.getTitle();
-			if(title != null)
-			{
-				CvParam cvParam = Constants.makeCvParam("MS:1000796", "spectrum title");
-				cvParam.setValue(title);
-				sir.getCvParam().add(cvParam);
-			}
-			
-			// add scan number
-			int scanNum = spec.getScanNum();
-			if(scanNum >= 0)
-			{
-				CvParam cvParam = Constants.makeCvParam("MS:1001115", "scan number(s)");
-				cvParam.setValue(String.valueOf(scanNum));
-				sir.getCvParam().add(cvParam);
-			}
-			
-			// add retention time
-			float scanStartTime = spec.getRt();
-			if(scanStartTime >= 0)
-			{
-				CvParam cvParam = Constants.makeCvParam("MS:1000016", "scan start time");
-				cvParam.setValue(String.valueOf(scanStartTime));
-                if(spec.getRtIsSeconds())
-                {
+    public synchronized void addSpectrumIdentificationResults(List<MSGFPlusMatch> resultList) {
+        for (MSGFPlusMatch mpMatch : resultList) {
+            int specIndex = mpMatch.getSpecIndex();
+            List<DatabaseMatch> matchList = mpMatch.getMatchList();
+            if (matchList == null || matchList.size() == 0)
+                continue;
+
+            edu.ucsd.msjava.msutil.Spectrum spec = specAcc.getSpecMap().getSpectrumBySpecIndex(specIndex);
+            String specID = spec.getID();
+            float precursorMz = spec.getPrecursorPeak().getMz();
+
+            SpectrumIdentificationResult sir = new SpectrumIdentificationResult();
+            sir.setId(Constants.sirID + specIndex);
+            sir.setSpectraData(spectraData);
+            sir.setSpectrumID(specID);
+
+            // add title
+            String title = spec.getTitle();
+            if (title != null) {
+                CvParam cvParam = Constants.makeCvParam("MS:1000796", "spectrum title");
+                cvParam.setValue(title);
+                sir.getCvParam().add(cvParam);
+            }
+
+            // add scan number
+            int scanNum = spec.getScanNum();
+            if (scanNum >= 0) {
+                CvParam cvParam = Constants.makeCvParam("MS:1001115", "scan number(s)");
+                cvParam.setValue(String.valueOf(scanNum));
+                sir.getCvParam().add(cvParam);
+            }
+
+            // add retention time
+            float scanStartTime = spec.getRt();
+            if (scanStartTime >= 0) {
+                CvParam cvParam = Constants.makeCvParam("MS:1000016", "scan start time");
+                cvParam.setValue(String.valueOf(scanStartTime));
+                if (spec.getRtIsSeconds()) {
                     cvParam.setUnitAccession("UO:0000010");
                     cvParam.setUnitName("second");
-                }
-                else
-                {
+                } else {
                     cvParam.setUnitAccession("UO:0000031");
                     cvParam.setUnitName("minute");
                 }
-				sir.getCvParam().add(cvParam);
-			}
-			
-			
-			int rank = 0;
-			for(int i=matchList.size()-1; i>=0; --i)
-			{
-				++rank;
-				DatabaseMatch match = matchList.get(i);
-				
-				if(match.getDeNovoScore() < params.getMinDeNovoScore())
-					break;
-				
-//				int pepIndex = match.getIndex();	// Position of preAA
-				int length = match.getLength();		// Peptide length + 2
-				int charge = match.getCharge();
+                sir.getCvParam().add(cvParam);
+            }
 
-				float peptideMass = match.getPeptideMass();
+
+            int rank = 0;
+            for (int i = matchList.size() - 1; i >= 0; --i) {
+                ++rank;
+                DatabaseMatch match = matchList.get(i);
+
+                if (match.getDeNovoScore() < params.getMinDeNovoScore())
+                    break;
+
+//				int pepIndex = match.getIndex();	// Position of preAA
+                int length = match.getLength();        // Peptide length + 2
+                int charge = match.getCharge();
+
+                float peptideMass = match.getPeptideMass();
 //				float theoMass = peptideMass + (float)Composition.H2O;
 //				float theoMz = theoMass/charge;
-				float theoMz = (peptideMass + (float)Composition.H2O)/charge + (float)Composition.PROTON;
-				
-				int score = match.getScore();
-				double specEValue = match.getSpecEValue();
-				int numPeptides = sa.getNumDistinctPeptides(params.getEnzyme() == null ? length-2 : length-1);
-				double eValue = specEValue*numPeptides;
-				
-				String specEValueStr;
-				if(specEValue < Float.MIN_NORMAL)
-					specEValueStr = String.valueOf(specEValue);
-				else
-					specEValueStr = String.valueOf((float)specEValue);
-				
-				String eValueStr;
-				if(specEValue < Float.MIN_NORMAL)
-					eValueStr = String.valueOf(eValue);
-				else
-					eValueStr = String.valueOf((float)eValue);
+                float theoMz = (peptideMass + (float) Composition.H2O) / charge + (float) Composition.PROTON;
 
-				SpectrumIdentificationItem sii = new SpectrumIdentificationItem();
+                int score = match.getScore();
+                double specEValue = match.getSpecEValue();
+                int numPeptides = sa.getNumDistinctPeptides(params.getEnzyme() == null ? length - 2 : length - 1);
+                double eValue = specEValue * numPeptides;
 
-				sii.setChargeState(charge);
-				sii.setExperimentalMassToCharge(precursorMz);
-				sii.setCalculatedMassToCharge((double) theoMz);
-				
-				Peptide pep = getPeptide(match);
-				sii.setPeptide(pep);
-				
-				sii.setRank(rank);
-				sii.setPassThreshold(eValue <= eValueThreshold);
-				sii.setId(Constants.siiID+specIndex+"_"+rank);
-					
-				sii.getPeptideEvidenceRef().addAll(getPeptideEvidenceList(match, pep));
-				
-				List<CvParam> cvList = sii.getCvParam();
-				List<UserParam> userList = sii.getUserParam();
+                String specEValueStr;
+                if (specEValue < Float.MIN_NORMAL)
+                    specEValueStr = String.valueOf(specEValue);
+                else
+                    specEValueStr = String.valueOf((float) specEValue);
+
+                String eValueStr;
+                if (specEValue < Float.MIN_NORMAL)
+                    eValueStr = String.valueOf(eValue);
+                else
+                    eValueStr = String.valueOf((float) eValue);
+
+                SpectrumIdentificationItem sii = new SpectrumIdentificationItem();
+
+                sii.setChargeState(charge);
+                sii.setExperimentalMassToCharge(precursorMz);
+                sii.setCalculatedMassToCharge((double) theoMz);
+
+                Peptide pep = getPeptide(match);
+                sii.setPeptide(pep);
+
+                sii.setRank(rank);
+                sii.setPassThreshold(eValue <= eValueThreshold);
+                sii.setId(Constants.siiID + specIndex + "_" + rank);
+
+                sii.getPeptideEvidenceRef().addAll(getPeptideEvidenceList(match, pep));
+
+                List<CvParam> cvList = sii.getCvParam();
+                List<UserParam> userList = sii.getUserParam();
 
 //				ActivationMethod[] activationMethodArr = match.getActivationMethodArr();
 //				if(activationMethodArr != null)
@@ -441,451 +411,421 @@ public class MZIdentMLGen {
 //						cvList.add(fragMethodCV);
 //					}
 //				}
-				
-				CvParam rawScoreCV = Constants.makeCvParam("MS:1002049", "MS-GF:RawScore");
-				rawScoreCV.setValue(String.valueOf(score));
-				cvList.add(rawScoreCV);
 
-				CvParam deNovoScoreCV = Constants.makeCvParam("MS:1002050", "MS-GF:DeNovoScore");
-				deNovoScoreCV.setValue(String.valueOf(match.getDeNovoScore()));
-				cvList.add(deNovoScoreCV);
+                CvParam rawScoreCV = Constants.makeCvParam("MS:1002049", "MS-GF:RawScore");
+                rawScoreCV.setValue(String.valueOf(score));
+                cvList.add(rawScoreCV);
 
-				CvParam specEValueCV = Constants.makeCvParam("MS:1002052", "MS-GF:SpecEValue");
-				specEValueCV.setValue(specEValueStr);
-				cvList.add(specEValueCV);
+                CvParam deNovoScoreCV = Constants.makeCvParam("MS:1002050", "MS-GF:DeNovoScore");
+                deNovoScoreCV.setValue(String.valueOf(match.getDeNovoScore()));
+                cvList.add(deNovoScoreCV);
 
-				CvParam eValueCV = Constants.makeCvParam("MS:1002053", "MS-GF:EValue");
-				eValueCV.setValue(eValueStr);
-				cvList.add(eValueCV);
+                CvParam specEValueCV = Constants.makeCvParam("MS:1002052", "MS-GF:SpecEValue");
+                specEValueCV.setValue(specEValueStr);
+                cvList.add(specEValueCV);
 
-				if(match.getPSMQValue() != null)
-				{
-					CvParam psmQValueCV = Constants.makeCvParam("MS:1002054", "MS-GF:QValue");
-					psmQValueCV.setValue(match.getPSMQValue().toString());
-					cvList.add(psmQValueCV);
-				}
+                CvParam eValueCV = Constants.makeCvParam("MS:1002053", "MS-GF:EValue");
+                eValueCV.setValue(eValueStr);
+                cvList.add(eValueCV);
 
-				if(match.getPepQValue() != null)
-				{
-					CvParam pepQValueCV = Constants.makeCvParam("MS:1002055", "MS-GF:PepQValue");
-					pepQValueCV.setValue(match.getPepQValue().toString());
-					cvList.add(pepQValueCV);
-				}
-				
-				UserParam isotopeErrorParam = Constants.makeUserParam("IsotopeError");
-				float expMass = precursorMz*charge;
-				float theoMass = theoMz*charge;
+                if (match.getPSMQValue() != null) {
+                    CvParam psmQValueCV = Constants.makeCvParam("MS:1002054", "MS-GF:QValue");
+                    psmQValueCV.setValue(match.getPSMQValue().toString());
+                    cvList.add(psmQValueCV);
+                }
+
+                if (match.getPepQValue() != null) {
+                    CvParam pepQValueCV = Constants.makeCvParam("MS:1002055", "MS-GF:PepQValue");
+                    pepQValueCV.setValue(match.getPepQValue().toString());
+                    cvList.add(pepQValueCV);
+                }
+
+                UserParam isotopeErrorParam = Constants.makeUserParam("IsotopeError");
+                float expMass = precursorMz * charge;
+                float theoMass = theoMz * charge;
 //				int isotopeError = NominalMass.toNominalMass(expMass) - NominalMass.toNominalMass(theoMass);
-				int isotopeError = Math.round((expMass-theoMass)/(float)Composition.ISOTOPE);
-				isotopeErrorParam.setValue(String.valueOf(isotopeError));
-				userList.add(isotopeErrorParam);
+                int isotopeError = Math.round((expMass - theoMass) / (float) Composition.ISOTOPE);
+                isotopeErrorParam.setValue(String.valueOf(isotopeError));
+                userList.add(isotopeErrorParam);
 
-				ActivationMethod[] activationMethodArr = match.getActivationMethodArr();
-				if(activationMethodArr != null)
-				{
-					StringBuffer actMethodStrBuf = new StringBuffer();
-					actMethodStrBuf.append(activationMethodArr[0]);
-					for(int j=1; j<activationMethodArr.length; j++)
-						actMethodStrBuf.append("/"+activationMethodArr[j]);
-					UserParam dissociationMethodParam = Constants.makeUserParam("AssumedDissociationMethod");
-					dissociationMethodParam.setValue(actMethodStrBuf.toString());
-					userList.add(dissociationMethodParam);
-				}
-				
-				if(match.getAdditionalFeatureList() != null)
-				{
-					for(Pair<String,String> feature : match.getAdditionalFeatureList())
-					{
-						String name = feature.getFirst();
-						String value = feature.getSecond();
-						UserParam addParam = Constants.makeUserParam(name);
-						addParam.setValue(value);
-						userList.add(addParam);
-					}
-				}
-				
-				sir.getSpectrumIdentificationItem().add(sii);
-			}
-			if(!sir.getSpectrumIdentificationItem().isEmpty())
-				siList.getSpectrumIdentificationResult().add(sir);
-		}
-	}	
-	
-	// index: peptide index in sarr
-	// length: peptide length including pre/post
-	// pepStr
-	private Peptide getPeptide(DatabaseMatch match)
-	{
+                ActivationMethod[] activationMethodArr = match.getActivationMethodArr();
+                if (activationMethodArr != null) {
+                    StringBuffer actMethodStrBuf = new StringBuffer();
+                    actMethodStrBuf.append(activationMethodArr[0]);
+                    for (int j = 1; j < activationMethodArr.length; j++)
+                        actMethodStrBuf.append("/" + activationMethodArr[j]);
+                    UserParam dissociationMethodParam = Constants.makeUserParam("AssumedDissociationMethod");
+                    dissociationMethodParam.setValue(actMethodStrBuf.toString());
+                    userList.add(dissociationMethodParam);
+                }
+
+                if (match.getAdditionalFeatureList() != null) {
+                    for (Pair<String, String> feature : match.getAdditionalFeatureList()) {
+                        String name = feature.getFirst();
+                        String value = feature.getSecond();
+                        UserParam addParam = Constants.makeUserParam(name);
+                        addParam.setValue(value);
+                        userList.add(addParam);
+                    }
+                }
+
+                sir.getSpectrumIdentificationItem().add(sii);
+            }
+            if (!sir.getSpectrumIdentificationItem().isEmpty())
+                siList.getSpectrumIdentificationResult().add(sir);
+        }
+    }
+
+    // index: peptide index in sarr
+    // length: peptide length including pre/post
+    // pepStr
+    private Peptide getPeptide(DatabaseMatch match) {
 //		String pvID = pre+pepStr+post;
-		
-		String pepStr = match.getPepSeq();
-		
+
+        String pepStr = match.getPepSeq();
+
 //		/////////
 //		System.out.println("PepStr: " + pepStr);
 //		///////////
-		
-		Peptide mzidPeptide = pepMap.get(pepStr);
-		
+
+        Peptide mzidPeptide = pepMap.get(pepStr);
+
 //		/////////////
 //		edu.ucsd.msjava.msutil.Peptide testPep = aaSet.getPeptide(pepStr);
 //		System.out.println(testPep);
 //		System.out.println(pepStr+"->"+(mzidPeptide == null ? null : mzidPeptide.getId()));
-		/////////////
-		
-		if(mzidPeptide == null)
-		{
-			// new peptide variant
-			mzidPeptide = new Peptide();
-			List<Modification> modList = mzidPeptide.getModification();
-			edu.ucsd.msjava.msutil.Peptide peptide = aaSet.getPeptide(pepStr); 
-			StringBuffer unmodPepStr = new StringBuffer();
-			StringBuffer modPepStr = new StringBuffer();
-			int location = 1;
-			for(edu.ucsd.msjava.msutil.AminoAcid aa : peptide)
-			{
-				Location loc;
-				if(location == 1)
-					loc = Location.N_Term;
-				else if(location == peptide.size())
-					loc = Location.C_Term;
-				else
-					loc = Location.Anywhere;
-				
-				unmodPepStr.append(aa.getUnmodResidue());
-				
-				char residue = aa.getResidue();
-				if(Character.isLetter(residue))
-					modPepStr.append(residue);
-				else
-					modPepStr.append((int)residue);
-				if(loc == Location.N_Term || loc == Location.C_Term)
-				{
-					List<edu.ucsd.msjava.msutil.Modification> fixedTermMods = apcGen.getTerminalFixedModifications(aa.getUnmodResidue(), loc);
-					for(edu.ucsd.msjava.msutil.Modification fixedMod : fixedTermMods)
-					{
-						Modification mod = new Modification();
-						if(loc == Location.N_Term)
-							mod.setLocation(location-1);
-						else
-							mod.setLocation(location+1);
-						mod.setMonoisotopicMassDelta(fixedMod.getAccurateMass());
-						mod.getCvParam().addAll(apcGen.getSearchModification(fixedMod).getCvParam());
-						modList.add(mod);
-					}
-				}
-				List<edu.ucsd.msjava.msutil.Modification> fixedMods = apcGen.getFixedModifications(aa.getUnmodResidue());
-				if(fixedMods != null)
-				{
-					for(edu.ucsd.msjava.msutil.Modification fixedMod : fixedMods)
-					{
-						Modification mod = new Modification();
-						mod.setLocation(location);
-						mod.setMonoisotopicMassDelta(fixedMod.getAccurateMass());
-						mod.getCvParam().addAll(apcGen.getSearchModification(fixedMod).getCvParam());
-						modList.add(mod);
-					}
-				}
-				if(aa.isModified())
-				{
-					Modification mod = new Modification();
-					ModifiedAminoAcid modAA = (ModifiedAminoAcid)aa;
-					if(location == 1 && modAA.isNTermVariableMod())
-						mod.setLocation(location-1);
-					else if(location == peptide.size() && modAA.isCTermVariableMod())
-						mod.setLocation(location+1);
-					else
-						mod.setLocation(location);
-					mod.setMonoisotopicMassDelta(modAA.getModification().getAccurateMass());
-					
-					mod.getCvParam().addAll(apcGen.getSearchModification(modAA.getModification()).getCvParam());
-					modList.add(mod);
-					
-					if(modAA.getTargetAA().isModified())	// aa has two modifications
-					{
-						Modification mod2 = new Modification();
-						ModifiedAminoAcid modAA2 = (ModifiedAminoAcid)modAA.getTargetAA();
-						if(location == 1 && modAA2.isNTermVariableMod())
-							mod2.setLocation(location-1);
-						else if(location == peptide.size() && modAA2.isCTermVariableMod())
-							mod2.setLocation(location+1);
-						else
-							mod2.setLocation(location);
-						mod2.setMonoisotopicMassDelta(modAA2.getModification().getAccurateMass());
-						
-						mod2.getCvParam().addAll(apcGen.getSearchModification(modAA2.getModification()).getCvParam());
-						modList.add(mod2);
-					}
-				}
-				location++;
-			}
+        /////////////
 
-			mzidPeptide.setPeptideSequence(unmodPepStr.toString());
-			pepMap.put(pepStr, mzidPeptide);
-			//mzidPeptide.setId(Constants.pepIDPrefix+pepMap.size());
-			mzidPeptide.setId(modPepStr.toString());
-			peptideList.add(mzidPeptide);
-		}
-		
-		return mzidPeptide;
-	}
-	
-	public List<PeptideEvidenceRef> getPeptideEvidenceList(DatabaseMatch match, Peptide peptide)
-	{
-		SortedSet<Integer> indices = match.getIndices();
-		int length = match.getLength();
-		
-		int startKey = indices.first();
+        if (mzidPeptide == null) {
+            // new peptide variant
+            mzidPeptide = new Peptide();
+            List<Modification> modList = mzidPeptide.getModification();
+            edu.ucsd.msjava.msutil.Peptide peptide = aaSet.getPeptide(pepStr);
+            StringBuffer unmodPepStr = new StringBuffer();
+            StringBuffer modPepStr = new StringBuffer();
+            int location = 1;
+            for (edu.ucsd.msjava.msutil.AminoAcid aa : peptide) {
+                Location loc;
+                if (location == 1)
+                    loc = Location.N_Term;
+                else if (location == peptide.size())
+                    loc = Location.C_Term;
+                else
+                    loc = Location.Anywhere;
+
+                unmodPepStr.append(aa.getUnmodResidue());
+
+                char residue = aa.getResidue();
+                if (Character.isLetter(residue))
+                    modPepStr.append(residue);
+                else
+                    modPepStr.append((int) residue);
+                if (loc == Location.N_Term || loc == Location.C_Term) {
+                    List<edu.ucsd.msjava.msutil.Modification> fixedTermMods = apcGen.getTerminalFixedModifications(aa.getUnmodResidue(), loc);
+                    for (edu.ucsd.msjava.msutil.Modification fixedMod : fixedTermMods) {
+                        Modification mod = new Modification();
+                        if (loc == Location.N_Term)
+                            mod.setLocation(location - 1);
+                        else
+                            mod.setLocation(location + 1);
+                        mod.setMonoisotopicMassDelta(fixedMod.getAccurateMass());
+                        mod.getCvParam().addAll(apcGen.getSearchModification(fixedMod).getCvParam());
+                        modList.add(mod);
+                    }
+                }
+                List<edu.ucsd.msjava.msutil.Modification> fixedMods = apcGen.getFixedModifications(aa.getUnmodResidue());
+                if (fixedMods != null) {
+                    for (edu.ucsd.msjava.msutil.Modification fixedMod : fixedMods) {
+                        Modification mod = new Modification();
+                        mod.setLocation(location);
+                        mod.setMonoisotopicMassDelta(fixedMod.getAccurateMass());
+                        mod.getCvParam().addAll(apcGen.getSearchModification(fixedMod).getCvParam());
+                        modList.add(mod);
+                    }
+                }
+                if (aa.isModified()) {
+                    Modification mod = new Modification();
+                    ModifiedAminoAcid modAA = (ModifiedAminoAcid) aa;
+                    if (location == 1 && modAA.isNTermVariableMod())
+                        mod.setLocation(location - 1);
+                    else if (location == peptide.size() && modAA.isCTermVariableMod())
+                        mod.setLocation(location + 1);
+                    else
+                        mod.setLocation(location);
+                    mod.setMonoisotopicMassDelta(modAA.getModification().getAccurateMass());
+
+                    mod.getCvParam().addAll(apcGen.getSearchModification(modAA.getModification()).getCvParam());
+                    modList.add(mod);
+
+                    if (modAA.getTargetAA().isModified())    // aa has two modifications
+                    {
+                        Modification mod2 = new Modification();
+                        ModifiedAminoAcid modAA2 = (ModifiedAminoAcid) modAA.getTargetAA();
+                        if (location == 1 && modAA2.isNTermVariableMod())
+                            mod2.setLocation(location - 1);
+                        else if (location == peptide.size() && modAA2.isCTermVariableMod())
+                            mod2.setLocation(location + 1);
+                        else
+                            mod2.setLocation(location);
+                        mod2.setMonoisotopicMassDelta(modAA2.getModification().getAccurateMass());
+
+                        mod2.getCvParam().addAll(apcGen.getSearchModification(modAA2.getModification()).getCvParam());
+                        modList.add(mod2);
+                    }
+                }
+                location++;
+            }
+
+            mzidPeptide.setPeptideSequence(unmodPepStr.toString());
+            pepMap.put(pepStr, mzidPeptide);
+            //mzidPeptide.setId(Constants.pepIDPrefix+pepMap.size());
+            mzidPeptide.setId(modPepStr.toString());
+            peptideList.add(mzidPeptide);
+        }
+
+        return mzidPeptide;
+    }
+
+    public List<PeptideEvidenceRef> getPeptideEvidenceList(DatabaseMatch match, Peptide peptide) {
+        SortedSet<Integer> indices = match.getIndices();
+        int length = match.getLength();
+
+        int startKey = indices.first();
 //		if(match.isNTermMetCleaved())
 //			++startKey;
-		
-		String pepIDNum = peptide.getId().substring(Constants.pepIDPrefix.length());
-		String annotationKey = (match.isNTermMetCleaved() ? "M" : "")+startKey+"_"+pepIDNum;
-		List<PeptideEvidenceRef> evRefList = evRefListMap.get(annotationKey);
-		
-		if(evRefList == null)
-		{
-			evRefList = new ArrayList<PeptideEvidenceRef>();
-			
-			CompactFastaSequence seq = sa.getSequence();
-			for(int index : indices)
-			{
-				boolean isNTermMetCleaved;
-				if(match.isNTermMetCleaved() && sa.getSequence().getCharAt(index+1) == 'M') 
-					isNTermMetCleaved = true;
-				else 
-					isNTermMetCleaved = false;
-				
-				PeptideEvidence pepEv = new PeptideEvidence();
-				
-				char pre = sa.getSequence().getCharAt(index);
-				if(pre == '_')
-				{
-					if(isNTermMetCleaved)
-						pre = 'M';
-					else
-						pre = '-';
-				}
-				char post;
-				if(isNTermMetCleaved)
-					post = sa.getSequence().getCharAt(index+length);
-				else
-					post = sa.getSequence().getCharAt(index+length-1);
-				if(post == '_')
-					post = '-';
-				pepEv.setPre(String.valueOf(pre));
-				pepEv.setPost(String.valueOf(post));
-				
-				int protStartIndex = (int)seq.getStartPosition(index);
-				DBSequence dbSeq = getDBSequence(protStartIndex);
-				pepEv.setDBSequence(dbSeq);
-				pepEv.setPeptide(peptide);
-				
-				int start = index-protStartIndex+1;
-				if(isNTermMetCleaved)
-					++start;
-				
-				int end = start+length-2-1;
-				pepEv.setStart(start);
-				pepEv.setEnd(end);
-				
+
+        String pepIDNum = peptide.getId().substring(Constants.pepIDPrefix.length());
+        String annotationKey = (match.isNTermMetCleaved() ? "M" : "") + startKey + "_" + pepIDNum;
+        List<PeptideEvidenceRef> evRefList = evRefListMap.get(annotationKey);
+
+        if (evRefList == null) {
+            evRefList = new ArrayList<PeptideEvidenceRef>();
+
+            CompactFastaSequence seq = sa.getSequence();
+            for (int index : indices) {
+                boolean isNTermMetCleaved;
+                isNTermMetCleaved = match.isNTermMetCleaved() && sa.getSequence().getCharAt(index + 1) == 'M';
+
+                PeptideEvidence pepEv = new PeptideEvidence();
+
+                char pre = sa.getSequence().getCharAt(index);
+                if (pre == '_') {
+                    if (isNTermMetCleaved)
+                        pre = 'M';
+                    else
+                        pre = '-';
+                }
+                char post;
+                if (isNTermMetCleaved)
+                    post = sa.getSequence().getCharAt(index + length);
+                else
+                    post = sa.getSequence().getCharAt(index + length - 1);
+                if (post == '_')
+                    post = '-';
+                pepEv.setPre(String.valueOf(pre));
+                pepEv.setPost(String.valueOf(post));
+
+                int protStartIndex = (int) seq.getStartPosition(index);
+                DBSequence dbSeq = getDBSequence(protStartIndex);
+                pepEv.setDBSequence(dbSeq);
+                pepEv.setPeptide(peptide);
+
+                int start = index - protStartIndex + 1;
+                if (isNTermMetCleaved)
+                    ++start;
+
+                int end = start + length - 2 - 1;
+                pepEv.setStart(start);
+                pepEv.setEnd(end);
+
 //				String pepEvKey = "PepEv"+(index+1)+"_"+length;
-				String pepEvKey = Constants.pepEvIDPrefix+"_"+(index+1)+"_"+pepIDNum+"_"+start;
+                String pepEvKey = Constants.pepEvIDPrefix + "_" + (index + 1) + "_" + pepIDNum + "_" + start;
 //				if(match.isNTermMetCleaved())
 //					pepEvKey += "_N"+"_"+startKey;
-				pepEv.setId(pepEvKey);
-				
-				pepEv.setIsDecoy(isDecoyMap.get(protStartIndex));
-				
-				peptideEvidenceList.add(pepEv);
-				
-				PeptideEvidenceRef pepEvRef = new PeptideEvidenceRef();
-				pepEvRef.setPeptideEvidence(pepEv);
-				evRefList.add(pepEvRef);
-			}
-			evRefListMap.put(annotationKey, evRefList);
-		}
-		
-		return evRefList;
-	}
-	
-	public DBSequence getDBSequence(int protStartIndex)
-	{
-		DBSequence dbSeq = dbSeqMap.get(protStartIndex);
-		if(dbSeq == null)
-		{
-			dbSeq = new DBSequence();
-			
-			CompactFastaSequence seq = sa.getSequence();
-			String annotation = seq.getAnnotation(protStartIndex);
-			String proteinSeq = seq.getMatchingEntry(protStartIndex);
-			String accession = annotation.split("\\s+")[0];
-			
-			dbSeq.setLength(proteinSeq.length());
-			dbSeq.setSearchDatabase(searchDatabase);
-			dbSeq.setAccession(accession);
-			dbSeq.setId("DBSeq"+(protStartIndex+1));
-			
-			boolean isDecoy = accession.startsWith(MSGFPlus.DECOY_PROTEIN_PREFIX); 
-			if(!isDecoy)
-			{
-				CvParam protDescCV = Constants.makeCvParam("MS:1001088", "protein description");
-				protDescCV.setValue(annotation);
-				dbSeq.getCvParam().add(protDescCV);
-			}
-			
-			this.dbSequenceList.add(dbSeq);
-			dbSeqMap.put(protStartIndex, dbSeq);
-			isDecoyMap.put(protStartIndex, isDecoy);
-		}
-		
-		return dbSeq;
-	}
-	
-	private void generateCvList()
-	{
-		cvList = new CvList();
-		List<Cv> localCvList = cvList.getCv();
-		localCvList.add(Constants.psiCV);
-		localCvList.add(Constants.unimodCV);
-		localCvList.add(Constants.unitCV);
-	}
+                pepEv.setId(pepEvKey);
 
-	private void generateAnalysisSoftwareList()
-	{
-		analysisSoftwareList = new AnalysisSoftwareList();
-		List<AnalysisSoftware> analysisSoftwares = analysisSoftwareList.getAnalysisSoftware();
-		analysisSoftwares.add(Constants.msgfPlus);
-	}
-	
-	private void initSequenceCollection()
-	{
-		sequenceCollection = new SequenceCollection();
-		dbSequenceList = sequenceCollection.getDBSequence();
-		peptideList = sequenceCollection.getPeptide();
-		peptideEvidenceList = sequenceCollection.getPeptideEvidence();
-	}
-	
-	private void generateAnalysisCollection()
-	{
-		
-		analysisCollection = new AnalysisCollection();
-		
-		List<SpectrumIdentification> specIdentList = analysisCollection.getSpectrumIdentification();
-		
-		SpectrumIdentification specIdent = new SpectrumIdentification();
-		specIdent.setId(Constants.specIdentID);
-		specIdent.setSpectrumIdentificationList(siList);
-		specIdent.setSpectrumIdentificationProtocol(siProtocol);
-		
-		List<InputSpectra> inputSpecList = specIdent.getInputSpectra();
-		InputSpectra inputSpec = new InputSpectra();
-		inputSpec.setSpectraData(spectraData);
-		inputSpecList.add(inputSpec);
-		
-		
-		List<SearchDatabaseRef> searchDBRefList = specIdent.getSearchDatabaseRef();
-		SearchDatabaseRef searchDBRef = new SearchDatabaseRef();
-		searchDBRef.setSearchDatabase(searchDatabase);
-		searchDBRefList.add(searchDBRef);
-		
-		specIdentList.add(specIdent);
-	}	
-	
-	private void generateAnalysisProtocolCollection()
-	{
-		apcGen = new AnalysisProtocolCollectionGen(params, aaSet);
-		analysisProtocolCollection = apcGen.getAnalysisProtocolCollection();
-		siProtocol = apcGen.getSpectrumIdentificationProtocol();
-	}
-	
-	private void initDataCollection()
-	{
-		dataCollection = new DataCollection();
+                pepEv.setIsDecoy(isDecoyMap.get(protStartIndex));
 
-		// Inputs
-		Inputs inputs = new Inputs();
-		// source file: skip
-		
-		// search database
-		searchDatabase = new SearchDatabase();
-		searchDatabase.setId(Constants.searchDBID);
-		searchDatabase.setNumDatabaseSequences((long)sa.getSequence().getNumProteins());
-		searchDatabase.setLocation(params.getDatabaseFile().getAbsolutePath());
-		
-		UserParam param = new UserParam();
-		param.setName(params.getDatabaseFile().getName());
-		Param tempParam = new Param();
-		tempParam.setParam(param);
-		searchDatabase.setDatabaseName(tempParam);
+                peptideEvidenceList.add(pepEv);
 
-		FileFormat ffDB = new FileFormat();
-		ffDB.setCvParam(Constants.makeCvParam("MS:1001348","FASTA format"));
-		searchDatabase.setFileFormat(ffDB);   
-		
-		// for decoy
-		if(params.useTDA())
-		{
-			searchDatabase.getCvParam().add(Constants.makeCvParam("MS:1001197", "DB composition target+decoy"));
-			CvParam decoyAccCV = Constants.makeCvParam("MS:1001283", "decoy DB accession regexp");
-			decoyAccCV.setValue("^"+MSGFPlus.DECOY_PROTEIN_PREFIX);
-			searchDatabase.getCvParam().add(decoyAccCV);
-			searchDatabase.getCvParam().add(Constants.makeCvParam("MS:1001195", "decoy DB type reverse"));
-		}
+                PeptideEvidenceRef pepEvRef = new PeptideEvidenceRef();
+                pepEvRef.setPeptideEvidence(pepEv);
+                evRefList.add(pepEvRef);
+            }
+            evRefListMap.put(annotationKey, evRefList);
+        }
 
-		inputs.getSearchDatabase().add(searchDatabase);
-		
-		// spectra data
-		spectraData = new SpectraData();
-		spectraData.setId(Constants.spectraDataID);
-		
-		File specFile = params.getDBSearchIOList().get(ioIndex).getSpecFile();
-		spectraData.setLocation(specFile.getAbsolutePath());
-		spectraData.setName(specFile.getName());
-		
-		// spectrum file format, TODO: add _dta.txt to the PSI CV
-		SpecFileFormat specFileFormat = params.getDBSearchIOList().get(ioIndex).getSpecFileFormat();
-		FileFormat ffSpec = new FileFormat();
-		ffSpec.setCvParam(Constants.makeCvParam(specFileFormat.getPSIAccession(),specFileFormat.getPSIName()));
-		spectraData.setFileFormat(ffSpec);
-		
-		SpectrumIDFormat sidFormat = new SpectrumIDFormat();
-		sidFormat.setCvParam(specAcc.getSpectrumIDFormatCvParam());
-		spectraData.setSpectrumIDFormat(sidFormat);
-		
-		inputs.getSpectraData().add(spectraData);
-		dataCollection.setInputs(inputs);
+        return evRefList;
+    }
 
-		// AnalysisData
-		AnalysisData analysisData = new AnalysisData();
-		dataCollection.setAnalysisData(analysisData);
-		
-		siList = new SpectrumIdentificationList();
-		siList.setId(Constants.siListID);
-		
-		FragmentationTable fragTable = new FragmentationTable();
-		List<Measure> measureList = fragTable.getMeasure();
-		Measure mzMeasure = new Measure();
-		mzMeasure.setId(Constants.measureMzID);
-		List<CvParam> cvParamList = mzMeasure.getCvParam();
-		cvParamList.add(Constants.makeCvParam("MS:1001225","product ion m/z", Constants.psiCV, "MS:1000040", "m/z", Constants.psiCV));
-		measureList.add(mzMeasure);
-		
+    public DBSequence getDBSequence(int protStartIndex) {
+        DBSequence dbSeq = dbSeqMap.get(protStartIndex);
+        if (dbSeq == null) {
+            dbSeq = new DBSequence();
+
+            CompactFastaSequence seq = sa.getSequence();
+            String annotation = seq.getAnnotation(protStartIndex);
+            String proteinSeq = seq.getMatchingEntry(protStartIndex);
+            String accession = annotation.split("\\s+")[0];
+
+            dbSeq.setLength(proteinSeq.length());
+            dbSeq.setSearchDatabase(searchDatabase);
+            dbSeq.setAccession(accession);
+            dbSeq.setId("DBSeq" + (protStartIndex + 1));
+
+            boolean isDecoy = accession.startsWith(MSGFPlus.DECOY_PROTEIN_PREFIX);
+            if (!isDecoy) {
+                CvParam protDescCV = Constants.makeCvParam("MS:1001088", "protein description");
+                protDescCV.setValue(annotation);
+                dbSeq.getCvParam().add(protDescCV);
+            }
+
+            this.dbSequenceList.add(dbSeq);
+            dbSeqMap.put(protStartIndex, dbSeq);
+            isDecoyMap.put(protStartIndex, isDecoy);
+        }
+
+        return dbSeq;
+    }
+
+    private void generateCvList() {
+        cvList = new CvList();
+        List<Cv> localCvList = cvList.getCv();
+        localCvList.add(Constants.psiCV);
+        localCvList.add(Constants.unimodCV);
+        localCvList.add(Constants.unitCV);
+    }
+
+    private void generateAnalysisSoftwareList() {
+        analysisSoftwareList = new AnalysisSoftwareList();
+        List<AnalysisSoftware> analysisSoftwares = analysisSoftwareList.getAnalysisSoftware();
+        analysisSoftwares.add(Constants.msgfPlus);
+    }
+
+    private void initSequenceCollection() {
+        sequenceCollection = new SequenceCollection();
+        dbSequenceList = sequenceCollection.getDBSequence();
+        peptideList = sequenceCollection.getPeptide();
+        peptideEvidenceList = sequenceCollection.getPeptideEvidence();
+    }
+
+    private void generateAnalysisCollection() {
+
+        analysisCollection = new AnalysisCollection();
+
+        List<SpectrumIdentification> specIdentList = analysisCollection.getSpectrumIdentification();
+
+        SpectrumIdentification specIdent = new SpectrumIdentification();
+        specIdent.setId(Constants.specIdentID);
+        specIdent.setSpectrumIdentificationList(siList);
+        specIdent.setSpectrumIdentificationProtocol(siProtocol);
+
+        List<InputSpectra> inputSpecList = specIdent.getInputSpectra();
+        InputSpectra inputSpec = new InputSpectra();
+        inputSpec.setSpectraData(spectraData);
+        inputSpecList.add(inputSpec);
+
+
+        List<SearchDatabaseRef> searchDBRefList = specIdent.getSearchDatabaseRef();
+        SearchDatabaseRef searchDBRef = new SearchDatabaseRef();
+        searchDBRef.setSearchDatabase(searchDatabase);
+        searchDBRefList.add(searchDBRef);
+
+        specIdentList.add(specIdent);
+    }
+
+    private void generateAnalysisProtocolCollection() {
+        apcGen = new AnalysisProtocolCollectionGen(params, aaSet);
+        analysisProtocolCollection = apcGen.getAnalysisProtocolCollection();
+        siProtocol = apcGen.getSpectrumIdentificationProtocol();
+    }
+
+    private void initDataCollection() {
+        dataCollection = new DataCollection();
+
+        // Inputs
+        Inputs inputs = new Inputs();
+        // source file: skip
+
+        // search database
+        searchDatabase = new SearchDatabase();
+        searchDatabase.setId(Constants.searchDBID);
+        searchDatabase.setNumDatabaseSequences((long) sa.getSequence().getNumProteins());
+        searchDatabase.setLocation(params.getDatabaseFile().getAbsolutePath());
+
+        UserParam param = new UserParam();
+        param.setName(params.getDatabaseFile().getName());
+        Param tempParam = new Param();
+        tempParam.setParam(param);
+        searchDatabase.setDatabaseName(tempParam);
+
+        FileFormat ffDB = new FileFormat();
+        ffDB.setCvParam(Constants.makeCvParam("MS:1001348", "FASTA format"));
+        searchDatabase.setFileFormat(ffDB);
+
+        // for decoy
+        if (params.useTDA()) {
+            searchDatabase.getCvParam().add(Constants.makeCvParam("MS:1001197", "DB composition target+decoy"));
+            CvParam decoyAccCV = Constants.makeCvParam("MS:1001283", "decoy DB accession regexp");
+            decoyAccCV.setValue("^" + MSGFPlus.DECOY_PROTEIN_PREFIX);
+            searchDatabase.getCvParam().add(decoyAccCV);
+            searchDatabase.getCvParam().add(Constants.makeCvParam("MS:1001195", "decoy DB type reverse"));
+        }
+
+        inputs.getSearchDatabase().add(searchDatabase);
+
+        // spectra data
+        spectraData = new SpectraData();
+        spectraData.setId(Constants.spectraDataID);
+
+        File specFile = params.getDBSearchIOList().get(ioIndex).getSpecFile();
+        spectraData.setLocation(specFile.getAbsolutePath());
+        spectraData.setName(specFile.getName());
+
+        // spectrum file format, TODO: add _dta.txt to the PSI CV
+        SpecFileFormat specFileFormat = params.getDBSearchIOList().get(ioIndex).getSpecFileFormat();
+        FileFormat ffSpec = new FileFormat();
+        ffSpec.setCvParam(Constants.makeCvParam(specFileFormat.getPSIAccession(), specFileFormat.getPSIName()));
+        spectraData.setFileFormat(ffSpec);
+
+        SpectrumIDFormat sidFormat = new SpectrumIDFormat();
+        sidFormat.setCvParam(specAcc.getSpectrumIDFormatCvParam());
+        spectraData.setSpectrumIDFormat(sidFormat);
+
+        inputs.getSpectraData().add(spectraData);
+        dataCollection.setInputs(inputs);
+
+        // AnalysisData
+        AnalysisData analysisData = new AnalysisData();
+        dataCollection.setAnalysisData(analysisData);
+
+        siList = new SpectrumIdentificationList();
+        siList.setId(Constants.siListID);
+
+        FragmentationTable fragTable = new FragmentationTable();
+        List<Measure> measureList = fragTable.getMeasure();
+        Measure mzMeasure = new Measure();
+        mzMeasure.setId(Constants.measureMzID);
+        List<CvParam> cvParamList = mzMeasure.getCvParam();
+        cvParamList.add(Constants.makeCvParam("MS:1001225", "product ion m/z", Constants.psiCV, "MS:1000040", "m/z", Constants.psiCV));
+        measureList.add(mzMeasure);
+
 //		Measure intMeasure = new Measure();
 //		intMeasure.setId(Constants.measureIntID);
 //		cvParamList = intMeasure.getCvParam();
 //		cvParamList.add(Constants.makeCvParam("MS:1001226","product ion intensity", Constants.psiCV,"MS:1000131", "number of counts", Constants.psiCV));
 //		measureList.add(intMeasure);
-		
+
 //		Measure errorMeasure = new Measure();
 //		errorMeasure.setId(Constants.measureErrorID);
 //		cvParamList = errorMeasure.getCvParam();
 //		cvParamList.add(Constants.makeCvParam("MS:1001227","product ion m/z error", Constants.psiCV,"MS:1000040","m/z", Constants.psiCV));
 //		measureList.add(errorMeasure);
 
-		siList.setFragmentationTable(fragTable);		
-		analysisData.getSpectrumIdentificationList().add(siList);
-	}
-	
+        siList.setFragmentationTable(fragTable);
+        analysisData.getSpectrumIdentificationList().add(siList);
+    }
+
 
 //	public MZIdentMLGen setPersonalInfo(
 //			String firstName,

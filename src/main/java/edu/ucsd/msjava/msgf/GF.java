@@ -4,9 +4,13 @@ import edu.ucsd.msjava.msutil.Annotation;
 import edu.ucsd.msjava.msutil.Matter;
 
 public interface GF<T extends Matter> {
-	public boolean computeGeneratingFunction();
-	public int getScore(Annotation annotation);
-	public double getSpectralProbability(int score);
-	public int getMaxScore();
-	public ScoreDist getScoreDist();
+    boolean computeGeneratingFunction();
+
+    int getScore(Annotation annotation);
+
+    double getSpectralProbability(int score);
+
+    int getMaxScore();
+
+    ScoreDist getScoreDist();
 }

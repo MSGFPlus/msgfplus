@@ -1,24 +1,23 @@
 package edu.ucsd.msjava.msutil;
 
 public class Ion {
-	public Ion(float mass, int charge)
-	{
-		this.mass = mass;
-		this.charge = charge;
-	}
+    public Ion(float mass, int charge) {
+        this.mass = mass;
+        this.charge = charge;
+    }
 
-	public float getMz() {
-		return (mass + charge * (float)Composition.PROTON) / charge;
-	}
-	
-	public float getMass() {
-		return mass;
-	}
+    public float getMz() {
+        return (mass + charge * (float) Composition.PROTON) / charge;
+    }
 
-	public int getCharge() {
-		return charge;
-	}
+    public float getMass() {
+        return mass;
+    }
 
-	private float mass;
-	private int charge;
+    public int getCharge() {
+        return charge;
+    }
+
+    private float mass;
+    private int charge;
 }

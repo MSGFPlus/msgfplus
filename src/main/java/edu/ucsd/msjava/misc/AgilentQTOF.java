@@ -26,8 +26,7 @@ import edu.ucsd.msjava.msutil.IonType.PrefixIon;
 import edu.ucsd.msjava.parser.MgfSpectrumParser;
 
 public class AgilentQTOF {
-	public static void main(String argv[]) throws Exception
-	{
+    public static void main(String argv[]) throws Exception {
 //		correctChargeZero();
 //		compositionMSGF();
 //		aminoacidMSGF();
@@ -44,33 +43,31 @@ public class AgilentQTOF {
 //		testErrors();
 //		aminoacidExtMSGF();
 //		trypsinTest();
-	}
+    }
 
-	public static void trypsinTest() throws Exception
-	{
-		SpectraIterator itr = new SpectraIterator("/home/sangtaekim/Research/Data/HeckRevision/AnnotatedSpectra/CID_Tryp_Confident.mgf", new MgfSpectrumParser());
-		int[] numSpecs = new int[100];
-		int[] numSpecsPrecedingKR = new int[100];
-		int[] numSpecsEndingKR = new int[100];
-		while(itr.hasNext())
-		{
-			Spectrum spec = itr.next();
-			int charge = spec.getCharge();
-			numSpecs[charge]++;
-			String annotation = spec.getAnnotationStr();
+    public static void trypsinTest() throws Exception {
+        SpectraIterator itr = new SpectraIterator("/home/sangtaekim/Research/Data/HeckRevision/AnnotatedSpectra/CID_Tryp_Confident.mgf", new MgfSpectrumParser());
+        int[] numSpecs = new int[100];
+        int[] numSpecsPrecedingKR = new int[100];
+        int[] numSpecsEndingKR = new int[100];
+        while (itr.hasNext()) {
+            Spectrum spec = itr.next();
+            int charge = spec.getCharge();
+            numSpecs[charge]++;
+            String annotation = spec.getAnnotationStr();
 //			if(annotation.charAt(0) == 'K' || annotation.charAt(0) == 'R')
 //			{
 //				
 //			}
-			char lastChar = annotation.charAt(annotation.length()-1);
-			if(lastChar == 'K' || lastChar == 'R')
-				numSpecsEndingKR[charge]++;
-		} 
-		
-		for(int c=2; c<=7; c++)
-			System.out.println(c+"\t"+numSpecsEndingKR[c]/(float)numSpecs[c]);
-	}
-	
+            char lastChar = annotation.charAt(annotation.length() - 1);
+            if (lastChar == 'K' || lastChar == 'R')
+                numSpecsEndingKR[charge]++;
+        }
+
+        for (int c = 2; c <= 7; c++)
+            System.out.println(c + "\t" + numSpecsEndingKR[c] / (float) numSpecs[c]);
+    }
+
 //	public static void testErrors() throws Exception
 //	{
 //		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
@@ -99,7 +96,7 @@ public class AgilentQTOF {
 //		System.out.println(new FloatingPointMass(1000f, 17).getMass());
 //		System.out.println(new FloatingPointMass(1000f+57.021464f,17).getMass());
 //	}
-	
+
 //	public static void testGraphErrorDist() throws Exception
 //	{
 //		int maxLength = 25;
@@ -200,7 +197,7 @@ public class AgilentQTOF {
 //			errMap.put(curNode, curDist);
 //		}
 //	}	
-	
+
 //	public static void testGraphTheoreticalErrors() throws Exception
 //	{
 //		int maxLength = 20;
@@ -240,7 +237,7 @@ public class AgilentQTOF {
 //			}
 //		}
 //	}
-	
+
 //	public static void testGraphErrors() throws Exception
 //	{
 //		int maxLength = 20;
@@ -314,272 +311,244 @@ public class AgilentQTOF {
 //		System.out.println(maxErr+"];");
 //		
 //	}
-	
 
-	public static void testFixedLengthAAGraph() throws Exception 
-	{
-		int numBits = 15;
-		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
-		
-		float maxErrPPM = 0;
-		float avgErrPPM = 0;
-		int size = 0;
-		
-		for(AminoAcid aa : aaSet)
-		{	
-			Composition c = aa.getComposition();
-			size++;
-			float mass = c.getMass();
-			String byteStr = floatToByteStr(c.getMass(), numBits);
-			float approxMass = byteStrToFloat(byteStr);
-			float errPPM = (approxMass-mass)/mass*1e6f;
-			if(Math.abs(errPPM) > maxErrPPM)
-				maxErrPPM = Math.abs(errPPM);
-			avgErrPPM += errPPM*aa.getProbability();
-			System.out.println(c+"\t"+c.getMass()+"\t"+byteStr+"\t"+approxMass+"\t"+errPPM+"\t"+round(mass,numBits));
-		}
-		System.out.println("MaxErr: " + maxErrPPM);
-		System.out.println("AvgErr: " + avgErrPPM);
-	}
-	
-	private static float round(float f, int numBits)
-	{
-		int intVal = Float.floatToIntBits(f);
-		int carry = (intVal & (1 << (23-numBits-1))) == 0 ? 0 : 1;
-		int intRounded = ((intVal >> (23-numBits))+ carry) << (23-numBits);
-		float rounded = Float.intBitsToFloat(intRounded);
-		return rounded;
-	}
-	
-	private static float byteStrToFloat(String byteStr)
-	{
-		return Float.intBitsToFloat(Integer.parseInt(byteStr, 2));
-	}
-	
-	private static String floatToByteStr(float f, int numBits)
-	{
-		int intValue = Float.floatToIntBits(f);
-		String byteStr = Integer.toBinaryString(intValue);
-		for(int i=byteStr.length(); i<32; i++)
-			byteStr = "0" + byteStr;
-			
-		String sign = byteStr.substring(0, 1);
-		String exp = byteStr.substring(1, 9);
-		StringBuffer fraction = new StringBuffer(byteStr.substring(9));
 
-		if(numBits < fraction.length())
-		{
-			char carry = fraction.charAt(numBits);
-			for(int i=fraction.length()-1; i>=0; i--)
-			{
-				if(i >= numBits)
-					fraction.setCharAt(i, '0');
-				else if(carry == '1')
-				{
-					if(fraction.charAt(i) == '1')
-						fraction.setCharAt(i, '0');
-					else
-					{
-						fraction.setCharAt(i, '1');
-						break;
-					}
-				}
-			}
-		}
-		
-		return sign+exp+fraction;
-	}
-	
+    public static void testFixedLengthAAGraph() throws Exception {
+        int numBits = 15;
+        AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
 
-	public static void graphTest() throws Exception
-	{
-		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
-		int maxLength = 20;
-		long time = System.currentTimeMillis();
-		CompositionFactory allCompositions = new CompositionFactory(aaSet, null, maxLength);
-		
-		System.out.println("Composibion Building: " + (System.currentTimeMillis()-time));
-		
-		Tolerance tol = Tolerance.parseToleranceStr("30ppm");
-		float maxJumpMass = 700;
-		String fileName = "/home/sangtaekim/Research/Data/AgilentQTOF/annotatedAgilentQTOF.mgf";
-		WindowFilter filter = new WindowFilter(6, 50);
-		
-		SpectraIterator itr = new SpectraIterator(fileName, new MgfSpectrumParser());
-		int numSpecs = 0;
-		int sumEdges = 0;
-		while(itr.hasNext())
-		{
-			Spectrum s = itr.next();
-			Spectrum spec = filter.apply(s);
-			Peptide pep = spec.getAnnotation();
-			
-			if(pep.size() > maxLength || spec.getCharge() != 2)
-				continue;
-			
-			numSpecs++;
+        float maxErrPPM = 0;
+        float avgErrPPM = 0;
+        int size = 0;
 
-			int numEdges = 0;
-			// construct a graph
-			for(int i=0; i<spec.size(); i++)
-			{
-				Peak p1 = spec.get(i);
-				for(int j=i+1; j<spec.size(); j++)
-				{
-					Peak p2 = spec.get(j);
-					float diff = p2.getMass() - p1.getMass();
-					if(allCompositions.getNodes(diff, tol).size() > 0)
-						numEdges++;
-				}
-			}
-			sumEdges += numEdges;
-			System.out.println(pep+"\t"+numEdges);
-		}
-		
-		System.out.println("AvgNumEdges: " + sumEdges/(float)numSpecs);
-		
-	}
-	
-	public static void ionProb() throws Exception
-	{
-		IonType[] ions = {IonType.Y}; // IonType.getIonType("y2")
-		Tolerance tol = Tolerance.parseToleranceStr("30ppm");
-		int numJumps = 0;
-		float maxJumpMass = 500;
-		int maxLength = 20;
-		
-		String fileName = "/home/sangtaekim/Research/Data/AgilentQTOF/annotatedAgilentQTOF.mgf";
-		WindowFilter filter = new WindowFilter(6, 50);
-		
-		SpectraIterator itr = new SpectraIterator(fileName, new MgfSpectrumParser());
-		int numCleavages = 0;
-		int numCleavagesWithPeaks = 0;
-		int numSpecs = 0;
-		int numPeaks = 0;
-		int numSpecsWithSpecGraphPath = 0;
-		while(itr.hasNext())
-		{
-			Spectrum s = itr.next();
+        for (AminoAcid aa : aaSet) {
+            Composition c = aa.getComposition();
+            size++;
+            float mass = c.getMass();
+            String byteStr = floatToByteStr(c.getMass(), numBits);
+            float approxMass = byteStrToFloat(byteStr);
+            float errPPM = (approxMass - mass) / mass * 1e6f;
+            if (Math.abs(errPPM) > maxErrPPM)
+                maxErrPPM = Math.abs(errPPM);
+            avgErrPPM += errPPM * aa.getProbability();
+            System.out.println(c + "\t" + c.getMass() + "\t" + byteStr + "\t" + approxMass + "\t" + errPPM + "\t" + round(mass, numBits));
+        }
+        System.out.println("MaxErr: " + maxErrPPM);
+        System.out.println("AvgErr: " + avgErrPPM);
+    }
+
+    private static float round(float f, int numBits) {
+        int intVal = Float.floatToIntBits(f);
+        int carry = (intVal & (1 << (23 - numBits - 1))) == 0 ? 0 : 1;
+        int intRounded = ((intVal >> (23 - numBits)) + carry) << (23 - numBits);
+        float rounded = Float.intBitsToFloat(intRounded);
+        return rounded;
+    }
+
+    private static float byteStrToFloat(String byteStr) {
+        return Float.intBitsToFloat(Integer.parseInt(byteStr, 2));
+    }
+
+    private static String floatToByteStr(float f, int numBits) {
+        int intValue = Float.floatToIntBits(f);
+        String byteStr = Integer.toBinaryString(intValue);
+        for (int i = byteStr.length(); i < 32; i++)
+            byteStr = "0" + byteStr;
+
+        String sign = byteStr.substring(0, 1);
+        String exp = byteStr.substring(1, 9);
+        StringBuffer fraction = new StringBuffer(byteStr.substring(9));
+
+        if (numBits < fraction.length()) {
+            char carry = fraction.charAt(numBits);
+            for (int i = fraction.length() - 1; i >= 0; i--) {
+                if (i >= numBits)
+                    fraction.setCharAt(i, '0');
+                else if (carry == '1') {
+                    if (fraction.charAt(i) == '1')
+                        fraction.setCharAt(i, '0');
+                    else {
+                        fraction.setCharAt(i, '1');
+                        break;
+                    }
+                }
+            }
+        }
+
+        return sign + exp + fraction;
+    }
+
+
+    public static void graphTest() throws Exception {
+        AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
+        int maxLength = 20;
+        long time = System.currentTimeMillis();
+        CompositionFactory allCompositions = new CompositionFactory(aaSet, null, maxLength);
+
+        System.out.println("Composibion Building: " + (System.currentTimeMillis() - time));
+
+        Tolerance tol = Tolerance.parseToleranceStr("30ppm");
+        float maxJumpMass = 700;
+        String fileName = "/home/sangtaekim/Research/Data/AgilentQTOF/annotatedAgilentQTOF.mgf";
+        WindowFilter filter = new WindowFilter(6, 50);
+
+        SpectraIterator itr = new SpectraIterator(fileName, new MgfSpectrumParser());
+        int numSpecs = 0;
+        int sumEdges = 0;
+        while (itr.hasNext()) {
+            Spectrum s = itr.next();
+            Spectrum spec = filter.apply(s);
+            Peptide pep = spec.getAnnotation();
+
+            if (pep.size() > maxLength || spec.getCharge() != 2)
+                continue;
+
+            numSpecs++;
+
+            int numEdges = 0;
+            // construct a graph
+            for (int i = 0; i < spec.size(); i++) {
+                Peak p1 = spec.get(i);
+                for (int j = i + 1; j < spec.size(); j++) {
+                    Peak p2 = spec.get(j);
+                    float diff = p2.getMass() - p1.getMass();
+                    if (allCompositions.getNodes(diff, tol).size() > 0)
+                        numEdges++;
+                }
+            }
+            sumEdges += numEdges;
+            System.out.println(pep + "\t" + numEdges);
+        }
+
+        System.out.println("AvgNumEdges: " + sumEdges / (float) numSpecs);
+
+    }
+
+    public static void ionProb() throws Exception {
+        IonType[] ions = {IonType.Y}; // IonType.getIonType("y2")
+        Tolerance tol = Tolerance.parseToleranceStr("30ppm");
+        int numJumps = 0;
+        float maxJumpMass = 500;
+        int maxLength = 20;
+
+        String fileName = "/home/sangtaekim/Research/Data/AgilentQTOF/annotatedAgilentQTOF.mgf";
+        WindowFilter filter = new WindowFilter(6, 50);
+
+        SpectraIterator itr = new SpectraIterator(fileName, new MgfSpectrumParser());
+        int numCleavages = 0;
+        int numCleavagesWithPeaks = 0;
+        int numSpecs = 0;
+        int numPeaks = 0;
+        int numSpecsWithSpecGraphPath = 0;
+        while (itr.hasNext()) {
+            Spectrum s = itr.next();
 //			Spectrum spec = filter.apply(s);
-			Spectrum spec = s;
-			Peptide pep = spec.getAnnotation();
-			
-			if(pep.size() > maxLength || spec.getCharge() != 2)
-				continue;
-			
-			numSpecs++;
-			numPeaks += spec.size();
-			
-			float suffixMass = 0;
-			boolean specGraphHasPath = true;
-			float prevSuffixMassWithPeak = 0;
-			int prevI = pep.size();
-			for(int i=pep.size()-1; i>0; i--)
-			{
-				numCleavages++;
-				suffixMass += pep.get(i).getMass();
-				float prefixMass = spec.getParentMass() - (float)Composition.H2O - suffixMass;
+            Spectrum spec = s;
+            Peptide pep = spec.getAnnotation();
+
+            if (pep.size() > maxLength || spec.getCharge() != 2)
+                continue;
+
+            numSpecs++;
+            numPeaks += spec.size();
+
+            float suffixMass = 0;
+            boolean specGraphHasPath = true;
+            float prevSuffixMassWithPeak = 0;
+            int prevI = pep.size();
+            for (int i = pep.size() - 1; i > 0; i--) {
+                numCleavages++;
+                suffixMass += pep.get(i).getMass();
+                float prefixMass = spec.getParentMass() - (float) Composition.H2O - suffixMass;
 //				float prefixMass = pep.getMass(0, i);
-				boolean peakExists = false;
-				for(IonType ion : ions)
-				{
-					float mass;
-					if(ion instanceof PrefixIon)
-						mass = ion.getMz(prefixMass);
-					else
-						mass = ion.getMz(suffixMass);
-					ArrayList<Peak> peakList = spec.getPeakListByMass(mass, tol);
-					if(peakList.size() > 0)	// peak exists
-					{
-						peakExists = true;
-						prevI = i;
-						prevSuffixMassWithPeak = suffixMass;
-						break;
-					}
-				}
-				if(peakExists)
-					numCleavagesWithPeaks++;
-				else
-				{
-					if(prevI-i <= numJumps)
-						numCleavagesWithPeaks++;
-					if(suffixMass - prevSuffixMassWithPeak > maxJumpMass)
-					{
-						specGraphHasPath = false;
-					}
-				}
-			}
-			if(specGraphHasPath)
-				numSpecsWithSpecGraphPath++;
-		}
-		
-		System.out.print("Ion:"); 
-		for(IonType ion : ions)
-			System.out.print(" "+ ion.getName());
-		System.out.println();
-		System.out.println("NumSpec: " + numSpecs);
-		System.out.println("RatioSpecWithSpecGraphPath: " + numSpecsWithSpecGraphPath/(float)numSpecs);
-		System.out.println("AverageNumPeaks: " + numPeaks/(float)numSpecs);
-		System.out.println("IonProb: " + numCleavagesWithPeaks/(float)numCleavages);
-	}
-	
-	public static void correctChargeZero() throws Exception
-	{
-		String fileName = "/home/sangtaekim/Research/Data/AgilentQTOF/annotatedAgilentQTOF.mgf";
-		
-		String outputFileName = "/home/sangtaekim/Research/Data/AgilentQTOF/annotatedAgilentQTOF_NoC0.mgf";
-		PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFileName)));
-		SpectraIterator itr = new SpectraIterator(fileName, new MgfSpectrumParser());
-		
-		while(itr.hasNext())
-		{
-			Spectrum spec = itr.next();
-			if(spec.getCharge() == 0)
-			{
-				Peptide pep = spec.getAnnotation();
-				int charge = Math.round(pep.getParentMass()/spec.getPrecursorPeak().getMz());
-				spec.setCharge(charge);
-			}
-			spec.outputMgf(out);
-		}
-		out.close();
-	}
+                boolean peakExists = false;
+                for (IonType ion : ions) {
+                    float mass;
+                    if (ion instanceof PrefixIon)
+                        mass = ion.getMz(prefixMass);
+                    else
+                        mass = ion.getMz(suffixMass);
+                    ArrayList<Peak> peakList = spec.getPeakListByMass(mass, tol);
+                    if (peakList.size() > 0)    // peak exists
+                    {
+                        peakExists = true;
+                        prevI = i;
+                        prevSuffixMassWithPeak = suffixMass;
+                        break;
+                    }
+                }
+                if (peakExists)
+                    numCleavagesWithPeaks++;
+                else {
+                    if (prevI - i <= numJumps)
+                        numCleavagesWithPeaks++;
+                    if (suffixMass - prevSuffixMassWithPeak > maxJumpMass) {
+                        specGraphHasPath = false;
+                    }
+                }
+            }
+            if (specGraphHasPath)
+                numSpecsWithSpecGraphPath++;
+        }
 
-	public static void compositionDensity() throws Exception
-	{
-		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
-		int maxLength = 10;
-		long time = System.currentTimeMillis();
-		CompositionFactory allCompositions = new CompositionFactory(aaSet, null, maxLength);
-		System.out.println("Composibion Building: " + (System.currentTimeMillis()-time));
+        System.out.print("Ion:");
+        for (IonType ion : ions)
+            System.out.print(" " + ion.getName());
+        System.out.println();
+        System.out.println("NumSpec: " + numSpecs);
+        System.out.println("RatioSpecWithSpecGraphPath: " + numSpecsWithSpecGraphPath / (float) numSpecs);
+        System.out.println("AverageNumPeaks: " + numPeaks / (float) numSpecs);
+        System.out.println("IonProb: " + numCleavagesWithPeaks / (float) numCleavages);
+    }
 
-		float clusterSizePPM = 30;
-		int clusterIndex = 1;
-		ArrayList<Composition> cluster = new ArrayList<Composition>();
-		System.out.println("0\t0\t1");	// 0
-		for(int i=1; i<allCompositions.getData().length; i++)
-		{
-			Composition comp = new Composition(allCompositions.getData()[i]);
-			if(cluster.size() == 0)
-			{
-				cluster.add(comp);
-			}
-			else
-			{
-				float firstCompMass = cluster.get(0).getMass();
-				float massDiffPPM = (comp.getMass() - firstCompMass)/firstCompMass*1e6f;
-				if(massDiffPPM < clusterSizePPM)
-					cluster.add(comp);
-				else
-				{
-					float avgMass = (cluster.get(0).getMass()+cluster.get(cluster.size()-1).getMass())/2;
-					System.out.println(clusterIndex+"\t"+avgMass+"\t"+cluster.size()+"\t"+i);
-					clusterIndex++;
-					cluster.clear();
-				}
-			}
-		}
-		
+    public static void correctChargeZero() throws Exception {
+        String fileName = "/home/sangtaekim/Research/Data/AgilentQTOF/annotatedAgilentQTOF.mgf";
+
+        String outputFileName = "/home/sangtaekim/Research/Data/AgilentQTOF/annotatedAgilentQTOF_NoC0.mgf";
+        PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFileName)));
+        SpectraIterator itr = new SpectraIterator(fileName, new MgfSpectrumParser());
+
+        while (itr.hasNext()) {
+            Spectrum spec = itr.next();
+            if (spec.getCharge() == 0) {
+                Peptide pep = spec.getAnnotation();
+                int charge = Math.round(pep.getParentMass() / spec.getPrecursorPeak().getMz());
+                spec.setCharge(charge);
+            }
+            spec.outputMgf(out);
+        }
+        out.close();
+    }
+
+    public static void compositionDensity() throws Exception {
+        AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
+        int maxLength = 10;
+        long time = System.currentTimeMillis();
+        CompositionFactory allCompositions = new CompositionFactory(aaSet, null, maxLength);
+        System.out.println("Composibion Building: " + (System.currentTimeMillis() - time));
+
+        float clusterSizePPM = 30;
+        int clusterIndex = 1;
+        ArrayList<Composition> cluster = new ArrayList<Composition>();
+        System.out.println("0\t0\t1");    // 0
+        for (int i = 1; i < allCompositions.getData().length; i++) {
+            Composition comp = new Composition(allCompositions.getData()[i]);
+            if (cluster.size() == 0) {
+                cluster.add(comp);
+            } else {
+                float firstCompMass = cluster.get(0).getMass();
+                float massDiffPPM = (comp.getMass() - firstCompMass) / firstCompMass * 1e6f;
+                if (massDiffPPM < clusterSizePPM)
+                    cluster.add(comp);
+                else {
+                    float avgMass = (cluster.get(0).getMass() + cluster.get(cluster.size() - 1).getMass()) / 2;
+                    System.out.println(clusterIndex + "\t" + avgMass + "\t" + cluster.size() + "\t" + i);
+                    clusterIndex++;
+                    cluster.clear();
+                }
+            }
+        }
+
 //		int counter = 0;
 //		for(int c : allCompositions.getData())
 //		{
@@ -597,7 +566,7 @@ public class AgilentQTOF {
 //			hist.add(comp.getNominalMass());
 //		}
 //		hist.printSorted();
-	}
-	
+    }
+
 
 }

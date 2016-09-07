@@ -7,43 +7,41 @@ import java.util.PriorityQueue;
 
 public class MSGFPlusMatch implements Comparable<MSGFPlusMatch> {
 
-	private final int specIndex;
-	private final List<DatabaseMatch> matchList;
-	private final double specEValue;
-	
-	public MSGFPlusMatch(int specIndex, PriorityQueue<DatabaseMatch> matchQueue)
-	{
-		this.specIndex = specIndex;
-		this.matchList = new ArrayList<DatabaseMatch>(matchQueue);
-		Collections.sort(matchList, new Match.SpecProbComparator());
-		specEValue = getBestDBMatch().getSpecEValue();
-	}
+    private final int specIndex;
+    private final List<DatabaseMatch> matchList;
+    private final double specEValue;
 
-	public DatabaseMatch getBestDBMatch()
-	{
-		return matchList.get(matchList.size()-1);
-	}
-	
-	public int getSpecIndex() {
-		return specIndex;
-	}
+    public MSGFPlusMatch(int specIndex, PriorityQueue<DatabaseMatch> matchQueue) {
+        this.specIndex = specIndex;
+        this.matchList = new ArrayList<DatabaseMatch>(matchQueue);
+        Collections.sort(matchList, new Match.SpecProbComparator());
+        specEValue = getBestDBMatch().getSpecEValue();
+    }
 
-	public List<DatabaseMatch> getMatchList() {
-		return matchList;
-	}
+    public DatabaseMatch getBestDBMatch() {
+        return matchList.get(matchList.size() - 1);
+    }
 
-	public double getSpecEValue() {
-		return specEValue;
-	}
-	
-	@Override
-	public int compareTo(MSGFPlusMatch o) {
-		if(specEValue < o.specEValue)
-			return -1;
-		else if(specEValue == o.specEValue)
-			return 0;
-		else
-			return 1;
-	}
-	
+    public int getSpecIndex() {
+        return specIndex;
+    }
+
+    public List<DatabaseMatch> getMatchList() {
+        return matchList;
+    }
+
+    public double getSpecEValue() {
+        return specEValue;
+    }
+
+    @Override
+    public int compareTo(MSGFPlusMatch o) {
+        if (specEValue < o.specEValue)
+            return -1;
+        else if (specEValue == o.specEValue)
+            return 0;
+        else
+            return 1;
+    }
+
 }

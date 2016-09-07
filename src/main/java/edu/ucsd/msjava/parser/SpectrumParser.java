@@ -6,6 +6,7 @@ import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.msutil.SpectrumMetaInfo;
 
 public interface SpectrumParser {
-	public Spectrum readSpectrum(LineReader lineReader);
-	Map<Integer, SpectrumMetaInfo> getSpecMetaInfoMap(BufferedRandomAccessLineReader lineReader);	// specIndex -> filePos
+    Spectrum readSpectrum(LineReader lineReader);
+
+    Map<Integer, SpectrumMetaInfo> getSpecMetaInfoMap(BufferedRandomAccessLineReader lineReader);    // specIndex -> filePos
 }

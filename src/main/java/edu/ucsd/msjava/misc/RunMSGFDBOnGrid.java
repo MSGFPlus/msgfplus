@@ -7,7 +7,7 @@ import java.io.PrintStream;
 import edu.ucsd.msjava.msgf.Tolerance;
 
 public class RunMSGFDBOnGrid {
-	/*
+    /*
 	public static void main(String argv[])
 	{
 		File dir = null;

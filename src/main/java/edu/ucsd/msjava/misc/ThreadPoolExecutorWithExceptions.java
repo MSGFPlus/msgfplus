@@ -1,6 +1,7 @@
 package edu.ucsd.msjava.misc;
 
 import edu.ucsd.msjava.msdbsearch.ConcurrentMSGFPlus;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,14 +13,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- *
  * @author Bryson Gibbons
  */
 public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
 
     private Throwable thrownData;
     private boolean hasThrownData;
-    
+
     private final List<ProgressData> progressObjects;
 
     public static ThreadPoolExecutorWithExceptions newFixedThreadPool(int nThreads) {
@@ -54,7 +54,7 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
         super.afterExecute(r, t);
         outputProgressReport();
         if (r instanceof ConcurrentMSGFPlus.RunMSGFPlus) {
-            ConcurrentMSGFPlus.RunMSGFPlus run = (ConcurrentMSGFPlus.RunMSGFPlus)r;
+            ConcurrentMSGFPlus.RunMSGFPlus run = (ConcurrentMSGFPlus.RunMSGFPlus) r;
             progressObjects.remove(run.getProgressData());
         }
         if (t != null) {
@@ -63,12 +63,12 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
             hasThrownData = true;
         }
     }
-    
+
     @Override
     public void beforeExecute(Thread t, Runnable r) {
         super.beforeExecute(t, r);
         if (r instanceof ConcurrentMSGFPlus.RunMSGFPlus) {
-            ConcurrentMSGFPlus.RunMSGFPlus run = (ConcurrentMSGFPlus.RunMSGFPlus)r;
+            ConcurrentMSGFPlus.RunMSGFPlus run = (ConcurrentMSGFPlus.RunMSGFPlus) r;
             run.setProgressData(new ProgressData());
             progressObjects.add(run.getProgressData());
         }
@@ -81,7 +81,7 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
     public Throwable getThrownData() {
         return thrownData;
     }
-    
+
     /*
     * Get the adjustment value for progress reporting
     */
@@ -102,7 +102,7 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
         double weight = count / this.getTaskCount();
         return progress * weight;
     }
-    
+
     /*
     * Output a progress report to the console
     */

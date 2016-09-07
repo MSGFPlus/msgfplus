@@ -1,40 +1,36 @@
 package edu.ucsd.msjava.misc;
 
 
-
 import edu.ucsd.msjava.msdbsearch.CompactFastaSequence;
 import edu.ucsd.msjava.msdbsearch.SuffixArrayForMSGFDB;
 import edu.ucsd.msjava.suffixarray.SuffixArray;
 import edu.ucsd.msjava.suffixarray.SuffixArraySequence;
 
 public class SuffixArrayTest {
-	public static void main(String argv[]) throws Exception
-	{
-		if(argv.length != 1)
-		{
-			System.out.println("java SuffixArrayTest *.fasta");
-			System.exit(-1);
-		}
-		testSA(argv[0]);
-	}
-	
-	public static void testSA(String fastaFile) throws Exception
-	{
+    public static void main(String argv[]) throws Exception {
+        if (argv.length != 1) {
+            System.out.println("java SuffixArrayTest *.fasta");
+            System.exit(-1);
+        }
+        testSA(argv[0]);
+    }
+
+    public static void testSA(String fastaFile) throws Exception {
 //	    String fastaFile = System.getProperty("user.home")+"/Research/Data/IPI/IPI_human_3.79.fasta";
 //	    String fastaFile = System.getProperty("user.home")+"/Research/Data/IPI/IPI_human_3.79_shuffle.fasta";
 //	    String fastaFile = System.getProperty("user.home")+"/Research/Data/ISBControl/Mix_7/ORBITRAP/Database/18mix.fasta";
 //		String fastaFile = System.getProperty("user.home")+"/Research/Data/IPI/tiny.fasta";
-		
-	    long time = System.currentTimeMillis();
-	    CompactFastaSequence sequence = new CompactFastaSequence(fastaFile);
-	    System.out.println("-- Loading fasta file time: " + (System.currentTimeMillis() - time)/1000.0 + "s");
-	    
+
+        long time = System.currentTimeMillis();
+        CompactFastaSequence sequence = new CompactFastaSequence(fastaFile);
+        System.out.println("-- Loading fasta file time: " + (System.currentTimeMillis() - time) / 1000.0 + "s");
+
 //	    time = System.currentTimeMillis();
 //	    SuffixArrayForMSGFDB sa = new SuffixArrayForMSGFDB(sequence);
 //	    System.out.println("-- Loading SuffixArray file time: " + (System.currentTimeMillis() - time)/1000.0 + "s");
 //
 //	    time = System.currentTimeMillis();
-	 
+
 //	    for(String m : sa.getAllMatchedStrings("abr"))
 //	    	System.out.println(m);
 //	    System.out.println("-- Searching time: " + (System.currentTimeMillis() - time)/1000.0 + "s");
@@ -52,8 +48,8 @@ public class SuffixArrayTest {
 //		    System.out.println(sa.getNumCandidatePeptides(peptideMass, tolerance));
 //		    System.out.println("-- Searching time: " + (System.currentTimeMillis() - time)/1000.0 + "s");
 //	    }
-	    time = System.currentTimeMillis();
+        time = System.currentTimeMillis();
 //	    sa.printAllPeptides(AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys(), 5, 50);
-	    System.out.println("-- Searching time: " + (System.currentTimeMillis() - time)/1000.0 + "s");
-	}
+        System.out.println("-- Searching time: " + (System.currentTimeMillis() - time) / 1000.0 + "s");
+    }
 }

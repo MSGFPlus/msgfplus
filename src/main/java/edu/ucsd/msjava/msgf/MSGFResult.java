@@ -4,31 +4,30 @@ import edu.ucsd.msjava.msutil.Peptide;
 import edu.ucsd.msjava.msutil.Spectrum;
 
 public class MSGFResult {
-	public MSGFResult(Spectrum spec, Peptide annotation, GeneratingFunction<?> gf)
-	{
-		this.spec = spec;
-		this.annotation = annotation;
-		this.gf = gf;
-	}
-	
-	public Spectrum getSpec() {
-		return spec;
-	}
+    public MSGFResult(Spectrum spec, Peptide annotation, GeneratingFunction<?> gf) {
+        this.spec = spec;
+        this.annotation = annotation;
+        this.gf = gf;
+    }
 
-	public Peptide getAnnotation() {
-		return annotation;
-	}
+    public Spectrum getSpec() {
+        return spec;
+    }
 
-	public GeneratingFunction<?> getGf() {
-		return gf;
-	}
+    public Peptide getAnnotation() {
+        return annotation;
+    }
 
-	public ProfileGF<?> getProfGF() {
-		return profGF;
-	}
+    public GeneratingFunction<?> getGf() {
+        return gf;
+    }
 
-	private Spectrum spec;
-	private Peptide annotation;
-	private GeneratingFunction<?> gf;
-	private ProfileGF<?> profGF;
+    public ProfileGF<?> getProfGF() {
+        return profGF;
+    }
+
+    private Spectrum spec;
+    private Peptide annotation;
+    private GeneratingFunction<?> gf;
+    private ProfileGF<?> profGF;
 }
