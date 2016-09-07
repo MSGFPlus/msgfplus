@@ -227,7 +227,13 @@ public class ParamManager {
 	{
 		addFragMethodParam(ActivationMethod.ASWRITTEN, false);
 	}
-	
+
+	/**
+	 * Used by both MS-GFDB and MS-GF+
+	 * MS-GF+ passes True for doNotAddMergeMode, thus ignoring ActivationMethod.FUSION
+	 * @param defaultMethod
+	 * @param doNotAddMergeMode
+     */
 	public void addFragMethodParam(ActivationMethod defaultMethod, boolean doNotAddMergeMode)
 	{
 		ObjectEnumParameter<ActivationMethod> fragParam = new ObjectEnumParameter<ActivationMethod>("m", "FragmentMethodID");
@@ -304,7 +310,10 @@ public class ParamManager {
 		modParam.fileMustExist();
 		addParameter(modParam);
 	}
-	
+
+	/**
+	 * Add parameters for MS-GF+
+     */
 	public void addMSGFPlusParams()
 	{
 		addSpecFileParam();
@@ -443,7 +452,10 @@ public class ParamManager {
 		addParameter(minDeNovoScoreParam);
 		
 	}
-	
+
+	/**
+	 * Used by MS-GF+
+     */
 	public void addScoringParamGenParams()
 	{
 		FileListParameter resFileParam = new FileListParameter("i", "ResultPath", "MSGFDBResultFile (*.mzid) or MSGFDBResultDir");

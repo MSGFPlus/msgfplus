@@ -4,11 +4,9 @@ import java.util.*;
 
 import edu.ucsd.msjava.msgf.IntMassFactory;
 import edu.ucsd.msjava.msgf.MassListComparator;
-import edu.ucsd.msjava.msgf.NominalMass;
 import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msgf.IntMassFactory.IntMass;
 import edu.ucsd.msjava.msutil.Modification.Location;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * 
