@@ -1,9 +1,9 @@
 package edu.ucsd.msjava.parser;
 
+import edu.ucsd.msjava.msutil.Peptide;
+
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-
-import edu.ucsd.msjava.msutil.Peptide;
 
 
 public class OMSSAParser {

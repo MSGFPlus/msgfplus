@@ -1,19 +1,12 @@
 package edu.ucsd.msjava.ipa;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
+import edu.ucsd.msjava.msgf.Tolerance;
+import edu.ucsd.msjava.msutil.Composition;
+
+import java.io.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
-import edu.ucsd.msjava.msgf.Tolerance;
-import edu.ucsd.msjava.msutil.Composition;
-import edu.ucsd.msjava.msutil.Peak;
 
 public class IPA {
 

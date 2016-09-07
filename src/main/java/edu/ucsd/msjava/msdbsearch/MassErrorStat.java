@@ -1,10 +1,10 @@
 package edu.ucsd.msjava.msdbsearch;
 
+import edu.ucsd.msjava.msutil.Pair;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import edu.ucsd.msjava.msutil.Pair;
 
 public class MassErrorStat {
     private List<Pair<Float, Float>> errorList; // (error, intensity)

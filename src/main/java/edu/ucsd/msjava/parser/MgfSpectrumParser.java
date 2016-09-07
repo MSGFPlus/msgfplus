@@ -1,18 +1,11 @@
 package edu.ucsd.msjava.parser;
 
+import edu.ucsd.msjava.msutil.*;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Map;
-
-import edu.ucsd.msjava.msgf.Tolerance;
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.AminoAcidSet;
-import edu.ucsd.msjava.msutil.Peak;
-import edu.ucsd.msjava.msutil.Peptide;
-import edu.ucsd.msjava.msutil.SpectraIterator;
-import edu.ucsd.msjava.msutil.Spectrum;
-import edu.ucsd.msjava.msutil.SpectrumMetaInfo;
 
 /**
  * This class enables to parse spectrum file with mgf format.
@@ -218,7 +211,7 @@ public class MgfSpectrumParser implements SpectrumParser {
 	    System.out.println("Size: " + size);
 	    */
         //  SpectraMap test
-	    
+
 	    /*	SpectraMap test
 	    SpectraMap map = new SpectraMap(mgfFile, new MgfSpectrumParser());
 	    Spectrum spec = map.getSpectrumByScanNum(1585);

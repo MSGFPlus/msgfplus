@@ -1,9 +1,9 @@
 package edu.ucsd.msjava.msgf;
 
-import java.util.ArrayList;
-
 import edu.ucsd.msjava.msutil.Mass;
 import edu.ucsd.msjava.msutil.Matter;
+
+import java.util.ArrayList;
 
 public class MassListComparator<T extends Matter> {
     ArrayList<T> massList1;

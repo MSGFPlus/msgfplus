@@ -1,12 +1,12 @@
 package edu.ucsd.msjava.parser;
 
-import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.Iterator;
-
 import edu.ucsd.msjava.msutil.ScanType;
 import edu.ucsd.msjava.msutil.SpectraIterator;
 import edu.ucsd.msjava.msutil.Spectrum;
+
+import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class PNNLSpectraIterator extends SpectraIterator {
 

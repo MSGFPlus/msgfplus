@@ -1,10 +1,10 @@
 package edu.ucsd.msjava.misc;
 
-import java.io.File;
-import java.util.HashSet;
-
 import edu.ucsd.msjava.msgf.Histogram;
 import edu.ucsd.msjava.parser.BufferedLineReader;
+
+import java.io.File;
+import java.util.HashSet;
 
 public class CountPSMs {
     public static void main(String argv[]) throws Exception {

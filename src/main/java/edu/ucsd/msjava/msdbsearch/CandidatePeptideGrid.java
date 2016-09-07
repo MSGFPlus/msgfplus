@@ -3,7 +3,6 @@ package edu.ucsd.msjava.msdbsearch;
 import edu.ucsd.msjava.msutil.AminoAcid;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Modification.Location;
-import edu.ucsd.msjava.sequences.Constants;
 
 public class CandidatePeptideGrid {
     private static final int STANDARD_RESIDUE_MAX_RESIDUE = 128;

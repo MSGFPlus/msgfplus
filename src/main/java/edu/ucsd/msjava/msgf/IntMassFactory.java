@@ -1,11 +1,11 @@
 package edu.ucsd.msjava.msgf;
 
-import java.util.ArrayList;
-
 import edu.ucsd.msjava.msutil.AminoAcid;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Enzyme;
 import edu.ucsd.msjava.msutil.Matter;
+
+import java.util.ArrayList;
 
 public class IntMassFactory extends MassFactory<IntMassFactory.IntMass> {
     private float rescalingConstant;

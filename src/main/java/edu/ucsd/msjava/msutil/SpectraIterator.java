@@ -1,11 +1,11 @@
 package edu.ucsd.msjava.msutil;
 
-import java.io.FileNotFoundException;
-import java.util.Iterator;
-
 import edu.ucsd.msjava.parser.BufferedLineReader;
 import edu.ucsd.msjava.parser.LineReader;
 import edu.ucsd.msjava.parser.SpectrumParser;
+
+import java.io.FileNotFoundException;
+import java.util.Iterator;
 
 
 public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {

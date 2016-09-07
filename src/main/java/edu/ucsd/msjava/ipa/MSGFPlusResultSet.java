@@ -1,12 +1,12 @@
 package edu.ucsd.msjava.ipa;
 
+import edu.ucsd.msjava.parser.BufferedLineReader;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import edu.ucsd.msjava.parser.BufferedLineReader;
 
 public class MSGFPlusResultSet {
     private String header;

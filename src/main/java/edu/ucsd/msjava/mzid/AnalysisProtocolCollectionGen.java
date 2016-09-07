@@ -1,16 +1,15 @@
 package edu.ucsd.msjava.mzid;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import edu.ucsd.msjava.msdbsearch.SearchParams;
 import edu.ucsd.msjava.msutil.AminoAcid;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Modification.Location;
-
 import uk.ac.ebi.jmzidml.model.mzidml.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AnalysisProtocolCollectionGen {
     private final SearchParams params;

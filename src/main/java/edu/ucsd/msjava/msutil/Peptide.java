@@ -1,12 +1,14 @@
 package edu.ucsd.msjava.msutil;
 
-import java.util.*;
-
 import edu.ucsd.msjava.msgf.IntMassFactory;
+import edu.ucsd.msjava.msgf.IntMassFactory.IntMass;
 import edu.ucsd.msjava.msgf.MassListComparator;
 import edu.ucsd.msjava.msgf.Tolerance;
-import edu.ucsd.msjava.msgf.IntMassFactory.IntMass;
 import edu.ucsd.msjava.msutil.Modification.Location;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * @author Sangtae Kim

@@ -1,40 +1,22 @@
 package edu.ucsd.msjava.ui;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-
-import edu.ucsd.msjava.msdbsearch.CompactFastaSequence;
-import edu.ucsd.msjava.msdbsearch.CompactSuffixArray;
-import edu.ucsd.msjava.msdbsearch.ConcurrentMSGFDB;
-import edu.ucsd.msjava.msdbsearch.DBScanner;
-import edu.ucsd.msjava.msdbsearch.ReverseDB;
-import edu.ucsd.msjava.msdbsearch.ScoredSpectraMap;
+import edu.ucsd.msjava.msdbsearch.*;
 import edu.ucsd.msjava.msgf.MSGFDBResultGenerator;
 import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msscorer.NewScorerFactory.SpecDataType;
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.AminoAcidSet;
-import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.InstrumentType;
-import edu.ucsd.msjava.msutil.Protocol;
-import edu.ucsd.msjava.msutil.SpecFileFormat;
-import edu.ucsd.msjava.msutil.SpecKey;
-import edu.ucsd.msjava.msutil.SpectraAccessor;
+import edu.ucsd.msjava.msutil.*;
 import edu.ucsd.msjava.params.FileParameter;
 import edu.ucsd.msjava.params.IntRangeParameter;
 import edu.ucsd.msjava.params.ParamManager;
 import edu.ucsd.msjava.params.ToleranceParameter;
 import edu.ucsd.msjava.sequences.Constants;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class MSGFDB {

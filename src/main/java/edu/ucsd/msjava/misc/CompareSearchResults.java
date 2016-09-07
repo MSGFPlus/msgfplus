@@ -1,13 +1,13 @@
 package edu.ucsd.msjava.misc;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.parser.InsPecTPSM;
 import edu.ucsd.msjava.parser.InsPecTParser;
 import edu.ucsd.msjava.parser.PSMList;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.HashSet;
 
 
 public class CompareSearchResults {

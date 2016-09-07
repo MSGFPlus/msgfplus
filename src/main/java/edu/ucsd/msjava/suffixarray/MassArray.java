@@ -1,14 +1,14 @@
 package edu.ucsd.msjava.suffixarray;
 
+import edu.ucsd.msjava.msutil.AminoAcid;
+import edu.ucsd.msjava.msutil.Peptide;
+
 import java.io.*;
-import java.nio.*;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Arrays;
 import java.util.TreeSet;
-
-
-import edu.ucsd.msjava.msutil.AminoAcid;
-import edu.ucsd.msjava.msutil.Peptide;
 
 
 /**

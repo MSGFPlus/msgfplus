@@ -1,10 +1,10 @@
 package edu.ucsd.msjava.parser;
 
+import edu.ucsd.msjava.msutil.Peptide;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.TreeMap;
-
-import edu.ucsd.msjava.msutil.Peptide;
 
 /**
  * A class represents Peptide-Spectrum Match (PSM)

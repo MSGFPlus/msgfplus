@@ -1,8 +1,8 @@
 package edu.ucsd.msjava.misc;
 
-import java.util.HashMap;
-
 import edu.ucsd.msjava.parser.BufferedLineReader;
+
+import java.util.HashMap;
 
 
 public class MergeTargetDecoyFiles {

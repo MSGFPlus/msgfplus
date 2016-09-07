@@ -1,14 +1,10 @@
 package edu.ucsd.msjava.parser;
 
+import edu.ucsd.msjava.msutil.*;
+
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Map;
-
-import edu.ucsd.msjava.msutil.Peak;
-import edu.ucsd.msjava.msutil.SpectraIterator;
-import edu.ucsd.msjava.msutil.SpectraMap;
-import edu.ucsd.msjava.msutil.Spectrum;
-import edu.ucsd.msjava.msutil.SpectrumMetaInfo;
 
 /**
  * A class that parses Pkl format

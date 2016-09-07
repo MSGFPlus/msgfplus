@@ -1,19 +1,15 @@
 package edu.ucsd.msjava.misc;
 
+import edu.ucsd.msjava.msscorer.NewRankScorer;
+import edu.ucsd.msjava.msscorer.NewScorerFactory.SpecDataType;
+import edu.ucsd.msjava.msscorer.ScoringParameterGeneratorWithErrors;
+import edu.ucsd.msjava.msutil.*;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Calendar;
-
-import edu.ucsd.msjava.msscorer.NewRankScorer;
-import edu.ucsd.msjava.msscorer.ScoringParameterGeneratorWithErrors;
-import edu.ucsd.msjava.msscorer.NewScorerFactory.SpecDataType;
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.AminoAcidSet;
-import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.InstrumentType;
-import edu.ucsd.msjava.msutil.Protocol;
 
 public class TrainScoringParameters {
 

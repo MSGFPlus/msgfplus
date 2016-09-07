@@ -1,35 +1,20 @@
 package edu.ucsd.msjava.msgf.test;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import edu.ucsd.msjava.msdbsearch.DBScanner;
-import edu.ucsd.msjava.msgf.GeneratingFunction;
-import edu.ucsd.msjava.msgf.GenericDeNovoGraph;
-import edu.ucsd.msjava.msgf.IntMassFactory;
-import edu.ucsd.msjava.msgf.NominalMass;
-import edu.ucsd.msjava.msgf.NominalMassFactory;
-import edu.ucsd.msjava.msgf.ScoredSpectrum;
-import edu.ucsd.msjava.msgf.Tolerance;
+import edu.ucsd.msjava.msgf.*;
 import edu.ucsd.msjava.msgf.IntMassFactory.IntMass;
 import edu.ucsd.msjava.msscorer.NewRankScorer;
 import edu.ucsd.msjava.msscorer.NewScoredSpectrum;
 import edu.ucsd.msjava.msscorer.NewScorerFactory;
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.AminoAcidSet;
-import edu.ucsd.msjava.msutil.Annotation;
-import edu.ucsd.msjava.msutil.Composition;
-import edu.ucsd.msjava.msutil.Constants;
-import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.Peptide;
-import edu.ucsd.msjava.msutil.SpectraMap;
-import edu.ucsd.msjava.msutil.Spectrum;
-import edu.ucsd.msjava.msutil.SpectrumAccessorBySpecIndex;
+import edu.ucsd.msjava.msutil.*;
 import edu.ucsd.msjava.parser.InsPecTPSM;
 import edu.ucsd.msjava.parser.InsPecTParser;
 import edu.ucsd.msjava.parser.MgfSpectrumParser;
 import edu.ucsd.msjava.parser.PSMList;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class MSGFTest {

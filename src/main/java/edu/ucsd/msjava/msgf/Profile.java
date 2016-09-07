@@ -1,15 +1,11 @@
 package edu.ucsd.msjava.msgf;
 
+import edu.ucsd.msjava.msutil.*;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Map.Entry;
-
-import edu.ucsd.msjava.msutil.AminoAcid;
-import edu.ucsd.msjava.msutil.Composition;
-import edu.ucsd.msjava.msutil.Matter;
-import edu.ucsd.msjava.msutil.Peptide;
-import edu.ucsd.msjava.msutil.Sequence;
 
 public class Profile<T extends Matter> extends ArrayList<ProfilePeak<T>> {
 

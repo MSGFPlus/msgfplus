@@ -3,10 +3,10 @@
  */
 package edu.ucsd.msjava.mstag;
 
-import java.util.*;
-
 import edu.ucsd.msjava.msutil.*;
 import edu.ucsd.msjava.parser.MgfSpectrumParser;
+
+import java.util.*;
 
 
 /**

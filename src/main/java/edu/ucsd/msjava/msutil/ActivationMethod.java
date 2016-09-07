@@ -1,14 +1,13 @@
 package edu.ucsd.msjava.msutil;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import uk.ac.ebi.jmzidml.model.mzidml.CvParam;
-
 import edu.ucsd.msjava.mzid.Constants;
 import edu.ucsd.msjava.params.ParamObject;
 import edu.ucsd.msjava.params.UserParam;
+import uk.ac.ebi.jmzidml.model.mzidml.CvParam;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class ActivationMethod implements ParamObject {

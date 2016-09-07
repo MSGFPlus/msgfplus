@@ -1,15 +1,14 @@
 package edu.ucsd.msjava.msgf;
 
+import edu.ucsd.msjava.msutil.Annotation;
+import edu.ucsd.msjava.msutil.Enzyme;
+import edu.ucsd.msjava.msutil.Matter;
+import edu.ucsd.msjava.suffixarray.SuffixArray;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-
-import edu.ucsd.msjava.msutil.*;
-import edu.ucsd.msjava.suffixarray.SuffixArray;
 
 
 public class GeneratingFunction<T extends Matter> implements GF<T> {

@@ -1,12 +1,12 @@
 package edu.ucsd.msjava.parser;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-
 import edu.ucsd.msjava.msutil.Pair;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.msutil.SpectrumAccessorBySpecIndex;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 
 
 /**

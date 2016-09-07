@@ -1,13 +1,11 @@
 package edu.ucsd.msjava.mzid;
 
-import java.util.List;
-import java.util.Map;
-
 import edu.ucsd.msjava.msgf.MSGFDBResultGenerator;
 import edu.ucsd.msjava.params.ParamManager;
-
-
 import uk.ac.ebi.jmzidml.model.mzidml.*;
+
+import java.util.List;
+import java.util.Map;
 
 public class MzIdAdapter {
     private SpectrumIdentificationProtocol searchParams;

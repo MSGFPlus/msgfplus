@@ -1,17 +1,16 @@
 package edu.ucsd.msjava.msgf2d;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-
-
 import edu.ucsd.msjava.msgf.DeNovoGraph;
-import edu.ucsd.msjava.msgf.ScoredSpectrum;
 import edu.ucsd.msjava.msgf.DeNovoGraph.Edge;
+import edu.ucsd.msjava.msgf.ScoredSpectrum;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Annotation;
 import edu.ucsd.msjava.msutil.Matter;
 import edu.ucsd.msjava.msutil.Peptide;
 import edu.ucsd.msjava.suffixarray.SuffixArray;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 public class GeneratingFunction2D<T extends Matter> {
     private final ScoredSpectrum<T> scoredSpec1;

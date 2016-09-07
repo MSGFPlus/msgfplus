@@ -1,13 +1,13 @@
 package edu.ucsd.msjava.fdr;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import edu.ucsd.msjava.msdbsearch.CompactSuffixArray;
 import edu.ucsd.msjava.msdbsearch.DatabaseMatch;
 import edu.ucsd.msjava.msdbsearch.MSGFPlusMatch;
 import edu.ucsd.msjava.ui.MSGFPlus;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class MSGFPlusPSMSet extends PSMSet {
 

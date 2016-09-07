@@ -1,16 +1,10 @@
 package edu.ucsd.msjava.mzml;
 
-import java.util.Collections;
-
-import uk.ac.ebi.jmzml.model.mzml.BinaryDataArray;
-import uk.ac.ebi.jmzml.model.mzml.CVParam;
-import uk.ac.ebi.jmzml.model.mzml.ParamGroup;
-import uk.ac.ebi.jmzml.model.mzml.Precursor;
-import uk.ac.ebi.jmzml.model.mzml.PrecursorList;
-import uk.ac.ebi.jmzml.model.mzml.ScanList;
-import uk.ac.ebi.jmzml.model.mzml.UserParam;
 import edu.ucsd.msjava.msutil.ActivationMethod;
 import edu.ucsd.msjava.msutil.Peak;
+import uk.ac.ebi.jmzml.model.mzml.*;
+
+import java.util.Collections;
 
 public class SpectrumConverter {
     public static edu.ucsd.msjava.msutil.Spectrum getSpectrumFromJMzMLSpec(uk.ac.ebi.jmzml.model.mzml.Spectrum jmzMLSpec) {

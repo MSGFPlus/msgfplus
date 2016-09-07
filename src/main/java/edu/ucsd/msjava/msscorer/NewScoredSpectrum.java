@@ -2,12 +2,7 @@ package edu.ucsd.msjava.msscorer;
 
 import edu.ucsd.msjava.msgf.ScoredSpectrum;
 import edu.ucsd.msjava.msgf.Tolerance;
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.IonType;
-import edu.ucsd.msjava.msutil.Matter;
-import edu.ucsd.msjava.msutil.Pair;
-import edu.ucsd.msjava.msutil.Peak;
-import edu.ucsd.msjava.msutil.Spectrum;
+import edu.ucsd.msjava.msutil.*;
 
 public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
 

@@ -1,40 +1,21 @@
 package edu.ucsd.msjava.ui;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-
-import java.util.concurrent.TimeUnit;
-
 import edu.ucsd.msjava.fdr.ComputeFDR;
-import edu.ucsd.msjava.misc.ProgressData;
 import edu.ucsd.msjava.misc.ThreadPoolExecutorWithExceptions;
-import edu.ucsd.msjava.msdbsearch.CompactFastaSequence;
-import edu.ucsd.msjava.msdbsearch.CompactSuffixArray;
-import edu.ucsd.msjava.msdbsearch.ConcurrentMSGFPlus;
-import edu.ucsd.msjava.msdbsearch.DBScanner;
-import edu.ucsd.msjava.msdbsearch.MSGFPlusMatch;
-import edu.ucsd.msjava.msdbsearch.ReverseDB;
-import edu.ucsd.msjava.msdbsearch.ScoredSpectraMap;
-import edu.ucsd.msjava.msdbsearch.SearchParams;
+import edu.ucsd.msjava.msdbsearch.*;
 import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msscorer.NewScorerFactory.SpecDataType;
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.AminoAcidSet;
-import edu.ucsd.msjava.msutil.DBSearchIOFiles;
-import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.InstrumentType;
-import edu.ucsd.msjava.msutil.Protocol;
-import edu.ucsd.msjava.msutil.SpecFileFormat;
-import edu.ucsd.msjava.msutil.SpecKey;
-import edu.ucsd.msjava.msutil.SpectraAccessor;
+import edu.ucsd.msjava.msutil.*;
 import edu.ucsd.msjava.mzid.MZIdentMLGen;
 import edu.ucsd.msjava.mzml.MzMLAdapter;
 import edu.ucsd.msjava.params.ParamManager;
 import edu.ucsd.msjava.sequences.Constants;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

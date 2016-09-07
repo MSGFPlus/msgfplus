@@ -1,15 +1,15 @@
 package edu.ucsd.msjava.misc;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.FileFormat;
 import edu.ucsd.msjava.params.FileParameter;
 import edu.ucsd.msjava.params.ParamManager;
 import edu.ucsd.msjava.parser.BufferedLineReader;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 
 public class SpectraSTToMSGFInput {
     public static final int VERSION = 7575;

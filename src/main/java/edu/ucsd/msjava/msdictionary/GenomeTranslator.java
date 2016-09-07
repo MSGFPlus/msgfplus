@@ -1,11 +1,11 @@
 package edu.ucsd.msjava.msdictionary;
 
+import edu.ucsd.msjava.parser.FullyBufferedLineReader;
+
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-
-import edu.ucsd.msjava.parser.FullyBufferedLineReader;
 
 
 public class GenomeTranslator {
@@ -207,7 +207,7 @@ public class GenomeTranslator {
 
 		
 		/*
-		for(int splitNum=0; splitNum<4; splitNum++)
+        for(int splitNum=0; splitNum<4; splitNum++)
 		{
 			GenomeTranslator translator = new GenomeTranslator(System.getProperty("user.home")+"/Research/Data/HumanGenome/splitted/Homo_sapiens.NCBI36.54.dna_rm."+splitNum+".fasta");
 			translator.translate(System.getProperty("user.home")+"/Research/Data/HumanGenome/translated/HSRM.NCBI36.54.translation."+splitNum+".fasta");

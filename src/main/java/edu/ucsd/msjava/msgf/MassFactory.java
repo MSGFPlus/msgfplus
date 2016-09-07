@@ -1,18 +1,9 @@
 package edu.ucsd.msjava.msgf;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-
-import edu.ucsd.msjava.msutil.AminoAcid;
-import edu.ucsd.msjava.msutil.AminoAcidSet;
-import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.Matter;
-import edu.ucsd.msjava.msutil.Peptide;
-import edu.ucsd.msjava.msutil.Sequence;
+import edu.ucsd.msjava.msutil.*;
 import edu.ucsd.msjava.msutil.Modification.Location;
+
+import java.util.*;
 
 public abstract class MassFactory<T extends Matter> implements DeNovoNodeFactory<T> {
 

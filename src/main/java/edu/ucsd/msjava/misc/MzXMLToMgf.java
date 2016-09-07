@@ -1,14 +1,10 @@
 package edu.ucsd.msjava.misc;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-
 import edu.ucsd.msjava.msutil.ActivationMethod;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.parser.MzXMLSpectraIterator;
+
+import java.io.*;
 
 
 public class MzXMLToMgf {

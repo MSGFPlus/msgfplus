@@ -1,11 +1,11 @@
 package edu.ucsd.msjava.msutil;
 
+import edu.ucsd.msjava.params.ParamObject;
+import edu.ucsd.msjava.params.UserParam;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import edu.ucsd.msjava.params.ParamObject;
-import edu.ucsd.msjava.params.UserParam;
 
 
 public class Protocol implements ParamObject {

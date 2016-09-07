@@ -1,38 +1,15 @@
 package edu.ucsd.msjava.msscorer;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.Map.Entry;
-
 import edu.ucsd.msjava.msgf.Histogram;
 import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msscorer.NewScorerFactory.SpecDataType;
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.InstrumentType;
-import edu.ucsd.msjava.msutil.IonType;
-import edu.ucsd.msjava.msutil.Matter;
-import edu.ucsd.msjava.msutil.Protocol;
-import edu.ucsd.msjava.msutil.Spectrum;
-import edu.ucsd.msjava.msutil.WindowFilter;
+import edu.ucsd.msjava.msutil.*;
 import edu.ucsd.msjava.msutil.IonType.PrefixIon;
+
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class NewRankScorer implements NewAdditiveScorer {
     public static final int VERSION = 7061;

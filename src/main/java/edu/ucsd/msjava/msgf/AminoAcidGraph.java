@@ -1,6 +1,5 @@
 package edu.ucsd.msjava.msgf;
 
-import edu.ucsd.msjava.msgf.NominalMass;
 import edu.ucsd.msjava.msutil.Constants;
 
 public class AminoAcidGraph extends GenericDeNovoGraph<NominalMass> {

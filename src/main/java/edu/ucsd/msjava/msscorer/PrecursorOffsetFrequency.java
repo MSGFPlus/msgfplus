@@ -1,8 +1,8 @@
 package edu.ucsd.msjava.msscorer;
 
-import java.util.ArrayList;
-
 import edu.ucsd.msjava.msgf.Tolerance;
+
+import java.util.ArrayList;
 
 public class PrecursorOffsetFrequency implements Comparable<PrecursorOffsetFrequency> {
     public PrecursorOffsetFrequency(int reducedCharge, float offset, float frequency) {

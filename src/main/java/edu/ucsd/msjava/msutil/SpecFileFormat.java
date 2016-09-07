@@ -1,23 +1,6 @@
 package edu.ucsd.msjava.msutil;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Iterator;
-
-import uk.ac.ebi.jmzidml.model.mzidml.SpectrumIDFormat;
-
-import edu.ucsd.msjava.mzid.Constants;
-import edu.ucsd.msjava.mzml.MzMLSpectraIterator;
-import edu.ucsd.msjava.mzml.MzMLSpectraMap;
-import edu.ucsd.msjava.parser.MS2SpectrumParser;
-import edu.ucsd.msjava.parser.MgfSpectrumParser;
-import edu.ucsd.msjava.parser.MzXMLSpectraIterator;
-import edu.ucsd.msjava.parser.MzXMLSpectraMap;
-import edu.ucsd.msjava.parser.PNNLSpectraIterator;
-import edu.ucsd.msjava.parser.PNNLSpectraMap;
-import edu.ucsd.msjava.parser.PklSpectrumParser;
-import edu.ucsd.msjava.parser.SpectrumParser;
 
 
 public class SpecFileFormat extends FileFormat {

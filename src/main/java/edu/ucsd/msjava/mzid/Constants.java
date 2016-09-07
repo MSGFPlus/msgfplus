@@ -1,11 +1,7 @@
 package edu.ucsd.msjava.mzid;
 
 import edu.ucsd.msjava.ui.MSGFPlus;
-import uk.ac.ebi.jmzidml.model.mzidml.AnalysisSoftware;
-import uk.ac.ebi.jmzidml.model.mzidml.Cv;
-import uk.ac.ebi.jmzidml.model.mzidml.CvParam;
-import uk.ac.ebi.jmzidml.model.mzidml.Param;
-import uk.ac.ebi.jmzidml.model.mzidml.UserParam;
+import uk.ac.ebi.jmzidml.model.mzidml.*;
 
 public class Constants {
     static String analysisSoftID = "ID_software";

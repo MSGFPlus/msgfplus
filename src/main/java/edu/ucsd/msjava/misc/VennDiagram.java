@@ -1,9 +1,9 @@
 package edu.ucsd.msjava.misc;
 
+import edu.ucsd.msjava.parser.TSVResultParser;
+
 import java.io.File;
 import java.util.Set;
-
-import edu.ucsd.msjava.parser.TSVResultParser;
 
 public class VennDiagram {
     public static void main(String argv[]) throws Exception {

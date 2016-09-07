@@ -1,39 +1,16 @@
 package edu.ucsd.msjava.mzid;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
+import edu.ucsd.msjava.msutil.AminoAcidSet;
+import edu.ucsd.msjava.msutil.Composition;
+import edu.ucsd.msjava.mzml.MzMLAdapter;
+import uk.ac.ebi.jmzidml.model.mzidml.*;
+import uk.ac.ebi.jmzidml.xml.io.MzIdentMLUnmarshaller;
+
+import java.io.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
-import edu.ucsd.msjava.msutil.AminoAcidSet;
-import edu.ucsd.msjava.msutil.Composition;
-import edu.ucsd.msjava.mzml.MzMLAdapter;
-
-import uk.ac.ebi.jmzidml.model.mzidml.AnalysisData;
-import uk.ac.ebi.jmzidml.model.mzidml.AnalysisProtocolCollection;
-import uk.ac.ebi.jmzidml.model.mzidml.CvParam;
-import uk.ac.ebi.jmzidml.model.mzidml.DBSequence;
-import uk.ac.ebi.jmzidml.model.mzidml.DataCollection;
-import uk.ac.ebi.jmzidml.model.mzidml.FileFormat;
-import uk.ac.ebi.jmzidml.model.mzidml.Inputs;
-import uk.ac.ebi.jmzidml.model.mzidml.Modification;
-import uk.ac.ebi.jmzidml.model.mzidml.Peptide;
-import uk.ac.ebi.jmzidml.model.mzidml.PeptideEvidence;
-import uk.ac.ebi.jmzidml.model.mzidml.PeptideEvidenceRef;
-import uk.ac.ebi.jmzidml.model.mzidml.SequenceCollection;
-import uk.ac.ebi.jmzidml.model.mzidml.SpectraData;
-import uk.ac.ebi.jmzidml.model.mzidml.SpectrumIdentificationItem;
-import uk.ac.ebi.jmzidml.model.mzidml.SpectrumIdentificationList;
-import uk.ac.ebi.jmzidml.model.mzidml.SpectrumIdentificationProtocol;
-import uk.ac.ebi.jmzidml.model.mzidml.SpectrumIdentificationResult;
-import uk.ac.ebi.jmzidml.model.mzidml.Tolerance;
-import uk.ac.ebi.jmzidml.model.mzidml.UserParam;
-import uk.ac.ebi.jmzidml.xml.io.MzIdentMLUnmarshaller;
 
 public class MzIDParser {
     private final MzIdentMLUnmarshaller unmarshaller;

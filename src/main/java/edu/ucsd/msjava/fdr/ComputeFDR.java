@@ -1,16 +1,12 @@
 package edu.ucsd.msjava.fdr;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
-
 import edu.ucsd.msjava.msdbsearch.CompactSuffixArray;
 import edu.ucsd.msjava.msdbsearch.DatabaseMatch;
 import edu.ucsd.msjava.msdbsearch.MSGFPlusMatch;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ComputeFDR {
     public static final float FDR_REPORT_THRESHOLD = 0.1f;

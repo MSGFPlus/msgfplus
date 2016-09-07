@@ -1,12 +1,11 @@
 package edu.ucsd.msjava.mzml;
 
-import java.util.ArrayList;
-
+import edu.ucsd.msjava.msutil.Spectrum;
+import edu.ucsd.msjava.msutil.SpectrumAccessorBySpecIndex;
 import uk.ac.ebi.jmzml.xml.io.MzMLUnmarshaller;
 import uk.ac.ebi.jmzml.xml.io.MzMLUnmarshallerException;
 
-import edu.ucsd.msjava.msutil.Spectrum;
-import edu.ucsd.msjava.msutil.SpectrumAccessorBySpecIndex;
+import java.util.ArrayList;
 
 public class MzMLSpectraMap implements SpectrumAccessorBySpecIndex {
     private final MzMLUnmarshaller unmarshaller;

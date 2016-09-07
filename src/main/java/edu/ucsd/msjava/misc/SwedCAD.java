@@ -1,16 +1,15 @@
 package edu.ucsd.msjava.misc;
 
-import java.io.FileNotFoundException;
-import java.util.HashSet;
-import java.util.Random;
-
-
-import edu.ucsd.msjava.msgf.*;
-import edu.ucsd.msjava.msscorer.NewScorerFactory;
+import edu.ucsd.msjava.msgf.Histogram;
+import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msutil.*;
 import edu.ucsd.msjava.parser.BufferedLineReader;
 import edu.ucsd.msjava.parser.LineReader;
 import edu.ucsd.msjava.parser.MgfSpectrumParser;
+
+import java.io.FileNotFoundException;
+import java.util.HashSet;
+import java.util.Random;
 
 public class SwedCAD {
     public static void main(String argv[]) throws Exception {
@@ -20,7 +19,7 @@ public class SwedCAD {
 //			runMSGF(length);
 
 		/*
-		String specFileName = System.getProperty("user.home")+"/Research/Data/SwedCAD/swedCADAnnotated.mgf";
+        String specFileName = System.getProperty("user.home")+"/Research/Data/SwedCAD/swedCADAnnotated.mgf";
 		String scoreParamFileName = System.getProperty("user.home")+"/Research/Data/RankScore/ionstat_FT_20ppm.txt";
 		
 		runMSProfile(specFileName, scoreParamFileName, new Tolerance(20, true), -1);

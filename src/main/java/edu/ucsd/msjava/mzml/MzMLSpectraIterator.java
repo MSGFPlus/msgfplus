@@ -1,12 +1,11 @@
 package edu.ucsd.msjava.mzml;
 
-import java.io.File;
-import java.util.Iterator;
-
 import edu.ucsd.msjava.msutil.Spectrum;
-
 import uk.ac.ebi.jmzml.xml.io.MzMLObjectIterator;
 import uk.ac.ebi.jmzml.xml.io.MzMLUnmarshaller;
+
+import java.io.File;
+import java.util.Iterator;
 
 
 public class MzMLSpectraIterator implements Iterator<edu.ucsd.msjava.msutil.Spectrum>, Iterable<edu.ucsd.msjava.msutil.Spectrum> {

@@ -1,15 +1,15 @@
 package edu.ucsd.msjava.scripts;
 
+import edu.ucsd.msjava.msutil.Composition;
+import edu.ucsd.msjava.msutil.Peptide;
+import edu.ucsd.msjava.msutil.Spectrum;
+import edu.ucsd.msjava.parser.MzXMLSpectraMap;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
-
-import edu.ucsd.msjava.msutil.Composition;
-import edu.ucsd.msjava.msutil.Peptide;
-import edu.ucsd.msjava.msutil.Spectrum;
-import edu.ucsd.msjava.parser.MzXMLSpectraMap;
 
 
 public class SelectSpectra {

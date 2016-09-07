@@ -1,15 +1,14 @@
 package edu.ucsd.msjava.misc;
 
-import java.io.*;
-import java.util.Arrays;
-
-
 import edu.ucsd.msjava.msutil.SpectraContainer;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.parser.MzXMLSpectraMap;
 import edu.ucsd.msjava.parser.PSM;
 import edu.ucsd.msjava.parser.PSMList;
 import edu.ucsd.msjava.parser.PepXMLParser;
+
+import java.io.File;
+import java.util.Arrays;
 
 public class ControlNew {
     public static void main(String argv[]) {

@@ -1,9 +1,9 @@
 package edu.ucsd.msjava.msutil;
 
-import java.util.ArrayList;
-
 import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msutil.IonType.PrefixIon;
+
+import java.util.ArrayList;
 
 /**
  * For a given peptide spectrum pair, retrieve annotation information.

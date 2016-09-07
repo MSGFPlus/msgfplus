@@ -1,14 +1,8 @@
 package edu.ucsd.msjava.misc;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
-
-import edu.ucsd.msjava.msgf.Tolerance;
-
 public class RunMSGFDBOnGrid {
     /*
-	public static void main(String argv[])
+    public static void main(String argv[])
 	{
 		File dir = null;
 		int heapSize = 1300;

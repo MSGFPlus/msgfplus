@@ -2,12 +2,7 @@ package edu.ucsd.msjava.msutil;
 
 //import java.util.ArrayList;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public abstract class IonType {
     // IonType.InternalIon

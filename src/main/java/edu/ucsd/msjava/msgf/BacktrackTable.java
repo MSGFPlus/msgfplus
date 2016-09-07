@@ -1,13 +1,10 @@
 package edu.ucsd.msjava.msgf;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-
-
-import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Matter;
 import edu.ucsd.msjava.suffixarray.SuffixArray;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class BacktrackTable<T extends Matter> extends HashMap<T, BacktrackPointer> {
     private static final long serialVersionUID = 1L;

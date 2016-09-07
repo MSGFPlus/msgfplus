@@ -1,10 +1,10 @@
 package edu.ucsd.msjava.parser;
 
-import java.util.ArrayList;
-
 import edu.ucsd.msjava.msutil.AminoAcid;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Peptide;
+
+import java.util.ArrayList;
 
 
 public class MSGappedDictionaryPSM extends PSM {

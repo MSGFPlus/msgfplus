@@ -1,8 +1,8 @@
 package edu.ucsd.msjava.msutil;
 
-import java.util.LinkedHashMap;
-
 import edu.ucsd.msjava.params.ParamObject;
+
+import java.util.LinkedHashMap;
 
 
 public class InstrumentType implements ParamObject {

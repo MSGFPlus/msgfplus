@@ -1,8 +1,8 @@
 package edu.ucsd.msjava.sequences;
 
-import java.util.HashSet;
-
 import edu.ucsd.msjava.msutil.AminoAcidSet;
+
+import java.util.HashSet;
 
 /**
  * This class is a wrapper to the FastaSequence that uses Amino Acids as the

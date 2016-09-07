@@ -1,10 +1,10 @@
 package edu.ucsd.msjava.misc;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-
 import edu.ucsd.msjava.msgf.Histogram;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
 
 public class CalcFastaDBSize {
     public static void main(String argv[]) throws Exception {

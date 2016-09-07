@@ -1,10 +1,8 @@
 package edu.ucsd.msjava.misc;
 
-import edu.ucsd.msjava.msgf.*;
-import edu.ucsd.msjava.msscorer.NewScorerFactory;
-import edu.ucsd.msjava.msutil.*;
+import edu.ucsd.msjava.msutil.AminoAcidSet;
+import edu.ucsd.msjava.msutil.CompositionFactory;
 import edu.ucsd.msjava.parser.BufferedLineReader;
-import edu.ucsd.msjava.parser.MgfSpectrumParser;
 
 public class CompGraphPaper {
 

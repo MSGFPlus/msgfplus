@@ -1,22 +1,11 @@
 package edu.ucsd.msjava.parser;
 
+import edu.ucsd.msjava.msutil.*;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Map;
-
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.Composition;
-import edu.ucsd.msjava.msutil.Peak;
-import edu.ucsd.msjava.msutil.ScanType;
-import edu.ucsd.msjava.msutil.SpectraIterator;
-import edu.ucsd.msjava.msutil.SpectraMap;
-import edu.ucsd.msjava.msutil.Spectrum;
-import edu.ucsd.msjava.msutil.SpectrumMetaInfo;
+import java.util.*;
 
 public class PNNLSpectrumParser implements SpectrumParser {
 

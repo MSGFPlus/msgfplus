@@ -1,13 +1,13 @@
 package edu.ucsd.msjava.ui;
 
-import java.io.File;
-
 import edu.ucsd.msjava.msutil.FileFormat;
 import edu.ucsd.msjava.mzid.MzIDParser;
 import edu.ucsd.msjava.mzml.MzMLAdapter;
 import edu.ucsd.msjava.params.EnumParameter;
 import edu.ucsd.msjava.params.FileParameter;
 import edu.ucsd.msjava.params.ParamManager;
+
+import java.io.File;
 
 public class MzIDToTsv {
     public static final String VERSION = "v9108";

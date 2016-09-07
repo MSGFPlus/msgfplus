@@ -1,9 +1,8 @@
 package edu.ucsd.msjava.msutil;
 
-import java.util.Hashtable;
-
-import edu.ucsd.msjava.parser.BufferedRandomAccessLineReader;
 import edu.ucsd.msjava.parser.SpectrumParserWithTitle;
+
+import java.util.Hashtable;
 
 
 public class SpectraMapByTitle extends SpectraMap implements SpectrumAccessorByTitle {

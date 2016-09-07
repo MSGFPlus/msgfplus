@@ -1,10 +1,9 @@
 package edu.ucsd.msjava.msgf;
 
-import java.util.HashMap;
-import java.util.Map.Entry;
-
 import edu.ucsd.msjava.msutil.Annotation;
 import edu.ucsd.msjava.msutil.Matter;
+
+import java.util.HashMap;
 
 public class GeneratingFunctionGroup<T extends Matter> extends HashMap<T, GeneratingFunction<T>> implements GF<T> {
 

@@ -1,18 +1,18 @@
 package edu.ucsd.msjava.ipa;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.TreeMap;
-
 import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msutil.Composition;
 import edu.ucsd.msjava.msutil.Pair;
 import edu.ucsd.msjava.msutil.Peak;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.parser.BufferedLineReader;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.TreeMap;
 
 public class MS1SpectraMap {
     private TreeMap<Integer, Spectrum> ms1SpecMap;

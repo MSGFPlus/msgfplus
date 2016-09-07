@@ -1,5 +1,7 @@
 package edu.ucsd.msjava.ims;
 
+import edu.ucsd.msjava.parser.BufferedLineReader;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -7,8 +9,6 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import edu.ucsd.msjava.parser.BufferedLineReader;
 
 public class OptimizeCE {
     public static void main(String argv[]) throws Exception {

@@ -1,20 +1,18 @@
 package edu.ucsd.msjava.mzml;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.List;
-
+import edu.ucsd.msjava.mzid.Constants;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
-import edu.ucsd.msjava.mzid.Constants;
-
 import uk.ac.ebi.jmzidml.model.mzidml.CvParam;
 import uk.ac.ebi.jmzml.model.mzml.CVParam;
 import uk.ac.ebi.jmzml.model.mzml.SourceFile;
 import uk.ac.ebi.jmzml.xml.io.MzMLObjectIterator;
 import uk.ac.ebi.jmzml.xml.io.MzMLUnmarshaller;
+
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
 
 public class MzMLAdapter {
 

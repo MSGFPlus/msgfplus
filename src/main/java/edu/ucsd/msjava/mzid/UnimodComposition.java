@@ -1,12 +1,12 @@
 package edu.ucsd.msjava.mzid;
 
+import edu.ucsd.msjava.msutil.Atom;
+import edu.ucsd.msjava.msutil.Composition;
+
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import edu.ucsd.msjava.msutil.Atom;
-import edu.ucsd.msjava.msutil.Composition;
 
 public class UnimodComposition {
 

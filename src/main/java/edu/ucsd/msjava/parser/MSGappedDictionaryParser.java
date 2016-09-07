@@ -1,11 +1,11 @@
 package edu.ucsd.msjava.parser;
 
+import edu.ucsd.msjava.msutil.AminoAcidSet;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.util.Collections;
-
-import edu.ucsd.msjava.msutil.AminoAcidSet;
 
 public class MSGappedDictionaryParser {
 

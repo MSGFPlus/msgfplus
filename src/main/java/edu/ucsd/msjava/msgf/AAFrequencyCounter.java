@@ -113,7 +113,7 @@ public class AAFrequencyCounter {
         System.out.println(getRandomFrequency("AAA"));
 //		generate(3);
         /*
-		AAFrequencyCounter counter = new AAFrequencyCounter();
+        AAFrequencyCounter counter = new AAFrequencyCounter();
 		counter.readFromFreqFile("/home/sangtaekim/Research/Data/AAFrequency/SProt_2mer.txt");
 		counter.frequencyTable.printSorted();
 		*/

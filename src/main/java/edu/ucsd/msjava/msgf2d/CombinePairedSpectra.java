@@ -1,6 +1,8 @@
 package edu.ucsd.msjava.msgf2d;
 
-import edu.ucsd.msjava.msutil.*;
+import edu.ucsd.msjava.msutil.SpectraContainer;
+import edu.ucsd.msjava.msutil.SpectraMap;
+import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.parser.MgfSpectrumParser;
 
 public class CombinePairedSpectra {

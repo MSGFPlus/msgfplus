@@ -1,39 +1,13 @@
 package edu.ucsd.msjava.misc;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Hashtable;
-
-import edu.ucsd.msjava.msgf.AminoAcidGraph;
-import edu.ucsd.msjava.msgf.GeneratingFunction;
-import edu.ucsd.msjava.msgf.ProfileGF;
-import edu.ucsd.msjava.msgf.ScoredSpectrum;
 import edu.ucsd.msjava.msgf.Tolerance;
-import edu.ucsd.msjava.msscorer.NewScorerFactory;
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.AminoAcidSet;
-import edu.ucsd.msjava.msutil.Composition;
-import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.IonType;
-import edu.ucsd.msjava.msutil.Peptide;
-import edu.ucsd.msjava.msutil.ScoredString;
-import edu.ucsd.msjava.msutil.Sequence;
-import edu.ucsd.msjava.msutil.SpectraContainer;
-import edu.ucsd.msjava.msutil.SpectraIterator;
-import edu.ucsd.msjava.msutil.Spectrum;
-import edu.ucsd.msjava.msutil.SpectrumAnnotator;
-import edu.ucsd.msjava.msutil.WindowFilter;
+import edu.ucsd.msjava.msutil.*;
 import edu.ucsd.msjava.parser.BufferedLineReader;
 import edu.ucsd.msjava.parser.MgfSpectrumParser;
 import edu.ucsd.msjava.parser.MzXMLSpectraIterator;
+
+import java.io.*;
+import java.util.*;
 
 public class CIDETDPairs {
     public static void main(String argv[]) throws Exception {
@@ -844,7 +818,7 @@ public class CIDETDPairs {
 
     public static void vennDiagram() throws Exception {
         /*
-		String fileNameCID = System.getProperty("user.home")+"/Research/MSGF2D/rescored/TrypCID_1.txt";
+        String fileNameCID = System.getProperty("user.home")+"/Research/MSGF2D/rescored/TrypCID_1.txt";
 		String fileNameETD = System.getProperty("user.home")+"/Research/MSGF2D/rescored/TrypETD_1.txt";
 		float cidThreshold = 4.85e-11f;
 		float etdThreshold = 2.33e-11f;

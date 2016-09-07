@@ -1,8 +1,8 @@
 package edu.ucsd.msjava.parser;
 
-import java.util.Iterator;
-
 import edu.ucsd.msjava.msutil.Spectrum;
+
+import java.util.Iterator;
 
 
 /**

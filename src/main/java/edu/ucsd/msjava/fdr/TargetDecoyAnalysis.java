@@ -3,8 +3,8 @@ package edu.ucsd.msjava.fdr;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 public class TargetDecoyAnalysis {
     final PSMSet target;

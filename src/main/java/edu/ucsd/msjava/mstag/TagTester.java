@@ -1,9 +1,12 @@
 package edu.ucsd.msjava.mstag;
 
-import edu.ucsd.msjava.msutil.*;
+import edu.ucsd.msjava.msutil.Reshape;
+import edu.ucsd.msjava.msutil.SpectraIterator;
+import edu.ucsd.msjava.msutil.Spectrum;
+import edu.ucsd.msjava.msutil.WindowFilter;
 import edu.ucsd.msjava.parser.MgfSpectrumParser;
 
-import java.io.*;
+import java.io.FileNotFoundException;
 
 
 /**

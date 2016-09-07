@@ -1,7 +1,5 @@
 package edu.ucsd.msjava.mslibsearch;
 
-import edu.ucsd.msjava.msgf.NominalMass;
-import edu.ucsd.msjava.msutil.Peak;
 import edu.ucsd.msjava.msutil.Spectrum;
 
 public class ProcessedSpectrum {

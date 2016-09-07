@@ -1,13 +1,12 @@
 package edu.ucsd.msjava.msutil;
 
+import edu.ucsd.msjava.msgf.DeNovoGraph;
+import edu.ucsd.msjava.msgf.MassFactory;
+import edu.ucsd.msjava.msgf.Tolerance;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-
-import edu.ucsd.msjava.msgf.DeNovoGraph;
-import edu.ucsd.msjava.msgf.IntMassFactory;
-import edu.ucsd.msjava.msgf.MassFactory;
-import edu.ucsd.msjava.msgf.Tolerance;
 
 /**
  * A factory class instantiate compositions.

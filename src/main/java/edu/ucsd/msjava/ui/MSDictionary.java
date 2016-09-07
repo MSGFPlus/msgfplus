@@ -1,21 +1,11 @@
 package edu.ucsd.msjava.ui;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Iterator;
-
-
 import edu.ucsd.msjava.msdictionary.MSDicLauncher;
 import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msscorer.NewAdditiveScorer;
 import edu.ucsd.msjava.msscorer.NewRankScorer;
 import edu.ucsd.msjava.msscorer.NewScorerFactory;
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.InstrumentType;
-import edu.ucsd.msjava.msutil.Protocol;
-import edu.ucsd.msjava.msutil.SpectraIterator;
-import edu.ucsd.msjava.msutil.Spectrum;
+import edu.ucsd.msjava.msutil.*;
 import edu.ucsd.msjava.params.ParamParser;
 import edu.ucsd.msjava.parser.MgfSpectrumParser;
 import edu.ucsd.msjava.parser.MzXMLSpectraIterator;
@@ -23,6 +13,10 @@ import edu.ucsd.msjava.parser.PklSpectrumParser;
 import edu.ucsd.msjava.parser.SpectrumParser;
 import edu.ucsd.msjava.suffixarray.SuffixArray;
 import edu.ucsd.msjava.suffixarray.SuffixArraySequence;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Iterator;
 
 public class MSDictionary {
     public static void main(String argv[]) {

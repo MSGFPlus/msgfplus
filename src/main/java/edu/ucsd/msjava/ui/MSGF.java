@@ -1,13 +1,5 @@
 package edu.ucsd.msjava.ui;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Hashtable;
-
 import edu.ucsd.msjava.msdbsearch.DBScanner;
 import edu.ucsd.msjava.msgf.DeNovoGraph;
 import edu.ucsd.msjava.msgf.FlexAminoAcidGraph;
@@ -16,23 +8,13 @@ import edu.ucsd.msjava.msgf.NominalMass;
 import edu.ucsd.msjava.msscorer.NewRankScorer;
 import edu.ucsd.msjava.msscorer.NewScoredSpectrum;
 import edu.ucsd.msjava.msscorer.NewScorerFactory;
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.AminoAcidSet;
-import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.InstrumentType;
-import edu.ucsd.msjava.msutil.Protocol;
-import edu.ucsd.msjava.msutil.SpectraMap;
-import edu.ucsd.msjava.msutil.Spectrum;
-import edu.ucsd.msjava.msutil.SpectrumAccessorBySpecIndex;
+import edu.ucsd.msjava.msutil.*;
 import edu.ucsd.msjava.params.ParamManager;
-import edu.ucsd.msjava.parser.InsPecTPSM;
-import edu.ucsd.msjava.parser.InsPecTParser;
-import edu.ucsd.msjava.parser.MS2SpectrumParser;
-import edu.ucsd.msjava.parser.MgfSpectrumParser;
-import edu.ucsd.msjava.parser.MzXMLSpectraMap;
-import edu.ucsd.msjava.parser.PNNLSpectrumParser;
-import edu.ucsd.msjava.parser.PSMList;
-import edu.ucsd.msjava.parser.PklSpectrumParser;
+import edu.ucsd.msjava.parser.*;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 
 public class MSGF {

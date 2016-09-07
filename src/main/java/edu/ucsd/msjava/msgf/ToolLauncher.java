@@ -1,14 +1,14 @@
 package edu.ucsd.msjava.msgf;
 
+import edu.ucsd.msjava.msscorer.NewAdditiveScorer;
+import edu.ucsd.msjava.msutil.AminoAcidSet;
+import edu.ucsd.msjava.msutil.Spectrum;
+
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Iterator;
-
-import edu.ucsd.msjava.msscorer.NewAdditiveScorer;
-import edu.ucsd.msjava.msutil.AminoAcidSet;
-import edu.ucsd.msjava.msutil.Spectrum;
 
 public abstract class ToolLauncher {
     // Essential parameters, set by the constructor

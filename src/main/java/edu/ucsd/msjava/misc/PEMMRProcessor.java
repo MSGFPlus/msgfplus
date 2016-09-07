@@ -1,10 +1,10 @@
 package edu.ucsd.msjava.misc;
 
+import edu.ucsd.msjava.parser.BufferedLineReader;
+
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-
-import edu.ucsd.msjava.parser.BufferedLineReader;
 
 public class PEMMRProcessor {
     public static void main(String argv[]) throws Exception {

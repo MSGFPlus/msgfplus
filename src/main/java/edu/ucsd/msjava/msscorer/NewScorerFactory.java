@@ -1,14 +1,14 @@
 package edu.ucsd.msjava.msscorer;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.util.Hashtable;
-
 import edu.ucsd.msjava.msutil.ActivationMethod;
 import edu.ucsd.msjava.msutil.Enzyme;
 import edu.ucsd.msjava.msutil.InstrumentType;
 import edu.ucsd.msjava.msutil.Protocol;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.util.Hashtable;
 
 public class NewScorerFactory {
     private static final String IONSTAT_RESOURCE_DIR = "ionstat/";

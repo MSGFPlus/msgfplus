@@ -1,15 +1,11 @@
 package edu.ucsd.msjava.msgf;
 
+import edu.ucsd.msjava.msutil.*;
+import edu.ucsd.msjava.msutil.Modification.Location;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-
-import edu.ucsd.msjava.msutil.AminoAcid;
-import edu.ucsd.msjava.msutil.AminoAcidSet;
-import edu.ucsd.msjava.msutil.Annotation;
-import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.Peptide;
-import edu.ucsd.msjava.msutil.Modification.Location;
 
 public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
     public static final int MODIFIED_EDGE_PENALTY = 0;

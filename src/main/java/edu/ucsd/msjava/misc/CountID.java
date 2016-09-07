@@ -1,12 +1,12 @@
 package edu.ucsd.msjava.misc;
 
-import java.io.File;
-
 import edu.ucsd.msjava.fdr.TSVPSMSet;
 import edu.ucsd.msjava.fdr.TargetDecoyAnalysis;
 import edu.ucsd.msjava.parser.BufferedLineReader;
 import edu.ucsd.msjava.parser.InsPecTParser;
 import edu.ucsd.msjava.ui.MSGFPlus;
+
+import java.io.File;
 
 
 public class CountID {

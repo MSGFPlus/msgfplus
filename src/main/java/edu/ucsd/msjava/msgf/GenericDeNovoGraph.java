@@ -1,19 +1,12 @@
 package edu.ucsd.msjava.msgf;
 
+import edu.ucsd.msjava.msutil.*;
+import edu.ucsd.msjava.msutil.Modification.Location;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-
-import edu.ucsd.msjava.msutil.AminoAcid;
-import edu.ucsd.msjava.msutil.AminoAcidSet;
-import edu.ucsd.msjava.msutil.Annotation;
-import edu.ucsd.msjava.msutil.Composition;
-import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.Matter;
-import edu.ucsd.msjava.msutil.Peptide;
-import edu.ucsd.msjava.msutil.Sequence;
-import edu.ucsd.msjava.msutil.Modification.Location;
 
 public class GenericDeNovoGraph<T extends Matter> extends DeNovoGraph<T> {
     private HashMap<T, Integer> nodeScore;

@@ -1,8 +1,8 @@
 package edu.ucsd.msjava.msgf.test;
 
-import java.io.File;
-
 import edu.ucsd.msjava.parser.BufferedLineReader;
+
+import java.io.File;
 
 
 public class MSGFValidation {

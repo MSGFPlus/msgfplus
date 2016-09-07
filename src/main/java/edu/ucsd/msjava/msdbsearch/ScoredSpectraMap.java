@@ -1,35 +1,15 @@
 package edu.ucsd.msjava.msdbsearch;
 
 import edu.ucsd.msjava.misc.ProgressData;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import edu.ucsd.msjava.msgf.NominalMass;
 import edu.ucsd.msjava.msgf.ScoredSpectrum;
 import edu.ucsd.msjava.msgf.ScoredSpectrumSum;
 import edu.ucsd.msjava.msgf.Tolerance;
-import edu.ucsd.msjava.msscorer.DBScanScorer;
-import edu.ucsd.msjava.msscorer.FastScorer;
-import edu.ucsd.msjava.msscorer.NewRankScorer;
-import edu.ucsd.msjava.msscorer.NewScoredSpectrum;
-import edu.ucsd.msjava.msscorer.NewScorerFactory;
-import edu.ucsd.msjava.msscorer.SimpleDBSearchScorer;
+import edu.ucsd.msjava.msscorer.*;
 import edu.ucsd.msjava.msscorer.NewScorerFactory.SpecDataType;
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.Composition;
-import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.InstrumentType;
-import edu.ucsd.msjava.msutil.Pair;
-import edu.ucsd.msjava.msutil.Protocol;
-import edu.ucsd.msjava.msutil.SpecKey;
-import edu.ucsd.msjava.msutil.SpectraAccessor;
-import edu.ucsd.msjava.msutil.Spectrum;
+import edu.ucsd.msjava.msutil.*;
+
+import java.util.*;
 
 public class ScoredSpectraMap {
     private final SpectraAccessor specAcc;

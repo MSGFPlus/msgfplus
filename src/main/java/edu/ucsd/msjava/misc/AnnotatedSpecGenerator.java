@@ -1,5 +1,13 @@
 package edu.ucsd.msjava.misc;
 
+import edu.ucsd.msjava.msutil.Peak;
+import edu.ucsd.msjava.msutil.SpectraMap;
+import edu.ucsd.msjava.msutil.Spectrum;
+import edu.ucsd.msjava.msutil.SpectrumAccessorBySpecIndex;
+import edu.ucsd.msjava.parser.BufferedLineReader;
+import edu.ucsd.msjava.parser.MgfSpectrumParser;
+import edu.ucsd.msjava.parser.MzXMLSpectraMap;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -8,16 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
-
-import edu.ucsd.msjava.msutil.Peak;
-import edu.ucsd.msjava.msutil.Peptide;
-import edu.ucsd.msjava.msutil.SpectraContainer;
-import edu.ucsd.msjava.msutil.SpectraMap;
-import edu.ucsd.msjava.msutil.Spectrum;
-import edu.ucsd.msjava.msutil.SpectrumAccessorBySpecIndex;
-import edu.ucsd.msjava.parser.BufferedLineReader;
-import edu.ucsd.msjava.parser.MgfSpectrumParser;
-import edu.ucsd.msjava.parser.MzXMLSpectraMap;
 
 public class AnnotatedSpecGenerator {
     public static void main(String argv[]) throws Exception {

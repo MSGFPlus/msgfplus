@@ -1,16 +1,16 @@
 package edu.ucsd.msjava.misc;
 
+import edu.ucsd.msjava.msutil.Peptide;
+import edu.ucsd.msjava.msutil.Spectrum;
+import edu.ucsd.msjava.parser.BufferedLineReader;
+import edu.ucsd.msjava.parser.MzXMLSpectraMap;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Hashtable;
-
-import edu.ucsd.msjava.msutil.Peptide;
-import edu.ucsd.msjava.msutil.Spectrum;
-import edu.ucsd.msjava.parser.BufferedLineReader;
-import edu.ucsd.msjava.parser.MzXMLSpectraMap;
 
 
 public class HeckPercolator {

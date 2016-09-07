@@ -1,12 +1,12 @@
 package edu.ucsd.msjava.msgf;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Hashtable;
-
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Matter;
 import edu.ucsd.msjava.msutil.Peptide;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Hashtable;
 
 public class DeNovoSequencer<T extends Matter> {
     ScoredSpectrum<T> scoredSpec;

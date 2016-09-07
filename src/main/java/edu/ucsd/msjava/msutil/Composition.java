@@ -2,7 +2,6 @@ package edu.ucsd.msjava.msutil;
 
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Hashtable;
 
 public class Composition extends Matter {
     public static final double C = 12.0f;
@@ -350,7 +349,7 @@ public class Composition extends Matter {
     }
 
     public static void main(String argv[]) {
-		/*
+        /*
     Composition[] aa = {
       new Composition(2,3,1,1,0),
       new Composition(3,5,1,1,0),

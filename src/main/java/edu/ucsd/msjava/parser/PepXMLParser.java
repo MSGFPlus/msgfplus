@@ -1,17 +1,17 @@
 package edu.ucsd.msjava.parser;
 
-import java.io.IOException;
+import edu.ucsd.msjava.msutil.AminoAcidSet;
+import edu.ucsd.msjava.msutil.Composition;
+import edu.ucsd.msjava.msutil.Peptide;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
-import edu.ucsd.msjava.msutil.AminoAcidSet;
-import edu.ucsd.msjava.msutil.Composition;
-import edu.ucsd.msjava.msutil.Peptide;
-
-import org.w3c.dom.*;
-import org.xml.sax.SAXException;
+import java.io.IOException;
 
 public class PepXMLParser {
     public static PSMList<PSM> parse(String fileName) {

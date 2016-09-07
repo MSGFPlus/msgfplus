@@ -1,10 +1,6 @@
 package edu.ucsd.msjava.msdictionary;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 
 public class GenomeLocator {
 

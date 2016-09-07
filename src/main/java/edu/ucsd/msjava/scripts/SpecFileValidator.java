@@ -1,14 +1,14 @@
 package edu.ucsd.msjava.scripts;
 
-import java.io.File;
-import java.util.Iterator;
-
 import edu.ucsd.msjava.msutil.SpectraIterator;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.parser.MS2SpectrumParser;
 import edu.ucsd.msjava.parser.MgfSpectrumParser;
 import edu.ucsd.msjava.parser.MzXMLSpectraIterator;
 import edu.ucsd.msjava.parser.PklSpectrumParser;
+
+import java.io.File;
+import java.util.Iterator;
 
 public class SpecFileValidator {
     public static void main(String argv[]) throws Exception {

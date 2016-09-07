@@ -1,14 +1,14 @@
 package edu.ucsd.msjava.msscorer;
 
-import java.util.HashSet;
-import java.util.Iterator;
-
 import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msutil.IonType;
+import edu.ucsd.msjava.msutil.IonType.PrefixIon;
 import edu.ucsd.msjava.msutil.Peptide;
 import edu.ucsd.msjava.msutil.Reshape;
 import edu.ucsd.msjava.msutil.Spectrum;
-import edu.ucsd.msjava.msutil.IonType.PrefixIon;
+
+import java.util.HashSet;
+import java.util.Iterator;
 
 public class IonProbability {
     private Iterator<Spectrum> itr;

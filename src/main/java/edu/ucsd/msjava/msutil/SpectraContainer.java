@@ -1,13 +1,12 @@
 package edu.ucsd.msjava.msutil;
 
+import edu.ucsd.msjava.parser.SpectrumParser;
+
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Iterator;
-
-import edu.ucsd.msjava.parser.SpectrumParser;
 
 
 public class SpectraContainer extends ArrayList<Spectrum> {

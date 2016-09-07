@@ -1,8 +1,8 @@
 package edu.ucsd.msjava.misc;
 
-import java.io.File;
-
 import edu.ucsd.msjava.msscorer.NewRankScorer;
+
+import java.io.File;
 
 public class ParamToTxt {
     public static void main(String argv[]) throws Exception {

@@ -7,11 +7,7 @@ import edu.ucsd.msjava.msgf.NominalMass;
 import edu.ucsd.msjava.msscorer.NewRankScorer;
 import edu.ucsd.msjava.msscorer.NewScoredSpectrum;
 import edu.ucsd.msjava.msscorer.NewScorerFactory;
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.AminoAcidSet;
-import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.SpectraIterator;
-import edu.ucsd.msjava.msutil.Spectrum;
+import edu.ucsd.msjava.msutil.*;
 import edu.ucsd.msjava.parser.MgfSpectrumParser;
 
 public class ChargePrediction {

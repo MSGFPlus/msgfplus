@@ -1,9 +1,9 @@
 package edu.ucsd.msjava.fdr;
 
+import edu.ucsd.msjava.parser.BufferedLineReader;
+
 import java.io.File;
 import java.util.ArrayList;
-
-import edu.ucsd.msjava.parser.BufferedLineReader;
 
 public class ComputeQValue {
     public static final float FDR_REPORT_THRESHOLD = 0.1f;

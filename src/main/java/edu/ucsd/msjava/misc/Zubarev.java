@@ -1,44 +1,22 @@
 package edu.ucsd.msjava.misc;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-
-import edu.ucsd.msjava.msgf.AminoAcidGraph;
-import edu.ucsd.msjava.msgf.Histogram;
-import edu.ucsd.msjava.msgf.IntMassFactory;
-import edu.ucsd.msjava.msgf.NominalMass;
-import edu.ucsd.msjava.msgf.NominalMassFactory;
-import edu.ucsd.msjava.msgf.Tolerance;
+import edu.ucsd.msjava.msgf.*;
 import edu.ucsd.msjava.msscorer.IonProbability;
 import edu.ucsd.msjava.msscorer.NewRankScorer;
 import edu.ucsd.msjava.msscorer.NewScoredSpectrum;
 import edu.ucsd.msjava.msscorer.NewScorerFactory;
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.AminoAcid;
-import edu.ucsd.msjava.msutil.AminoAcidSet;
-import edu.ucsd.msjava.msutil.Composition;
-import edu.ucsd.msjava.msutil.CompositionFactory;
-import edu.ucsd.msjava.msutil.Constants;
-import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.IonType;
-import edu.ucsd.msjava.msutil.Peak;
-import edu.ucsd.msjava.msutil.Peptide;
-import edu.ucsd.msjava.msutil.SpectraContainer;
-import edu.ucsd.msjava.msutil.SpectraIterator;
-import edu.ucsd.msjava.msutil.Spectrum;
-import edu.ucsd.msjava.msutil.WindowFilter;
+import edu.ucsd.msjava.msutil.*;
 import edu.ucsd.msjava.msutil.Modification.Location;
 import edu.ucsd.msjava.parser.BufferedLineReader;
 import edu.ucsd.msjava.parser.MgfSpectrumParser;
 import edu.ucsd.msjava.suffixarray.SuffixArray;
 import edu.ucsd.msjava.suffixarray.SuffixArraySequence;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+import java.util.*;
 
 
 public class Zubarev {

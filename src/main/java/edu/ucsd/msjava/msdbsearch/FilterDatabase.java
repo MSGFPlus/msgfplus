@@ -1,12 +1,12 @@
 package edu.ucsd.msjava.msdbsearch;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-
 import edu.ucsd.msjava.parser.BufferedLineReader;
 import edu.ucsd.msjava.suffixarray.SuffixArray;
 import edu.ucsd.msjava.suffixarray.SuffixArraySequence;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 
 public class FilterDatabase {

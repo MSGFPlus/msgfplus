@@ -1,15 +1,18 @@
 package edu.ucsd.msjava.suffixarray;
 
-import java.io.*;
-import java.nio.*;
-import java.nio.channels.FileChannel;
-import java.util.*;
-
 import edu.ucsd.msjava.msdbsearch.CompactSuffixArray;
 import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msutil.AminoAcid;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.sequences.Constants;
+
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
 
 
 /**

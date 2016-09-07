@@ -1,12 +1,12 @@
 package edu.ucsd.msjava.ims;
 
+import edu.ucsd.msjava.parser.BufferedLineReader;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import edu.ucsd.msjava.parser.BufferedLineReader;
 
 public class GetTheBestPerPeptide {
     public static void main(String argv[]) throws Exception {

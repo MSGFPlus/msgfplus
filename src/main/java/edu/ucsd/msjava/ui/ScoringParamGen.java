@@ -1,26 +1,12 @@
 package edu.ucsd.msjava.ui;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-
-import edu.ucsd.msjava.msscorer.NewRankScorer;
-import edu.ucsd.msjava.msscorer.ScoringParameterGeneratorWithErrors;
 import edu.ucsd.msjava.msscorer.NewScorerFactory.SpecDataType;
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.AminoAcidSet;
-import edu.ucsd.msjava.msutil.AnnotatedSpectra;
-import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.FileFormat;
-import edu.ucsd.msjava.msutil.InstrumentType;
-import edu.ucsd.msjava.msutil.Protocol;
+import edu.ucsd.msjava.msscorer.ScoringParameterGeneratorWithErrors;
+import edu.ucsd.msjava.msutil.*;
 import edu.ucsd.msjava.mzml.MzMLAdapter;
-import edu.ucsd.msjava.params.FileListParameter;
-import edu.ucsd.msjava.params.FileParameter;
-import edu.ucsd.msjava.params.ObjectEnumParameter;
 import edu.ucsd.msjava.params.ParamManager;
+
+import java.io.*;
 
 public class ScoringParamGen {
 

@@ -1,12 +1,12 @@
 package edu.ucsd.msjava.msutil;
 
+import edu.ucsd.msjava.parser.MzXMLSpectraIterator;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
-
-import edu.ucsd.msjava.parser.MzXMLSpectraIterator;
 
 public class SpecKey extends Pair<Integer, Integer> {
 

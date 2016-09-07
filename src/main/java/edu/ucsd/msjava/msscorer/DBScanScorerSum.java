@@ -1,10 +1,10 @@
 package edu.ucsd.msjava.msscorer;
 
-import java.util.List;
-
 import edu.ucsd.msjava.msgf.NominalMass;
 import edu.ucsd.msjava.msgf.ScoredSpectrum;
 import edu.ucsd.msjava.msgf.ScoredSpectrumSum;
+
+import java.util.List;
 
 public class DBScanScorerSum extends ScoredSpectrumSum<NominalMass> implements SimpleDBSearchScorer<NominalMass> {
 

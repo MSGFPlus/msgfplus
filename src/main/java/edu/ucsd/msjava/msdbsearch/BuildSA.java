@@ -1,9 +1,8 @@
 package edu.ucsd.msjava.msdbsearch;
 
-import java.io.File;
-
-import edu.ucsd.msjava.ui.MSGFDB;
 import edu.ucsd.msjava.ui.MSGFPlus;
+
+import java.io.File;
 
 
 public class BuildSA {

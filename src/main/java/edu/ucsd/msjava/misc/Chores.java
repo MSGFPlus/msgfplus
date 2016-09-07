@@ -1,17 +1,16 @@
 package edu.ucsd.msjava.misc;
 
-import java.io.*;
-import java.math.*;
+import edu.ucsd.msjava.msgf.MSGFDBResultGenerator;
+import edu.ucsd.msjava.msutil.SpectraIterator;
+import edu.ucsd.msjava.parser.BufferedLineReader;
+import edu.ucsd.msjava.parser.MgfSpectrumParser;
+import edu.ucsd.msjava.parser.MzXMLSpectraIterator;
+import edu.ucsd.msjava.parser.MzXMLSpectraMap;
+
+import java.io.File;
 import java.util.*;
 
 //import org.systemsbiology.jrap.stax.*;
-
-import edu.ucsd.msjava.msdbsearch.*;
-import edu.ucsd.msjava.msgf.*;
-import edu.ucsd.msjava.msscorer.*;
-import edu.ucsd.msjava.msutil.*;
-import edu.ucsd.msjava.msutil.Modification.Location;
-import edu.ucsd.msjava.parser.*;
 
 
 public class Chores {

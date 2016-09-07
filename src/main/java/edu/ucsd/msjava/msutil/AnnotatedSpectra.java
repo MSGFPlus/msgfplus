@@ -1,5 +1,8 @@
 package edu.ucsd.msjava.msutil;
 
+import edu.ucsd.msjava.mzid.MzIDParser;
+import edu.ucsd.msjava.parser.BufferedLineReader;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -7,9 +10,6 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-
-import edu.ucsd.msjava.mzid.MzIDParser;
-import edu.ucsd.msjava.parser.BufferedLineReader;
 
 public class AnnotatedSpectra {
     private File[] resultFiles;

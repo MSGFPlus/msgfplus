@@ -1,14 +1,14 @@
 package edu.ucsd.msjava.misc;
 
+import edu.ucsd.msjava.parser.MascotParser;
+import edu.ucsd.msjava.parser.PSM;
+import edu.ucsd.msjava.parser.PSMList;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.HashSet;
-
-import edu.ucsd.msjava.parser.MascotParser;
-import edu.ucsd.msjava.parser.PSM;
-import edu.ucsd.msjava.parser.PSMList;
 
 
 public class DatToTxt {
@@ -45,7 +45,7 @@ public class DatToTxt {
         PSMList<PSM> psmList = MascotParser.parseFromDat(datFile.getPath(), isDecoy);
         for (PSM psm : psmList) {
             /*
-			System.out.print(psm.getTitle());
+            System.out.print(psm.getTitle());
 			System.out.print("\t"+psm.getCharge());
 			System.out.print(psm.getPrecedingResidue());
 			System.out.print("."+psm.getPeptide()+".");

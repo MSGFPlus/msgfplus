@@ -1,10 +1,10 @@
 package edu.ucsd.msjava.msutil;
 
+import edu.ucsd.msjava.msgf.IntMassFactory;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-
-import edu.ucsd.msjava.msgf.IntMassFactory;
 
 public class IntMassAASet {
     private Integer[] intMassArr;

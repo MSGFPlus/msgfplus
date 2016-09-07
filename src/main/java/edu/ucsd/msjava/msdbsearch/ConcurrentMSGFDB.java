@@ -1,12 +1,11 @@
 package edu.ucsd.msjava.msdbsearch;
 
-import java.util.List;
-
-
 import edu.ucsd.msjava.msgf.MSGFDBResultGenerator;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Enzyme;
 import edu.ucsd.msjava.sequences.Constants;
+
+import java.util.List;
 
 public class ConcurrentMSGFDB {
     public static class PreProcessSpectra implements Runnable {

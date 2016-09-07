@@ -1,10 +1,9 @@
 package edu.ucsd.msjava.msdbsearch;
 
-import java.util.TreeSet;
-import java.util.List;
-import java.util.SortedSet;
-
 import edu.ucsd.msjava.msutil.ActivationMethod;
+
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class DatabaseMatch extends Match {
     private int index;

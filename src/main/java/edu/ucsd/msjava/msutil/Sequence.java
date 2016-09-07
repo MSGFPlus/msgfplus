@@ -1,9 +1,10 @@
 package edu.ucsd.msjava.msutil;
 
-import java.util.*;
-
 import edu.ucsd.msjava.msgf.MassListComparator;
 import edu.ucsd.msjava.msgf.Tolerance;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 
 
 /**

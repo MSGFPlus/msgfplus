@@ -1,14 +1,14 @@
 package edu.ucsd.msjava.msdbsearch;
 
+import edu.ucsd.msjava.suffixarray.SuffixArray;
+import edu.ucsd.msjava.suffixarray.SuffixArraySequence;
+
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-
-import edu.ucsd.msjava.suffixarray.SuffixArray;
-import edu.ucsd.msjava.suffixarray.SuffixArraySequence;
 
 
 public class SuffixArrayForMSGFDB extends SuffixArray {

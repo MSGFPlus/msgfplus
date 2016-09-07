@@ -1,35 +1,15 @@
 package edu.ucsd.msjava.ui;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import java.util.Iterator;
-
-
 import edu.ucsd.msjava.msgf.NominalMass;
 import edu.ucsd.msjava.msscorer.NewRankScorer;
 import edu.ucsd.msjava.msscorer.NewScoredSpectrum;
 import edu.ucsd.msjava.msscorer.NewScorerFactory;
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.InstrumentType;
-import edu.ucsd.msjava.msutil.Pair;
-import edu.ucsd.msjava.msutil.Protocol;
-import edu.ucsd.msjava.msutil.SpecFileFormat;
-import edu.ucsd.msjava.msutil.SpectraIterator;
-import edu.ucsd.msjava.msutil.SpectraMap;
-import edu.ucsd.msjava.msutil.Spectrum;
-import edu.ucsd.msjava.msutil.SpectrumAccessorBySpecIndex;
-import edu.ucsd.msjava.parser.MS2SpectrumParser;
-import edu.ucsd.msjava.parser.MgfSpectrumParser;
-import edu.ucsd.msjava.parser.MzXMLSpectraIterator;
-import edu.ucsd.msjava.parser.MzXMLSpectraMap;
-import edu.ucsd.msjava.parser.PNNLSpectrumParser;
-import edu.ucsd.msjava.parser.PklSpectrumParser;
-import edu.ucsd.msjava.parser.SpectrumParser;
+import edu.ucsd.msjava.msutil.*;
+import edu.ucsd.msjava.parser.*;
 import edu.ucsd.msjava.sequences.Constants;
+
+import java.io.*;
+import java.util.Iterator;
 
 
 public class PRMSpecGen {

@@ -1,11 +1,11 @@
 package edu.ucsd.msjava.parser;
 
+import edu.ucsd.msjava.msutil.Peptide;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.util.Collections;
-
-import edu.ucsd.msjava.msutil.Peptide;
 
 public class MSGFDBParser {
     public static PSMList<PSM> parse(String fileName) {

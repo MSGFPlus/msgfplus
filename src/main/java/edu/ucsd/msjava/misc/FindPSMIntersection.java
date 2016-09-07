@@ -1,16 +1,16 @@
 package edu.ucsd.msjava.misc;
 
+import edu.ucsd.msjava.msutil.SpectraIterator;
+import edu.ucsd.msjava.msutil.Spectrum;
+import edu.ucsd.msjava.parser.MgfSpectrumParser;
+import edu.ucsd.msjava.parser.TSVResultParser;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.Set;
-
-import edu.ucsd.msjava.msutil.SpectraIterator;
-import edu.ucsd.msjava.msutil.Spectrum;
-import edu.ucsd.msjava.parser.MgfSpectrumParser;
-import edu.ucsd.msjava.parser.TSVResultParser;
 
 public class FindPSMIntersection {
     public static void main(String argv[]) throws Exception {

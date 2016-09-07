@@ -1,13 +1,9 @@
 package edu.ucsd.msjava.parser;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-
 import edu.ucsd.msjava.msutil.ActivationMethod;
 import edu.ucsd.msjava.msutil.Spectrum;
+
+import java.io.*;
 
 public class MzXMLToMgfConverter {
     public static void main(String argv[]) {

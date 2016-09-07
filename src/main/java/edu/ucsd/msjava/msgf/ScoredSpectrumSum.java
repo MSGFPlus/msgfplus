@@ -1,10 +1,10 @@
 package edu.ucsd.msjava.msgf;
 
-import java.util.List;
-
 import edu.ucsd.msjava.msutil.ActivationMethod;
 import edu.ucsd.msjava.msutil.Matter;
 import edu.ucsd.msjava.msutil.Peak;
+
+import java.util.List;
 
 public class ScoredSpectrumSum<T extends Matter> implements ScoredSpectrum<T> {
 

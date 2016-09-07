@@ -1,14 +1,14 @@
 package edu.ucsd.msjava.scripts;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-
 import edu.ucsd.msjava.msutil.SpectraIterator;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.parser.MS2SpectrumParser;
 import edu.ucsd.msjava.parser.MgfSpectrumParser;
 import edu.ucsd.msjava.parser.MzXMLSpectraIterator;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 
 /**

@@ -1,19 +1,11 @@
 package edu.ucsd.msjava.msutil;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-
 import edu.ucsd.msjava.msutil.Modification.Location;
 import edu.ucsd.msjava.parser.BufferedLineReader;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * A factory class to instantiate a set of amino acids

@@ -1,16 +1,12 @@
 package edu.ucsd.msjava.parser;
 
+import edu.ucsd.msjava.msutil.Peptide;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.LinkedList;
-
-import edu.ucsd.msjava.msutil.Composition;
-import edu.ucsd.msjava.msutil.Modification;
-import edu.ucsd.msjava.msutil.Peptide;
 
 
 public class MascotParser {

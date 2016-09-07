@@ -1,20 +1,11 @@
 package edu.ucsd.msjava.msdbsearch;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Composition;
 import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.Ion;
-import edu.ucsd.msjava.msutil.Modification;
 import edu.ucsd.msjava.sequences.Constants;
+
+import java.io.*;
 
 public class PeptideEnumerator {
 

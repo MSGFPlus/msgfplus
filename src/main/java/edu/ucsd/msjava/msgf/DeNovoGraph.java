@@ -1,8 +1,11 @@
 package edu.ucsd.msjava.msgf;
 
-import java.util.ArrayList;
+import edu.ucsd.msjava.msutil.AminoAcidSet;
+import edu.ucsd.msjava.msutil.Annotation;
+import edu.ucsd.msjava.msutil.Matter;
+import edu.ucsd.msjava.msutil.Peptide;
 
-import edu.ucsd.msjava.msutil.*;
+import java.util.ArrayList;
 
 public abstract class DeNovoGraph<T extends Matter> {
     protected T source;

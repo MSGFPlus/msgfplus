@@ -1,7 +1,6 @@
 package edu.ucsd.msjava.msdbsearch;
 
 import edu.ucsd.msjava.msutil.AminoAcidSet;
-import edu.ucsd.msjava.sequences.Constants;
 
 public class CandidatePeptideGridConsideringMetCleavage extends CandidatePeptideGrid {
 

@@ -1,6 +1,6 @@
 package edu.ucsd.msjava.msutil;
 
-import java.util.*;
+import java.util.Comparator;
 
 /**
  * Representation of a peak in a spectrum object.

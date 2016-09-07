@@ -1,16 +1,15 @@
 package edu.ucsd.msjava.misc;
 
+import edu.ucsd.msjava.msutil.ActivationMethod;
+import edu.ucsd.msjava.msutil.Peak;
+import edu.ucsd.msjava.msutil.SpectraAccessor;
+import edu.ucsd.msjava.msutil.Spectrum;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Iterator;
-
-
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.Peak;
-import edu.ucsd.msjava.msutil.SpectraAccessor;
-import edu.ucsd.msjava.msutil.Spectrum;
 
 
 public class ConvertToMgf {

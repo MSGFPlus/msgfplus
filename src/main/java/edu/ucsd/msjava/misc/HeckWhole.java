@@ -1,35 +1,14 @@
 package edu.ucsd.msjava.misc;
 
+import edu.ucsd.msjava.msgf.Tolerance;
+import edu.ucsd.msjava.msutil.*;
+import edu.ucsd.msjava.parser.*;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Set;
-
-
-import edu.ucsd.msjava.msgf.Tolerance;
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.AminoAcidSet;
-import edu.ucsd.msjava.msutil.Composition;
-import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.IonType;
-import edu.ucsd.msjava.msutil.Peak;
-import edu.ucsd.msjava.msutil.Peptide;
-import edu.ucsd.msjava.msutil.SpectraContainer;
-import edu.ucsd.msjava.msutil.SpectraIterator;
-import edu.ucsd.msjava.msutil.SpectraMap;
-import edu.ucsd.msjava.msutil.Spectrum;
-import edu.ucsd.msjava.msutil.SpectrumAccessorBySpecIndex;
-import edu.ucsd.msjava.msutil.SpectrumAnnotator;
-import edu.ucsd.msjava.parser.BufferedLineReader;
-import edu.ucsd.msjava.parser.MgfSpectrumParser;
-import edu.ucsd.msjava.parser.MzXMLSpectraIterator;
-import edu.ucsd.msjava.parser.MzXMLSpectraMap;
-import edu.ucsd.msjava.parser.MzXMLToMgfConverter;
+import java.util.*;
 
 public class HeckWhole {
     public static void main(String argv[]) throws Exception {

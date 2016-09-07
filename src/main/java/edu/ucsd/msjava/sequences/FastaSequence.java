@@ -2,7 +2,6 @@ package edu.ucsd.msjava.sequences;
 
 import java.io.*;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -581,7 +580,7 @@ public class FastaSequence implements Sequence {
      * @param position the starting position.
      * @return the letter specified by the coordinate.
      */
-	/*
+    /*
   public Character getMatch(long position) {
     if(position >= this.getSize() || position < 0)         return null; 
     return this.getCharAt(position);

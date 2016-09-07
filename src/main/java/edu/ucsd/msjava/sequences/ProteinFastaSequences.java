@@ -1,19 +1,9 @@
 package edu.ucsd.msjava.sequences;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Set;
-
 import edu.ucsd.msjava.msutil.AminoAcidSet;
+
+import java.io.*;
+import java.util.*;
 
 /**
  * This class allows iteration over all sequences inside a directory.

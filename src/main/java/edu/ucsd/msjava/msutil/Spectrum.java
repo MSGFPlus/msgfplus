@@ -1,13 +1,15 @@
 package edu.ucsd.msjava.msutil;
 
 
+import edu.ucsd.msjava.msgf.Tolerance;
+
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.util.*;
-
-import edu.ucsd.msjava.msgf.Tolerance;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Representation of a mass spectrum object.
@@ -919,7 +921,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	 */
 
 	/*
-	 * @deprecated
+     * @deprecated
 	 * @param mass
 	 * @param tolerancePPM
 	 * @return

@@ -1,22 +1,13 @@
 package edu.ucsd.msjava.msdictionary;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import edu.ucsd.msjava.msgf.AminoAcidGraph;
-import edu.ucsd.msjava.msgf.GeneratingFunction;
-import edu.ucsd.msjava.msgf.NominalMass;
-import edu.ucsd.msjava.msgf.NominalMassFactory;
-import edu.ucsd.msjava.msgf.ScoredSpectrum;
-import edu.ucsd.msjava.msgf.ToolLauncher;
+import edu.ucsd.msjava.msgf.*;
 import edu.ucsd.msjava.msscorer.NewAdditiveScorer;
 import edu.ucsd.msjava.msscorer.NewScorerFactory;
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.AminoAcidSet;
-import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.Peptide;
-import edu.ucsd.msjava.msutil.Spectrum;
+import edu.ucsd.msjava.msutil.*;
 import edu.ucsd.msjava.suffixarray.SuffixArray;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * MSDicLauncher class for launching MS-Dictinoary.

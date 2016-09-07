@@ -1,12 +1,11 @@
 package edu.ucsd.msjava.msdbsearch;
 
-import java.io.File;
-
-
 import edu.ucsd.msjava.msutil.SpectraContainer;
 import edu.ucsd.msjava.msutil.SpectraMap;
 import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.parser.MgfSpectrumParser;
+
+import java.io.File;
 
 /**
  * Take CID mgf and ETD mgf and generate a single mgf with CID/ETD pairs

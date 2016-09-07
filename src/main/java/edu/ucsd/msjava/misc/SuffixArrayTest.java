@@ -2,9 +2,6 @@ package edu.ucsd.msjava.misc;
 
 
 import edu.ucsd.msjava.msdbsearch.CompactFastaSequence;
-import edu.ucsd.msjava.msdbsearch.SuffixArrayForMSGFDB;
-import edu.ucsd.msjava.suffixarray.SuffixArray;
-import edu.ucsd.msjava.suffixarray.SuffixArraySequence;
 
 public class SuffixArrayTest {
     public static void main(String argv[]) throws Exception {

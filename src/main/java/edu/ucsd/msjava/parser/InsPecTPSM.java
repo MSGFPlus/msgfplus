@@ -1,14 +1,11 @@
 package edu.ucsd.msjava.parser;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-
 import edu.ucsd.msjava.msutil.AminoAcid;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Annotation;
-import edu.ucsd.msjava.msutil.Modification;
-import edu.ucsd.msjava.msutil.ModifiedAminoAcid;
 import edu.ucsd.msjava.msutil.Peptide;
+
+import java.util.ArrayList;
 
 public class InsPecTPSM extends PSM {
     private String insPecTString;

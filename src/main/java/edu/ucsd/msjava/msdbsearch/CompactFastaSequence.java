@@ -1,13 +1,12 @@
 package edu.ucsd.msjava.msdbsearch;
 
-import java.io.*;
-import java.util.*;
-import java.util.Map.Entry;
-
-import edu.ucsd.msjava.msutil.Pair;
 import edu.ucsd.msjava.sequences.Constants;
 import edu.ucsd.msjava.sequences.Sequence;
 import edu.ucsd.msjava.ui.MSGFPlus;
+
+import java.io.*;
+import java.util.*;
+import java.util.Map.Entry;
 
 
 //import suffixarray.ByteSequence;

@@ -1,10 +1,10 @@
 package edu.ucsd.msjava.parser;
 
-import java.util.HashMap;
-
 import edu.ucsd.msjava.msutil.ScanType;
 import edu.ucsd.msjava.msutil.SpectraMap;
 import edu.ucsd.msjava.msutil.Spectrum;
+
+import java.util.HashMap;
 
 public class PNNLSpectraMap extends SpectraMap {
 

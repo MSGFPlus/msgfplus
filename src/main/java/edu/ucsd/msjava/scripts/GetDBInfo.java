@@ -1,14 +1,14 @@
 package edu.ucsd.msjava.scripts;
 
+import edu.ucsd.msjava.msgf.Histogram;
+import edu.ucsd.msjava.msutil.AminoAcid;
+import edu.ucsd.msjava.msutil.AminoAcidSet;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
-
-import edu.ucsd.msjava.msgf.Histogram;
-import edu.ucsd.msjava.msutil.AminoAcid;
-import edu.ucsd.msjava.msutil.AminoAcidSet;
 
 public class GetDBInfo {
     public static void main(String argv[]) throws Exception {

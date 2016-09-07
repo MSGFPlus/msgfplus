@@ -1,12 +1,12 @@
 package edu.ucsd.msjava.msdbsearch;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
 import edu.ucsd.msjava.msgf.ScoreDist;
 import edu.ucsd.msjava.msutil.ActivationMethod;
 import edu.ucsd.msjava.msutil.Pair;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public class Match implements Comparable<Match> {
     private final int score;

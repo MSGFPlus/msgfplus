@@ -1,11 +1,11 @@
 package edu.ucsd.msjava.misc;
 
-import java.io.File;
-import java.util.ArrayList;
-
 import edu.ucsd.msjava.parser.PSM;
 import edu.ucsd.msjava.parser.PSMList;
 import edu.ucsd.msjava.parser.PepXMLParser;
+
+import java.io.File;
+import java.util.ArrayList;
 
 
 public class ISBETDAnalysis {

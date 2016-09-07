@@ -1,14 +1,14 @@
 package edu.ucsd.msjava.msdictionary;
 
+import edu.ucsd.msjava.parser.BufferedLineReader;
+import edu.ucsd.msjava.suffixarray.SuffixArray;
+import edu.ucsd.msjava.suffixarray.SuffixArraySequence;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
-
-import edu.ucsd.msjava.parser.BufferedLineReader;
-import edu.ucsd.msjava.suffixarray.SuffixArray;
-import edu.ucsd.msjava.suffixarray.SuffixArraySequence;
 
 
 public class ProteinLocator {

@@ -1,36 +1,14 @@
 package edu.ucsd.msjava.msscorer;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
 import edu.ucsd.msjava.msgf.Histogram;
 import edu.ucsd.msjava.msgf.NominalMass;
 import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msscorer.NewScorerFactory.SpecDataType;
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.AminoAcid;
-import edu.ucsd.msjava.msutil.AminoAcidSet;
-import edu.ucsd.msjava.msutil.Composition;
-import edu.ucsd.msjava.msutil.Constants;
-import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.InstrumentType;
-import edu.ucsd.msjava.msutil.IonType;
-import edu.ucsd.msjava.msutil.Pair;
-import edu.ucsd.msjava.msutil.Peak;
-import edu.ucsd.msjava.msutil.Peptide;
-import edu.ucsd.msjava.msutil.Protocol;
-import edu.ucsd.msjava.msutil.SpectraContainer;
-import edu.ucsd.msjava.msutil.SpectraIterator;
-import edu.ucsd.msjava.msutil.Spectrum;
-import edu.ucsd.msjava.msutil.WindowFilter;
-import edu.ucsd.msjava.msutil.IonType.PrefixIon;
+import edu.ucsd.msjava.msutil.*;
 import edu.ucsd.msjava.parser.MgfSpectrumParser;
+
+import java.io.File;
+import java.util.*;
 
 /**
  * This only supports low accuracy fragment ions.

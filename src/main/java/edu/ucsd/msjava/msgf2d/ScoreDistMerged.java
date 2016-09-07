@@ -357,7 +357,7 @@ public class ScoreDistMerged {
         }
 
 		/*
-		float sum = 0;
+        float sum = 0;
 		for(int s1=minScore1; s1<=maxScore1; s1++)
 		{
 			for(int s2=minScore2; s2<=maxScore2; s2++)

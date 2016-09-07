@@ -1,12 +1,12 @@
 package edu.ucsd.msjava.msdbsearch;
 
-import java.io.*;
-import java.util.*;
-
 import edu.ucsd.msjava.msutil.AminoAcid;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.sequences.Constants;
 import edu.ucsd.msjava.suffixarray.SuffixFactory;
+
+import java.io.*;
+import java.util.Arrays;
 
 /**
  * SuffixArray class for fast exact matching.

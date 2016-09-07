@@ -1,11 +1,11 @@
 package edu.ucsd.msjava.scripts;
 
-import java.io.File;
-import java.io.IOException;
-
 import edu.ucsd.msjava.msutil.SpectraIterator;
 import edu.ucsd.msjava.parser.MS2SpectrumParser;
 import edu.ucsd.msjava.parser.MzXMLSpectraIterator;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Count the spectra in a directory

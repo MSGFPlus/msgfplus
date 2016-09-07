@@ -1,14 +1,10 @@
 package edu.ucsd.msjava.msutil;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import edu.ucsd.msjava.parser.BufferedRandomAccessLineReader;
 import edu.ucsd.msjava.parser.SpectrumParser;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 public class SpectraMap implements SpectrumAccessorBySpecIndex {
     private Map<Integer, SpectrumMetaInfo> specIndexMap = null;    // key: specIndex, value: metaInfo

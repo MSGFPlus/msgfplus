@@ -1,14 +1,13 @@
 package edu.ucsd.msjava.misc;
 
+import edu.ucsd.msjava.msutil.SpectraIterator;
+import edu.ucsd.msjava.msutil.Spectrum;
+import edu.ucsd.msjava.parser.MgfSpectrumParser;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-
-
-import edu.ucsd.msjava.msutil.SpectraIterator;
-import edu.ucsd.msjava.msutil.Spectrum;
-import edu.ucsd.msjava.parser.MgfSpectrumParser;
 
 public class Deconvolution {
     public static void main(String argv[]) throws Exception {

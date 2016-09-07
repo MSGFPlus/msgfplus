@@ -1,9 +1,9 @@
 package edu.ucsd.msjava.params;
 
+import edu.ucsd.msjava.msutil.FileFormat;
+
 import java.io.File;
 import java.util.ArrayList;
-
-import edu.ucsd.msjava.msutil.FileFormat;
 
 public class FileListParameter extends Parameter {
 

@@ -1,13 +1,12 @@
 package edu.ucsd.msjava.msdbsearch.test;
 
-import java.io.File;
-
 import edu.ucsd.msjava.msdbsearch.SuffixArrayForMSGFDB;
 import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Composition;
-import edu.ucsd.msjava.suffixarray.SuffixArray;
 import edu.ucsd.msjava.suffixarray.SuffixArraySequence;
+
+import java.io.File;
 
 
 public class SATest {

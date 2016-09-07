@@ -1,10 +1,10 @@
 package edu.ucsd.msjava.misc;
 
-import java.util.HashMap;
-import java.util.TreeSet;
-
 import edu.ucsd.msjava.msgf.Histogram;
 import edu.ucsd.msjava.parser.BufferedLineReader;
+
+import java.util.HashMap;
+import java.util.TreeSet;
 
 public class MSGFDBToQSpec {
     public static void main(String argv[]) throws Exception {

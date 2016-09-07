@@ -1,9 +1,9 @@
 package edu.ucsd.msjava.params;
 
+import edu.ucsd.msjava.parser.BufferedLineReader;
+
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-
-import edu.ucsd.msjava.parser.BufferedLineReader;
 
 
 public class UserParam {

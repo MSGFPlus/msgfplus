@@ -1,17 +1,13 @@
 package edu.ucsd.msjava.msgf.analysis;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.TreeMap;
-import java.util.Map.Entry;
-
 import edu.ucsd.msjava.msutil.Pair;
 import edu.ucsd.msjava.msutil.ScoredString;
 import edu.ucsd.msjava.parser.BufferedLineReader;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class ROCGenerator {
     public static final float FDR_REPORT_THRESHOLD = 0.1f;

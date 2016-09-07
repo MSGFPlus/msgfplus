@@ -1,12 +1,12 @@
 package edu.ucsd.msjava.msgf;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-
 import edu.ucsd.msjava.msgf.DeNovoGraph.Edge;
 import edu.ucsd.msjava.msutil.Matter;
 import edu.ucsd.msjava.msutil.Sequence;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 
 //TODO: implement it again
 public class ProfileGF<T extends Matter> {

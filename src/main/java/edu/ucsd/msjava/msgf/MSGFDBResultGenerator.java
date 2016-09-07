@@ -1,12 +1,7 @@
 package edu.ucsd.msjava.msgf;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-
-import uk.ac.ebi.jmzidml.xml.io.MzIdentMLMarshaller;
 
 public class MSGFDBResultGenerator {
     /**

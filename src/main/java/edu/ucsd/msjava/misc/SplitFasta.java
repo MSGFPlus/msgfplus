@@ -1,12 +1,11 @@
 package edu.ucsd.msjava.misc;
 
+import edu.ucsd.msjava.parser.BufferedLineReader;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-
-import edu.ucsd.msjava.parser.BufferedLineReader;
 
 
 public class SplitFasta {

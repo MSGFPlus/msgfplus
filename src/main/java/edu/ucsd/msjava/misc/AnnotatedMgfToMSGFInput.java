@@ -1,14 +1,14 @@
 package edu.ucsd.msjava.misc;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-
 import edu.ucsd.msjava.msutil.SpecFileFormat;
 import edu.ucsd.msjava.params.FileParameter;
 import edu.ucsd.msjava.params.ParamManager;
 import edu.ucsd.msjava.parser.BufferedLineReader;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 
 public class AnnotatedMgfToMSGFInput {
     public static final int VERSION = 7556;

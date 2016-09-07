@@ -1,21 +1,14 @@
 package edu.ucsd.msjava.params;
 
+import edu.ucsd.msjava.msutil.*;
+import edu.ucsd.msjava.sequences.Constants;
+import edu.ucsd.msjava.ui.MSGF;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
-
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.DBFileFormat;
-import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.FileFormat;
-import edu.ucsd.msjava.msutil.InstrumentType;
-import edu.ucsd.msjava.msutil.Protocol;
-import edu.ucsd.msjava.msutil.SpecFileFormat;
-import edu.ucsd.msjava.mzml.MzMLAdapter;
-import edu.ucsd.msjava.sequences.Constants;
-import edu.ucsd.msjava.ui.MSGF;
 
 
 public class ParamManager {

@@ -1,22 +1,15 @@
 package edu.ucsd.msjava.msdbsearch;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-
 import edu.ucsd.msjava.msgf.Tolerance;
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.AminoAcidSet;
-import edu.ucsd.msjava.msutil.DBSearchIOFiles;
-import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.InstrumentType;
-import edu.ucsd.msjava.msutil.Protocol;
-import edu.ucsd.msjava.msutil.SpecFileFormat;
+import edu.ucsd.msjava.msutil.*;
 import edu.ucsd.msjava.params.FileParameter;
 import edu.ucsd.msjava.params.IntRangeParameter;
 import edu.ucsd.msjava.params.ParamManager;
 import edu.ucsd.msjava.params.ToleranceParameter;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SearchParams {
     private List<DBSearchIOFiles> dbSearchIOList;

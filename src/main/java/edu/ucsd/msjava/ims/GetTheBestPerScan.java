@@ -1,13 +1,9 @@
 package edu.ucsd.msjava.ims;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import edu.ucsd.msjava.parser.BufferedLineReader;
+
+import java.io.File;
+import java.util.*;
 
 public class GetTheBestPerScan {
     public static void main(String argv[]) throws Exception {

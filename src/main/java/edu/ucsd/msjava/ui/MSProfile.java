@@ -1,38 +1,16 @@
 package edu.ucsd.msjava.ui;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
+import edu.ucsd.msjava.msgf.*;
+import edu.ucsd.msjava.msscorer.NewRankScorer;
+import edu.ucsd.msjava.msscorer.NewScorerFactory;
+import edu.ucsd.msjava.msutil.*;
+import edu.ucsd.msjava.parser.MgfSpectrumParser;
+import edu.ucsd.msjava.parser.MzXMLSpectraIterator;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-
-import edu.ucsd.msjava.msgf.AminoAcidGraph;
-import edu.ucsd.msjava.msgf.GeneratingFunction;
-import edu.ucsd.msjava.msgf.NominalMass;
-import edu.ucsd.msjava.msgf.NominalMassFactory;
-import edu.ucsd.msjava.msgf.Profile;
-import edu.ucsd.msjava.msgf.ProfileGF;
-import edu.ucsd.msjava.msgf.ProfilePeak;
-import edu.ucsd.msjava.msgf.ScoredSpectrum;
-import edu.ucsd.msjava.msgf.ScoredSpectrumSum;
-import edu.ucsd.msjava.msscorer.NewRankScorer;
-import edu.ucsd.msjava.msscorer.NewScorerFactory;
-import edu.ucsd.msjava.msutil.ActivationMethod;
-import edu.ucsd.msjava.msutil.AminoAcidSet;
-import edu.ucsd.msjava.msutil.Composition;
-import edu.ucsd.msjava.msutil.Constants;
-import edu.ucsd.msjava.msutil.Enzyme;
-import edu.ucsd.msjava.msutil.InstrumentType;
-import edu.ucsd.msjava.msutil.Protocol;
-import edu.ucsd.msjava.msutil.Sequence;
-import edu.ucsd.msjava.msutil.SpecFileFormat;
-import edu.ucsd.msjava.msutil.SpectraIterator;
-import edu.ucsd.msjava.msutil.Spectrum;
-import edu.ucsd.msjava.parser.MgfSpectrumParser;
-import edu.ucsd.msjava.parser.MzXMLSpectraIterator;
 
 public class MSProfile {
     public static float MIN_PROF_PROB_REPORT_THRESHOLD = 0.01f;

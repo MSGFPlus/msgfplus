@@ -1,9 +1,9 @@
 package edu.ucsd.msjava.ims;
 
+import edu.ucsd.msjava.parser.BufferedLineReader;
+
 import java.io.File;
 import java.util.HashSet;
-
-import edu.ucsd.msjava.parser.BufferedLineReader;
 
 public class Misc {
     public static void main(String argv[]) throws Exception {

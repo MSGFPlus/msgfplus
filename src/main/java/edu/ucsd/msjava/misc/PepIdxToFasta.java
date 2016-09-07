@@ -1,12 +1,11 @@
 package edu.ucsd.msjava.misc;
 
-import java.io.File;
-import java.util.HashSet;
-
-import edu.ucsd.msjava.msutil.DBFileFormat;
 import edu.ucsd.msjava.msutil.FileFormat;
-import edu.ucsd.msjava.params.*;
+import edu.ucsd.msjava.params.FileParameter;
+import edu.ucsd.msjava.params.ParamManager;
 import edu.ucsd.msjava.parser.BufferedLineReader;
+
+import java.io.File;
 
 public class PepIdxToFasta {
     public static void main(String argv[]) throws Exception {

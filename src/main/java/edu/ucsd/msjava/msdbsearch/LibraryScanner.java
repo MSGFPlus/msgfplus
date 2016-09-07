@@ -1,32 +1,15 @@
 package edu.ucsd.msjava.msdbsearch;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Map.Entry;
-
-
-import edu.ucsd.msjava.msgf.DeNovoGraph;
-import edu.ucsd.msjava.msgf.FlexAminoAcidGraph;
-import edu.ucsd.msjava.msgf.GeneratingFunction;
-import edu.ucsd.msjava.msgf.GeneratingFunctionGroup;
-import edu.ucsd.msjava.msgf.MSGFDBResultGenerator;
-import edu.ucsd.msjava.msgf.NominalMass;
+import edu.ucsd.msjava.msgf.*;
 import edu.ucsd.msjava.msscorer.SimpleDBSearchScorer;
-import edu.ucsd.msjava.msutil.AminoAcid;
-import edu.ucsd.msjava.msutil.AminoAcidSet;
-import edu.ucsd.msjava.msutil.Composition;
-import edu.ucsd.msjava.msutil.Modification;
-import edu.ucsd.msjava.msutil.SpecKey;
+import edu.ucsd.msjava.msutil.*;
 import edu.ucsd.msjava.msutil.Modification.Location;
 import edu.ucsd.msjava.parser.BufferedLineReader;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class LibraryScanner {
 

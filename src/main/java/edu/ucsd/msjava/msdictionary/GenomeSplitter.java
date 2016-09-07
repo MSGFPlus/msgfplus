@@ -1,5 +1,8 @@
 package edu.ucsd.msjava.msdictionary;
 
+import edu.ucsd.msjava.parser.BufferedLineReader;
+import edu.ucsd.msjava.parser.LineReader;
+
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -8,9 +11,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
-
-import edu.ucsd.msjava.parser.BufferedLineReader;
-import edu.ucsd.msjava.parser.LineReader;
 
 
 public class GenomeSplitter {

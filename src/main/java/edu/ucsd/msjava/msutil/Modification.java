@@ -1,8 +1,8 @@
 package edu.ucsd.msjava.msutil;
 
-import java.util.Hashtable;
-
 import edu.ucsd.msjava.msgf.NominalMass;
+
+import java.util.Hashtable;
 
 
 /**
