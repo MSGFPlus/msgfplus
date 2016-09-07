@@ -1,5 +1,6 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>MzIDToTsv</title>
     <link type="text/css" rel="stylesheet" href="style.css" />
@@ -7,10 +8,11 @@
 
   <body>
     <h1 class="pagetitle">MzIDToTsv</h1>
-    <div class="pageEditData">
-      Added by Sangtae Kim, last edited by Sangtae Kim on May 17, 2013
-    </div>
-    <a href="index.html">MS-GF+ Documentation home</a>
+
+    <p>
+        <a href="index.html">MS-GF+ Documentation home</a>
+    </p>
+
     <h1>MzIDToTsv</h1>
     <p>Converts MS-GF+ output (<b>.mzid) into the tsv format (</b>.tsv)</p>
 
@@ -23,40 +25,38 @@
 	<span class="code-keyword">[-unroll 0/1]</span> (<span class="code-object">0: merge shared peptides (Default)</span>, 1: unroll shared peptides)</pre>
     </div>
 
-    <p>
-      <font color="#003366">
+    <p style="color:#003366;">
         <b>Parameters:</b>
-      </font>
     </p>
     <ul>
-      <li>
+      <li style="margin-bottom: 10px;">
         <b>-i MzIDFile</b>
         <ul>
           <li>Path to the MS-GF+ result file (*.mzid)</li>
         </ul>
       </li>
-      <li>
+      <li style="margin-bottom: 10px;">
         <b>-o TSVFile</b>
         <ul>
           <li>Path to the tsv output file (*.tsv)</li>
           <li>If not specified, for input MyFile.mzid, the output will be MyFile.tsv.</li>
         </ul>
       </li>
-      <li>
+      <li style="margin-bottom: 10px;">
         <b>-showQValue 0/1</b>
         <ul>
           <li>If 0, QValue and PepQValue are not be reported.</li>
           <li>If 1, QValue and PepQValue are reported (Default).</li>
         </ul>
       </li>
-      <li>
+      <li style="margin-bottom: 10px;">
         <b>-showDecoy 0/1</b>
         <ul>
           <li>If 0, decoy PSMs will not be reported (Default).</li>
           <li>If 1, decoy PSMs will be reported.</li>
         </ul>
       </li>
-      <li>
+      <li style="margin-bottom: 10px;">
         <b>-unroll 0/1</b>
         <ul>
           <li>This parameter controls the output format for shared peptides (peptides matched to multiple proteins).</li>
