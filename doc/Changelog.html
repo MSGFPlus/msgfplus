@@ -1,5 +1,6 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>MS-GF+ ChangeLog</title>
     <link type="text/css" rel="stylesheet" href="style.css" />
@@ -10,8 +11,10 @@
     <div class="pageEditData">
       Added by Sangtae Kim
     </div>
+    <p>
     <a href="index.html">MS-GF+ Documentation home</a>
-    
+    </p>
+
     <p>
       <b>08/31/2016 v2016.08.31</b>
     </p>
@@ -109,7 +112,7 @@
       <b>08/28/2013 v9881</b>
     </p>
     <ul>
-      <li>Change in database indexing format. The index file keeps non-standard amino acids (characters other than 20 standard residue characters). Previously, non-standard amino acids were converted into ‘?’ while indexing. It caused a problem when converting mzid into pepXML using idconvert (ProteoWizard).</li>
+      <li>Change in database indexing format. The index file keeps non-standard amino acids (characters other than 20 standard residue characters). Previously, non-standard amino acids were converted into â€˜?â€™ while indexing. It caused a problem when converting mzid into pepXML using idconvert (ProteoWizard).</li>
       <li>Fixed a bug that creates duplicate PeptideEvidence items when more than one matches are reported for a spectrum (e.g. -n 10),</li>
       <li>Fixed a bug that crashes MS-GF+ when a modification makes the amino acid mass 0 or smaller (e.g. M-131).</li>
     </ul>
