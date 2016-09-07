@@ -73,7 +73,9 @@ public class SpecKey extends Pair<Integer, Integer> {
 		
 		int numProfileSpectra = 0;
 		int numSpectraWithTooFewPeaks = 0;
-		
+		final int MAX_INFORMATIVE_MESSAGES = 10;
+		int informativeMessageCount = 0;
+
 		while(itr.hasNext())
 		{
 			Spectrum spec = itr.next();
@@ -87,12 +89,62 @@ public class SpecKey extends Pair<Integer, Integer> {
 			spec.setChargeIfSinglyCharged();
 			int charge = spec.getCharge();
 			
-			if(activationMethod != ActivationMethod.ASWRITTEN && spec.getActivationMethod() != null && spec.getActivationMethod() != activationMethod)
-				continue;
-			
+			if(activationMethod != ActivationMethod.ASWRITTEN) {
+				if (informativeMessageCount < MAX_INFORMATIVE_MESSAGES) {
+					System.out.println(
+							"Use spectrum " + spec.getID() +
+							" since assumed activationMethod is " + activationMethod.toString());
+					informativeMessageCount++;
+				} else {
+					if (informativeMessageCount == MAX_INFORMATIVE_MESSAGES) {
+						System.out.println(" ...");
+						informativeMessageCount++;
+					}
+				}
+			} else {
+
+				ActivationMethod currentActivationMethod = spec.getActivationMethod();
+				if (currentActivationMethod == null) {
+					if (informativeMessageCount < MAX_INFORMATIVE_MESSAGES) {
+						System.out.println("Skip spectrum " + spec.getID() + " since activationMethod is unknown");
+						informativeMessageCount++;
+					} else {
+						if (informativeMessageCount == MAX_INFORMATIVE_MESSAGES) {
+							System.out.println(" ...");
+							informativeMessageCount++;
+						}
+					}
+					continue;
+				}
+
+				if (currentActivationMethod != activationMethod) {
+					if (informativeMessageCount < MAX_INFORMATIVE_MESSAGES) {
+						System.out.println(
+								"Skip spectrum " + spec.getID() +
+										" since activationMethod is " + currentActivationMethod.toString() +
+										", not " + activationMethod.toString());
+						informativeMessageCount++;
+					} else {
+						if (informativeMessageCount == MAX_INFORMATIVE_MESSAGES) {
+							System.out.println(" ...");
+							informativeMessageCount++;
+						}
+					}
+					continue;
+				}
+			}
+
 			if(!spec.isCentroided())
 			{
-				System.out.println("Ignoring spectrum " + spec.getID() + ": spectrum is not centroided.");
+				if (informativeMessageCount < MAX_INFORMATIVE_MESSAGES) {
+					System.out.println("Skip spectrum " + spec.getID() + " since it is not centroided");
+					informativeMessageCount++;
+				} else {
+					if (informativeMessageCount == MAX_INFORMATIVE_MESSAGES) {
+						System.out.println(" ...");
+						informativeMessageCount++;
+					}
+				}
 				numProfileSpectra++;
 				continue;
 			}
@@ -103,6 +155,7 @@ public class SpecKey extends Pair<Integer, Integer> {
 				numSpectraWithTooFewPeaks++;
 				continue;
 			}
+
 			if(charge == 0)
 			{
 				for(int c=minCharge; c<=maxCharge; c++)

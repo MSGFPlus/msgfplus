@@ -280,7 +280,7 @@ public class MSGFPlus {
 				startSpecIndex, endSpecIndex, minCharge, maxCharge, activationMethod, minNumPeaksPerSpectrum);
 		int specSize = specKeyList.size();
 		if(specSize == 0)
-			return specFile.getPath() + " includes no spectrum";
+			return specFile.getPath() + " does not have any valid spectra";
 		
 		System.out.print("Reading spectra finished ");
 		System.out.format("(elapsed time: %.2f sec)\n", (float)(System.currentTimeMillis()-time)/1000);

@@ -65,7 +65,8 @@ public class ScoringParameterGenerator extends NewRankScorer {
 		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
 		int numSpecsPerPeptide = 1;
 		int errorScalingFactor = 10;
-		
+
+		// Fragmentation method
 		ActivationMethod activationMethod = null;
 		InstrumentType instType = null;
 		Enzyme enzyme = null;
@@ -135,10 +136,10 @@ public class ScoringParameterGenerator extends NewRankScorer {
 				{
 					activationMethod = ActivationMethod.HCD;
 				}
-                                else if (argv[i+1].equalsIgnoreCase("4"))
-                                {
-                                    activationMethod = ActivationMethod.UVPD;
-                                }
+				else if (argv[i+1].equalsIgnoreCase("4"))
+				{
+					activationMethod = ActivationMethod.UVPD;
+				}
 				else
 				{
 					printUsageAndExit("Illegal activation method: " + argv[i+1]);
