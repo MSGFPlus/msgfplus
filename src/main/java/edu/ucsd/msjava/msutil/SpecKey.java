@@ -54,8 +54,15 @@ public class SpecKey extends Pair<Integer, Integer> {
         return specIndexList;
     }
 
-    public static ArrayList<SpecKey> getSpecKeyList(Iterator<Spectrum> itr, int startSpecIndex,
-                                                    int endSpecIndex, int minCharge, int maxCharge, ActivationMethod activationMethod, int minNumPeaksPerSpectrum) {
+    public static ArrayList<SpecKey> getSpecKeyList(
+            Iterator<Spectrum> itr,
+            int startSpecIndex,
+            int endSpecIndex,
+            int minCharge,
+            int maxCharge,
+            ActivationMethod activationMethod,
+            int minNumPeaksPerSpectrum) {
+
         if (activationMethod == ActivationMethod.FUSION)
             return getFusedSpecKeyList(itr, startSpecIndex, endSpecIndex, minCharge, maxCharge);
 
@@ -78,22 +85,14 @@ public class SpecKey extends Pair<Integer, Integer> {
             spec.setChargeIfSinglyCharged();
             int charge = spec.getCharge();
 
-            if (activationMethod != ActivationMethod.ASWRITTEN) {
-                if (informativeMessageCount < MAX_INFORMATIVE_MESSAGES) {
-                    System.out.println(
-                            "Use spectrum " + spec.getID() +
-                                    " since assumed activationMethod is " + activationMethod.toString());
-                    informativeMessageCount++;
-                } else {
-                    if (informativeMessageCount == MAX_INFORMATIVE_MESSAGES) {
-                        System.out.println(" ...");
-                        informativeMessageCount++;
-                    }
-                }
+            if (activationMethod == ActivationMethod.ASWRITTEN) {
+                // System.out.println(
+                //   "Use spectrum " + spec.getID() +
+                //   " since assumed activationMethod is " + activationMethod.toString());
             } else {
 
-                ActivationMethod currentActivationMethod = spec.getActivationMethod();
-                if (currentActivationMethod == null) {
+                ActivationMethod specActivationMethod = spec.getActivationMethod();
+                if (specActivationMethod == null) {
                     if (informativeMessageCount < MAX_INFORMATIVE_MESSAGES) {
                         System.out.println("Skip spectrum " + spec.getID() + " since activationMethod is unknown");
                         informativeMessageCount++;
@@ -106,12 +105,10 @@ public class SpecKey extends Pair<Integer, Integer> {
                     continue;
                 }
 
-                if (currentActivationMethod != activationMethod) {
+                if (activationMethod == ActivationMethod.UVPD && specActivationMethod == ActivationMethod.HCD) {
                     if (informativeMessageCount < MAX_INFORMATIVE_MESSAGES) {
                         System.out.println(
-                                "Skip spectrum " + spec.getID() +
-                                        " since activationMethod is " + currentActivationMethod.toString() +
-                                        ", not " + activationMethod.toString());
+                                "Use spectrum " + spec.getID() + " since Thermo currently labels UVPD spectra as HCD");
                         informativeMessageCount++;
                     } else {
                         if (informativeMessageCount == MAX_INFORMATIVE_MESSAGES) {
@@ -119,7 +116,22 @@ public class SpecKey extends Pair<Integer, Integer> {
                             informativeMessageCount++;
                         }
                     }
-                    continue;
+                } else {
+                    if (specActivationMethod != activationMethod) {
+                        if (informativeMessageCount < MAX_INFORMATIVE_MESSAGES) {
+                            System.out.println(
+                                    "Skip spectrum " + spec.getID() +
+                                            " since activationMethod is " + specActivationMethod.toString() +
+                                            ", not " + activationMethod.toString());
+                            informativeMessageCount++;
+                        } else {
+                            if (informativeMessageCount == MAX_INFORMATIVE_MESSAGES) {
+                                System.out.println(" ...");
+                                informativeMessageCount++;
+                            }
+                        }
+                        continue;
+                    }
                 }
             }
 
