@@ -50,6 +50,11 @@ public class SpecKey extends Pair<Integer, Integer> {
         specIndexList.add(scanNum);
     }
 
+    @Override
+    public String toString() {
+        return getSpecKeyString();
+    }
+
     public ArrayList<Integer> getSpecIndexList() {
         return specIndexList;
     }

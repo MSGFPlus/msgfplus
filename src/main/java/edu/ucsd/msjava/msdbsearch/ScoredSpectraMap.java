@@ -216,18 +216,24 @@ public class ScoredSpectraMap {
             }
             int charge = specKey.getCharge();
             spec.setCharge(charge);
+
+            // System.out.println("GetScoredSpectrum for " + specKey.toString());
             NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
 
             float peptideMass = spec.getParentMass() - (float) Composition.H2O;
             float tolDaLeft = leftParentMassTolerance.getToleranceAsDa(peptideMass);
             int maxNominalPeptideMass = NominalMass.toNominalMass(peptideMass) + Math.round(tolDaLeft - 0.4999f) - this.minIsotopeError;
 
-            if (scorer.supportEdgeScores())
+            if (scorer.supportEdgeScores()) {
                 specKeyScorerMap.put(specKey, new DBScanScorer(scoredSpec, maxNominalPeptideMass));
-            else
+            } else {
                 specKeyScorerMap.put(specKey, new FastScorer(scoredSpec, maxNominalPeptideMass));
-            if (specKeyRankScorerMap != null)
+            }
+
+            if (specKeyRankScorerMap != null) {
                 specKeyRankScorerMap.put(specKey, scorer);
+            }
+
             count++;
             progress.report(count, total);
         }
