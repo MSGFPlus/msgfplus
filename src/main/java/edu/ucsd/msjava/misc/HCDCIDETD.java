@@ -197,7 +197,7 @@ public class HCDCIDETD {
         File dir = new File(System.getProperty("user.home") + "/Research/Data/CIDETDHCD");
         File specFile = new File(dir.getPath() + File.separator + "AnnotatedSpectra/Annotated_" + method + ".mgf");
 
-        double prefixMass = Composition.PROTON;
+        double prefixMass = Composition.ChargeCarrierMass();
         double suffixMass = Composition.H2O;
 
         SpectraIterator itr = new SpectraIterator(specFile.getPath(), new MgfSpectrumParser().aaSet(aaSet));

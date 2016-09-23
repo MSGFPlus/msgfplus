@@ -72,7 +72,7 @@ public class MS2SpectrumParser implements SpectrumParser {
                 if (!zParsed) {
                     int charge = Integer.parseInt(token[1]);
                     float precursorMH = Float.parseFloat(token[2]);
-                    float precursorMz = ((precursorMH - (float) Composition.PROTON) + charge * (float) Composition.PROTON) / charge;
+                    float precursorMz = ((precursorMH - (float) Composition.ChargeCarrierMass()) + charge * (float) Composition.ChargeCarrierMass()) / charge;
                     spec.setPrecursor(new Peak(precursorMz, 0, charge));
                     zParsed = true;
                 } else {

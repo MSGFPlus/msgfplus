@@ -329,7 +329,7 @@ public class ScoringParameterGenerator extends NewRankScorer {
                 spec = filter.apply(spec);
                 float precursorNeutralMass = spec.getParentMass();
                 for (int c = charge; c >= 2; c--) {
-                    float precursorMz = (precursorNeutralMass + c * (float) Composition.PROTON) / c;
+                    float precursorMz = (precursorNeutralMass + c * (float) Composition.ChargeCarrierMass()) / c;
                     ArrayList<Peak> peakList = spec.getPeakListByMassRange(
                             precursorMz + MIN_PRECURSOR_OFFSET / (float) c - mme.getToleranceAsDa(precursorMz + MIN_PRECURSOR_OFFSET / (float) c) / 2,
                             precursorMz + MAX_PRECURSOR_OFFSET / (float) c + mme.getToleranceAsDa(precursorMz + MAX_PRECURSOR_OFFSET / (float) c) / 2);

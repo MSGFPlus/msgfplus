@@ -63,7 +63,7 @@ public class MS2ToMgf {
             } else if (s.startsWith("Z")) {
                 int charge = Integer.parseInt(token[1]);
                 float precursorMH = Float.parseFloat(token[2]);
-                float precursorMz = ((precursorMH - (float) Composition.PROTON) + charge * (float) Composition.PROTON) / charge;
+                float precursorMz = ((precursorMH - (float) Composition.ChargeCarrierMass()) + charge * (float) Composition.ChargeCarrierMass()) / charge;
 
                 Spectrum spec = new Spectrum();
                 spec.setStartScanNum(startScanNum);

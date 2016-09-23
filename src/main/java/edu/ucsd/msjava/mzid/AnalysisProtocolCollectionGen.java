@@ -105,6 +105,7 @@ public class AnalysisProtocolCollectionGen {
         userParamList.add(Constants.makeUserParam("MaxPepLength", String.valueOf(params.getMaxPeptideLength())));
         userParamList.add(Constants.makeUserParam("MinCharge", String.valueOf(params.getMinCharge())));
         userParamList.add(Constants.makeUserParam("MaxCharge", String.valueOf(params.getMaxCharge())));
+        userParamList.add(Constants.makeUserParam("ChargeCarrierMass", String.valueOf(params.getChargeCarrierMass())));
         spectrumIdentificationProtocol.setAdditionalSearchParams(additionalSearchParams);
 
         ModificationParams modParams = getModificationParam();

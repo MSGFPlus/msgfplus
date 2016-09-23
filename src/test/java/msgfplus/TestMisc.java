@@ -33,7 +33,7 @@ public class TestMisc {
 	@Test
 	public void testMasses()
 	{
-		System.out.println(Composition.H - Composition.PROTON);
+		System.out.println(Composition.H - Composition.ChargeCarrierMass());
 	}
 	
 	@Test

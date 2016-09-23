@@ -690,7 +690,7 @@ public class CIDETDPairs {
 //			float precursorMz = Float.parseFloat(token[1]);
             String annotation = token[4].substring(token[4].indexOf('.') + 1, token[4].lastIndexOf('.'));
             int charge = Integer.parseInt(token[2]);
-            float precursorMz = (new Peptide(annotation).getParentMass() + charge * (float) Composition.PROTON) / charge;
+            float precursorMz = (new Peptide(annotation).getParentMass() + charge * (float) Composition.ChargeCarrierMass()) / charge;
             Spectrum specCID1 = null;
             Spectrum specCID2 = null;
             Spectrum specETD1 = null;

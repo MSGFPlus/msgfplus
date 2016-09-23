@@ -63,7 +63,7 @@ public class IPA {
         out.println(resultSet.getHeader());
         List<PSM> psmList = resultSet.getPSMList();
         for (PSM psm : psmList) {
-            float precursorMz = (float) (psm.getComposition().getMass() / psm.getCharge() + Composition.PROTON);
+            float precursorMz = (float) (psm.getComposition().getMass() / psm.getCharge() + Composition.ChargeCarrierMass());
             int charge = psm.getCharge();
 
             // 1e-9: Shew, 1e-11: Human

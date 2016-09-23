@@ -30,14 +30,41 @@ public class Composition extends Matter {
     public static final double PROTON = 1.00727649;
     //	public static final double PROTON = 1.007825035;
     public static final double NEUTRON = 1.0086650;
-    public static final double OFFSET_Y = H * 2 + O + PROTON;
-    public static final double OFFSET_B = PROTON;
+    public static final double SODIUM_CHARGE_CARRIER_MASS = 22.98922189;
+    public static final double POTASSIUM_CHARGE_CARRIER_MASS = 38.96315989;
 
     public static final Composition NIL = new Composition(0, 0, 0, 0, 0);
+    
+    private static double chargeCarrierMass;
+    public static double offsetY;
+    public static double offsetB;
+    
+    static {
+        setChargeCarrierMass(PROTON);
+    }
 
     int number; // MSB 8 (C) 8 (H) 6 (N) 6 (O) 4 (S)
     static final double[] monoMass = new double[]{C, H, N, O, S};
     static final float[] avgMass = new float[]{12.011f, 1.00794f, 14.00674f, 15.9994f, 32.066f};
+    
+    public static final double OffsetY() {
+        return offsetY;
+    }
+    
+    public static final double OffsetB() {
+        return offsetB;
+    }
+    
+    public static final double ChargeCarrierMass() {
+        System.out.println("get CCM: " + chargeCarrierMass);
+        return chargeCarrierMass;
+    }
+    
+    public static final void setChargeCarrierMass(double mass) {
+        chargeCarrierMass = mass;
+        offsetY = H * 2 + O + chargeCarrierMass;
+        offsetB = chargeCarrierMass;
+    }
 
 
     //  private Composition() {}

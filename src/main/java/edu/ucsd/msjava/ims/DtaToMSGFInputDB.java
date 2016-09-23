@@ -94,7 +94,7 @@ public class DtaToMSGFInputDB {
                     System.exit(-1);
                 }
                 float precursorMH = Float.parseFloat(precursorToken[0]);
-                float precursorMz = (precursorMH - (float) Composition.PROTON) / charge + (float) Composition.PROTON;
+                float precursorMz = (precursorMH - (float) Composition.ChargeCarrierMass()) / charge + (float) Composition.ChargeCarrierMass();
 
                 msgfOut.println(dtaFile.getName() + "\t" + origSpecIndex + "\t" + annotation + "\t" + precursorMz + "\t" + charge + "\t" + precursorIntensity + "\t" + frameNum + "\t" + fromScan + "\t" + toScan);
             }

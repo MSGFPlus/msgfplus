@@ -332,6 +332,12 @@ public class ParamManager {
         addFeatureParam.registerEntry("output basic scores only").setDefault();
         addFeatureParam.registerEntry("output additional features");
         addParameter(addFeatureParam);
+        
+        DoubleParameter chargeCarrierMassParam = new DoubleParameter("ccm", "ChargeCarrierMass", "Mass of charge carrier, Default: mass of proton (1.00727649)");
+        chargeCarrierMassParam.minValue(0.1);
+        chargeCarrierMassParam.setMaxInclusive();
+        chargeCarrierMassParam.defaultValue(Composition.PROTON);
+        addParameter(chargeCarrierMassParam);
 
         addExample("Example (high-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzXML -d IPI_human_3.79.fasta -t 20ppm -ti -1,2 -ntt 2 -tda 1 -o testMSGFPlus.mzid");
         addExample("Example (low-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzXML -d IPI_human_3.79.fasta -t 0.5Da,2.5Da -ntt 2 -tda 1 -o testMSGFPlus.mzid");
@@ -726,6 +732,17 @@ public class ParamManager {
             return ((FloatParameter) param).getValue();
         else {
             System.err.println("[Error] in ParamManager.getFloatValue: " + key + " is not an instance of FloatParameter.");
+            System.exit(-1);
+        }
+        return -1;
+    }
+
+    public double getDoubleValue(String key) {
+        Parameter param = this.getParameter(key);
+        if (param instanceof DoubleParameter)
+            return ((DoubleParameter) param).getValue();
+        else {
+            System.err.println("[Error] in ParamManager.getDoubleValue: " + key + " is not an instance of DoubleParameter.");
             System.exit(-1);
         }
         return -1;

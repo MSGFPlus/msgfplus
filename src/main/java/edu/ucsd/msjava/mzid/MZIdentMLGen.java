@@ -310,7 +310,7 @@ public class MZIdentMLGen {
                 float peptideMass = match.getPeptideMass();
 //				float theoMass = peptideMass + (float)Composition.H2O;
 //				float theoMz = theoMass/charge;
-                float theoMz = (peptideMass + (float) Composition.H2O) / charge + (float) Composition.PROTON;
+                float theoMz = (peptideMass + (float) Composition.H2O) / charge + (float) Composition.ChargeCarrierMass();
 
                 int score = match.getScore();
                 double specEValue = match.getSpecEValue();

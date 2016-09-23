@@ -30,7 +30,7 @@ public class SATest {
         time = System.currentTimeMillis();
         SuffixArrayForMSGFDB sa2 = new SuffixArrayForMSGFDB(sequence);
         System.out.println("Time: " + (System.currentTimeMillis() - time));
-        int numCandidates = sa2.getNumCandidatePeptides(AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys(), (383.8754f - (float) Composition.PROTON) * 3 - (float) Composition.H2O, new Tolerance(2.5f, false));
+        int numCandidates = sa2.getNumCandidatePeptides(AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys(), (383.8754f - (float) Composition.ChargeCarrierMass()) * 3 - (float) Composition.H2O, new Tolerance(2.5f, false));
         System.out.println("NumCandidatePeptides: " + numCandidates);
         int length10 = sa2.getNumDistinctPeptides(10);
         System.out.println("NumUnique10: " + length10);

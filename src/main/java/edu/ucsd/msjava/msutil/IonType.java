@@ -302,11 +302,11 @@ public abstract class IonType {
     protected static Hashtable<String, IonType> ionTable;
     protected static Hashtable<String, Float> compositionOffsetTable;
     protected static Hashtable<String, IonType> offsetToIonTable;
-    public final static IonType Y = new SuffixIon("y", 1, (float) Composition.OFFSET_Y);
+    public final static IonType Y = new SuffixIon("y", 1, (float) Composition.OffsetY());
     public final static IonType Z = new SuffixIon("z", 1, (float) (Y.offset - (Composition.NH2)));
     public final static IonType X = new SuffixIon("x", 1, (float) (Y.offset + Composition.CO));
     public final static IonType Xr = new SuffixIon("x.", 1, (float) (X.offset + Composition.H));
-    public final static IonType B = new PrefixIon("b", 1, (float) Composition.OFFSET_B);
+    public final static IonType B = new PrefixIon("b", 1, (float) Composition.OffsetB());
     public final static IonType A = new PrefixIon("a", 1, (float) (B.offset - Composition.CO));
     public final static IonType Ar = new PrefixIon("a.", 1, (float) (A.offset + Composition.H));
     public final static IonType C = new PrefixIon("c", 1, (float) (B.offset + Composition.NH3));
@@ -326,35 +326,35 @@ public abstract class IonType {
         ionTable.put("c", C); //+16.0188
 
         for (int charge = 2; charge <= 4; charge++) {
-            ionTable.put("x" + charge, new SuffixIon("x" + charge, charge, (float) ((X.offset + Composition.PROTON * (charge - 1)) / charge)));
-            ionTable.put("x." + charge, new SuffixIon("x." + charge, charge, (float) ((Xr.offset + Composition.PROTON * (charge - 1)) / charge)));
-            ionTable.put("y" + charge, new SuffixIon("y" + charge, charge, (float) ((Y.offset + Composition.PROTON * (charge - 1)) / charge)));
-            ionTable.put("z" + charge, new SuffixIon("z" + charge, charge, (float) ((Z.offset + Composition.PROTON * (charge - 1)) / charge)));
-            ionTable.put("a" + charge, new PrefixIon("a" + charge, charge, (float) ((A.offset + Composition.PROTON * (charge - 1)) / charge)));
-            ionTable.put("a." + charge, new PrefixIon("a." + charge, charge, (float) ((Ar.offset + Composition.PROTON * (charge - 1)) / charge)));
-            ionTable.put("b" + charge, new PrefixIon("b" + charge, charge, (float) ((B.offset + Composition.PROTON * (charge - 1)) / charge)));
-            ionTable.put("c" + charge, new PrefixIon("c" + charge, charge, (float) ((C.offset + Composition.PROTON * (charge - 1)) / charge)));
+            ionTable.put("x" + charge, new SuffixIon("x" + charge, charge, (float) ((X.offset + Composition.ChargeCarrierMass() * (charge - 1)) / charge)));
+            ionTable.put("x." + charge, new SuffixIon("x." + charge, charge, (float) ((Xr.offset + Composition.ChargeCarrierMass() * (charge - 1)) / charge)));
+            ionTable.put("y" + charge, new SuffixIon("y" + charge, charge, (float) ((Y.offset + Composition.ChargeCarrierMass() * (charge - 1)) / charge)));
+            ionTable.put("z" + charge, new SuffixIon("z" + charge, charge, (float) ((Z.offset + Composition.ChargeCarrierMass() * (charge - 1)) / charge)));
+            ionTable.put("a" + charge, new PrefixIon("a" + charge, charge, (float) ((A.offset + Composition.ChargeCarrierMass() * (charge - 1)) / charge)));
+            ionTable.put("a." + charge, new PrefixIon("a." + charge, charge, (float) ((Ar.offset + Composition.ChargeCarrierMass() * (charge - 1)) / charge)));
+            ionTable.put("b" + charge, new PrefixIon("b" + charge, charge, (float) ((B.offset + Composition.ChargeCarrierMass() * (charge - 1)) / charge)));
+            ionTable.put("c" + charge, new PrefixIon("c" + charge, charge, (float) ((C.offset + Composition.ChargeCarrierMass() * (charge - 1)) / charge)));
 
         }
-//        ionTable.put("x2", new SuffixIon("x2", 2, (float)((X.offset+Composition.PROTON)/2)));
-//        ionTable.put("y2", new SuffixIon("y2", 2, (float)((Y.offset+Composition.PROTON)/2)));
-//        ionTable.put("z2", new SuffixIon("z2", 2, (float)((Z.offset+Composition.PROTON)/2)));
-//        ionTable.put("a2", new PrefixIon("a2", 2, (float)((A.offset+Composition.PROTON)/2)));
-//        ionTable.put("b2", new PrefixIon("b2", 2, (float)((B.offset+Composition.PROTON)/2)));
-//        ionTable.put("c2", new PrefixIon("c2", 2, (float)((C.offset+Composition.PROTON)/2)));
+//        ionTable.put("x2", new SuffixIon("x2", 2, (float)((X.offset+Composition.ChargeCarrierMass())/2)));
+//        ionTable.put("y2", new SuffixIon("y2", 2, (float)((Y.offset+Composition.ChargeCarrierMass())/2)));
+//        ionTable.put("z2", new SuffixIon("z2", 2, (float)((Z.offset+Composition.ChargeCarrierMass())/2)));
+//        ionTable.put("a2", new PrefixIon("a2", 2, (float)((A.offset+Composition.ChargeCarrierMass())/2)));
+//        ionTable.put("b2", new PrefixIon("b2", 2, (float)((B.offset+Composition.ChargeCarrierMass())/2)));
+//        ionTable.put("c2", new PrefixIon("c2", 2, (float)((C.offset+Composition.ChargeCarrierMass())/2)));
 //        // Internal ions "i_.."
 //        ionTable.put("i_a",  new InternalIon("i_a",  1, (float)A.offset));
-//        ionTable.put("i_a2", new InternalIon("i_a2", 2, (float)((A.offset+Composition.PROTON)/2)));
+//        ionTable.put("i_a2", new InternalIon("i_a2", 2, (float)((A.offset+Composition.ChargeCarrierMass())/2)));
 //        ionTable.put("i_b",  new InternalIon("i_b",  1, (float)(B.offset)));
-//        ionTable.put("i_b2", new InternalIon("i_b2", 2, (float)((B.offset+Composition.PROTON)/2)));
+//        ionTable.put("i_b2", new InternalIon("i_b2", 2, (float)((B.offset+Composition.ChargeCarrierMass())/2)));
 //        ionTable.put("i_c",  new InternalIon("i_c",  1, (float)(C.offset)));
-//        ionTable.put("i_c2", new InternalIon("i_c2", 2, (float)((C.offset+Composition.PROTON)/2)));
+//        ionTable.put("i_c2", new InternalIon("i_c2", 2, (float)((C.offset+Composition.ChargeCarrierMass())/2)));
 //        ionTable.put("i_x",  new InternalIon("i_x",  1, (float)(X.offset)));
-//        ionTable.put("i_x2", new InternalIon("i_x2", 2, (float)((X.offset+Composition.PROTON)/2)));
+//        ionTable.put("i_x2", new InternalIon("i_x2", 2, (float)((X.offset+Composition.ChargeCarrierMass())/2)));
 //        ionTable.put("i_y",  new InternalIon("i_y",  1, (float)(Y.offset)));
-//        ionTable.put("i_y2", new InternalIon("i_y2", 2, (float)((Y.offset+Composition.PROTON)/2)));
+//        ionTable.put("i_y2", new InternalIon("i_y2", 2, (float)((Y.offset+Composition.ChargeCarrierMass())/2)));
 //        ionTable.put("i_z",  new InternalIon("i_z",  1, (float)(Z.offset)));
-//        ionTable.put("i_z2", new InternalIon("i_z2", 2, (float)((Z.offset+Composition.PROTON)/2)));
+//        ionTable.put("i_z2", new InternalIon("i_z2", 2, (float)((Z.offset+Composition.ChargeCarrierMass())/2)));
 
         compositionOffsetTable = new Hashtable<String, Float>();
         compositionOffsetTable.put("H2O", (float) Composition.H2O);

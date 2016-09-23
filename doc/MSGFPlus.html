@@ -50,6 +50,7 @@
 	<span class="code-keyword">[-maxCharge MaxCharge]</span> (Maximum precursor charge to consider if charges are not specified in the spectrum file, <span class="code-object">Default: 3</span>)
 	<span class="code-keyword">[-n NumMatchesPerSpec]</span> (Number of matches per spectrum to be reported, <span class="code-object">Default: 1</span>)
 	<span class="code-keyword">[-addFeatures 0/1]</span> (<span class="code-object">0: output basic scores only (Default)</span>, 1: output additional features)
+	<span class="code-keyword">[-ccm ChargeCarrierMass]</span> (Mass of charge carrier, <span class="code-object">Default: mass of proton (1.00727649)</span>)
 Example (high-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzXML -d IPI_human_3.79.fasta -t 20ppm -ti "-1,2" -ntt 0 -tda 1 -o testMSGFPlus.mzid
 Example (low-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzXML -d IPI_human_3.79.fasta -t 0.5Da,2.5Da -ntt 0 -tda 1 -o testMSGFPlus.mzid</pre>
     </div>

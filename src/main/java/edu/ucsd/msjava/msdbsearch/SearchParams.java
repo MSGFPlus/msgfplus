@@ -43,7 +43,7 @@ public class SearchParams {
     private boolean outputAdditionalFeatures;
     private int minNumPeaksPerSpectrum;
     private int minDeNovoScore;
-
+    private double chargeCarrierMass;
 
     public SearchParams() {
     }
@@ -164,7 +164,15 @@ public class SearchParams {
         return minDeNovoScore;
     }
 
+    public double getChargeCarrierMass() {
+        return chargeCarrierMass;
+    }
+
     public String parse(ParamManager paramManager) {
+        // Charge carrier mass
+        chargeCarrierMass = paramManager.getDoubleValue("ccm");
+        Composition.setChargeCarrierMass(chargeCarrierMass);
+        
         // Spectrum file
         FileParameter specParam = paramManager.getSpecFileParam();
         File specPath = specParam.getFile();

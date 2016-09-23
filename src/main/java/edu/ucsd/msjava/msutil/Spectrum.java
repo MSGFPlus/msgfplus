@@ -544,7 +544,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
                     float diff = p2.getMz() - pMz - (float) Composition.ISOTOPE / ionCharge;
                     if (diff > -toleranceBetweenIsotopes && diff < toleranceBetweenIsotopes) {
                         ignore[j] = true;
-                        p.setMz(ionCharge * p.getMz() - (ionCharge - 1) * (float) Composition.PROTON);
+                        p.setMz(ionCharge * p.getMz() - (ionCharge - 1) * (float) Composition.ChargeCarrierMass());
                         isDeconvoluted = true;
                         float p2Mz = p2.getMz();
                         for (int k = j + 1; k < this.size(); k++) {
@@ -552,13 +552,13 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
                             float diff2 = p3.getMz() - p2Mz - (float) (Composition.C14 - Composition.C13) / ionCharge;
                             if (diff2 > -toleranceBetweenIsotopes && diff2 < toleranceBetweenIsotopes) {
                                 ignore[k] = true;
-                                p3.setMz(ionCharge * p3.getMz() - (ionCharge - 1) * (float) Composition.PROTON);
+                                p3.setMz(ionCharge * p3.getMz() - (ionCharge - 1) * (float) Composition.ChargeCarrierMass());
                                 deconvSpec.add(p3);
                                 break;
                             } else if (diff2 > toleranceBetweenIsotopes)
                                 break;
                         }
-                        p2.setMz(ionCharge * p2.getMz() - (ionCharge - 1) * (float) Composition.PROTON);
+                        p2.setMz(ionCharge * p2.getMz() - (ionCharge - 1) * (float) Composition.ChargeCarrierMass());
                         deconvSpec.add(p2);
                         break;
                     } else if (diff > toleranceBetweenIsotopes)
@@ -590,7 +590,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
         if (this.annotation == null || this.getCharge() <= 0)
             return;
         else
-            this.precursor.setMz((annotation.getParentMass() + precursor.getCharge() * (float) Composition.PROTON) / precursor.getCharge());
+            this.precursor.setMz((annotation.getParentMass() + precursor.getCharge() * (float) Composition.ChargeCarrierMass()) / precursor.getCharge());
     }
 
     /**
@@ -599,7 +599,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
      * @param parentMass
      */
     public void correctParentMass(float parentMass) {
-        this.precursor.setMz((parentMass + precursor.getCharge() * (float) Composition.PROTON) / precursor.getCharge());
+        this.precursor.setMz((parentMass + precursor.getCharge() * (float) Composition.ChargeCarrierMass()) / precursor.getCharge());
     }
 
 
@@ -610,7 +610,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
         if (this.getCharge() <= 0)
             return;
         else
-            this.precursor.setMz((pep.getParentMass() + precursor.getCharge() * (float) Composition.PROTON) / precursor.getCharge());
+            this.precursor.setMz((pep.getParentMass() + precursor.getCharge() * (float) Composition.ChargeCarrierMass()) / precursor.getCharge());
     }
 
     /**
@@ -719,7 +719,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
      */
     public void filterPrecursorPeaks(Tolerance tolerance, int reducedCharge, float offset) {
         int c = this.getCharge() - reducedCharge;
-        float mass = (this.getParentMass() + c * (float) Composition.PROTON) / c + offset;
+        float mass = (this.getParentMass() + c * (float) Composition.ChargeCarrierMass()) / c + offset;
         for (Peak p : getPeakListByMass(mass, tolerance))
             p.setIntensity(0);
     }
@@ -850,7 +850,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        out.println(this.getParentMass() + Composition.PROTON + "\t" + this.getPrecursorPeak().getCharge());
+        out.println(this.getParentMass() + Composition.ChargeCarrierMass() + "\t" + this.getPrecursorPeak().getCharge());
         for (Peak p : this)
             out.println(p.getMz() + "\t" + p.getIntensity());
         out.close();
@@ -863,7 +863,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
      */
     public String toDta() {
         StringBuffer sb = new StringBuffer();
-        sb.append(this.getParentMass() + Composition.PROTON + "\t" + this.getPrecursorPeak().getCharge() + "\n");
+        sb.append(this.getParentMass() + Composition.ChargeCarrierMass() + "\t" + this.getPrecursorPeak().getCharge() + "\n");
         for (Peak p : this) sb.append(p.getMz() + "\t" + p.getIntensity() + "\n");
         return sb.toString();
     }

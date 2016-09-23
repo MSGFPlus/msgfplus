@@ -71,7 +71,7 @@ public class PepXMLParser {
 //				int endScan = Integer.parseInt(sq.getAttribute("end_scan"));
                 float precursorNeutralMass = (float) Double.parseDouble(sq.getAttribute("precursor_neutral_mass"));
                 int charge = Integer.parseInt(sq.getAttribute("assumed_charge"));
-                float precursorMz = (precursorNeutralMass + charge * (float) Composition.PROTON) / charge;
+                float precursorMz = (precursorNeutralMass + charge * (float) Composition.ChargeCarrierMass()) / charge;
                 NodeList searchResultList = sq.getElementsByTagName("search_result");
                 if (searchResultList == null)
                     continue;

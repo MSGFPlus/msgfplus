@@ -28,9 +28,9 @@ public class MassCalc {
             System.out.println("Mass : " + pep.getAccurateMass() + " (" + composition + ")\t"
                     + pep.getNominalMass() + "\t"
                     + (pep.getMass() + Composition.H2O) + "\t"
-                    + (pep.getMass() + Composition.H2O + Composition.PROTON) + "\t"
-                    + ((pep.getMass() + Composition.H2O + 2 * Composition.PROTON) / 2) + "\t"
-                    + ((pep.getMass() + Composition.H2O + 3 * Composition.PROTON) / 3)
+                    + (pep.getMass() + Composition.H2O + Composition.ChargeCarrierMass()) + "\t"
+                    + ((pep.getMass() + Composition.H2O + 2 * Composition.ChargeCarrierMass()) / 2) + "\t"
+                    + ((pep.getMass() + Composition.H2O + 3 * Composition.ChargeCarrierMass()) / 3)
             );
         }
     }

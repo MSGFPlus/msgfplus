@@ -376,8 +376,8 @@ public class Zubarev {
 
             intSRM += Math.round(peptide.get(0).getMass() * Constants.INTEGER_MASS_SCALER);
             assert (intSRM == intPeptideMass) : peptide + ": " + intSRM + " != " + intPeptideMass + " " + (spec.getParentMass() - (float) Composition.H2O);
-            b[peptide.size()] = spec.getParentMass() - (float) Composition.H2O + (float) Composition.PROTON;
-            y[peptide.size()] = spec.getParentMass() + (float) Composition.PROTON;
+            b[peptide.size()] = spec.getParentMass() - (float) Composition.H2O + (float) Composition.ChargeCarrierMass();
+            y[peptide.size()] = spec.getParentMass() + (float) Composition.ChargeCarrierMass();
 
             boolean useY = true;
             float[] mainIon;
@@ -839,7 +839,7 @@ public class Zubarev {
     public static void testDBSearch() throws Exception {
         float precursorMass = 413.3487f;
         int charge = 2;
-        float peptideMass = (precursorMass - (float) Composition.PROTON) * charge - (float) Composition.H2O;
+        float peptideMass = (precursorMass - (float) Composition.ChargeCarrierMass()) * charge - (float) Composition.H2O;
         File databaseFile = new File("/home/sangtaekim/Research/Data/IPI/IPI_human_3.79.fasta");
         SuffixArray sa = new SuffixArray(new SuffixArraySequence(databaseFile.getPath()));
         AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
@@ -917,20 +917,20 @@ public class Zubarev {
                 float prm3 = factory.getMassFromIndex(pmIndex - srmIndex);
 
                 numYIons++;
-                if (filteredSpec.getPeakByMass((float) (srm + Composition.OFFSET_Y), fragTolerance) != null)
+                if (filteredSpec.getPeakByMass((float) (srm + Composition.OffsetY()), fragTolerance) != null)
                     numObservedYIons++;
 
-                if (filteredSpec.getPeakByMass((float) (srm2 + Composition.OFFSET_Y), fragTolerance) != null)
+                if (filteredSpec.getPeakByMass((float) (srm2 + Composition.OffsetY()), fragTolerance) != null)
                     numObservedYIonsIntMass++;
 
                 numBIons++;
-                if (filteredSpec.getPeakByMass((float) (prm + Composition.OFFSET_B), fragTolerance) != null)
+                if (filteredSpec.getPeakByMass((float) (prm + Composition.OffsetB()), fragTolerance) != null)
                     numObservedBIons++;
-                if (filteredSpec.getPeakByMass((float) (prmByPM + Composition.OFFSET_B), fragTolerance) != null)
+                if (filteredSpec.getPeakByMass((float) (prmByPM + Composition.OffsetB()), fragTolerance) != null)
                     numObservedBIonsBySpecMass++;
-                if (filteredSpec.getPeakByMass((float) (prm2 + Composition.OFFSET_B), fragTolerance) != null)
+                if (filteredSpec.getPeakByMass((float) (prm2 + Composition.OffsetB()), fragTolerance) != null)
                     numObservedBIonsIntMass++;
-                if (filteredSpec.getPeakByMass((float) (prm3 + Composition.OFFSET_B), fragTolerance) != null)
+                if (filteredSpec.getPeakByMass((float) (prm3 + Composition.OffsetB()), fragTolerance) != null)
                     numObserbedBIonsIntMassIntPM++;
 
             }

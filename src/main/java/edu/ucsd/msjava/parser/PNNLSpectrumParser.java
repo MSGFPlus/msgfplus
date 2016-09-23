@@ -51,7 +51,7 @@ public class PNNLSpectrumParser implements SpectrumParser {
                 String[] token = buf.split("\\s+");
                 float mPlusH = Float.parseFloat(token[0]);
                 int charge = Integer.parseInt(token[1].substring(token[1].indexOf('=') + 1));
-                float precursorMz = (mPlusH - (float) Composition.PROTON) / charge + (float) Composition.PROTON;
+                float precursorMz = (mPlusH - (float) Composition.ChargeCarrierMass()) / charge + (float) Composition.ChargeCarrierMass();
                 spec.setPrecursor(new Peak(precursorMz, 0, charge));
                 spec.setScanNum(scanNum);
             } else if (Character.isDigit(buf.charAt(0)))    // peak
@@ -103,7 +103,7 @@ public class PNNLSpectrumParser implements SpectrumParser {
                 String[] token = buf.split("\\s+");
                 float mPlusH = Float.parseFloat(token[0]);
                 int charge = Integer.parseInt(token[1].substring(token[1].indexOf('=') + 1));
-                float precursorMz = (mPlusH - (float) Composition.PROTON) / charge + (float) Composition.PROTON;
+                float precursorMz = (mPlusH - (float) Composition.ChargeCarrierMass()) / charge + (float) Composition.ChargeCarrierMass();
 
                 SpectrumMetaInfo metaInfo = new SpectrumMetaInfo();
                 metaInfo.setID("index=" + (specIndex - 1));
@@ -226,7 +226,7 @@ public class PNNLSpectrumParser implements SpectrumParser {
                 System.out.println(spec.getScanNum());
             } else
                 scanNumSet.add(spec.getScanNum());
-//			System.out.println(spec+ "\t" + spec.getScanNum()+"\t"+(spec.getParentMass()+(float)Composition.PROTON)+"\t"+spec.getCharge());
+//			System.out.println(spec+ "\t" + spec.getScanNum()+"\t"+(spec.getParentMass()+(float)Composition.ChargeCarrierMass)+"\t"+spec.getCharge());
         }
         System.out.println("NumSpecs: " + numSpecs);
         System.out.println("Time: " + (System.currentTimeMillis() - time));
@@ -237,7 +237,7 @@ public class PNNLSpectrumParser implements SpectrumParser {
         for (int specIndex : map.getSpecIndexList()) {
             Spectrum spec = map.getSpectrumBySpecIndex(specIndex);
             numSpecs++;
-//			System.out.println(spec+ "\t" + spec.getScanNum()+"\t"+(spec.getParentMass()+(float)Composition.PROTON)+"\t"+spec.getCharge());
+//			System.out.println(spec+ "\t" + spec.getScanNum()+"\t"+(spec.getParentMass()+(float)Composition.ChargeCarrierMass)+"\t"+spec.getCharge());
         }
         System.out.println("NumSpecs: " + numSpecs);
         System.out.println("Time: " + (System.currentTimeMillis() - time));
