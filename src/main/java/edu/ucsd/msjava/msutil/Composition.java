@@ -56,7 +56,6 @@ public class Composition extends Matter {
     }
     
     public static final double ChargeCarrierMass() {
-        System.out.println("get CCM: " + chargeCarrierMass);
         return chargeCarrierMass;
     }
     
