@@ -11,6 +11,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static edu.ucsd.msjava.msutil.Composition.POTASSIUM_CHARGE_CARRIER_MASS;
+import static edu.ucsd.msjava.msutil.Composition.PROTON;
+import static edu.ucsd.msjava.msutil.Composition.SODIUM_CHARGE_CARRIER_MASS;
+
 public class SearchParams {
     private List<DBSearchIOFiles> dbSearchIOList;
     private File databaseFile;
@@ -331,7 +335,19 @@ public class SearchParams {
         buf.append("\tNumTolerableTermini: " + this.numTolerableTermini + "\n");
         buf.append("\tMinPeptideLength: " + this.minPeptideLength + "\n");
         buf.append("\tMaxPeptideLength: " + this.maxPeptideLength + "\n");
-        buf.append("\tNumMatchesPerSpec: " + this.numMatchesPerSpec);
+        buf.append("\tNumMatchesPerSpec: " + this.numMatchesPerSpec + "\n");
+
+        buf.append("\tChargeCarrierMass: " + this.chargeCarrierMass);
+
+        if (Math.abs(this.chargeCarrierMass - PROTON) < 0.005) {
+            buf.append(" (proton)");
+        } else if (Math.abs(this.chargeCarrierMass - POTASSIUM_CHARGE_CARRIER_MASS) < 0.005) {
+            buf.append(" (potassium)");
+        } else if (Math.abs(this.chargeCarrierMass - SODIUM_CHARGE_CARRIER_MASS) < 0.005) {
+            buf.append(" (sodium)");
+        } else {
+            buf.append(" (custom)");
+        }
 
         return buf.toString();
     }
