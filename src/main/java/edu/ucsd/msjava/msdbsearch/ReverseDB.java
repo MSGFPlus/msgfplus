@@ -75,11 +75,8 @@ public class ReverseDB {
             e.printStackTrace();
         }
         if (protein != null && annotation != null) {
-            StringBuffer rev = new StringBuffer();
-            for (int i = protein.length() - 1; i >= 0; i--)
-                rev.append(protein.charAt(i));
             out.println(">" + revPrefix + "_" + annotation);
-            out.println(rev.toString().trim());
+            out.println(protein.reverse().toString().trim());
         }
         try {
             in.close();
