@@ -462,9 +462,12 @@ public class MZIdentMLGen {
 
                 char residue = aa.getResidue();
                 if (Character.isLetter(residue))
-                    modPepStr.append(residue);
+                    modPepStr.append(aa.getUnmodResidue());
                 else
                     modPepStr.append((int) residue);
+                double mass = 0;
+                boolean modified = false;
+                
                 if (loc == Location.N_Term || loc == Location.C_Term) {
                     List<edu.ucsd.msjava.msutil.Modification> fixedTermMods = apcGen.getTerminalFixedModifications(aa.getUnmodResidue(), loc);
                     for (edu.ucsd.msjava.msutil.Modification fixedMod : fixedTermMods) {
@@ -498,6 +501,8 @@ public class MZIdentMLGen {
                     else
                         mod.setLocation(location);
                     mod.setMonoisotopicMassDelta(modAA.getModification().getAccurateMass());
+                    mass += modAA.getModification().getAccurateMass();
+                    modified = true;
 
                     mod.getCvParam().addAll(apcGen.getSearchModification(modAA.getModification()).getCvParam());
                     modList.add(mod);
@@ -513,18 +518,29 @@ public class MZIdentMLGen {
                         else
                             mod2.setLocation(location);
                         mod2.setMonoisotopicMassDelta(modAA2.getModification().getAccurateMass());
+                        mass += modAA2.getModification().getAccurateMass();
+                        modified = true;
 
                         mod2.getCvParam().addAll(apcGen.getSearchModification(modAA2.getModification()).getCvParam());
                         modList.add(mod2);
                     }
                 }
+                
+                if (modified) {
+                    if (mass >= 0)
+                        modPepStr.append("+");
+                    else
+                        modPepStr.append("-");
+                    modPepStr.append(Math.round(mass));
+                }
+                
                 location++;
             }
 
             mzidPeptide.setPeptideSequence(unmodPepStr.toString());
             pepMap.put(pepStr, mzidPeptide);
             //mzidPeptide.setId(Constants.pepIDPrefix+pepMap.size());
-            mzidPeptide.setId(modPepStr.toString());
+            mzidPeptide.setId(Constants.pepIDPrefix+modPepStr.toString());
             peptideList.add(mzidPeptide);
         }
 
