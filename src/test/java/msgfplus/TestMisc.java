@@ -8,6 +8,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -30,6 +31,52 @@ import edu.ucsd.msjava.msutil.Spectrum;
 import edu.ucsd.msjava.parser.TSVParser;
 
 public class TestMisc {
+
+    @Test
+    public void testCleavageState() {
+
+        Map<String, Integer> peptides = new HashMap<String, Integer>(){
+            {
+                // These test cases correspond to those in the UnitTests project of the
+                // Peptide Hit Results Processor.  See:
+                // https://github.com/PNNL-Comp-Mass-Spec/PHRP/blob/master/UnitTests/PeptideCleavageStateCalculatorTests.vb
+
+                // Fully tryptic peptides
+                put("K.ACDEFGR.S", 2); // Normal, fully tryptic peptide
+                put("R.ACDEFGR.S", 2); // Normal, fully tryptic peptide
+                put("-.ACDEFGR.S", 2); // Fully tryptic at the N-Terminus of the protein
+                put("R.ACDEFGH.-", 1); // Fully tryptic at the C-Terminus of the protein; getNumCleavedTermini reports 1
+                put("-.ACDEFG.-",  1); // Peptide spans the entire protein; getNumCleavedTermini reports 1
+
+                // Partially tryptic peptides
+                put("K.ACDEFGH.S", 1); // Normal, partially tryptic peptide
+                put("L.ACDEFGR.S", 1); // Normal, partially tryptic peptide
+                put("K.ACDEFGR.P", 2); // Would have been fully tryptic, but ends with R followed by P; getNumCleavedTermini reports 2
+                put("K.PCDEFGR.S", 2); // Would have been fully tryptic, but starts with K followed by P; getNumCleavedTermini reports 2
+
+                // Non-tryptic peptides
+                put("L.ACDEFGH.S", 0); // Normal, non-tryptic peptide
+                put("-.ACDEFGH.S", 1); // Normal, non-tryptic peptide that happens to be at the N-terminus; getNumCleavedTermini reports 1
+                put("L.ACDEFGH.-", 0); // Normal, non-tryptic peptide that happens to be at the C-terminus
+                put("L.ACDEFGR.P", 1); // Would have been partially tryptic, but ends with R followed by P; getNumCleavedTermini reports 1
+                put("K.PCDEFGR.P", 2); // Would have been fully tryptic, but has a P after both the K and the R; getNumCleavedTermini reports 2
+            }
+        };
+
+        AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCysWithTerm();
+        aaSet.registerEnzyme(Enzyme.TRYPSIN);
+
+        Enzyme enzyme = Enzyme.getEnzymeByName("Tryp");
+
+        for (Map.Entry<String, Integer> entry : peptides.entrySet()) {
+            Integer computedTerminii = enzyme.getNumCleavedTermini(entry.getKey(), aaSet);
+
+            Integer expectedterminii = entry.getValue();
+            System.out.println("Peptide " + entry.getKey() + " has computedTerminii = " + computedTerminii + "; expected " + expectedterminii);
+        }
+
+
+    }
 
     @Test
     public void testMasses()

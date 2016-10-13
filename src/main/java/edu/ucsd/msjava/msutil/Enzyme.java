@@ -194,6 +194,7 @@ public class Enzyme implements ParamObject {
 
     /**
      * Checks if the peptide is cleaved by the enzyme.
+     * Does not check for exception residues (meaning K.P or K.P is considered cleavable for trypsin)
      *
      * @param p peptide
      * @return true if p is cleaved, false otherwise.
@@ -226,15 +227,19 @@ public class Enzyme implements ParamObject {
         int nCT = 0;
         String pepStr = annotation.substring(annotation.indexOf('.') + 1, annotation.lastIndexOf('.'));
         Peptide peptide = aaSet.getPeptide(pepStr);
+
+        // Check whether the C-terminus of the peptide is a cleavage point
         if (this.isCleaved(peptide))
             nCT++;
 
-        AminoAcid precedingAA = aaSet.getAminoAcid(annotation.charAt(0));
-        AminoAcid nextAA = aaSet.getAminoAcid(annotation.charAt(annotation.length() - 1));
         if (this.isNTerm) {
+            // N-terminal cleavage, including AspN
+            AminoAcid nextAA = aaSet.getAminoAcid(annotation.charAt(annotation.length() - 1));
             if (nextAA == null || this.isCleavable(nextAA))
                 nCT++;
         } else {
+            // C-terminal cleavage, including trypsin
+            AminoAcid precedingAA = aaSet.getAminoAcid(annotation.charAt(0));
             if (precedingAA == null || this.isCleavable(precedingAA))
                 nCT++;
         }
