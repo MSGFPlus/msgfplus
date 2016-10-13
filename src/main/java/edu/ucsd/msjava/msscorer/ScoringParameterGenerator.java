@@ -50,7 +50,7 @@ public class ScoringParameterGenerator extends NewRankScorer {
 
         for (int i = 0; i < argv.length; i += 2) {
             if (!argv[i].startsWith("-") || i + 1 >= argv.length)
-                printUsageAndExit("Illegal parameter!");
+                printUsageAndExit("Invalid parameter!");
             if (argv[i].equalsIgnoreCase("-i")) {
                 specFile = new File(argv[i + 1]);
                 if (!specFile.exists()) {
@@ -60,9 +60,9 @@ public class ScoringParameterGenerator extends NewRankScorer {
                 if (posDot >= 0) {
                     String extension = specFile.getName().substring(posDot);
                     if (!extension.equalsIgnoreCase(".mgf"))
-                        printUsageAndExit("Illegal spectrum format: " + argv[i + 1]);
+                        printUsageAndExit("Invalid spectrum format: " + argv[i + 1]);
                 } else
-                    printUsageAndExit("Illegal spectrum format: " + argv[i + 1]);
+                    printUsageAndExit("Invalid spectrum format: " + argv[i + 1]);
             } else if (argv[i].equalsIgnoreCase("-o")) {
                 outputFile = new File(argv[i + 1]);
             } else if (argv[i].equalsIgnoreCase("-t")) {
@@ -77,7 +77,7 @@ public class ScoringParameterGenerator extends NewRankScorer {
                 else if (argv[i + 1].equalsIgnoreCase("2"))
                     aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarboxymethylatedCys();
                 else
-                    printUsageAndExit("Illigal -fixMod parameter: " + argv[i + 1]);
+                    printUsageAndExit("Invalid -fixMod parameter: " + argv[i + 1]);
             } else if (argv[i].equalsIgnoreCase("-pep")) {
                 numSpecsPerPeptide = Integer.parseInt(argv[i + 1]);
             } else if (argv[i].equalsIgnoreCase("-err")) {
@@ -94,7 +94,7 @@ public class ScoringParameterGenerator extends NewRankScorer {
                 } else if (argv[i + 1].equalsIgnoreCase("4")) {
                     activationMethod = ActivationMethod.UVPD;
                 } else {
-                    printUsageAndExit("Illegal activation method: " + argv[i + 1]);
+                    printUsageAndExit("Invalid activation method: " + argv[i + 1]);
                 }
             } else if (argv[i].equalsIgnoreCase("-inst"))    // Instrument type
             {
@@ -105,7 +105,7 @@ public class ScoringParameterGenerator extends NewRankScorer {
                 } else if (argv[i + 1].equalsIgnoreCase("2")) {
                     instType = InstrumentType.HIGH_RESOLUTION_LTQ;
                 } else {
-                    printUsageAndExit("Illegal instrument type: " + argv[i + 1]);
+                    printUsageAndExit("Invalid instrument type: " + argv[i + 1]);
                 }
             } else if (argv[i].equalsIgnoreCase("-e"))    // Enzyme
             {
@@ -127,9 +127,9 @@ public class ScoringParameterGenerator extends NewRankScorer {
                 else if (argv[i + 1].equalsIgnoreCase("7"))
                     enzyme = Enzyme.AspN;
                 else
-                    printUsageAndExit("Illegal enzyme: " + argv[i + 1]);
+                    printUsageAndExit("Invalid enzyme: " + argv[i + 1]);
             } else
-                printUsageAndExit("Illegal parameters!");
+                printUsageAndExit("Invalid parameters!");
         }
         if (specFile == null)
             printUsageAndExit("missing annotatedMgfFileName!");

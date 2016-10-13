@@ -8,7 +8,7 @@ import java.util.*;
 public class GetTheBestPerScan {
     public static void main(String argv[]) throws Exception {
         if (argv.length != 1)
-            printUsageAndExit("Illegal parameter.");
+            printUsageAndExit("Invalid parameter.");
         File tsvFile = new File(argv[0]);
         if (!tsvFile.exists())
             printUsageAndExit("File does not exist.");

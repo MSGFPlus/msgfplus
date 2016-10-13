@@ -13,12 +13,12 @@ import java.util.Iterator;
 public class MaskSpectra {
     public static void main(String argv[]) throws Exception {
         if (argv.length != 2)
-            printUsageAndExit("Illegal parameters!");
+            printUsageAndExit("Invalid parameters!");
 
         File specFile = new File(argv[0]);
         Iterator<Spectrum> itr = new SpectraAccessor(specFile).getSpecItr();
         if (itr == null)
-            printUsageAndExit("Illegal spectrum format.");
+            printUsageAndExit("Invalid spectrum format.");
 
         int windowSize = Integer.parseInt(argv[1]);
 

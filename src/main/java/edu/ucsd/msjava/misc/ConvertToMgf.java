@@ -26,7 +26,7 @@ public class ConvertToMgf {
 
         for (int i = 0; i < argv.length; i += 2) {
             if (!argv[i].startsWith("-") || i + 1 >= argv.length)
-                printUsageAndExit("Illegal parameters");
+                printUsageAndExit("Invalid parameters");
             else if (argv[i].equalsIgnoreCase("-s")) {
                 source = new File(argv[i + 1]);
                 if (!source.exists())
@@ -52,7 +52,7 @@ public class ConvertToMgf {
                 } else if (argv[i + 1].equalsIgnoreCase("3")) {
                     activationMethod = ActivationMethod.HCD;
                 } else
-                    printUsageAndExit("Illegal activation method: " + argv[i + 1]);
+                    printUsageAndExit("Invalid activation method: " + argv[i + 1]);
             } else if (argv[i].equalsIgnoreCase("-index")) {
                 specIndex = Integer.parseInt(argv[i + 1]);
 

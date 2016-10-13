@@ -40,7 +40,7 @@ public class ToleranceParameter extends Parameter {
                 return "asymmetric values are not allowed";
         }
         if (leftTolerance == null || rightTolerance == null) {
-            return "illegal tolerance value";
+            return "invalid tolerance value";
         }
         if (leftTolerance.isTolerancePPM() != rightTolerance.isTolerancePPM()) {
             return "left and right tolerance units must be the same";

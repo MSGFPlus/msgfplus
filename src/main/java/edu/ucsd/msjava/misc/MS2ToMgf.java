@@ -15,11 +15,11 @@ import java.util.List;
 public class MS2ToMgf {
     public static void main(String argv[]) throws Exception {
         if (argv.length != 1)
-            printUsageAndExit("Illegal parameters");
+            printUsageAndExit("Invalid parameters");
 
         File ms2File = new File(argv[0]);
         if (!ms2File.exists() || !ms2File.getName().endsWith(".ms2"))
-            printUsageAndExit("Illegal ms2 input: " + argv[0]);
+            printUsageAndExit("Invalid ms2 input: " + argv[0]);
 
         String ms2FileName = ms2File.getAbsolutePath();
         File mgfFile = new File(ms2FileName.substring(0, ms2FileName.lastIndexOf('.')) + ".mgf");

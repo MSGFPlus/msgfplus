@@ -72,7 +72,7 @@ public class InsPecTParser {
         String labelRow = in.readLine();
 
         if (labelRow == null || !labelRow.startsWith("#")) {
-            return;    // illegal file format
+            return;    // Invalid file format
         }
 
         int specFileColumn = -1;

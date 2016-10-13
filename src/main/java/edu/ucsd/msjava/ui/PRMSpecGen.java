@@ -28,7 +28,7 @@ public class PRMSpecGen {
 
         for (int i = 0; i < argv.length; i += 2) {
             if (!argv[i].startsWith("-") || i + 1 >= argv.length)
-                printUsageAndExit("Illegal parameters");
+                printUsageAndExit("Invalid parameters");
             else if (argv[i].equalsIgnoreCase("-s")) {
                 specFile = new File(argv[i + 1]);
                 if (!specFile.exists()) {
@@ -57,13 +57,13 @@ public class PRMSpecGen {
                     }
                 }
                 if (specFormat == null)
-                    printUsageAndExit("Illegal spectrum format: " + argv[i + 1]);
+                    printUsageAndExit("Invalid spectrum format: " + argv[i + 1]);
             }
 //			else if(argv[i].equalsIgnoreCase("-f"))
 //			{
 //				fragmentMassTolerance = Tolerance.parseToleranceStr(argv[i+1]);
 //				if(fragmentMassTolerance == null)
-//					printUsageAndExit("Illegal fragment mass tolerance value: " + argv[i+1]);
+//					printUsageAndExit("Invalid fragment mass tolerance value: " + argv[i+1]);
 //			}
 //			else if(argv[i].equalsIgnoreCase("-i"))
 //			{
@@ -95,7 +95,7 @@ public class PRMSpecGen {
                 } else if (argv[i + 1].equalsIgnoreCase("3")) {
                     activationMethod = ActivationMethod.HCD;
                 } else
-                    printUsageAndExit("Illegal activation method: " + argv[i + 1]);
+                    printUsageAndExit("Invalid activation method: " + argv[i + 1]);
             } else if (argv[i].equalsIgnoreCase("-inst"))    // Instrument type
             {
                 if (argv[i + 1].equalsIgnoreCase("0")) {
@@ -105,7 +105,7 @@ public class PRMSpecGen {
                 } else if (argv[i + 1].equalsIgnoreCase("2")) {
                     instType = InstrumentType.HIGH_RESOLUTION_LTQ;
                 } else {
-                    printUsageAndExit("Illegal instrument type: " + argv[i + 1]);
+                    printUsageAndExit("Invalid instrument type: " + argv[i + 1]);
                 }
             } else if (argv[i].equalsIgnoreCase("-e"))    // Enzyme
             {
@@ -127,7 +127,7 @@ public class PRMSpecGen {
                 else if (argv[i + 1].equalsIgnoreCase("7"))
                     enzyme = Enzyme.AspN;
                 else
-                    printUsageAndExit("Illegal enzyme: " + argv[i + 1]);
+                    printUsageAndExit("Invalid enzyme: " + argv[i + 1]);
             } else {
                 printUsageAndExit("Invalid option: " + argv[i]);
             }

@@ -127,7 +127,7 @@ public class MS2SpectrumParser implements SpectrumParser {
 
                 String[] token = buf.split("\\s+");
                 if (token.length < 4) {
-                    System.err.println("Illegal ms2 file format!");
+                    System.err.println("Invalid ms2 file format!");
                     System.exit(-1);
                 }
                 float precursorMz = Float.parseFloat(token[3]);

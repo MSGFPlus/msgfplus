@@ -15,7 +15,7 @@ public class DatToTxt {
     public static void main(String argv[]) throws Exception {
 //		String fileName = System.getProperty("user.home")+"/Research/Data/HeckWhole/ResultsShabaz/LysN_ETD_F245063.dat";
         if (argv.length != 2 && argv.length != 3) {
-            printUsageAndExit("Illegal parameters");
+            printUsageAndExit("Invalid parameters");
         }
         File datFile = new File(argv[0]);
         if (!datFile.isFile())

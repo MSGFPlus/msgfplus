@@ -46,7 +46,7 @@ public class SpectraSTToTSV {
                     }
                     token = newToken;
                 } else {
-                    System.err.println("Illegal output: " + s);
+                    System.err.println("Invalid output: " + s);
                     System.err.println("Token length: " + token.length);
                     System.exit(-1);
                 }

@@ -5,7 +5,7 @@ import java.io.File;
 public class CountSequestIDs {
     public static void main(String argv[]) throws Exception {
         if (argv.length != 1)
-            printUsageAndExit("Illegal parameters!");
+            printUsageAndExit("Invalid parameters!");
 
         File seqDir = new File(argv[0]);
         if (!seqDir.isDirectory())

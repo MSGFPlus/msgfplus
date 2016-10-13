@@ -19,7 +19,7 @@ public class PreprocessSpec {
 
         for (int i = 0; i < argv.length; i += 2) {
             if (!argv[i].startsWith("-") || i + 1 >= argv.length)
-                printUsageAndExit("Illegal parameters");
+                printUsageAndExit("Invalid parameters");
             else if (argv[i].equalsIgnoreCase("-s")) {
                 source = new File(argv[i + 1]);
                 if (!source.exists())
@@ -40,7 +40,7 @@ public class PreprocessSpec {
                 } else if (argv[i + 1].equalsIgnoreCase("3")) {
                     activationMethod = ActivationMethod.HCD;
                 } else
-                    printUsageAndExit("Illegal activation method: " + argv[i + 1]);
+                    printUsageAndExit("Invalid activation method: " + argv[i + 1]);
             } else if (argv[i].equalsIgnoreCase("-inst"))    // Instrument type
             {
                 if (argv[i + 1].equalsIgnoreCase("0")) {
@@ -50,7 +50,7 @@ public class PreprocessSpec {
                 } else if (argv[i + 1].equalsIgnoreCase("2")) {
                     instType = InstrumentType.HIGH_RESOLUTION_LTQ;
                 } else {
-                    printUsageAndExit("Illegal instrument type: " + argv[i + 1]);
+                    printUsageAndExit("Invalid instrument type: " + argv[i + 1]);
                 }
             } else if (argv[i].equalsIgnoreCase("-e"))    // Enzyme
             {
@@ -76,7 +76,7 @@ public class PreprocessSpec {
                 else if (argv[i + 1].equalsIgnoreCase("9"))
                     enzyme = Enzyme.NoCleavage;
                 else
-                    printUsageAndExit("Illegal enzyme: " + argv[i + 1]);
+                    printUsageAndExit("Invalid enzyme: " + argv[i + 1]);
             } else if (argv[i].equalsIgnoreCase("-w")) {
                 if (argv[i + 1].equals("0"))
                     writeActivationMethod = false;

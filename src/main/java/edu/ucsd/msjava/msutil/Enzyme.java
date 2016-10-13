@@ -392,7 +392,7 @@ public class Enzyme implements ParamObject {
                 else {
                     for (int i = 0; i < cleaveAt.length(); i++) {
                         if (!AminoAcid.isStdAminoAcid(cleaveAt.charAt(i))) {
-                            System.err.println("Illegal user-defined enzyme at " + enzymeFile.getAbsolutePath() + ": " + paramStr);
+                            System.err.println("Invalid user-defined enzyme at " + enzymeFile.getAbsolutePath() + ": " + paramStr);
                             System.err.println("Unrecognizable aa residue: " + cleaveAt.charAt(i));
                             System.exit(-1);
                         }
@@ -404,7 +404,7 @@ public class Enzyme implements ParamObject {
                 else if (token[2].equals("N"))
                     isNTerm = true;
                 else {
-                    System.err.println("Illegal user-defined enzyme at " + enzymeFile.getAbsolutePath() + ": " + paramStr);
+                    System.err.println("Invalid user-defined enzyme at " + enzymeFile.getAbsolutePath() + ": " + paramStr);
                     System.err.println(token[2] + " must be 'C' or 'N'.");
                     System.exit(-1);
                 }

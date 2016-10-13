@@ -13,7 +13,7 @@ public class ParamToTxt {
         File paramFile = new File(argv[0]);
         String ext = paramFile.getName().substring(paramFile.getName().lastIndexOf('.'));
         if (!ext.equalsIgnoreCase(".param"))
-            pringUsageAndExit("Illegal file format: " + paramFile.getAbsolutePath());
+            pringUsageAndExit("Invalid file format: " + paramFile.getAbsolutePath());
 
         convert(paramFile);
     }

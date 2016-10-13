@@ -17,7 +17,7 @@ public class MSProfile {
 
     public static void main(String argv[]) {
         if (argv.length < 2 || argv.length % 2 != 0)
-            printUsageAndExit("Illegal parameters");
+            printUsageAndExit("Invalid parameters");
 
         // required
         File specFile = null;
@@ -41,7 +41,7 @@ public class MSProfile {
 
         for (int i = 0; i < argv.length; i += 2) {
             if (!argv[i].startsWith("-") || i + 1 >= argv.length)
-                printUsageAndExit("Illegal parameter: " + argv[i]);
+                printUsageAndExit("Invalid parameter: " + argv[i]);
             if (argv[i].equalsIgnoreCase("-i")) {
                 specFile = new File(argv[i + 1]);
                 if (!specFile.exists()) {
@@ -58,7 +58,7 @@ public class MSProfile {
 //				else if(ext.equalsIgnoreCase("ms2"))
 //					specFileFormat = SpecFileFormat.MS2;
                 if (specFileFormat == null)
-                    printUsageAndExit("Illegal file format: " + specFileName);
+                    printUsageAndExit("Invalid file format: " + specFileName);
             } else if (argv[i].equalsIgnoreCase("-param")) {
                 paramFile = new File(argv[i + 1]);
                 if (!paramFile.exists())
@@ -66,17 +66,17 @@ public class MSProfile {
             } else if (argv[i].equalsIgnoreCase("-pair"))    // Fragmentation method
             {
                 if (methodSpecified)
-                    printUsageAndExit("Illegal parameter: at most one of -m and -pair can be specified!");
+                    printUsageAndExit("Invalid parameter: at most one of -m and -pair can be specified!");
                 if (argv[i + 1].equalsIgnoreCase("0"))
                     isPaired = false;
                 else if (argv[i + 1].equalsIgnoreCase("1"))
                     isPaired = true;
                 else
-                    printUsageAndExit("Illegal parameter: -pair " + argv[i + 1]);
+                    printUsageAndExit("Invalid parameter: -pair " + argv[i + 1]);
                 pairSpecified = true;
             } else if (argv[i].equalsIgnoreCase("-m")) {
                 if (pairSpecified)
-                    printUsageAndExit("Illegal parameter: at most one of -m and -pair can be specified!");
+                    printUsageAndExit("Invalid parameter: at most one of -m and -pair can be specified!");
 
                 fragMethod = argv[i + 1];
                 methodSpecified = true;
@@ -90,19 +90,19 @@ public class MSProfile {
                 try {
                     specProbThreshold = Float.parseFloat(argv[i + 1]);
                 } catch (NumberFormatException e) {
-                    printUsageAndExit("Illigal specProbThreshold: " + argv[i + 1]);
+                    printUsageAndExit("Invalid specProbThreshold: " + argv[i + 1]);
                 }
             } else if (argv[i].equalsIgnoreCase("-delta")) {
                 try {
                     delta = Float.parseFloat(argv[i + 1]);
                 } catch (NumberFormatException e) {
-                    printUsageAndExit("Illigal deltaScoreForGPTemplate: " + argv[i + 1]);
+                    printUsageAndExit("Invalid deltaScoreForGPTemplate: " + argv[i + 1]);
                 }
             } else if (argv[i].equalsIgnoreCase("-prob")) {
                 try {
                     profProbThreshold = Float.parseFloat(argv[i + 1]);
                 } catch (NumberFormatException e) {
-                    printUsageAndExit("Illigal profProbThreshold: " + argv[i + 1]);
+                    printUsageAndExit("Invalid profProbThreshold: " + argv[i + 1]);
                 }
             } else if (argv[i].equalsIgnoreCase("-e"))    // Enzyme
             {
@@ -124,7 +124,7 @@ public class MSProfile {
                 else if (argv[i + 1].equalsIgnoreCase("7"))
                     enzyme = Enzyme.AspN;
                 else
-                    printUsageAndExit("Illigal enzyme: " + argv[i + 1]);
+                    printUsageAndExit("Invalid enzyme: " + argv[i + 1]);
             } else if (argv[i].equalsIgnoreCase("-fixMod")) {
                 // 0: No mod, 1: Carbamidomethyl C, 2: Carboxymethyl C
                 isFixedModSpecified = true;
@@ -135,7 +135,7 @@ public class MSProfile {
                 else if (argv[i + 1].equalsIgnoreCase("2"))
                     aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarboxymethylatedCys();
                 else
-                    printUsageAndExit("Illigal -fixMod parameter: " + argv[i + 1]);
+                    printUsageAndExit("Invalid -fixMod parameter: " + argv[i + 1]);
             } else if (argv[i].equalsIgnoreCase("-aaSet") && !isFixedModSpecified) {
                 File aaSetFile = new File(argv[i + 1]);
                 if (!aaSetFile.exists()) {
@@ -143,7 +143,7 @@ public class MSProfile {
                 }
                 aaSet = AminoAcidSet.getAminoAcidSet(aaSetFile.getPath());
             } else
-                printUsageAndExit("Illegal parameter!");
+                printUsageAndExit("Invalid parameter!");
         }
 
         if (specFile == null)

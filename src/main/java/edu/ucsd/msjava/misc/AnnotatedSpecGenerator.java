@@ -37,64 +37,64 @@ public class AnnotatedSpecGenerator {
         while (i < argv.length) {
             if (argv[i].equalsIgnoreCase("-r")) {
                 if (i + 1 >= argv.length)
-                    printUsageAndExit("Illegal parameter: " + argv[i]);
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
                 resultFile = new File(argv[i + 1]);
                 if (!resultFile.exists())
                     printUsageAndExit(argv[i + 1] + " doesn't exist.");
                 i += 2;
             } else if (argv[i].equalsIgnoreCase("-d")) {
                 if (i + 1 >= argv.length)
-                    printUsageAndExit("Illegal parameter: " + argv[i]);
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
                 specDir = new File(argv[i + 1]);
                 if (!specDir.exists() || !specDir.isDirectory())
                     printUsageAndExit(argv[i + 1] + " doesn't exist or not a directory!");
                 i += 2;
             } else if (argv[i].equalsIgnoreCase("-o")) {
                 if (i + 1 >= argv.length)
-                    printUsageAndExit("Illegal parameter: " + argv[i]);
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
                 outputFile = new File(argv[i + 1]);
                 i += 2;
             } else if (argv[i].equalsIgnoreCase("-n")) {
                 if (i + 1 >= argv.length)
-                    printUsageAndExit("Illegal parameter: " + argv[i]);
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
                 specIndexCol = Integer.parseInt(argv[i + 1]);
                 i += 2;
             } else if (argv[i].equalsIgnoreCase("-f")) {
                 if (i + 1 >= argv.length)
-                    printUsageAndExit("Illegal parameter: " + argv[i]);
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
                 specFileCol = Integer.parseInt(argv[i + 1]);
                 i += 2;
             } else if (argv[i].equalsIgnoreCase("-p")) {
                 if (i + 1 >= argv.length)
-                    printUsageAndExit("Illegal parameter: " + argv[i]);
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
                 peptideCol = Integer.parseInt(argv[i + 1]);
                 i += 2;
             } else if (argv[i].equalsIgnoreCase("-c")) {
                 if (i + 1 >= argv.length)
-                    printUsageAndExit("Illegal parameter: " + argv[i]);
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
                 chargeCol = Integer.parseInt(argv[i + 1]);
                 i += 2;
             } else if (argv[i].equalsIgnoreCase("-s")) {
                 if (i + 2 >= argv.length)
-                    printUsageAndExit("Illegal parameter: " + argv[i]);
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
                 scoreCol = Integer.parseInt(argv[i + 1]);
                 if (argv[i + 2].equalsIgnoreCase("1"))
                     isGreaterBetter = true;
                 i += 3;
             } else if (argv[i].equalsIgnoreCase("-t")) {
                 if (i + 1 >= argv.length)
-                    printUsageAndExit("Illegal parameter: " + argv[i]);
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
                 threshold = Float.parseFloat(argv[i + 1]);
                 i += 2;
             } else if (argv[i].equalsIgnoreCase("-u")) {
                 if (i + 1 >= argv.length)
-                    printUsageAndExit("Illegal parameter: " + argv[i]);
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
                 if (argv[i + 1].equalsIgnoreCase("1"))
                     uniquePeptide = true;
                 i += 2;
             } else if (argv[i].equalsIgnoreCase("-h")) {
                 if (i + 1 >= argv.length)
-                    printUsageAndExit("Illegal parameter: " + argv[i]);
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
                 if (argv[i + 1].equalsIgnoreCase("0"))
                     hasHeader = false;
                 i += 2;
@@ -109,11 +109,11 @@ public class AnnotatedSpecGenerator {
 //				else if(argv[i+1].equalsIgnoreCase("2"))
 //					aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarboxymethylatedCys();
 //				else
-//					printUsageAndExit("Illigal -fixMod parameter: " + argv[i+1]);
+//					printUsageAndExit("Invalid -fixMod parameter: " + argv[i+1]);
 //				i += 2;
 //			}     		
             else
-                printUsageAndExit("Illegal parameter!");
+                printUsageAndExit("Invalid parameter!");
         }
 
         if (resultFile == null)

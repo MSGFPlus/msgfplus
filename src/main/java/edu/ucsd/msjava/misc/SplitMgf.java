@@ -11,7 +11,7 @@ import java.io.PrintStream;
 public class SplitMgf {
     public static void main(String argv[]) throws Exception {
         if (argv.length != 2)
-            printUsageAndExit("Illegal parameters!");
+            printUsageAndExit("Invalid parameters!");
 
         File mgfFile = new File(argv[0]);
         if (!mgfFile.exists())
@@ -19,7 +19,7 @@ public class SplitMgf {
         String fileName = mgfFile.getName();
         String ext = fileName.substring(fileName.lastIndexOf('.') + 1);
         if (!ext.equalsIgnoreCase("mgf"))
-            printUsageAndExit(argv[0] + ": Illegal file extension!");
+            printUsageAndExit(argv[0] + ": Invalid file extension!");
 
         int numParts = Integer.parseInt(argv[1]);
         split(mgfFile, numParts);

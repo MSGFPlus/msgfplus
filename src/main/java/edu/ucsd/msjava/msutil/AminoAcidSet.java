@@ -702,7 +702,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 try {
                     numMods = Integer.parseInt(s.split("=")[1].trim());
                 } catch (NumberFormatException e) {
-                    System.err.println(fileName + ": Illegal NumMods option at line " + lineNum + ": " + s);
+                    System.err.println(fileName + ": Invalid NumMods option at line " + lineNum + ": " + s);
                     e.printStackTrace();
                     System.exit(-1);
                 }
@@ -721,7 +721,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     try {
                         modMass = Double.parseDouble(compStr);
                     } catch (NumberFormatException e) {
-                        System.err.println(fileName + ": AminoAcidSet: Illegal Mass/Composition at line " + lineNum + ": " + s);
+                        System.err.println(fileName + ": AminoAcidSet: Invalid Mass/Composition at line " + lineNum + ": " + s);
                         e.printStackTrace();
                         System.exit(-1);
                     }
@@ -762,16 +762,16 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     modTypeParseFailed = true;
 
                 if ((!isResidueStrLegitimate && !isCustomAminoAcid) || (isCustomAminoAcid && matchesCustomAA)) {
-                    System.err.println(fileName + ": AminoAcidSet: Illegal Residue(s) at line " + lineNum + ": " + s);
+                    System.err.println(fileName + ": AminoAcidSet: Invalid Residue(s) at line " + lineNum + ": " + s);
                     System.exit(-1);
                 }
                 if (isCustomAminoAcid && (residueStr.length() > 1 || !residueStr.toLowerCase().matches("[bjouxz]"))) {
-                    System.err.println(fileName + ": AminoAcidSet: Illegal Residue(s) at line " + lineNum + ": " + s);
+                    System.err.println(fileName + ": AminoAcidSet: Invalid Residue(s) at line " + lineNum + ": " + s);
                     System.err.println("Custom Amino acids are only allowed using B, J, O, U, X, or Z as the custom symbol.");
                     System.exit(-1);
                 }
                 if (isCustomAminoAcid && !compStr.matches("([CcHhNnOoSs][0-9]{1,3})+")) {
-                    System.err.println(fileName + ": AminoAcidSet: Illegal composition/mass at line " + lineNum + ": " + s);
+                    System.err.println(fileName + ": AminoAcidSet: Invalid composition/mass at line " + lineNum + ": " + s);
                     System.err.println("Custom Amino acids must supply a composition string, and must not use elements other than C H N O S.");
                     System.exit(-1);
                 }
@@ -797,7 +797,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 else if (isCustomAminoAcid)
                     customResidueBase = locStr;
                 else {
-                    System.err.println(fileName + ": AminoAcidSet: Illegal Location at line " + lineNum + ": " + s);
+                    System.err.println(fileName + ": AminoAcidSet: Invalid Location at line " + lineNum + ": " + s);
                     System.exit(-1);
                 }
 
@@ -864,7 +864,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     String value = s.substring(numModsKey.length(), s.lastIndexOf(closeKey));
                     numMods = Integer.parseInt(value);
                 } catch (NumberFormatException e) {
-                    System.err.println(fileName + ": Illegal ptm.mods option at line " + lineNum + ": " + s);
+                    System.err.println(fileName + ": Invalid ptm.mods option at line " + lineNum + ": " + s);
                     e.printStackTrace();
                     System.exit(-1);
                 }
@@ -888,7 +888,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 } else if (value.equals("None")) {
                     // do nothing
                 } else {
-                    System.err.println(fileName + ": Illegal Cycteine protecting group at line " + lineNum + ": " + s);
+                    System.err.println(fileName + ": Invalid Cycteine protecting group at line " + lineNum + ": " + s);
                     System.exit(-1);
                 }
             } else if (s.startsWith(ptmKey))    // custom PTM
@@ -897,7 +897,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 String[] token = value.split(",");
 
                 if (token.length != 3) {
-                    System.err.println(fileName + ": Illegal custom ptm option at line " + lineNum + ": " + s);
+                    System.err.println(fileName + ": Invalid custom ptm option at line " + lineNum + ": " + s);
                     System.exit(-1);
                 }
 
@@ -906,7 +906,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 try {
                     modMass = Double.parseDouble(token[0]);
                 } catch (NumberFormatException e) {
-                    System.err.println(fileName + ": AminoAcidSet: Illegal Mass at line " + lineNum + ": " + s);
+                    System.err.println(fileName + ": AminoAcidSet: Invalid Mass at line " + lineNum + ": " + s);
                     e.printStackTrace();
                     System.exit(-1);
                 }
@@ -926,7 +926,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                         isResidueStrLegitimate = false;
                 }
                 if (!isResidueStrLegitimate) {
-                    System.err.println(fileName + ": AminoAcidSet: Illegal Residue(s) at line " + lineNum + ": " + s);
+                    System.err.println(fileName + ": AminoAcidSet: Invalid Residue(s) at line " + lineNum + ": " + s);
                     System.exit(-1);
                 }
 
@@ -954,7 +954,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     isFixedModification = true;
                     location = Location.C_Term;
                 } else {
-                    System.err.println(fileName + ": AminoAcidSet: Illegal Type(s) at line " + lineNum + ": " + s);
+                    System.err.println(fileName + ": AminoAcidSet: Invalid Type(s) at line " + lineNum + ": " + s);
                     System.exit(-1);
                 }
 
@@ -1074,13 +1074,13 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     continue;
                 String residueStr = token[0].trim();
                 if (residueStr.length() != 1) {
-                    System.err.println("Illegal amino acid file format: " + fileName);
+                    System.err.println("Invalid amino acid file format: " + fileName);
                     System.err.println("Residue must be a single character: " + s);
                     System.exit(-1);
                 }
                 char residue = residueStr.charAt(0);
                 if (!Character.isUpperCase(residue)) {
-                    System.err.println("Illegal amino acid file format: " + fileName);
+                    System.err.println("Invalid amino acid file format: " + fileName);
                     System.err.println("Residue must be an upper case letter: " + s);
                     System.exit(-1);
                 }
@@ -1097,7 +1097,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     try {
                         mass = Double.parseDouble(token[2]);
                     } catch (NumberFormatException e) {
-                        System.err.println("Illigal AASet File format at line " + lineNum + ": " + s);
+                        System.err.println("Invalid AASet File format at line " + lineNum + ": " + s);
                         System.exit(-1);
                     }
                     aa = AminoAcid.getCustomAminoAcid(residue, name, mass);
@@ -1106,7 +1106,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             {
                 String[] token = s.split("=");
                 if (token.length != 2 || token[0].length() != 1 || !Character.isLetter(token[0].charAt(0))) {
-                    System.err.println("Illegal AASet File format at line" + lineNum + ": " + s);
+                    System.err.println("Invalid AASet File format at line" + lineNum + ": " + s);
                     System.exit(-1);
                 }
                 char residue = token[0].charAt(0);
@@ -1121,11 +1121,11 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                         prob = Float.parseFloat(token[1].split(",")[1]);
                     }
                 } catch (NumberFormatException e) {
-                    System.err.println("Illegal AASet File format at line" + lineNum + ": " + s);
+                    System.err.println("Invalid AASet File format at line" + lineNum + ": " + s);
                     System.exit(-1);
                 }
                 if (mass <= 0) {
-                    System.err.println("Illegal AASet File format at line" + lineNum + ": " + s);
+                    System.err.println("Invalid AASet File format at line" + lineNum + ": " + s);
                     System.exit(-1);
                 }
                 aa = AminoAcid.getCustomAminoAcid(residue, name, mass).setProbability(prob);

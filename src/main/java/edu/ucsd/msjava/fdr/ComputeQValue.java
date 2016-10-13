@@ -25,7 +25,7 @@ public class ComputeQValue {
             // 	-f resuleFileName dbCol decoyPrefix or -f targetFileName decoyFileName
             if (argv[i].equalsIgnoreCase("-f")) {
                 if (i + 1 >= argv.length)
-                    printUsageAndExit("Illegal parameter: " + argv[i]);
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
                 targetFile = new File(argv[i + 1]);
                 if (!targetFile.exists())
                     printUsageAndExit(argv[i + 1] + " doesn't exist.");
@@ -34,7 +34,7 @@ public class ComputeQValue {
                 i += 2;
             } else if (argv[i].equalsIgnoreCase("-o")) {
                 if (i + 1 >= argv.length)
-                    printUsageAndExit("Illegal parameter: " + argv[i]);
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
                 outputFile = new File(argv[i + 1]);
                 i += 2;
             } else if (argv[i].equalsIgnoreCase("-decoy")) {
@@ -43,24 +43,24 @@ public class ComputeQValue {
                 i += 2;
             } else if (argv[i].equalsIgnoreCase("-fdr")) {
                 if (i + 1 >= argv.length)
-                    printUsageAndExit("Illegal parameter: " + argv[i]);
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
                 try {
                     fdrThreshold = Float.parseFloat(argv[i + 1]);
                 } catch (NumberFormatException e) {
-                    printUsageAndExit("Illigal pepCol: " + argv[i + 1]);
+                    printUsageAndExit("Invalid pepCol: " + argv[i + 1]);
                 }
                 i += 2;
             } else if (argv[i].equalsIgnoreCase("-pepfdr")) {
                 if (i + 1 >= argv.length)
-                    printUsageAndExit("Illegal parameter: " + argv[i]);
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
                 try {
                     pepFDRThreshold = Float.parseFloat(argv[i + 1]);
                 } catch (NumberFormatException e) {
-                    printUsageAndExit("Illigal pepCol: " + argv[i + 1]);
+                    printUsageAndExit("Invalid pepCol: " + argv[i + 1]);
                 }
                 i += 2;
             } else {
-                printUsageAndExit("Illegal parameter");
+                printUsageAndExit("Invalid parameter");
             }
         }
 

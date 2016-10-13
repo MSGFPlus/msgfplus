@@ -9,7 +9,7 @@ public class RunMSGFDBOnGrid {
 		for(int i=0; i<argv.length; i+=2)
 		{
 			if(!argv[i].startsWith("-") || i+1 >= argv.length)
-				printUsageAndExit("Illegal parameters");
+				printUsageAndExit("Invalid parameters");
 			else if(argv[i].equalsIgnoreCase("-d"))
 			{
 				dir = new File(argv[i+1]);

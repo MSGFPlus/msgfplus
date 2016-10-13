@@ -16,7 +16,7 @@ public class MakePairedSpectra {
 
     public static void main(String argv[]) {
         if (argv.length != 3)
-            printErrorAndExit("Illegal parameters!");
+            printErrorAndExit("Invalid parameters!");
 
         File cidFile = new File(argv[0]);
         if (!cidFile.isFile())

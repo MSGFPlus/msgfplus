@@ -42,7 +42,7 @@ public class ROCGenerator {
             // 	-f resuleFileName dbCol decoyPrefix or -f targetFileName decoyFileName
             else if (argv[i].equalsIgnoreCase("-f")) {
                 if (i + 2 >= argv.length)
-                    printUsageAndExit("Illegal parameter: " + argv[i]);
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
                 targetFile = new File(argv[i + 1]);
                 if (!targetFile.exists())
                     printUsageAndExit(argv[i + 1] + " doesn't exist.");
@@ -66,18 +66,18 @@ public class ROCGenerator {
                 }
             } else if (argv[i].equalsIgnoreCase("-s")) {
                 if (i + 2 >= argv.length)
-                    printUsageAndExit("Illegal parameter: " + argv[i]);
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
 
                 try {
                     scoreCol = Integer.parseInt(argv[i + 1]);
                 } catch (NumberFormatException e) {
-                    printUsageAndExit("Illigal scoreCol: " + argv[i + 1]);
+                    printUsageAndExit("Invalid scoreCol: " + argv[i + 1]);
                 }
                 isGreaterBetter = argv[i + 2].equalsIgnoreCase("1");
                 i += 3;
             } else if (argv[i].equalsIgnoreCase("-o")) {
                 if (i + 1 >= argv.length)
-                    printUsageAndExit("Illegal parameter: " + argv[i]);
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
                 outputFile = new File(argv[i + 1]);
             } else if (argv[i].equalsIgnoreCase("-h")) {
                 if (argv[i + 1].equalsIgnoreCase("0"))
@@ -85,25 +85,25 @@ public class ROCGenerator {
                 i += 2;
             } else if (argv[i].equalsIgnoreCase("-delim")) {
                 if (i + 1 >= argv.length)
-                    printUsageAndExit("Illegal parameter: " + argv[i]);
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
                 delimeter = argv[i + 1];
                 i += 2;
             } else if (argv[i].equalsIgnoreCase("-p")) {
                 if (i + 1 >= argv.length)
-                    printUsageAndExit("Illegal parameter: " + argv[i]);
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
                 try {
                     pepCol = Integer.parseInt(argv[i + 1]);
                 } catch (NumberFormatException e) {
-                    printUsageAndExit("Illigal pepCol: " + argv[i + 1]);
+                    printUsageAndExit("Invalid pepCol: " + argv[i + 1]);
                 }
                 i += 2;
             } else if (argv[i].equalsIgnoreCase("-n")) {
                 if (i + 1 >= argv.length)
-                    printUsageAndExit("Illegal parameter: " + argv[i]);
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
                 try {
                     scanNumCol = Integer.parseInt(argv[i + 1]);
                 } catch (NumberFormatException e) {
-                    printUsageAndExit("Illigal pepCol: " + argv[i + 1]);
+                    printUsageAndExit("Invalid pepCol: " + argv[i + 1]);
                 }
                 i += 2;
             } else if (argv[i].equalsIgnoreCase("-m")) {
@@ -111,25 +111,25 @@ public class ROCGenerator {
                     reqStrList = new ArrayList<Pair<Integer, String>>();
                 int matchCol = -1;
                 if (i + 2 >= argv.length)
-                    printUsageAndExit("Illegal parameter: " + argv[i]);
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
                 try {
                     matchCol = Integer.parseInt(argv[i + 1]);
                 } catch (NumberFormatException e) {
-                    printUsageAndExit("Illigal matchCol: " + argv[i + 1]);
+                    printUsageAndExit("Invalid matchCol: " + argv[i + 1]);
                 }
                 String[] token = argv[i + 2].split(",");
                 for (String requiredStr : token)
                     reqStrList.add(new Pair<Integer, String>(matchCol, requiredStr));
                 i += 3;
             } else {
-                printUsageAndExit("Illegal parameter");
+                printUsageAndExit("Invalid parameter");
             }
         }
 
         if (targetFile == null)
             printUsageAndExit("Target is missing!");
         if (scoreCol < 0)
-            printUsageAndExit("scoreCol is missing or illegal!");
+            printUsageAndExit("scoreCol is missing or Invalid!");
 
         printROCCurve(identifier, targetFile, decoyFile,
                 scoreCol, isGreaterBetter,

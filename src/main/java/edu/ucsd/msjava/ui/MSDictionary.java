@@ -104,7 +104,7 @@ public class MSDictionary {
         if (pmTolStr != null)
             pmTolerance = Tolerance.parseToleranceStr(pmTolStr);
         if (pmTolerance == null)
-            printParsingErrorAndExit("Input file parsing error: illegal parent mass tolerance.");
+            printParsingErrorAndExit("Input file parsing error: invalid parent mass tolerance.");
         else
             msDicLauncher.pmTolerance(pmTolerance);
 
@@ -114,7 +114,7 @@ public class MSDictionary {
 //		if(fragTolStr != null)
 //			fragTolerance = Tolerance.parseToleranceStr(fragTolStr);
 //		if(fragTolerance == null)
-//			printParsingErrorAndExit("Input file parsing error: illegal fragment mass tolerance.");
+//			printParsingErrorAndExit("Input file parsing error: invalid fragment mass tolerance.");
 //		else
 //			msDicLauncher.fragTolerance(fragTolerance);
 
@@ -124,7 +124,7 @@ public class MSDictionary {
         if (specProbStr != null)
             specProb = Float.parseFloat(specProbStr);
         if (specProb == null)
-            printParsingErrorAndExit("Input file parsing error: illegal spectral probability.");
+            printParsingErrorAndExit("Input file parsing error: invalid spectral probability.");
         else
             msDicLauncher.specProb(specProb);
 
@@ -134,37 +134,37 @@ public class MSDictionary {
         if (numRecsStr != null)
             numRecs = Float.parseFloat(numRecsStr);
         if (numRecs == null)
-            printParsingErrorAndExit("Input file parsing error: illegal spectral probability.");
+            printParsingErrorAndExit("Input file parsing error: invalid spectral probability.");
         else
             msDicLauncher.numRecs(numRecs);
 
         Integer isNumInclusive = params.getIntParameter("IsNumInclusive");
         if (isNumInclusive == null)
-            printParsingErrorAndExit("Input file parsing error: illegal IsNumInclusive field.");
+            printParsingErrorAndExit("Input file parsing error: invalid IsNumInclusive field.");
         else if (isNumInclusive == 1)
             msDicLauncher.setNumInclusive();
 
         Integer isTrypticOnly = params.getIntParameter("IsTrypticOnly");
         if (isTrypticOnly == null)
-            printParsingErrorAndExit("Input file parsing error: illegal IsTrypticOnly field.");
+            printParsingErrorAndExit("Input file parsing error: invalid IsTrypticOnly field.");
         else if (isTrypticOnly == 0)
             msDicLauncher.allowNonTryptic();
 
         Integer msgfThreshold = params.getIntParameter("MSGFThreshold");
         if (msgfThreshold == null)
-            printParsingErrorAndExit("Input file parsing error: illegal MSGFThreshold field.");
+            printParsingErrorAndExit("Input file parsing error: invalid MSGFThreshold field.");
         else
             msDicLauncher.msgfScoreThreshold(msgfThreshold);
 
         Float minParentMass = params.getFloatParameter("MinParentMass");
         if (minParentMass == null)
-            printParsingErrorAndExit("Input file parsing error: illegal minimum parent mass.");
+            printParsingErrorAndExit("Input file parsing error: invalid minimum parent mass.");
         else
             msDicLauncher.minParentMass(minParentMass);
 
         Float maxParentMass = params.getFloatParameter("MaxParentMass");
         if (maxParentMass == null)
-            printParsingErrorAndExit("Input file parsing error: illegal maximum parent mass.");
+            printParsingErrorAndExit("Input file parsing error: invalid maximum parent mass.");
         else
             msDicLauncher.maxParentMass(maxParentMass);
 

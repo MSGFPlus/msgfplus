@@ -12,7 +12,7 @@ import java.util.List;
 public class DtaToMSGFInput {
     public static void main(String argv[]) throws Exception {
         if (argv.length != 1)
-            printUsageAndExit("Illegal parameter");
+            printUsageAndExit("Invalid parameter");
 
         File dtaPath = new File(argv[0]);
         if (!dtaPath.exists())

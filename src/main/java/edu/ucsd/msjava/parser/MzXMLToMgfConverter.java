@@ -8,7 +8,7 @@ import java.io.*;
 public class MzXMLToMgfConverter {
     public static void main(String argv[]) {
         if (argv.length < 2 || argv.length % 2 != 0)
-            printUsageAndExit("Illegal parameters");
+            printUsageAndExit("Invalid parameters");
 
         File mzXMLFile = null;
         File mgfFile = null;
@@ -45,7 +45,7 @@ public class MzXMLToMgfConverter {
                     if (maxChargeStr.length() > 0)
                         maxCharge = Integer.parseInt(maxChargeStr);
                 } catch (NumberFormatException e) {
-                    printUsageAndExit("Illigal charge: " + argv[i + 1]);
+                    printUsageAndExit("Invalid charge: " + argv[i + 1]);
                 }
             } else if (argv[i].equalsIgnoreCase("-m")) {
                 // 0: All, 1: CID, 2: ETD, 3: HCD
@@ -74,10 +74,10 @@ public class MzXMLToMgfConverter {
                     if (maxMSLevelStr.length() > 0)
                         maxMSLevel = Integer.parseInt(maxMSLevelStr);
                     if (minMSLevel <= 0 || minMSLevel > maxMSLevel) {
-                        printUsageAndExit("Illigal MS Level: " + argv[i + 1]);
+                        printUsageAndExit("Invalid MS Level: " + argv[i + 1]);
                     }
                 } catch (NumberFormatException e) {
-                    printUsageAndExit("Illigal MS Level: " + argv[i + 1]);
+                    printUsageAndExit("Invalid MS Level: " + argv[i + 1]);
                 }
             }
         }

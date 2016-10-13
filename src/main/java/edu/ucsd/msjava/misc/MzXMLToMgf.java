@@ -14,7 +14,7 @@ public class MzXMLToMgf {
         ActivationMethod activationMethod = null;
 
         if (argv.length != 2 && argv.length != 3)
-            printUsageAndExit("Illegal parameters");
+            printUsageAndExit("Invalid parameters");
 
         mzXMLFile = new File(argv[0]);
         if (!mzXMLFile.exists())

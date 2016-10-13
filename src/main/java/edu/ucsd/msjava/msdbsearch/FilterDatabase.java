@@ -18,7 +18,7 @@ public class FilterDatabase {
 
         for (int i = 0; i < argv.length; i += 2) {
             if (!argv[i].startsWith("-") || i + 1 >= argv.length)
-                printUsageAndExit("Illegal parameters");
+                printUsageAndExit("Invalid parameters");
             else if (argv[i].equalsIgnoreCase("-d")) {
                 dbFile = new File(argv[i + 1]);
                 if (!dbFile.exists())
@@ -35,11 +35,11 @@ public class FilterDatabase {
         }
 
         if (dbFile == null || !dbFile.exists())
-            printUsageAndExit("Illegal dbFile!");
+            printUsageAndExit("Invalid dbFile!");
         if (resultFile == null || !resultFile.exists())
-            printUsageAndExit("Illegal resultFile!");
+            printUsageAndExit("Invalid resultFile!");
         if (pepColumn < 0)
-            printUsageAndExit("Illegal pepColumn!");
+            printUsageAndExit("Invalid pepColumn!");
         filterDatabase(dbFile, resultFile, pepColumn, delimeter);
     }
 

@@ -16,7 +16,7 @@ public class BuildSA {
         int mode = 2;
         for (int i = 0; i < argv.length; i += 2) {
             if (!argv[i].startsWith("-") || i + 1 >= argv.length)
-                printUsageAndExit("Illegal parameters");
+                printUsageAndExit("Invalid parameters");
             else if (argv[i].equalsIgnoreCase("-d")) {
                 dbPath = new File(argv[i + 1]);
                 if (!dbPath.exists())
@@ -31,7 +31,7 @@ public class BuildSA {
                 else if (argv[i + 1].equals("2"))
                     mode = 2;
                 else
-                    printUsageAndExit("Illegal parameter: -tda " + argv[i + 1]);
+                    printUsageAndExit("Invalid parameter: -tda " + argv[i + 1]);
             }
         }
         if (dbPath == null)

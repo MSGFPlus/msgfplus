@@ -114,7 +114,7 @@ public class MzIDToTsv {
             }
         } else {
             if (!mzIDPath.getName().endsWith(".mzid")) {
-                return "Illegal file format: " + mzIDPath.getName();
+                return "Invalid file format: " + mzIDPath.getName();
             }
             // output tsv file
             File tsvFile = paramManager.getFile("o");

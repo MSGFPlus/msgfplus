@@ -258,7 +258,7 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
 //			if(aa.isModified())
 //				errorScore += MODIFIED_EDGE_PENALTY;
             if (errorScore < -100 || errorScore > 100) {
-                System.err.println("Illegal ErrorScore: " + errorScore);
+                System.err.println("Invalid ErrorScore: " + errorScore);
                 System.exit(-1);
             }
             edge.setErrorScore(errorScore);
