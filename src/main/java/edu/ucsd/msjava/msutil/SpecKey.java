@@ -89,27 +89,15 @@ public class SpecKey extends Pair<Integer, Integer> {
 
             spec.setChargeIfSinglyCharged();
             int charge = spec.getCharge();
+            ActivationMethod specActivationMethod = spec.getActivationMethod();
 
             if (activationMethod == ActivationMethod.ASWRITTEN) {
                 // System.out.println(
                 //   "Use spectrum " + spec.getID() +
                 //   " since assumed activationMethod is " + activationMethod.toString());
-            } else {
-
-                ActivationMethod specActivationMethod = spec.getActivationMethod();
-                if (specActivationMethod == null) {
-                    if (informativeMessageCount < MAX_INFORMATIVE_MESSAGES) {
-                        System.out.println("Skip spectrum " + spec.getID() + " since activationMethod is unknown");
-                        informativeMessageCount++;
-                    } else {
-                        if (informativeMessageCount == MAX_INFORMATIVE_MESSAGES) {
-                            System.out.println(" ...");
-                            informativeMessageCount++;
-                        }
-                    }
-                    continue;
-                }
-
+            } else if (specActivationMethod != null) {
+                // If specActivationMethod is null, we use whatever was specified
+                //   - some supported spectra input types do not allow/require activation method
                 if (activationMethod == ActivationMethod.UVPD && specActivationMethod == ActivationMethod.HCD) {
                     if (informativeMessageCount < MAX_INFORMATIVE_MESSAGES) {
                         System.out.println(
@@ -136,6 +124,19 @@ public class SpecKey extends Pair<Integer, Integer> {
                             }
                         }
                         continue;
+                    }
+                }
+            } else {
+                // specActivationMethod is null
+                // Just let the user know we are using what was written on the command line
+                if (informativeMessageCount < MAX_INFORMATIVE_MESSAGES) {
+                    System.out.println("Spectrum " + spec.getID() + " activationMethod is unknown; " 
+                            + "Using " + activationMethod.toString() + " as specified in parameters.");
+                    informativeMessageCount++;
+                } else {
+                    if (informativeMessageCount == MAX_INFORMATIVE_MESSAGES) {
+                        System.out.println(" ...");
+                        informativeMessageCount++;
                     }
                 }
             }
