@@ -600,7 +600,7 @@ public class MZIdentMLGen {
                 pepEv.setEnd(end);
 
 //				String pepEvKey = "PepEv"+(index+1)+"_"+length;
-                String pepEvKey = Constants.pepEvIDPrefix + "_" + (index + 1) + "_" + pepIDNum + "_" + start;
+                String pepEvKey = Constants.pepEvIDPrefix + (index + 1) + "_" + pepIDNum + "_" + start;
 //				if(match.isNTermMetCleaved())
 //					pepEvKey += "_N"+"_"+startKey;
                 pepEv.setId(pepEvKey);
