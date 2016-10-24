@@ -15,6 +15,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -307,6 +308,7 @@ public class MSGFPlus {
             }
 
             try {
+                final ArrayList<Future<?>> futures = new ArrayList<Future<?>>();
                 for (int i = 0; i < numTasks; i++) {
                     ScoredSpectraMap specScanner = new ScoredSpectraMap(
                             specAcc,
@@ -329,20 +331,23 @@ public class MSGFPlus {
                             resultList,
                             i + 1
                     );
-                    executor.execute(msgfdbExecutor);
+                    futures.add(executor.submit(msgfdbExecutor));
                 }
 
                 executor.shutdown();
 
                 int outputLimitCounter = 0;
-                while (executor.getActiveCount() > 0) {
-                    if (executor.HasThrownData()) {
-                        // One task threw an exception, so all of the results will be incomplete. Exit.
-                        Throwable data = executor.getThrownData();
-                        if (data instanceof OutOfMemoryError) {
-                            throw (OutOfMemoryError) data;
-                        } else {
-                            throw data;
+                while (!futures.isEmpty()) {
+                    for(final java.util.Iterator<Future<?>> it = futures.iterator(); it.hasNext();){
+                        final Future<?> f = it.next();
+                        if (f.isDone()){
+                            try {
+                                f.get();
+                            } catch (java.util.concurrent.ExecutionException e) {
+                                // One task threw an exception, so all of the results will be incomplete. Exit.
+                                throw e.getCause();
+                            }
+                            it.remove();
                         }
                     }
 
