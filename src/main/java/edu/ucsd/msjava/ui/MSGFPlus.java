@@ -22,8 +22,8 @@ import java.util.logging.Logger;
 
 
 public class MSGFPlus {
-    public static final String VERSION = "Release (v2016.10.14)";
-    public static final String RELEASE_DATE = "14 Oct 2016";
+    public static final String VERSION = "Release (v2016.10.24)";
+    public static final String RELEASE_DATE = "24 Oct 2016";
 
     public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
     public static final String DECOY_PROTEIN_PREFIX = "XXX";
@@ -219,19 +219,6 @@ public class MSGFPlus {
         if (specAcc.getSpecMap() == null || specAcc.getSpecItr() == null)
             return "Error while parsing spectrum file: " + specFile.getPath();
 
-        // determine the number of spectra to be scanned together
-//		long maxMemory = Runtime.getRuntime().maxMemory() - sa.getSize() - 1<<28;
-//		int avgPeptideMass = 2000;
-//		int numBytesPerMass = 12;
-
-//		int numSpecScannedTogether;
-//		if(maxMemory > Integer.MAX_VALUE)
-//			numSpecScannedTogether = Integer.MAX_VALUE;
-//		else
-//			numSpecScannedTogether = (int)((float)maxMemory/avgPeptideMass/numBytesPerMass);
-
-        int numSpecScannedTogether = Integer.MAX_VALUE;
-
         ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specAcc.getSpecItr(),
                 startSpecIndex, endSpecIndex, minCharge, maxCharge, activationMethod, minNumPeaksPerSpectrum);
         int specSize = specKeyList.size();
@@ -241,7 +228,6 @@ public class MSGFPlus {
         System.out.print("Reading spectra finished ");
         System.out.format("(elapsed time: %.2f sec)\n", (float) (System.currentTimeMillis() - time) / 1000);
 
-        //numThreads = Math.min(numThreads, Math.round(Math.min(specSize, numSpecScannedTogether)/1000f));
         numThreads = Math.min(numThreads, Math.round(specSize / 1000f));
         if (numThreads <= 0)
             numThreads = 1;
@@ -253,144 +239,137 @@ public class MSGFPlus {
         System.out.println(params.toString());
 
         SpecDataType specDataType = new SpecDataType(activationMethod, instType, enzyme, protocol);
-        int fromIndexGlobal = 0;
 
         List<MSGFPlusMatch> resultList = Collections.synchronizedList(new ArrayList<MSGFPlusMatch>());
 
-        while (true) {
-            if (fromIndexGlobal >= specSize)
-                break;
-            int toIndexGlobal = Math.min(specSize, fromIndexGlobal + numSpecScannedTogether);
-            while (toIndexGlobal < specSize) {
-                SpecKey lastSpecKey = specKeyList.get(toIndexGlobal - 1);
-                SpecKey nextSpecKey = specKeyList.get(toIndexGlobal);
+        int toIndexGlobal = specSize;
+        while (toIndexGlobal < specSize) {
+            SpecKey lastSpecKey = specKeyList.get(toIndexGlobal - 1);
+            SpecKey nextSpecKey = specKeyList.get(toIndexGlobal);
 
-                if (lastSpecKey.getSpecIndex() == nextSpecKey.getSpecIndex())
-                    toIndexGlobal++;
-                else
+            if (lastSpecKey.getSpecIndex() == nextSpecKey.getSpecIndex())
+                toIndexGlobal++;
+            else
+                break;
+        }
+
+        System.out.println("Spectrum 0-" + (toIndexGlobal - 1) + " (total: " + specSize + ")");
+
+        // Thread pool
+        ThreadPoolExecutorWithExceptions executor = ThreadPoolExecutorWithExceptions.newFixedThreadPool(numThreads);
+
+        int numTasks = Math.min(Math.min(numThreads * 10, 64), Math.round(specSize / 250f));
+        if (numThreads <= 1) {
+            numTasks = 1;
+        }
+        System.out.println("Splitting work into " + numTasks + " tasks.");
+
+        // Partition specKeyList
+        int size = toIndexGlobal;
+        int residue = size % numTasks;
+
+        int[] startIndex = new int[numTasks];
+        int[] endIndex = new int[numTasks];
+
+        int subListSize = size / numTasks;
+        for (int i = 0; i < numTasks; i++) {
+            startIndex[i] = i > 0 ? endIndex[i - 1] : 0;
+            endIndex[i] = startIndex[i] + subListSize + (i < residue ? 1 : 0);
+
+            subListSize = size / numTasks;
+            while (endIndex[i] < specKeyList.size()) {
+                SpecKey lastSpecKey = specKeyList.get(endIndex[i] - 1);
+                SpecKey nextSpecKey = specKeyList.get(endIndex[i]);
+
+                if (lastSpecKey.getSpecIndex() == nextSpecKey.getSpecIndex()) {
+                    ++endIndex[i];
+                    --subListSize;
+                } else
                     break;
             }
+        }
 
-            System.out.println("Spectrum " + fromIndexGlobal + "-" + (toIndexGlobal - 1) + " (total: " + specSize + ")");
-
-            // Thread pool
-            ThreadPoolExecutorWithExceptions executor = ThreadPoolExecutorWithExceptions.newFixedThreadPool(numThreads);
-
-            int numTasks = Math.min(Math.min(numThreads * 10, 64), Math.round(specSize / 250f));
-            if (numThreads <= 1) {
-                numTasks = 1;
-            }
-            System.out.println("Splitting work into " + numTasks + " tasks.");
-
-            // Partition specKeyList
-            int size = toIndexGlobal - fromIndexGlobal;
-            int residue = size % numTasks;
-
-            int[] startIndex = new int[numTasks];
-            int[] endIndex = new int[numTasks];
-
-            int subListSize = size / numTasks;
+        try {
+            final ArrayList<Future<?>> futures = new ArrayList<Future<?>>();
             for (int i = 0; i < numTasks; i++) {
-                startIndex[i] = i > 0 ? endIndex[i - 1] : fromIndexGlobal;
-                endIndex[i] = startIndex[i] + subListSize + (i < residue ? 1 : 0);
+                ScoredSpectraMap specScanner = new ScoredSpectraMap(
+                        specAcc,
+                        Collections.synchronizedList(specKeyList.subList(startIndex[i], endIndex[i])),
+                        leftParentMassTolerance,
+                        rightParentMassTolerance,
+                        minIsotopeError,
+                        maxIsotopeError,
+                        specDataType,
+                        params.outputAdditionalFeatures(),
+                        false
+                );
+                if (doNotUseEdgeScore)
+                    specScanner.turnOffEdgeScoring();
 
-                subListSize = size / numTasks;
-                while (endIndex[i] < specKeyList.size()) {
-                    SpecKey lastSpecKey = specKeyList.get(endIndex[i] - 1);
-                    SpecKey nextSpecKey = specKeyList.get(endIndex[i]);
+                ConcurrentMSGFPlus.RunMSGFPlus msgfdbExecutor = new ConcurrentMSGFPlus.RunMSGFPlus(
+                        specScanner,
+                        sa,
+                        params,
+                        resultList,
+                        i + 1
+                );
+                futures.add(executor.submit(msgfdbExecutor));
+            }
 
-                    if (lastSpecKey.getSpecIndex() == nextSpecKey.getSpecIndex()) {
-                        ++endIndex[i];
-                        --subListSize;
-                    } else
-                        break;
+            executor.shutdown();
+
+            int outputLimitCounter = 0;
+            while (!futures.isEmpty()) {
+                for(final java.util.Iterator<Future<?>> it = futures.iterator(); it.hasNext();){
+                    final Future<?> f = it.next();
+                    if (f.isDone()){
+                        try {
+                            f.get();
+                        } catch (java.util.concurrent.ExecutionException e) {
+                            // One task threw an exception, so all of the results will be incomplete. Exit.
+                            throw e.getCause();
+                        }
+                        it.remove();
+                    }
+                }
+
+                if (outputLimitCounter % 60 == 0) {
+                    // Output every minute
+                    executor.outputProgressReport();
+                }
+                outputLimitCounter++;
+
+                try {
+                    Thread.sleep(1000); // sleep for one second; don't busy wait.
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
 
             try {
-                final ArrayList<Future<?>> futures = new ArrayList<Future<?>>();
-                for (int i = 0; i < numTasks; i++) {
-                    ScoredSpectraMap specScanner = new ScoredSpectraMap(
-                            specAcc,
-                            Collections.synchronizedList(specKeyList.subList(startIndex[i], endIndex[i])),
-                            leftParentMassTolerance,
-                            rightParentMassTolerance,
-                            minIsotopeError,
-                            maxIsotopeError,
-                            specDataType,
-                            params.outputAdditionalFeatures(),
-                            false
-                    );
-                    if (doNotUseEdgeScore)
-                        specScanner.turnOffEdgeScoring();
-
-                    ConcurrentMSGFPlus.RunMSGFPlus msgfdbExecutor = new ConcurrentMSGFPlus.RunMSGFPlus(
-                            specScanner,
-                            sa,
-                            params,
-                            resultList,
-                            i + 1
-                    );
-                    futures.add(executor.submit(msgfdbExecutor));
-                }
-
-                executor.shutdown();
-
-                int outputLimitCounter = 0;
-                while (!futures.isEmpty()) {
-                    for(final java.util.Iterator<Future<?>> it = futures.iterator(); it.hasNext();){
-                        final Future<?> f = it.next();
-                        if (f.isDone()){
-                            try {
-                                f.get();
-                            } catch (java.util.concurrent.ExecutionException e) {
-                                // One task threw an exception, so all of the results will be incomplete. Exit.
-                                throw e.getCause();
-                            }
-                            it.remove();
-                        }
-                    }
-
-                    if (outputLimitCounter % 60 == 0) {
-                        // Output every minute
-                        executor.outputProgressReport();
-                    }
-                    outputLimitCounter++;
-
-                    try {
-                        Thread.sleep(1000); // sleep for one second; don't busy wait.
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-
-                try {
-                    executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, e);
-                }
-                // Output completed progress report.
-                executor.outputProgressReport();
-                //while(!executor.isTerminated()) {}	// wait until all threads terminate
-            } catch (OutOfMemoryError ex) {
-                ex.printStackTrace();
-                Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, ex);
-                executor.shutdownNow();
-                return "Task terminated; results incomplete. Please run again with a greater amount of memory, using \"-Xmx4G\", for example.";
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, ex);
-                executor.shutdownNow();
-                return "Task terminated; results incomplete. Please run again.";
-            } catch (Throwable ex) {
-                ex.printStackTrace();
-                Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, ex);
-                executor.shutdownNow();
-                return "Task terminated; results incomplete. Please run again.";
+                executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, e);
             }
+            // Output completed progress report.
+            executor.outputProgressReport();
 
-            fromIndexGlobal += numSpecScannedTogether;
+        } catch (OutOfMemoryError ex) {
+            ex.printStackTrace();
+            Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, ex);
+            executor.shutdownNow();
+            return "Task terminated; results incomplete. Please run again with a greater amount of memory, using \"-Xmx4G\", for example.";
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, ex);
+            executor.shutdownNow();
+            return "Task terminated; results incomplete. Please run again.";
+        } catch (Throwable ex) {
+            ex.printStackTrace();
+            Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, ex);
+            executor.shutdownNow();
+            return "Task terminated; results incomplete. Please run again.";
         }
 
         time = System.currentTimeMillis();
