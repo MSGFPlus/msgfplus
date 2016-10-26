@@ -110,7 +110,7 @@ public class MSGFDBLib {
         System.out.print("Reading spectra finished ");
         System.out.format("(elapsed time: %.2f sec)\n", (float) (System.currentTimeMillis() - time) / 1000);
 
-        numThreads = Math.min(numThreads, Math.round(Math.min(specSize, numSpecScannedTogether) / 1000f));
+        numThreads = Math.min(numThreads, Math.round((float) Math.min(specSize, numSpecScannedTogether) / 250));
         if (numThreads == 0)
             numThreads = 1;
         System.out.println("Using " + numThreads + (numThreads == 1 ? " thread." : " threads."));

@@ -22,8 +22,8 @@ import java.util.logging.Logger;
 
 
 public class MSGFPlus {
-    public static final String VERSION = "Release (v2016.10.24)";
-    public static final String RELEASE_DATE = "24 Oct 2016";
+    public static final String VERSION = "Release (v2016.10.26)";
+    public static final String RELEASE_DATE = "26 Oct 2016";
 
     public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
     public static final String DECOY_PROTEIN_PREFIX = "XXX";
@@ -228,7 +228,7 @@ public class MSGFPlus {
         System.out.print("Reading spectra finished ");
         System.out.format("(elapsed time: %.2f sec)\n", (float) (System.currentTimeMillis() - time) / 1000);
 
-        numThreads = Math.min(numThreads, Math.round(specSize / 1000f));
+        numThreads = Math.min(numThreads, Math.round((float) specSize / 250));
         if (numThreads <= 0)
             numThreads = 1;
 
@@ -258,11 +258,16 @@ public class MSGFPlus {
         // Thread pool
         ThreadPoolExecutorWithExceptions executor = ThreadPoolExecutorWithExceptions.newFixedThreadPool(numThreads);
 
-        int numTasks = Math.min(Math.min(numThreads * 10, 64), Math.round(specSize / 250f));
+        int numTasks = Math.min(Math.min(numThreads * 10, 64), Math.round((float) specSize / 250));
         if (numThreads <= 1) {
             numTasks = 1;
         }
-        System.out.println("Splitting work into " + numTasks + " tasks.");
+
+        if (numTasks > 1) {
+            System.out.println("Splitting work into " + numTasks + " tasks.");
+        } else {
+            System.out.println("Searching using a single task.");
+        }
 
         // Partition specKeyList
         int size = toIndexGlobal;
