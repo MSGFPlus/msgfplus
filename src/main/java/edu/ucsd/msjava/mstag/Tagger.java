@@ -72,7 +72,7 @@ public class Tagger {
     public static void main(String[] args) throws Exception {
 
         float cutOffFraction = 0.5f;
-        float ppmTolerance = 10f;
+        float ppmTolerance = 10;
 
         String spectrumFile = "/Users/jung/Research/USTags/centroidedMGF/spec1845.mgf";
 

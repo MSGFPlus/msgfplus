@@ -18,8 +18,8 @@ import java.util.*;
  * @author sangtaekim
  */
 public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
-    private static final float MIN_PRECURSOR_OFFSET = -300f;    // for precursors
-    private static final float MAX_PRECURSOR_OFFSET = 30f;
+    private static final float MIN_PRECURSOR_OFFSET = -300;    // for precursors
+    private static final float MAX_PRECURSOR_OFFSET = 30;
     private static final int MIN_NUM_SPECTRA_PER_PARTITION = 400;    // 400
     private static final int MIN_NUM_SPECTRA_FOR_PRECURSOR_OFF = 150;
     private static final int MAX_NUM_PARTITIONS_PER_CHARGE = 30;    // 30

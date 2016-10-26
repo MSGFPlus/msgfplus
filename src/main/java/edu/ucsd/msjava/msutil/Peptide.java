@@ -762,7 +762,7 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
      * @return the mass of this peptide in Daltons.
      */
     public static float getMassFromString(String peptide) {
-        float cumMass = 0f;
+        float cumMass = 0;
         for (int i = peptide.length(), j = 0; i > 0; i--, j++) {
             cumMass += AminoAcid.getStandardAminoAcid(peptide.charAt(j)).getMass();
 

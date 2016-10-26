@@ -4,7 +4,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 public class Composition extends Matter {
-    public static final double C = 12.0f;
+    public static final double C = 12.0;
     public static final double C13 = 13.00335483;
     public static final double C14 = 14.003241;
     public static final double H = 1.007825035;

@@ -21,7 +21,7 @@ public class MassArray {
 
     // constants
     private static final String MASS_FILE_EXTENSION = ".marray";
-    private static final float MAX_GAP_MASS = 1000.0f;
+    private static final float MAX_GAP_MASS = 1000;
 
     // the size of an int primitive type in bytes
     private static final int INT_BYTE_SIZE = Integer.SIZE / Byte.SIZE;
@@ -255,7 +255,7 @@ public class MassArray {
 
         int sequenceLen = (int) sequence.getSize();
         for (int index = 0; index < sequenceLen; index++) {
-            float cumMass = 0f;
+            float cumMass = 0;
             int newIndex = index;
             while (cumMass < MAX_GAP_MASS && newIndex < sequenceLen) {
                 AminoAcid aa = AminoAcid.getStandardAminoAcid(sequence.getCharAt(newIndex));

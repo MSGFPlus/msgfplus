@@ -475,7 +475,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
                 prevMz = curMz;
             }
             Collections.sort(diff);
-            if (diff.size() > 0 && diff.get(diff.size() / 2) < 50f)
+            if (diff.size() > 0 && diff.get(diff.size() / 2) < 50)
                 isCentroided = false;
         }
     }

@@ -16,10 +16,10 @@ import java.util.*;
  * @author sangtaekim
  */
 public class ScoringParameterGenerator extends NewRankScorer {
-    private static final float MIN_OFFSET_MASS = -120f;    // for ion types
-    private static final float MAX_OFFSET_MASS = 38f;
-    private static final float MIN_PRECURSOR_OFFSET = -300f;    // for precursors
-    private static final float MAX_PRECURSOR_OFFSET = 30f;
+    private static final float MIN_OFFSET_MASS = -120;    // for ion types
+    private static final float MAX_OFFSET_MASS = 38;
+    private static final float MIN_PRECURSOR_OFFSET = -300;    // for precursors
+    private static final float MAX_PRECURSOR_OFFSET = 30;
     private static final int MIN_NUM_SPECTRA_PER_PARTITION = 400;    // 400
     private static final int MIN_NUM_SPECTRA_FOR_PRECURSOR_OFF = 150;
 

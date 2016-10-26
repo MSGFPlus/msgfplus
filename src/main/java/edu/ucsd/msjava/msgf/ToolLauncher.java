@@ -25,8 +25,8 @@ public abstract class ToolLauncher {
     protected Tolerance pmTolerance = new Tolerance(30, true);
     protected Tolerance fragTolerance = new Tolerance(30, true);
 
-    protected float minParentMass = 400f;
-    protected float maxParentMass = 2000f;
+    protected float minParentMass = 400;
+    protected float maxParentMass = 2000;
     protected int msgfScoreThreshold = 0;
 
     // Amino acid set, default: standard + Carboamidomethyl C
