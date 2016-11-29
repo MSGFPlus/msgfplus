@@ -59,7 +59,7 @@ public class GeneratingFunctionGroup<T extends Matter> extends HashMap<T, Genera
 
     public int getMaxScore() {
         if (mergedScoreDist == null)
-            System.out.println("Debug");
+            System.out.println("Debug in getMaxScore: getMaxScore is null");
         return mergedScoreDist.getMaxScore();
     }
 
