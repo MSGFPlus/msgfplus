@@ -6,6 +6,7 @@ import edu.ucsd.msjava.msutil.Modification.Location;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
     public static final int MODIFIED_EDGE_PENALTY = 0;
@@ -18,6 +19,9 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
 
     private HashMap<NominalMass, ArrayList<DeNovoGraph.Edge<NominalMass>>> edgeMap;
     private HashMap<NominalMass, Integer> nodeScore;
+
+    private static AtomicInteger negativeCompNodeMassWarnCount;
+    private static AtomicInteger negativeNodeMassWarnCount;
 
     public FlexAminoAcidGraph(
             AminoAcidSet aaSet,
@@ -46,6 +50,14 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
         super.source = new NominalMass(0);
 
         super.pmNode = new NominalMass(peptideMass);
+
+        if (negativeNodeMassWarnCount == null) {
+            negativeNodeMassWarnCount = new AtomicInteger();
+        }
+
+        if (negativeCompNodeMassWarnCount == null) {
+            negativeCompNodeMassWarnCount = new AtomicInteger();
+        }
 
         edgeMap = new HashMap<NominalMass, ArrayList<DeNovoGraph.Edge<NominalMass>>>();
         edgeMap.put(source, new ArrayList<DeNovoGraph.Edge<NominalMass>>());
@@ -150,14 +162,29 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
         nodeScore = new HashMap<NominalMass, Integer>();
         nodeScore.put(source, 0);
 
+        boolean warnNegativeNodeMass = false;
+        boolean warnNegativeCompNodeMass = false;
+
         for (int i = 1; i < intermediateNodes.size(); i++) {
             NominalMass node = intermediateNodes.get(i);
             NominalMass compNode = this.getComplementNode(node);
-            if (node.getNominalMass() < 0) {
-                System.out.println("Debug in computeNodeScores: node.getNominalMass() < 0");
+            if (node.getNominalMass() < 0 && !warnNegativeNodeMass) {
+                warnNegativeNodeMass = true;
+                // Mass of the node is negative
+                // This can happen if we have a negative dynamic mod at the C-terminus, for example Lys-Loss
+                int warnCount = negativeNodeMassWarnCount.addAndGet(1);
+                if (warnCount < 5 || warnCount == 100 || warnCount == 1000 || warnCount % 10000 == 0) {
+                    System.out.println("Note: negative node mass in computeNodeScores " +
+                            "(count = " + Integer.toString(warnCount) + ")");
+                }
             }
-            if (compNode.getNominalMass() < 0) {
-                System.out.println("Debug in computeNodeScores: compNode.getNominalMass() < 0");
+            if (compNode.getNominalMass() < 0 && !warnNegativeCompNodeMass) {
+                warnNegativeCompNodeMass = true;
+                int warnCount = negativeCompNodeMassWarnCount.addAndGet(1);
+                if (warnCount < 5 || warnCount == 100 || warnCount == 1000 || warnCount % 10000 == 0) {
+                    System.out.println("Note: negative compnode mass in computeNodeScores " +
+                            "(count = " + Integer.toString(warnCount) + ")");
+                }
             }
             int score;
             if (isReverse())
