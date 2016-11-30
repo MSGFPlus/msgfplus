@@ -23,6 +23,9 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
     private static AtomicInteger negativeCompNodeMassWarnCount;
     private static AtomicInteger negativeNodeMassWarnCount;
 
+    private static AtomicInteger getNodeScoreNullNodeCount;
+    private static AtomicInteger getNodeScoreExceptionCount;
+
     public FlexAminoAcidGraph(
             AminoAcidSet aaSet,
             int peptideMass,
@@ -59,6 +62,14 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
             negativeCompNodeMassWarnCount = new AtomicInteger();
         }
 
+        if (getNodeScoreNullNodeCount == null) {
+            getNodeScoreNullNodeCount = new AtomicInteger();
+        }
+
+        if (getNodeScoreExceptionCount == null) {
+            getNodeScoreExceptionCount = new AtomicInteger();
+        }
+
         edgeMap = new HashMap<NominalMass, ArrayList<DeNovoGraph.Edge<NominalMass>>>();
         edgeMap.put(source, new ArrayList<DeNovoGraph.Edge<NominalMass>>());
         setForwardEdgesFromSource();
@@ -80,12 +91,32 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
 
     @Override
     public ArrayList<DeNovoGraph.Edge<NominalMass>> getEdges(NominalMass curNode) {
+
         return edgeMap.get(curNode);
     }
 
     @Override
     public int getNodeScore(NominalMass node) {
-        return nodeScore.get(node);
+
+        if (node == null) {
+            int errorCount = getNodeScoreNullNodeCount.addAndGet(1);
+            if (notifyError(errorCount)) {
+                System.out.println("Note: null node encountered in getNodeScore");
+            }
+            return 0;
+        }
+
+        try {
+            return nodeScore.get(node);
+        } catch (Exception ex) {
+            int errorCount = getNodeScoreExceptionCount.addAndGet(1);
+            if (notifyError(errorCount)) {
+                System.out.println("Note: Exception in getNodeScore retrieving node at nominal mass " +
+                        node.getNominalMass() + ": " + ex.getMessage());
+            }
+            return 0;
+        }
+
     }
 
     @Override
@@ -173,7 +204,7 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
                 // Mass of the node is negative
                 // This can happen if we have a negative dynamic mod at the C-terminus, for example Lys-Loss
                 int warnCount = negativeNodeMassWarnCount.addAndGet(1);
-                if (warnCount < 5 || warnCount == 100 || warnCount == 1000 || warnCount % 10000 == 0) {
+                if (notifyError(warnCount)) {
                     System.out.println("Note: negative node mass in computeNodeScores " +
                             "(count = " + Integer.toString(warnCount) + ")");
                 }
@@ -181,7 +212,7 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
             if (compNode.getNominalMass() < 0 && !warnNegativeCompNodeMass) {
                 warnNegativeCompNodeMass = true;
                 int warnCount = negativeCompNodeMassWarnCount.addAndGet(1);
-                if (warnCount < 5 || warnCount == 100 || warnCount == 1000 || warnCount % 10000 == 0) {
+                if (notifyError(warnCount)) {
                     System.out.println("Note: negative compnode mass in computeNodeScores " +
                             "(count = " + Integer.toString(warnCount) + ")");
                 }
@@ -195,6 +226,14 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
         }
         for (NominalMass node : this.sinkNodes)
             nodeScore.put(node, 0);
+    }
+
+    private boolean notifyError(int errorCount) {
+        if (errorCount < 5 || errorCount == 100 || errorCount == 1000 || errorCount % 10000 == 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void setForwardEdgesFromSource() {
