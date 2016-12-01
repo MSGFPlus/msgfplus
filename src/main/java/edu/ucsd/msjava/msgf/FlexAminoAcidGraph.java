@@ -23,8 +23,8 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
     private static AtomicInteger negativeCompNodeMassWarnCount;
     private static AtomicInteger negativeNodeMassWarnCount;
 
-    private static AtomicInteger getNodeScoreNullNodeCount;
-    private static AtomicInteger getNodeScoreExceptionCount;
+    private static AtomicInteger nullNodeCountGetNodeScore;
+    private static AtomicInteger exceptionCountGetNodeScore;
 
     public FlexAminoAcidGraph(
             AminoAcidSet aaSet,
@@ -62,12 +62,12 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
             negativeCompNodeMassWarnCount = new AtomicInteger();
         }
 
-        if (getNodeScoreNullNodeCount == null) {
-            getNodeScoreNullNodeCount = new AtomicInteger();
+        if (nullNodeCountGetNodeScore == null) {
+            nullNodeCountGetNodeScore = new AtomicInteger();
         }
 
-        if (getNodeScoreExceptionCount == null) {
-            getNodeScoreExceptionCount = new AtomicInteger();
+        if (exceptionCountGetNodeScore == null) {
+            exceptionCountGetNodeScore = new AtomicInteger();
         }
 
         edgeMap = new HashMap<NominalMass, ArrayList<DeNovoGraph.Edge<NominalMass>>>();
@@ -99,7 +99,7 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
     public int getNodeScore(NominalMass node) {
 
         if (node == null) {
-            int errorCount = getNodeScoreNullNodeCount.addAndGet(1);
+            int errorCount = nullNodeCountGetNodeScore.addAndGet(1);
             if (notifyError(errorCount)) {
                 System.out.println("Note: null node encountered in getNodeScore");
             }
@@ -109,7 +109,7 @@ public class FlexAminoAcidGraph extends DeNovoGraph<NominalMass> {
         try {
             return nodeScore.get(node);
         } catch (Exception ex) {
-            int errorCount = getNodeScoreExceptionCount.addAndGet(1);
+            int errorCount = exceptionCountGetNodeScore.addAndGet(1);
             if (notifyError(errorCount)) {
                 System.out.println("Note: Exception in getNodeScore retrieving node at nominal mass " +
                         node.getNominalMass() + ": " + ex.getMessage());
