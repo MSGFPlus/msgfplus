@@ -458,13 +458,10 @@ public class MZIdentMLGen {
                 else
                     loc = Location.Anywhere;
 
-                unmodPepStr.append(aa.getUnmodResidue());
+                char residue = aa.getUnmodResidue();
+                unmodPepStr.append(residue);
+                modPepStr.append(residue);
 
-                char residue = aa.getResidue();
-                if (Character.isLetter(residue))
-                    modPepStr.append(aa.getUnmodResidue());
-                else
-                    modPepStr.append((int) residue);
                 double mass = 0;
                 boolean modified = false;
                 
@@ -529,8 +526,6 @@ public class MZIdentMLGen {
                 if (modified) {
                     if (mass >= 0)
                         modPepStr.append("+");
-                    else
-                        modPepStr.append("-");
                     modPepStr.append(Math.round(mass));
                 }
                 
