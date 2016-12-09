@@ -460,9 +460,12 @@ public class MZIdentMLGen {
 
                 char residue = aa.getUnmodResidue();
                 unmodPepStr.append(residue);
-                modPepStr.append(residue);
 
                 double mass = 0;
+                boolean hasNTermMod = false;
+                double nTermMass = 0;
+                boolean hasCTermMod = false;
+                double cTermMass = 0;
                 boolean modified = false;
                 
                 if (loc == Location.N_Term || loc == Location.C_Term) {
@@ -491,15 +494,22 @@ public class MZIdentMLGen {
                 if (aa.isModified()) {
                     Modification mod = new Modification();
                     ModifiedAminoAcid modAA = (ModifiedAminoAcid) aa;
-                    if (location == 1 && modAA.isNTermVariableMod())
+                    if (location == 1 && modAA.isNTermVariableMod()) {
                         mod.setLocation(location - 1);
-                    else if (location == peptide.size() && modAA.isCTermVariableMod())
+                        nTermMass += modAA.getModification().getAccurateMass();
+                        hasNTermMod = true;
+                    }
+                    else if (location == peptide.size() && modAA.isCTermVariableMod()) {
                         mod.setLocation(location + 1);
-                    else
+                        cTermMass += modAA.getModification().getAccurateMass();
+                        hasCTermMod = true;
+                    }
+                    else {
                         mod.setLocation(location);
+                        mass += modAA.getModification().getAccurateMass();
+                        modified = true;
+                    }
                     mod.setMonoisotopicMassDelta(modAA.getModification().getAccurateMass());
-                    mass += modAA.getModification().getAccurateMass();
-                    modified = true;
 
                     mod.getCvParam().addAll(apcGen.getSearchModification(modAA.getModification()).getCvParam());
                     modList.add(mod);
@@ -508,25 +518,47 @@ public class MZIdentMLGen {
                     {
                         Modification mod2 = new Modification();
                         ModifiedAminoAcid modAA2 = (ModifiedAminoAcid) modAA.getTargetAA();
-                        if (location == 1 && modAA2.isNTermVariableMod())
+                        if (location == 1 && modAA2.isNTermVariableMod()) {
                             mod2.setLocation(location - 1);
-                        else if (location == peptide.size() && modAA2.isCTermVariableMod())
+                            nTermMass += modAA2.getModification().getAccurateMass();
+                            hasNTermMod = true;
+                        }
+                        else if (location == peptide.size() && modAA2.isCTermVariableMod()) {
                             mod2.setLocation(location + 1);
-                        else
+                            cTermMass += modAA2.getModification().getAccurateMass();
+                            hasCTermMod = true;
+                        }
+                        else {
                             mod2.setLocation(location);
+                            mass += modAA2.getModification().getAccurateMass();
+                            modified = true;
+                        }
                         mod2.setMonoisotopicMassDelta(modAA2.getModification().getAccurateMass());
-                        mass += modAA2.getModification().getAccurateMass();
-                        modified = true;
 
                         mod2.getCvParam().addAll(apcGen.getSearchModification(modAA2.getModification()).getCvParam());
                         modList.add(mod2);
                     }
                 }
                 
+                if (hasNTermMod) {
+                    modPepStr.append("[");
+                    if (nTermMass >= 0)
+                        modPepStr.append("+");
+                    modPepStr.append(Math.round(nTermMass));
+                }
+                
+                modPepStr.append(residue);
                 if (modified) {
                     if (mass >= 0)
                         modPepStr.append("+");
                     modPepStr.append(Math.round(mass));
+                }
+                
+                if (hasCTermMod) {
+                    modPepStr.append("}");
+                    if (cTermMass >= 0)
+                        modPepStr.append("+");
+                    modPepStr.append(Math.round(cTermMass));
                 }
                 
                 location++;
