@@ -770,7 +770,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     System.err.println("Custom Amino acids are only allowed using B, J, O, U, X, or Z as the custom symbol.");
                     System.exit(-1);
                 }
-                if (isCustomAminoAcid && !compStr.matches("([CcHhNnOoSs][0-9]{1,3})+")) {
+                if (isCustomAminoAcid && !compStr.matches("([CHNOS][0-9]{0,3})+")) {
                     System.err.println(fileName + ": AminoAcidSet: Invalid composition/mass at line " + lineNum + ": " + s);
                     System.err.println("Custom Amino acids must supply a composition string, and must not use elements other than C H N O S.");
                     System.exit(-1);

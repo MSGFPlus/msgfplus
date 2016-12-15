@@ -89,19 +89,29 @@ public class Composition extends Matter {
         compTable.put('S', 0);
 
         int number = 0;
+        boolean numberSpecified = false;
         char element = '*';
         int i = 0;
         while (i < compositionStr.length()) {
             char c = compositionStr.charAt(i);
             if (Character.isLetter(c)) {
+                if (!numberSpecified && element != '*') {
+                    number = 1;
+                }
                 if (number > 0)
                     compTable.put(element, number);
                 element = c;
                 number = 0;
+                numberSpecified = false;
             } else if (Character.isDigit(c)) {
                 number = 10 * number + Integer.parseInt(String.valueOf(c));
+                numberSpecified = true;
             }
             i++;
+        }
+
+        if (!numberSpecified) {
+            number = 1;
         }
         if (number > 0)
             compTable.put(element, number);
