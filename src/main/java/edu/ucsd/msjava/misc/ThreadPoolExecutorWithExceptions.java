@@ -14,6 +14,7 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
 
     private Throwable thrownData;
     private boolean hasThrownData;
+    private long startTime;
 
     private final List<ProgressData> progressObjects;
 
@@ -35,6 +36,7 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
         thrownData = null;
         hasThrownData = false;
         progressObjects = Collections.synchronizedList(new ArrayList<ProgressData>(maximumPoolSize));
+        startTime = -1;
     }
 
     private ThreadPoolExecutorWithExceptions(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory) {
@@ -42,6 +44,15 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
         thrownData = null;
         hasThrownData = false;
         progressObjects = Collections.synchronizedList(new ArrayList<ProgressData>(maximumPoolSize));
+        startTime = -1;
+    }
+    
+    @Override
+    public void execute(Runnable command) {
+        if (startTime < 0) {
+            startTime = System.currentTimeMillis();
+        }
+        super.execute(command);
     }
 
     @Override
@@ -109,6 +120,17 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
             total = 1;
         }
         double progress = (completed / total) * 100.0;
-        System.out.format("Search progress: %.0f / %.0f tasks, %.2f%%%n", completed, total, progress + getProgressAdjustment());
+        
+        double time = (System.currentTimeMillis() - startTime) / 1000.0;
+        String units = "seconds";
+        if (time > 3600) {
+            time = time / 3600;
+            units = "hours";
+        } else if (time > 60) {
+            time = time / 60;
+            units = "minutes";
+        }
+        double totalProgress = progress + getProgressAdjustment();
+        System.out.format("Search progress: %.0f / %.0f tasks, %.2f%%\t\t%.2f %s elapsed%n", completed, total, totalProgress, time, units);
     }
 }
