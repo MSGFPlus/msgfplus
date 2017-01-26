@@ -284,6 +284,11 @@ public class ParamManager {
         numThreadParam.minValue(1);
         addParameter(numThreadParam);
 
+        EnumParameter verboseOutputParam = new EnumParameter("verbose");
+        verboseOutputParam.registerEntry("report total progress only").setDefault();
+        verboseOutputParam.registerEntry("report total and per-thread progress/status");
+        addParameter(verboseOutputParam);
+
         EnumParameter tdaParam = new EnumParameter("tda");
         tdaParam.registerEntry("don't search decoy database").setDefault();
         tdaParam.registerEntry("search decoy database");

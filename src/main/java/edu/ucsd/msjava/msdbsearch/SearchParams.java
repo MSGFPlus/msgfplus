@@ -41,6 +41,7 @@ public class SearchParams {
     private int minCharge;
     private int maxCharge;
     private int numThreads;
+    private boolean verbose;
     private boolean replicateMergedResults;
     private boolean doNotUseEdgeScore;
     private File dbIndexDir;
@@ -142,6 +143,10 @@ public class SearchParams {
 
     public int getNumThreads() {
         return numThreads;
+    }
+
+    public boolean getVerbose() {
+        return verbose;
     }
 
     public boolean replicateMergedResults() {
@@ -297,6 +302,7 @@ public class SearchParams {
         }
 
         numThreads = paramManager.getIntValue("thread");
+        verbose = paramManager.getIntValue("verbose") == 1;
         doNotUseEdgeScore = paramManager.getIntValue("edgeScore") == 1;
 
         dbIndexDir = paramManager.getFile("dd");

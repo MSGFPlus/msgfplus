@@ -2,7 +2,9 @@ package edu.ucsd.msjava.msdbsearch;
 
 import edu.ucsd.msjava.misc.ProgressData;
 
+import java.io.PrintStream;
 import java.util.List;
+import org.apache.commons.io.output.NullOutputStream;
 
 public class ConcurrentMSGFPlus {
     public static class RunMSGFPlus implements Runnable {
@@ -52,9 +54,17 @@ public class ConcurrentMSGFPlus {
             if (progress == null) {
                 progress = new ProgressData();
             }
+            
+            PrintStream output;
+            if (params.getVerbose()) {
+                output = System.out;
+            } else {
+                output = new PrintStream(new NullOutputStream());
+            }
+            
             progress.stepRange(5.0);
             String threadName = Thread.currentThread().getName();
-            System.out.println(threadName + ": Starting task " + taskNum);
+            output.println(threadName + ": Starting task " + taskNum);
 
             specScanner.setProgressObj(new ProgressData(progress));
 
@@ -62,10 +72,10 @@ public class ConcurrentMSGFPlus {
             long time = System.currentTimeMillis();
             if (specScanner.getPepMassSpecKeyMap().size() == 0)
                 specScanner.makePepMassSpecKeyMap();
-            System.out.println(threadName + ": Preprocessing spectra...");
+            output.println(threadName + ": Preprocessing spectra...");
             specScanner.preProcessSpectra();
-            System.out.print(threadName + ": Preprocessing spectra finished ");
-            System.out.format("(elapsed time: %.2f sec)\n", (float) ((System.currentTimeMillis() - time) / 1000));
+            output.print(threadName + ": Preprocessing spectra finished ");
+            output.format("(elapsed time: %.2f sec)\n", (float) ((System.currentTimeMillis() - time) / 1000));
 
             specScanner.getProgressObj().setParentProgressObj(null);
             progress.report(5.0);
@@ -74,24 +84,25 @@ public class ConcurrentMSGFPlus {
 
             time = System.currentTimeMillis();
             // DB search
-            System.out.println(threadName + ": Database search...");
+            output.println(threadName + ": Database search...");
             scanner.setThreadName(threadName);
+            scanner.setPrintStream(output);
 
             int ntt = params.getNumTolerableTermini();
             if (params.getEnzyme() == null)
                 ntt = 0;
             int nnet = 2 - ntt;
             scanner.dbSearch(nnet);
-            System.out.print(threadName + ": Database search finished ");
-            System.out.format("(elapsed time: %.2f sec)\n", (float) ((System.currentTimeMillis() - time) / 1000));
+            output.print(threadName + ": Database search finished ");
+            output.format("(elapsed time: %.2f sec)\n", (float) ((System.currentTimeMillis() - time) / 1000));
 
             progress.stepRange(95.0);
 
             time = System.currentTimeMillis();
-            System.out.println(threadName + ": Computing spectral E-values...");
+            output.println(threadName + ": Computing spectral E-values...");
             scanner.computeSpecEValue(false);
-            System.out.print(threadName + ": Computing spectral E-values finished ");
-            System.out.format("(elapsed time: %.2f sec)\n", (float) ((System.currentTimeMillis() - time) / 1000));
+            output.print(threadName + ": Computing spectral E-values finished ");
+            output.format("(elapsed time: %.2f sec)\n", (float) ((System.currentTimeMillis() - time) / 1000));
 
             scanner.getProgressObj().setParentProgressObj(null);
             progress.stepRange(100);
@@ -109,7 +120,7 @@ public class ConcurrentMSGFPlus {
 
             progress.report(100.0);
 //			gen.addSpectrumIdentificationResults(scanner.getSpecIndexDBMatchMap());
-            System.out.println(threadName + ": Task " + taskNum + " completed.");
+            output.println(threadName + ": Task " + taskNum + " completed.");
         }
     }
 }

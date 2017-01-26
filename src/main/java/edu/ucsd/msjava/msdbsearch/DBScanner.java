@@ -41,6 +41,7 @@ public class DBScanner {
     private Map<Integer, PriorityQueue<DatabaseMatch>> specIndexDBMatchMap;
 
     private ProgressData progress;
+    private PrintStream output;
 
     // For output
     private String threadName = "";
@@ -85,6 +86,7 @@ public class DBScanner {
         specIndexDBMatchMap = Collections.synchronizedMap(new HashMap<Integer, PriorityQueue<DatabaseMatch>>());
 
         progress = null;
+        output = System.out;
     }
 
     // builder
@@ -139,6 +141,18 @@ public class DBScanner {
 
     public ProgressData getProgressObj() {
         return progress;
+    }
+
+    public void setPrintStream(PrintStream out) {
+        if (out == null) {
+            output = System.out;
+        } else {
+            output = out;
+        }
+    }
+
+    public PrintStream getPrintStream() {
+        return output;
     }
 
     public void dbSearchCTermEnzymeNoMod(int numberOfAllowableNonEnzymaticTermini, boolean verbose) {
@@ -209,8 +223,8 @@ public class DBScanner {
             for (int bufferIndex = 0; bufferIndex < numIndices; bufferIndex++) {
                 // Print out the progress
                 if (verbose && bufferIndex % 2000000 == 0) {
-                    System.out.print(threadName + ": Database search progress... ");
-                    System.out.format("%.1f%% complete\n", bufferIndex / (float) numIndices * 100);
+                    output.print(threadName + ": Database search progress... ");
+                    output.format("%.1f%% complete\n", bufferIndex / (float) numIndices * 100);
                 }
                 progress.report(bufferIndex, numIndices);
                 isExtensionAtTheSameIndex = false;
@@ -508,8 +522,8 @@ public class DBScanner {
         for (SpecKey specKey : specKeyList) {
             numProcessedSpecs++;
             if (numProcessedSpecs % 1000 == 0) {
-                System.out.print(threadName + ": Computing spectral E-values... ");
-                System.out.format("%.1f%% complete\n", numProcessedSpecs / (float) numSpecs * 100);
+                output.print(threadName + ": Computing spectral E-values... ");
+                output.format("%.1f%% complete\n", numProcessedSpecs / (float) numSpecs * 100);
             }
             progress.report(numProcessedSpecs, numSpecs);
 
