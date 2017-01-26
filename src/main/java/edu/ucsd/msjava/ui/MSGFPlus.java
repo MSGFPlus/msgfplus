@@ -346,6 +346,16 @@ public class MSGFPlus {
                 }
             }
 
+            if (executor.HasThrownData()) {
+                // One task threw an exception, so all of the results will be incomplete. Exit.
+                Throwable data = executor.getThrownData();
+                if (data instanceof OutOfMemoryError) {
+                    throw (OutOfMemoryError) data;
+                } else {
+                    throw data;
+                }
+            }
+
             try {
                 executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
             } catch (InterruptedException e) {
