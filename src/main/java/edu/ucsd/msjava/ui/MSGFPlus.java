@@ -333,41 +333,15 @@ public class MSGFPlus {
 
             executor.shutdown();
 
-            int outputLimitCounter = 0;
-            while (executor.getActiveCount() > 0) {
-                if (executor.HasThrownData()) {
-                    // One task threw an exception, so all of the results will be incomplete. Exit.
-                    Throwable data = executor.getThrownData();
-                    if (data instanceof OutOfMemoryError) {
-                        throw (OutOfMemoryError) data;
-                    } else {
-                        throw data;
-                    }
-                }
-
-                try {
-                    Thread.sleep(1000); // sleep for one second; don't busy wait.
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-
-            if (executor.HasThrownData()) {
-                // One task threw an exception, so all of the results will be incomplete. Exit.
-                Throwable data = executor.getThrownData();
-                if (data instanceof OutOfMemoryError) {
-                    throw (OutOfMemoryError) data;
-                } else {
-                    throw data;
-                }
-            }
-
             try {
-                executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+                executor.awaitTerminationWithExceptions(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
             } catch (InterruptedException e) {
-                e.printStackTrace();
-                Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, e);
+                if (!executor.HasThrownData()) {
+                    e.printStackTrace();
+                    Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, e.getMessage(), e);
+                }
             }
+
             // Output completed progress report.
             executor.outputProgressReport();
 

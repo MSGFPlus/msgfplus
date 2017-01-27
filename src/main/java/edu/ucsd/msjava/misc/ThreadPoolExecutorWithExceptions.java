@@ -76,6 +76,7 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
             // store the throwable, to get meaningful data.
             thrownData = t;
             hasThrownData = true;
+            this.shutdownNow();
         }
     }
 
@@ -107,6 +108,27 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
         if (except != null)
         {
             throw except;
+        }
+        return result;
+    }
+
+    public boolean awaitTerminationWithExceptions(long timeout, TimeUnit unit) throws Throwable {
+        boolean result = false;
+        InterruptedException interrupted = null;
+        try {
+            result = this.awaitTermination(timeout, unit);
+        } catch (InterruptedException e) {
+            interrupted = e;
+        }
+
+        // If we have data thrown by a thread, throw that instead of the result of awaitTermination
+        if (hasThrownData) {
+            throw thrownData;
+        }
+
+        // No data thrown by a thread? Return/throw the original result
+        if (interrupted != null) {
+            throw interrupted;
         }
         return result;
     }
