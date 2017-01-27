@@ -41,6 +41,7 @@ public class SearchParams {
     private int minCharge;
     private int maxCharge;
     private int numThreads;
+    private int numTasks;
     private boolean verbose;
     private boolean replicateMergedResults;
     private boolean doNotUseEdgeScore;
@@ -143,6 +144,10 @@ public class SearchParams {
 
     public int getNumThreads() {
         return numThreads;
+    }
+
+    public int getNumTasks() {
+        return numTasks;
     }
 
     public boolean getVerbose() {
@@ -302,6 +307,7 @@ public class SearchParams {
         }
 
         numThreads = paramManager.getIntValue("thread");
+        numTasks = paramManager.getIntValue("tasks");
         verbose = paramManager.getIntValue("verbose") == 1;
         doNotUseEdgeScore = paramManager.getIntValue("edgeScore") == 1;
 

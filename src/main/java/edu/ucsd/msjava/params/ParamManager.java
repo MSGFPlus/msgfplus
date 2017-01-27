@@ -273,7 +273,7 @@ public class ParamManager {
 
         IntRangeParameter isotopeRange = new IntRangeParameter("ti", "IsotopeErrorRange", "Range of allowed isotope peak errors, Default:0,1");
         isotopeRange.setAdditionalDescription("Takes into account of the error introduced by chooosing a non-monoisotopic peak for fragmentation.\n" +
-                "\t   The combination of -t and -ti determins the precursor mass tolerance.\n" +
+                "\t   The combination of -t and -ti determines the precursor mass tolerance.\n" +
                 "\t   E.g. \"-t 20ppm -ti -1,2\" tests abs(exp-calc-n*1.00335Da)<20ppm for n=-1, 0, 1, 2.");
         isotopeRange.setMaxInclusive();
         isotopeRange.defaultValue("0,1");
@@ -283,6 +283,17 @@ public class ParamManager {
         numThreadParam.defaultValue(Runtime.getRuntime().availableProcessors());
         numThreadParam.minValue(1);
         addParameter(numThreadParam);
+
+        IntParameter numTasksParam = new IntParameter("tasks", "NumTasks", "Override the number of tasks to use on the threads, Default: (internally calculated based on inputs)");
+        numTasksParam.setAdditionalDescription("More tasks than threads will reduce the memory requirements of the search, but will be slower (how much depends on the inputs).\n" +
+                "\t   1<=tasks<=numThreads: will create one task per thread, which is the original behavior.\n" +
+                "\t   tasks=0: use default calculation - minimum of: (threads*3) and (numSpectra/250).\n" +
+                "\t   tasks<0: multiply number of threads by abs(tasks) to determine number of tasks (i.e., -2 => \"2 * numThreads\" tasks).\n" +
+                "\t   One task per thread will use the most memory, but will usually finish the fastest.\n" +
+                "\t   2-3 tasks per thread will use comparably less memory, but may cause the search to take 1.5 to 2 times as long.");
+        numTasksParam.defaultValue(0);
+        numTasksParam.minValue(-10);
+        addParameter(numTasksParam);
 
         EnumParameter verboseOutputParam = new EnumParameter("verbose");
         verboseOutputParam.registerEntry("report total progress only").setDefault();

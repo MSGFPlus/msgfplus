@@ -257,11 +257,21 @@ public class MSGFPlus {
         // Thread pool
         ThreadPoolExecutorWithExceptions executor = ThreadPoolExecutorWithExceptions.newFixedThreadPool(numThreads);
 
-        int numTasks = Math.min(Math.min(numThreads * 10, 64), Math.round((float) specSize / 250));
+        int numTasks = Math.min(numThreads * 3, Math.round((float) specSize / 250));
         if (numThreads <= 1) {
             numTasks = 1;
         }
 
+        if (params.getNumTasks() != 0) {
+            numTasks = params.getNumTasks();
+            if (numTasks < 0) {
+                numTasks = numThreads * (numTasks * -1);
+            }
+            if (numTasks < numThreads) {
+                System.out.println("Changing specified tasks from " + numTasks + " to " + numThreads + " to provide the minimum of one task per thread.");
+                numTasks = numThreads;
+            }
+        }
         if (numTasks > 1) {
             System.out.println("Splitting work into " + numTasks + " tasks.");
         } else {
@@ -369,7 +379,10 @@ public class MSGFPlus {
             ex.printStackTrace();
             Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, ex);
             executor.shutdownNow();
-            return "Task terminated; results incomplete. Please run again with a greater amount of memory, using \"-Xmx4G\", for example.";
+            int taskMult = numTasks / numThreads;
+            return "Task terminated; results incomplete. Please run again with a greater amount of memory, using \"-Xmx4G\", for example.\n" +
+                    "\tYou can also use less memory by increasing the number of tasks used for the search, at the cost of more time.\n" +
+                    "\tTry doubling the number used for this search with \"-tasks -" + (taskMult * 2) + "\" or \"-tasks " + (numTasks * 2) + "\".";
         } catch (Exception ex) {
             ex.printStackTrace();
             Logger.getLogger(MSGFPlus.class.getName()).log(Level.SEVERE, null, ex);
