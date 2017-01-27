@@ -328,6 +328,8 @@ public class MSGFPlus {
                 );
                     executor.execute(msgfdbExecutor);
             }
+            // Output initial progress report.
+            executor.outputProgressReport();
 
             executor.shutdown();
 
@@ -342,12 +344,6 @@ public class MSGFPlus {
                         throw data;
                     }
                 }
-
-                if (outputLimitCounter % 60 == 0) {
-                    // Output every minute
-                    executor.outputProgressReport();
-                }
-                outputLimitCounter++;
 
                 try {
                     Thread.sleep(1000); // sleep for one second; don't busy wait.

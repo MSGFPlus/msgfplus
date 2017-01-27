@@ -15,6 +15,14 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
     private Throwable thrownData;
     private boolean hasThrownData;
     private long startTime;
+    private final ScheduledExecutorService statusExecutor = Executors.newSingleThreadScheduledExecutor();
+    private final Runnable progressReportRunnable = new Runnable() {
+        @Override
+        public void run() {
+            outputProgressReport();
+        }
+    };
+    private ScheduledFuture<?> currentProgressReportFuture;
 
     private final List<ProgressData> progressObjects;
 
@@ -51,6 +59,7 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
     public void execute(Runnable command) {
         if (startTime < 0) {
             startTime = System.currentTimeMillis();
+            currentProgressReportFuture = statusExecutor.scheduleAtFixedRate(progressReportRunnable, 1, 1, TimeUnit.MINUTES);
         }
         super.execute(command);
     }
@@ -78,6 +87,28 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
             run.setProgressData(new ProgressData());
             progressObjects.add(run.getProgressData());
         }
+    }
+
+    @Override
+    public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+        boolean result = false;
+        InterruptedException except = null;
+        try {
+            result = super.awaitTermination(timeout, unit);
+        } catch (InterruptedException e) {
+            except = e;
+        }
+
+        // Shutdown the progress reporting
+        currentProgressReportFuture.cancel(true);
+        statusExecutor.shutdown();
+
+        // Return/throw the original result
+        if (except != null)
+        {
+            throw except;
+        }
+        return result;
     }
 
     public boolean HasThrownData() {
