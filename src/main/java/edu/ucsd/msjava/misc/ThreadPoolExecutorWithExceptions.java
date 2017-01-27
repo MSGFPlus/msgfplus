@@ -56,14 +56,14 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
     }
 
     @Override
-    public void afterExecute(Runnable r, Throwable t) {
+    protected void afterExecute(Runnable r, Throwable t) {
         super.afterExecute(r, t);
         outputProgressReport();
         if (r instanceof ConcurrentMSGFPlus.RunMSGFPlus) {
             ConcurrentMSGFPlus.RunMSGFPlus run = (ConcurrentMSGFPlus.RunMSGFPlus) r;
             progressObjects.remove(run.getProgressData());
         }
-        if (t != null) {
+        if (t != null && thrownData == null) {
             // store the throwable, to get meaningful data.
             thrownData = t;
             hasThrownData = true;
@@ -71,7 +71,7 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
     }
 
     @Override
-    public void beforeExecute(Thread t, Runnable r) {
+    protected void beforeExecute(Thread t, Runnable r) {
         super.beforeExecute(t, r);
         if (r instanceof ConcurrentMSGFPlus.RunMSGFPlus) {
             ConcurrentMSGFPlus.RunMSGFPlus run = (ConcurrentMSGFPlus.RunMSGFPlus) r;
