@@ -239,9 +239,16 @@ public class DBScanner {
 //					System.out.println("Debug");
                 // skip redundant peptides
 
+                if (Thread.currentThread().isInterrupted()) {
+                    return;
+                }
 
                 // lcp: shared prefix length
                 for (int peptideLength = minPeptideLength; peptideLength < prevMatchList.length; peptideLength++) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        return;
+                    }
+
                     if (lcp >= peptideLength + 2)    // peptide, N-term, C-term are shared
                     {
                         if (prevMatchList[peptideLength] != null) {
@@ -252,6 +259,10 @@ public class DBScanner {
                     } else if (lcp == peptideLength + 1) {
                         if (prevMatchList[peptideLength] != null) {
                             for (DatabaseMatch m : prevMatchList[peptideLength]) {
+                                if (Thread.currentThread().isInterrupted()) {
+                                    return;
+                                }
+
                                 if (!m.isProteinCTerm() || enzyme == null || enzyme.isNTerm() || numberOfAllowableNonEnzymaticTermini == 2) {
                                     m.addIndex(index);
                                     continue;
@@ -323,6 +334,10 @@ public class DBScanner {
 
                 for (; peptideLengthIndex <= maxPeptideLength && index + peptideLengthIndex < size - 1; peptideLengthIndex++)    // ith character of a peptide
                 {
+                    if (Thread.currentThread().isInterrupted()) {
+                        return;
+                    }
+
                     char residue = sequence.getCharAt(index + peptideLengthIndex);
                     boolean isProteinCTerm = false;
                     if (peptideLengthIndex == 1)    // N-term residue
@@ -414,6 +429,10 @@ public class DBScanner {
                     int cleavageScore = nTermCleavageScore + cTermCleavageScore;
 
                     for (int j = 0; j < candidatePepGrid.size(); j++) {
+                        if (Thread.currentThread().isInterrupted()) {
+                            return;
+                        }
+
                         float theoPeptideMass = candidatePepGrid.getPeptideMass(j);
 //						/// Debug
 //						System.out.println("PepStr: " + candidatePepGrid.getPeptideSeq(j) + " GridSize:" + candidatePepGrid.size());
@@ -449,6 +468,10 @@ public class DBScanner {
                                 continue;
 
                             for (SpecKey specKey : matchedSpecKeyList) {
+                                if (Thread.currentThread().isInterrupted()) {
+                                    return;
+                                }
+
 //								Tolerance specSpecificTol;
 //								if((specSpecificTol = specScanner.getSpectrumSpecificPrecursorTolerance(specKey)) != null)
 //								{
@@ -520,6 +543,9 @@ public class DBScanner {
         int numSpecs = toIndex - fromIndex;
         int numProcessedSpecs = 0;
         for (SpecKey specKey : specKeyList) {
+            if (Thread.currentThread().isInterrupted()) {
+                return;
+            }
             numProcessedSpecs++;
             if (numProcessedSpecs % 1000 == 0) {
                 output.print(threadName + ": Computing spectral E-values... ");

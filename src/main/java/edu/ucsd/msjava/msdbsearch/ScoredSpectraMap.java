@@ -207,6 +207,10 @@ public class ScoredSpectraMap {
         int count = 0;
         int total = toIndex - fromIndex;
         for (SpecKey specKey : specKeyList.subList(fromIndex, toIndex)) {
+            if (Thread.currentThread().isInterrupted()) {
+                return;
+            }
+
             int specIndex = specKey.getSpecIndex();
             Spectrum spec = specAcc.getSpectrumBySpecIndex(specIndex);
             if (activationMethod == ActivationMethod.ASWRITTEN || activationMethod == ActivationMethod.FUSION) {
@@ -245,6 +249,10 @@ public class ScoredSpectraMap {
         Protocol protocol = specDataType.getProtocol();
 
         for (SpecKey specKey : specKeyList.subList(fromIndex, toIndex)) {
+            if (Thread.currentThread().isInterrupted()) {
+                return;
+            }
+
             ArrayList<Integer> specIndexList = specKey.getSpecIndexList();
             if (specIndexList == null) {
                 specIndexList = new ArrayList<Integer>();
@@ -253,6 +261,10 @@ public class ScoredSpectraMap {
             ArrayList<ScoredSpectrum<NominalMass>> scoredSpecList = new ArrayList<ScoredSpectrum<NominalMass>>();
             boolean supportEdgeScore = true;
             for (int specIndex : specIndexList) {
+                if (Thread.currentThread().isInterrupted()) {
+                    return;
+                }
+
                 Spectrum spec = specAcc.getSpectrumBySpecIndex(specIndex);
 
                 NewRankScorer scorer = NewScorerFactory.get(spec.getActivationMethod(), instType, enzyme, protocol);

@@ -70,10 +70,19 @@ public class ConcurrentMSGFPlus {
 
             // Pre-process spectra
             long time = System.currentTimeMillis();
+            if (Thread.currentThread().isInterrupted()) {
+                return;
+            }
             if (specScanner.getPepMassSpecKeyMap().size() == 0)
                 specScanner.makePepMassSpecKeyMap();
             output.println(threadName + ": Preprocessing spectra...");
+            if (Thread.currentThread().isInterrupted()) {
+                return;
+            }
             specScanner.preProcessSpectra();
+            if (Thread.currentThread().isInterrupted()) {
+                return;
+            }
             output.print(threadName + ": Preprocessing spectra finished ");
             output.format("(elapsed time: %.2f sec)\n", (float) ((System.currentTimeMillis() - time) / 1000));
 
@@ -92,7 +101,13 @@ public class ConcurrentMSGFPlus {
             if (params.getEnzyme() == null)
                 ntt = 0;
             int nnet = 2 - ntt;
+            if (Thread.currentThread().isInterrupted()) {
+                return;
+            }
             scanner.dbSearch(nnet);
+            if (Thread.currentThread().isInterrupted()) {
+                return;
+            }
             output.print(threadName + ": Database search finished ");
             output.format("(elapsed time: %.2f sec)\n", (float) ((System.currentTimeMillis() - time) / 1000));
 
@@ -100,12 +115,22 @@ public class ConcurrentMSGFPlus {
 
             time = System.currentTimeMillis();
             output.println(threadName + ": Computing spectral E-values...");
+            if (Thread.currentThread().isInterrupted()) {
+                return;
+            }
             scanner.computeSpecEValue(false);
+            if (Thread.currentThread().isInterrupted()) {
+                return;
+            }
             output.print(threadName + ": Computing spectral E-values finished ");
             output.format("(elapsed time: %.2f sec)\n", (float) ((System.currentTimeMillis() - time) / 1000));
 
             scanner.getProgressObj().setParentProgressObj(null);
             progress.stepRange(100);
+            
+            if (Thread.currentThread().isInterrupted()) {
+                return;
+            }
 
             scanner.generateSpecIndexDBMatchMap();
 
