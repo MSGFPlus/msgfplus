@@ -14,6 +14,26 @@
     </p>
 
     <p>
+        <b>01/27/2017 v2017.01.27</b>
+    </p>
+    <ul>
+        <li>Reduce the number of exceptions seen when a thread exits with an exception - There were multiple exceptions being displayed that were the result of killing the other threads.</li>
+        <li>Change how the overall progress reporting and exception handling is managed, to minimize the thread overhead burden.</li>
+        <li>Allow the user to specify a number of tasks on the command line using "-tasks n", and modify the default calculation. The previous default had a hard-coded limit of 64, and multiplied the number of threads by 10; new default removes the hard-coded limit, and multiplies by only 3.</li>
+        <li>Change the output behavior - by default, the per-thread status messages will no longer be output. Per-thread status messages are a large amount of output, and aren't usually necessary with good progress reporting. The old output can be re-enabled using the command line argument "-verbose 1"</li>
+        <li>Add the elapsed time to the overall progress report</li>
+        <li>Fix the overall progress reporting - get the active task progress again with the overall task progress.</li>
+    </ul>
+
+    <p>
+        <b>01/10/2017 v2017.01.10</b>
+    </p>
+    <ul>
+        <li>Allow CustomAminoAcid formulas to not specify a number if it is 1.</li>
+        <li>Updating UVPD scoring parameters</li>
+    </ul>
+
+    <p>
         <b>12/12/2016 v2016.12.12</b>
     </p>
     <ul>

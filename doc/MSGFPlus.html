@@ -36,6 +36,14 @@
 	   The combination of -t and -ti determins the precursor mass tolerance.
 	   E.g. <span class="code-quote">"-t 20ppm -ti -1,2"</span> tests abs(exp-calc-n*1.00335Da)&lt;20ppm for n=-1, 0, 1, 2.
 	<span class="code-keyword">[-thread NumThreads]</span> (Number of concurrent threads to be executed, <span class="code-object">Default: Number of available cores</span>)
+	<span class="code-keyword">[-tasks NumTasks]</span> (Override the number of tasks to use on the threads, <span class="code-object">Default: (internally calculated based on inputs)</span>)
+	   More tasks than threads will reduce the memory requirements of the search, but will be slower (how much depends on the inputs).
+	   1&lt;=tasks&lt;=numThreads: will create one task per thread, which is the original behavior.
+	   tasks=0: use default calculation - minimum of :(threads*3), and (numSpectra/250).
+	   tasks&lt;0: multiply number of threads by abs(tasks) to determine number of tasks (i.e., -2 =&gt; "2 * numThreads" tasks).
+	   One task per thread will use the most memory, but will usually finish the fastest.
+	   2-3 tasks per thread will use comparably less memory, but may cause the search to take 1.5 to 2 times as long.
+	<span class="code-keyword">[-verbose 0/1]</span> (<span class="code-object">0: report total progress only (Default)</span>, 1: report total and per-thread progress/status)
 	<span class="code-keyword">[-tda 0/1]</span> (<span class="code-object">0: don't search decoy database (Default)</span>, 1: search decoy database)
 	<span class="code-keyword">[-m FragmentMethodID]</span> (<span class="code-object">0: As written in the spectrum or CID if no info (Default)</span>, 1: CID, 2: ETD, 3: HCD)
 	<span class="code-keyword">[-inst InstrumentID]</span> (<span class="code-object">0: Low-res LCQ/LTQ (Default)</span>, 1: High-res LTQ, 2: TOF, 3: Q-Exactive)
@@ -110,6 +118,29 @@ Example (low-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzXML -d IPI_h
           <li>Default value is the number of available logical cores (e.g. 8 for quad-core processor with hyper-threading support).</li>
         </ul>
       </li>
+      <li style="margin-bottom: 10px;">
+        <b>-tasks NumTasks</b> (Override the number of tasks to use on the threads, Default: (internally calculated based on inputs))
+        <ul>
+          <li>Manually set the number of tasks to create for the search.</li>
+          <li>More tasks than threads will reduce the memory requirements of the search, but will be slower (how much depends on the inputs).</li>
+          <li>If the spectrum file is particularly large, a larger number of tasks will decrease the possibility of out of memory errors.</li>
+          <li>If the fasta file being searched is larger than 10MB, more tasks will cause a noticeably longer search time.</li>
+          <li>1&lt;=tasks&lt;=numThreads: will create one task per thread, which is the original behavior.</li>
+          <li>tasks=0: use default calculation - minimum of :(threads*3), and (numSpectra/250).</li>
+          <li>tasks&lt;0: multiply number of threads by abs(tasks) to determine number of tasks (i.e., -2 =&gt; "2 * numThreads" tasks).</li>
+          <li>One task per thread will use the most memory, but will usually finish the fastest.</li>
+          <li>2-3 tasks per thread will use comparably less memory, but may cause the search to take 1.5 to 2 times as long with a 23MB fasta file.</li>
+        </ul>
+      </li>
+      <li style="margin-bottom: 10px;">
+        <b>-verbose 0/1</b> (0: report total progress only (Default), 1: report total and per-thread progress/status)
+        <ul>
+          <li>Changes the verbosity of the output</li>
+          <li>If 0, only the overall progress is reported, creating the minimal useful output to console.</li>
+          <li>If 1, you see all of the output of 0, but with additional console output from each thread and task.</li>
+          <li>1 will produce console output that matches the console output prior to this version.</li>
+        </ul>
+      </li>
       <li>
         <b>-tda 0/1</b> (0: don't search decoy database (default), 1: search decoy database to compute FDR)
         <ul>
@@ -181,7 +212,7 @@ Example (low-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzXML -d IPI_h
           </li>
           <li>By default, -ntt 2 will be used. Using -ntt 1 (or 0) will make the search significantly slower.</li>
         </ul>
-      </li>
+    </li>
     </ul>
     <p class="note">The meaning and the default value have changed as of version 8442 (Sept. 2012).</p>
 
