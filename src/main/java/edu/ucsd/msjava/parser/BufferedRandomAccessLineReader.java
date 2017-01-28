@@ -52,7 +52,9 @@ public class BufferedRandomAccessLineReader implements LineReader {
             tempBuffer = ByteBuffer.allocate(bufSize);
             bytesRead = in.read(tempBuffer);
         } catch (IOException e1) {
-            e1.printStackTrace();
+            if (!Thread.currentThread().isInterrupted()) {
+                e1.printStackTrace();
+            }
         }
 
         buffer = tempBuffer.array();
@@ -112,7 +114,9 @@ public class BufferedRandomAccessLineReader implements LineReader {
             try {
                 in.position(pointer);
             } catch (IOException e) {
-                e.printStackTrace();
+                if (!Thread.currentThread().isInterrupted()) {
+                    e.printStackTrace();
+                }
             }
             fillBuffer();
         }
