@@ -23,6 +23,7 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
         }
     };
     private ScheduledFuture<?> currentProgressReportFuture;
+    private int progressReportDelayNextChangeMinutes = 0;
 
     private final List<ProgressData> progressObjects;
 
@@ -59,7 +60,9 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
     public void execute(Runnable command) {
         if (startTime < 0) {
             startTime = System.currentTimeMillis();
-            currentProgressReportFuture = statusExecutor.scheduleAtFixedRate(progressReportRunnable, 1, 1, TimeUnit.MINUTES);
+            if (currentProgressReportFuture == null) {
+                currentProgressReportFuture = statusExecutor.scheduleAtFixedRate(progressReportRunnable, 1, 1, TimeUnit.MINUTES);
+            }
         }
         super.execute(command);
     }
@@ -175,6 +178,7 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
         double progress = (completed / total) * 100.0;
         
         double time = (System.currentTimeMillis() - startTime) / 1000.0;
+        double timeMinutes = time / 60;
         String units = "seconds";
         if (time > 3600) {
             time = time / 3600;
@@ -185,5 +189,42 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
         }
         double totalProgress = progress + getProgressAdjustment();
         System.out.format("Search progress: %.0f / %.0f tasks, %.2f%%\t\t%.2f %s elapsed%n", completed, total, totalProgress, time, units);
+        
+        if (timeMinutes >= progressReportDelayNextChangeMinutes) {
+            ChangeProgressReportDelay();
+        }
+    }
+    
+    private void ChangeProgressReportDelay() {
+        int nextDelayValue;
+        TimeUnit nextDelayUnits;
+        switch (progressReportDelayNextChangeMinutes) {
+            case 0:
+                nextDelayValue = 1;
+                nextDelayUnits = TimeUnit.MINUTES;
+                progressReportDelayNextChangeMinutes = 60;
+                break;
+            case 60:
+                nextDelayValue = 5;
+                nextDelayUnits = TimeUnit.MINUTES;
+                progressReportDelayNextChangeMinutes = 180;
+                break;
+            case 180:
+                nextDelayValue = 15;
+                nextDelayUnits = TimeUnit.MINUTES;
+                progressReportDelayNextChangeMinutes = 600;
+                break;
+            case 600:
+                nextDelayValue = 30;
+                nextDelayUnits = TimeUnit.MINUTES;
+                progressReportDelayNextChangeMinutes = Integer.MAX_VALUE;
+                break;
+            default:
+                return;
+        }
+        if (currentProgressReportFuture != null) {
+            currentProgressReportFuture.cancel(false);
+        }
+        currentProgressReportFuture = statusExecutor.scheduleAtFixedRate(progressReportRunnable, nextDelayValue, nextDelayValue, nextDelayUnits);
     }
 }
