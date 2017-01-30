@@ -27,28 +27,28 @@
 	<span class="code-keyword">-s SpectrumFile</span> (*.mzML, *.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt)
 	   Spectra should be centroided. Profile spectra will be ignored.
 	<span class="code-keyword">-d DatabaseFile</span> (*.fasta or *.fa)
-	<span class="code-keyword">[-o OutputFile (*.mzid)]</span> (<span class="code-object">Default: SpectrumFileName.mzid</span>)
+	<span class="code-keyword">[-o OutputFile (*.mzid)]</span> (<span class="code-object">Default: [SpectrumFileName].mzid</span>)
 	<span class="code-keyword">[-t PrecursorMassTolerance]</span> (e.g. 2.5Da, 20ppm or 0.5Da,2.5Da, <span class="code-object">Default: 20ppm</span>)
 	   Use comma to set asymmetric values. E.g. <span class="code-quote">"-t 0.5Da,2.5Da"</span> will set 0.5Da to the minus (expMass&lt;theoMass) and 2.5Da to plus (expMass&gt;theoMass)
 	<span class="code-keyword">[-ti IsotopeErrorRange]</span> (Range of allowed isotope peak errors, <span class="code-object">Default:0,1</span>)
 	   Takes into account of the error introduced by chooosing a non-monoisotopic peak for fragmentation.
 	   On Windows, put the range inside <span class="code-quote">""</span> (e.g. <span class="code-quote">"0,1"</span>).
-	   The combination of -t and -ti determins the precursor mass tolerance.
+	   The combination of -t and -ti determines the precursor mass tolerance.
 	   E.g. <span class="code-quote">"-t 20ppm -ti -1,2"</span> tests abs(exp-calc-n*1.00335Da)&lt;20ppm for n=-1, 0, 1, 2.
 	<span class="code-keyword">[-thread NumThreads]</span> (Number of concurrent threads to be executed, <span class="code-object">Default: Number of available cores</span>)
 	<span class="code-keyword">[-tasks NumTasks]</span> (Override the number of tasks to use on the threads, <span class="code-object">Default: (internally calculated based on inputs)</span>)
 	   More tasks than threads will reduce the memory requirements of the search, but will be slower (how much depends on the inputs).
 	   1&lt;=tasks&lt;=numThreads: will create one task per thread, which is the original behavior.
-	   tasks=0: use default calculation - minimum of :(threads*3), and (numSpectra/250).
+	   tasks=0: use default calculation - minimum of: (threads*3) and (numSpectra/250).
 	   tasks&lt;0: multiply number of threads by abs(tasks) to determine number of tasks (i.e., -2 =&gt; "2 * numThreads" tasks).
 	   One task per thread will use the most memory, but will usually finish the fastest.
 	   2-3 tasks per thread will use comparably less memory, but may cause the search to take 1.5 to 2 times as long.
 	<span class="code-keyword">[-verbose 0/1]</span> (<span class="code-object">0: report total progress only (Default)</span>, 1: report total and per-thread progress/status)
 	<span class="code-keyword">[-tda 0/1]</span> (<span class="code-object">0: don't search decoy database (Default)</span>, 1: search decoy database)
-	<span class="code-keyword">[-m FragmentMethodID]</span> (<span class="code-object">0: As written in the spectrum or CID if no info (Default)</span>, 1: CID, 2: ETD, 3: HCD)
-	<span class="code-keyword">[-inst InstrumentID]</span> (<span class="code-object">0: Low-res LCQ/LTQ (Default)</span>, 1: High-res LTQ, 2: TOF, 3: Q-Exactive)
+	<span class="code-keyword">[-m FragmentMethodID]</span> (<span class="code-object">0: As written in the spectrum or CID if no info (Default)</span>, 1: CID, 2: ETD, 3: HCD, 4: UVPD)
+	<span class="code-keyword">[-inst InstrumentID]</span> (<span class="code-object">0: Low-res LCQ/LTQ (Default)</span>, 1: Orbitrap/FTICR, 2: TOF, 3: Q-Exactive)
 	<span class="code-keyword">[-e EnzymeID]</span> (0: unspecific cleavage, <span class="code-object">1: Trypsin (Default)</span>, 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: glutamyl endopeptidase, 6: Arg-C, 7: Asp-N, 8: alphaLP, 9: no cleavage)
-	<span class="code-keyword">[-protocol ProtocolID]</span> (<span class="code-object">0: NoProtocol (Default)</span>, 1: Phosphorylation, 2: iTRAQ, 3: iTRAQPhospho)
+	<span class="code-keyword">[-protocol ProtocolID]</span> (<span class="code-object">0: Automatic (Default)</span>, 1: Phosphorylation, 2: iTRAQ, 3: iTRAQPhospho, 4: TMT, 5: Standard)
 	<span class="code-keyword">[-ntt 0/1/2]</span> (Number of Tolerable Termini, <span class="code-object">Default: 2</span>)
 	   E.g. For trypsin, 0: non-tryptic, 1: semi-tryptic, 2: fully-tryptic peptides only.
 	<span class="code-keyword">[-mod ModificationFileName]</span> (Modification file, <span class="code-object">Default: standard amino acids with fixed C+57</span>)
@@ -59,8 +59,8 @@
 	<span class="code-keyword">[-n NumMatchesPerSpec]</span> (Number of matches per spectrum to be reported, <span class="code-object">Default: 1</span>)
 	<span class="code-keyword">[-addFeatures 0/1]</span> (<span class="code-object">0: output basic scores only (Default)</span>, 1: output additional features)
 	<span class="code-keyword">[-ccm ChargeCarrierMass]</span> (Mass of charge carrier, <span class="code-object">Default: mass of proton (1.00727649)</span>)
-Example (high-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzXML -d IPI_human_3.79.fasta -t 20ppm -ti -1,2 -ntt 0 -tda 1 -o testMSGFPlus.mzid
-Example (low-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzXML -d IPI_human_3.79.fasta -t 0.5Da,2.5Da -ntt 0 -tda 1 -o testMSGFPlus.mzid</pre>
+Example (high-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzXML -d IPI_human_3.79.fasta -t 20ppm -ti -1,2 -ntt 2 -tda 1 -o testMSGFPlus.mzid
+Example (low-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzXML -d IPI_human_3.79.fasta -t 0.5Da,2.5Da -ntt 2 -tda 1 -o testMSGFPlus.mzid</pre>
     </div>
 
     <h3>Parameters:</h3>
@@ -160,18 +160,17 @@ Example (low-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzXML -d IPI_h
 
     <ul>
       <li style="margin-bottom: 10px;">
-        <b>-m FragmentationMethodID</b> (0: as written in the spectrum or CID if no info (Default), 1: CID, 2: ETD, 3: HCD, 4: Merge spectra from the same precursor)
+        <b>-m FragmentationMethodID</b> (0: as written in the spectrum or CID if no info (Default), 1: CID, 2: ETD, 3: HCD, 4: UVPD)
         <ul>
           <li>Fragmentation method identifier (used to determine the scoring model).</li>
           <li>If the identifier is 0 and fragmentation method is written in the spectrum file (e.g. mzML files), MS-GF+ will recognize the fragmentation method and use a relevant scoring model.</li>
           <li>If the identifier is 0 and there is no fragmentation method information in the spectrum (e.g. mgf files), CID model will be used by default.</li>
           <li>If the identifier is non-zero and the spectrum has fragmentation method information, only the spectra that match with the identifier will be processed.</li>
           <li>If the identifier is non-zero and the spectrum has no fragmentation method information, MS-GF+ will process all spectra assuming the specified fragmentation method.</li>
-          <li>If the identifier is 4, MS/MS spectra from the same precursor ion (e.g. CID/ETD pairs, CID/HCD/ETD triplets) will be merged and the "merged" spectrum will be used for searching instead of individual spectra. See Kim et al., MCP 2010 for details.</li>
         </ul>
       </li>
       <li style="margin-bottom: 10px;">
-        <b>-inst InstrumentID</b> (0: Low-res LCQ/LTQ (Default for CID and ETD), 1: High-res LTQ (Default for HCD), 2: TOF, 3: Q-Exactive)
+        <b>-inst InstrumentID</b> (0: Low-res LCQ/LTQ (Default for CID and ETD), 1: Orbitrap/FTICR (Default for HCD), 2: TOF, 3: Q-Exactive)
         <ul>
           <li>Identifier of the instrument to generate MS/MS spectra (used to determine the scoring model).</li>
           <li>For "hybrid" spectra with high-precision MS1 and low-precision MS2, use 0.</li>
@@ -194,10 +193,16 @@ Example (low-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzXML -d IPI_h
         <b>-p ProtocolID</b> (Default: 0)
         <ul>
           <li>Protocol identifier. Protocols are used to enable scoring parameters for enriched and/or labeled samples.</li>
-          <li>0: No protocol (Default)</li>
+          <li>0: Automatic (Default)</li>
+            <ul>
+              <li>This will set the protocol based on the names of the modifications in Mods.txt</li>
+              <li>It looks for names (case insensitive) that start with "itraq", "phospho", and "tmt"</li>
+            </ul>
           <li>1: Phosphorylation: for phosphopeptide enriched samples</li>
           <li>2: iTRAQ: for iTRAQ-labeled samples</li>
           <li>3: iTRAQPhospho: for phosphopeptide enriched and iTRAQ-labeled samples</li>
+          <li>4: TMT: for TMT-labeled samples</li>
+          <li>5: Standard: for samples not in the above categories (no protocol)</li>
         </ul>
       </li>
       <li>
@@ -271,18 +276,10 @@ Example (low-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzXML -d IPI_h
           </li>
         </ul>
       </li>
-      <li style="margin-bottom: 10px;">
-        <b>-showQValue 0/1</b>
-        <ul>
-          <li>If 0, QValue and PepQValue are not reported.</li>
-          <li>If 1, QValue (PSM-level Q-value) and PepQValue (peptide-level Q-value) are reported (Default).</li>
-          <li>This parameter is ignored when "-tda 0".</li>
-        </ul>
-      </li>
     </ul>
 
     <h3>MS-GF+ output</h3>
-    <p>MS-GF+ outputs results as an mzIdentML (version 1.1) file. See <a href="http://www.psidev.info/mzidentml/">http://www.psidev.info/mzidentml/</a> for details on the mzIdentML format. For every PSM, MS-GF+ reports the scores.&nbsp;</p>
+    <p>MS-GF+ outputs results as an mzIdentML (version 1.1) file. See <a href="http://www.psidev.info/mzidentml/">http://www.psidev.info/mzidentml/</a> for details on the mzIdentML format. For every PSM, MS-GF+ reports the following scores:</p>
 
     <ul>
       <li style="margin-bottom: 5px;">
