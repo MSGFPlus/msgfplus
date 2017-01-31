@@ -428,6 +428,9 @@ public class ParamManager {
         FileListParameter resFileParam = new FileListParameter("i", "ResultPath", "MSGFDBResultFile (*.mzid) or MSGFDBResultDir");
         resFileParam.addFileFormat(new FileFormat(".mzid"));
         resFileParam.addFileFormat(new FileFormat(".tsv"));
+        resFileParam.setAdditionalDescription("mzid files are converted to tsv using default settings before use.\n" +
+                "\t   If you are going to run ScoringParamGen multiple times on the same data (with different parameters),\n" +
+                "\t   convert any mzid files to tsv prior to running ScoringParamGen.");
         addParameter(resFileParam);
 
         FileParameter specDirParam = new FileParameter("d", "SpecDir", "Path to directory containing spectrum files");
@@ -459,6 +462,26 @@ public class ParamManager {
 
         // Protocol
         addProtocolParam();
+
+        IntParameter numThreadParam = new IntParameter("thread", "NumThreads", "Number of concurrent threads to be executed, Default: Number of available cores");
+        numThreadParam.defaultValue(Runtime.getRuntime().availableProcessors() / 2);
+        numThreadParam.setAdditionalDescription("This is best set to the number of physical cores in a single NUMA node.\n" +
+                "\t   Generally a single NUMA node is 1 physical processor.\n" +
+                "\t   The default will try to use hyperthreading cores, which can increase the amount of time this process will take.\n" +
+                "\t   This is because the part of Scoring param generation that is multithreaded is also I/O intensive.");
+        numThreadParam.minValue(1);
+        addParameter(numThreadParam);
+
+        EnumParameter dropErrors = new EnumParameter("dropErrors");
+        dropErrors.registerEntry("Fail on first dataset with errors").setDefault();
+        dropErrors.registerEntry("Drop results from datasets with errors");
+        numThreadParam.setAdditionalDescription("If 0, the first dataset encountered.\n" +
+                "\t   Generally a single NUMA node is 1 physical processor.\n" +
+                "\t   The default will try to use hyperthreading cores, which can increase the amount of time this process will take.\n" +
+                "\t   This is because the part of Scoring param generation that is multithreaded is also I/O intensive.");
+        addParameter(dropErrors);
+
+        addExample("Example (high-precision): java -Xmx4G -cp MSGFPlus.jar edu.ucsd.msjava.ui.ScoringParamGen -i resultsFolder -d spectraFolder -m 2 -e 1 -protocol 5 -thread 4 -dropErrors 1");
 
         EnumParameter mgfParam = new EnumParameter("mgf");
         mgfParam.registerEntry("do not create annotated mgf").setDefault();

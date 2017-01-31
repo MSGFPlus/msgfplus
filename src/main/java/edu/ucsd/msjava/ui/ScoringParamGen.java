@@ -50,6 +50,8 @@ public class ScoringParamGen {
     public static String runScoringParamGen(ParamManager paramManager) {
         File[] resultFiles = paramManager.getFiles("i");
         File specDir = paramManager.getFile("d");
+        int numThreads = paramManager.getIntValue("thread");
+        boolean dropErrors = paramManager.getIntValue("dropErrors") == 1;
 
         AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSet();
 
@@ -69,10 +71,19 @@ public class ScoringParamGen {
 
 
         AnnotatedSpectra annotatedSpec = new AnnotatedSpectra(resultFiles, specDir, aaSet);
-        System.out.print("Reading training PSMs...");
-        String errMsg = annotatedSpec.parse();
-        if (errMsg != null)
-            return errMsg;
+        System.out.println("Reading training PSMs...");
+        String errMsg = annotatedSpec.parse(numThreads, dropErrors);
+        if (errMsg != null) {
+            if (dropErrors) {
+                System.out.println("Datasets with errors (dropped): " + errMsg);
+            } else {
+                return errMsg;
+            }
+        }
+        if (annotatedSpec.getAnnotatedSpecContainer().isEmpty())
+        {
+            return "No results to train on. Exiting.";
+        }
         System.out.println("Done.");
 
         ActivationMethod activationMethod = paramManager.getActivationMethod();

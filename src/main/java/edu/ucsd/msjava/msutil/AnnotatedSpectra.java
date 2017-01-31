@@ -1,5 +1,9 @@
 package edu.ucsd.msjava.msutil;
 
+import edu.ucsd.msjava.misc.ExceptionCapturer;
+import edu.ucsd.msjava.misc.ProgressData;
+import edu.ucsd.msjava.misc.ProgressReporter;
+import edu.ucsd.msjava.misc.ThreadPoolExecutorWithExceptions;
 import edu.ucsd.msjava.mzid.MzIDParser;
 import edu.ucsd.msjava.parser.BufferedLineReader;
 
@@ -8,14 +12,44 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-public class AnnotatedSpectra {
+public class AnnotatedSpectra implements ProgressReporter, ExceptionCapturer {
     private File[] resultFiles;
     private File specDir;
     private AminoAcidSet aaSet;
     private float fdrThreshold = 0.01f;
+    private ProgressData progress;
+    private boolean dropErrorDatasets = false;
+    private Throwable exception = null;
+
+    @Override
+    public void setProgressData(ProgressData data) {
+        progress = data;
+    }
+
+    @Override
+    public ProgressData getProgressData() {
+        return progress;
+    }
+    
+    @Override
+    public boolean hasException() {
+        return exception != null;
+    }
+    
+    @Override
+    public Throwable getException() {
+        return exception;
+    }
+    
+    public void setDropErrorDatasets(boolean dropErrors) {
+        dropErrorDatasets = dropErrors;
+    }
 
     private SpectraContainer annotatedSpectra;
 
@@ -23,6 +57,38 @@ public class AnnotatedSpectra {
         this.resultFiles = resultFiles;
         this.specDir = specDir;
         this.aaSet = aaSet;
+        this.progress = null;
+    }
+    
+    public AnnotatedSpectra(File[] resultFiles, File specDir, AminoAcidSet aaSet, float fdrThreshold, boolean dropErrors) {
+        this.resultFiles = resultFiles;
+        this.specDir = specDir;
+        this.aaSet = aaSet;
+        this.fdrThreshold = fdrThreshold;
+        this.dropErrorDatasets = dropErrors;
+        this.progress = null;
+    }
+    
+    public static class ConcurrentAnnotatedSpectraParser extends AnnotatedSpectra implements Runnable {
+        private List<Spectrum> results;
+        private List<String> errors;
+        
+        public ConcurrentAnnotatedSpectraParser(File[] resultFiles, File specDir, AminoAcidSet aaSet, float fdrThreshold, boolean dropErrors, List<Spectrum> resultList, List<String> errorList) {
+            super(resultFiles, specDir, aaSet, fdrThreshold, dropErrors);
+            results = resultList;
+            errors = errorList;
+        }
+        
+        @Override
+        public void run() {
+            //String result = parse();
+            String result = parse();
+            results.addAll(getAnnotatedSpecContainer());
+            if (result != null) {
+                errors.add(result);
+                //System.out.println("ERROR: " + result);
+            }
+        }
     }
 
     public AnnotatedSpectra fdrThreshold(float fdrThreshold) {
@@ -33,18 +99,112 @@ public class AnnotatedSpectra {
     public SpectraContainer getAnnotatedSpecContainer() {
         return annotatedSpectra;
     }
+    
+    public String parse(int numThreads, boolean dropErrors) {
+        if (numThreads <= 1) {
+            return parse();
+        }
+
+        List<Spectrum> results = Collections.synchronizedList(new ArrayList<Spectrum>());
+        List<String> errors = Collections.synchronizedList(new ArrayList<String>());
+
+        // Thread pool
+        ThreadPoolExecutorWithExceptions executor = ThreadPoolExecutorWithExceptions.newFixedThreadPool(numThreads);
+        executor.setTaskName("Parse");
+
+        try {
+            List<List<File>> taskFiles = new ArrayList<List<File>>();
+            for (int i = 0; i < numThreads; i++) {
+                taskFiles.add(new ArrayList<File>());
+            }
+            for (int i = 0; i < resultFiles.length; i++)
+            {
+                // Evenly distribute the files to the threads; doing it in a collated fashion because files
+                // of similar size will often have similar names, and we don't want to give one thread all
+                // of the largest files.
+                taskFiles.get(i % numThreads).add(resultFiles[i]);
+            }
+            for (int i = 0; i < numThreads; i++) {
+                List<File> thisTaskFiles = taskFiles.get(i);
+                System.out.println("Task " + (i + 1) + ": " + thisTaskFiles.size() + " files.");
+                ConcurrentAnnotatedSpectraParser parser = new ConcurrentAnnotatedSpectraParser(thisTaskFiles.toArray(new File[0]), specDir, aaSet, fdrThreshold, dropErrors, results, errors);
+                executor.execute(parser);
+            }
+            taskFiles.clear();
+            
+            // Output initial progress report.
+            executor.outputProgressReport();
+
+            executor.shutdown();
+
+            try {
+                executor.awaitTerminationWithExceptions(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            } catch (InterruptedException e) {
+                if (!executor.HasThrownData()) {
+                    e.printStackTrace();
+                }
+            }
+            
+            // Output completed progress report.
+            executor.outputProgressReport();
+        } catch (OutOfMemoryError ex) {
+            ex.printStackTrace();
+            executor.shutdownNow();
+            return "Task terminated; results incomplete. Please run again with a greater amount of memory, using \"-Xmx4G\", for example.";
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            executor.shutdownNow();
+            return "Task terminated; results incomplete. Please run again.";
+        } catch (Throwable ex) {
+            ex.printStackTrace();
+            executor.shutdownNow();
+            return "Task terminated; results incomplete. Please run again.";
+        }
+        annotatedSpectra = new SpectraContainer();
+        annotatedSpectra.addAll(results);
+        String errorList = null;
+        for (String error : errors) {
+            if (errorList == null) {
+                errorList = error;
+            } else {
+                errorList += "\n" + error;
+            }
+        }
+        return errorList;
+    }
 
     public String parse() {
+        if (progress == null) {
+            progress = new ProgressData();
+        }
         annotatedSpectra = new SpectraContainer();
 
         System.out.println("Using " + resultFiles.length + " result files:");
         for (File resultFile : resultFiles)
             System.out.println("\t" + resultFile.getName());
 
+        
+        int count = 0;
+        int total = resultFiles.length;
+        String aggErrs = null;
         for (File resultFile : resultFiles) {
             String errMsg = parseFile(resultFile);
-            if (errMsg != null)
-                return "Error while parsing " + resultFile.getName() + ": " + errMsg;
+            count++;
+            progress.report(count, total);
+            if (errMsg != null){
+                String msg = "Error while parsing " + resultFile.getName() + ": " + errMsg;
+                if (dropErrorDatasets) {
+                    System.out.println(msg);
+                    if (aggErrs == null) {
+                        aggErrs = msg;
+                    } else {
+                        aggErrs += "\n" + msg;
+                    }
+                } else {
+                    exception = new Exception(msg);
+                    return msg;
+                }
+            }
         }
         return null;
     }
@@ -132,6 +292,7 @@ public class AnnotatedSpectra {
         }
 
         Iterator<String> itr = resultList.iterator();
+        List<Spectrum> annotatedResults = new ArrayList<Spectrum>();
 
         HashMap<String, SpectraAccessor> specAccessorMap = new HashMap<String, SpectraAccessor>();
         while (itr.hasNext()) {
@@ -165,7 +326,7 @@ public class AnnotatedSpectra {
 
                 if (Math.abs(spec.getPeptideMass() - peptide.getMass()) < 5) {
                     spec.setAnnotation(peptide);
-                    annotatedSpectra.add(spec);
+                    annotatedResults.add(spec);
                 } else {
                     return "parent mass doesn't match " + specFileName + ":" + specId + " " + peptide.toString() + " " + spec.getPeptideMass() + " != " + peptide.getMass();
                 }
@@ -177,6 +338,7 @@ public class AnnotatedSpectra {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        annotatedSpectra.addAll(annotatedResults);
         return null;
     }
 }
