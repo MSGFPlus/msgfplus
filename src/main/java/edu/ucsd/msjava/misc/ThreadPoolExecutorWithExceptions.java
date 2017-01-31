@@ -70,7 +70,6 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
     @Override
     protected void afterExecute(Runnable r, Throwable t) {
         super.afterExecute(r, t);
-        outputProgressReport();
         if (r instanceof ProgressReporter) {
             ProgressReporter reporter = (ProgressReporter) r;
             progressObjects.remove(reporter.getProgressData());
@@ -80,6 +79,11 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
             thrownData = t;
             hasThrownData = true;
             this.shutdownNow();
+            return;
+        }
+        if (t == null) {
+            // Output the progress report right after exiting this function, but just once.
+            statusExecutor.schedule(progressReportRunnable, 10, TimeUnit.NANOSECONDS);
         }
     }
 
