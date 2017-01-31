@@ -1,7 +1,5 @@
 package edu.ucsd.msjava.misc;
 
-import edu.ucsd.msjava.msdbsearch.ConcurrentMSGFPlus;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,6 +12,8 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
 
     private Throwable thrownData;
     private boolean hasThrownData;
+    private String taskName;
+    private String progressTitle = "Progress";
     private long startTime;
     private final ScheduledExecutorService statusExecutor = Executors.newSingleThreadScheduledExecutor();
     private final Runnable progressReportRunnable = new Runnable() {
@@ -71,9 +71,9 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
     protected void afterExecute(Runnable r, Throwable t) {
         super.afterExecute(r, t);
         outputProgressReport();
-        if (r instanceof ConcurrentMSGFPlus.RunMSGFPlus) {
-            ConcurrentMSGFPlus.RunMSGFPlus run = (ConcurrentMSGFPlus.RunMSGFPlus) r;
-            progressObjects.remove(run.getProgressData());
+        if (r instanceof ProgressReporter) {
+            ProgressReporter reporter = (ProgressReporter) r;
+            progressObjects.remove(reporter.getProgressData());
         }
         if (t != null && thrownData == null) {
             // store the throwable, to get meaningful data.
@@ -86,10 +86,10 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
     @Override
     protected void beforeExecute(Thread t, Runnable r) {
         super.beforeExecute(t, r);
-        if (r instanceof ConcurrentMSGFPlus.RunMSGFPlus) {
-            ConcurrentMSGFPlus.RunMSGFPlus run = (ConcurrentMSGFPlus.RunMSGFPlus) r;
-            run.setProgressData(new ProgressData());
-            progressObjects.add(run.getProgressData());
+        if (r instanceof ProgressReporter) {
+            ProgressReporter reporter = (ProgressReporter) r;
+            reporter.setProgressData(new ProgressData());
+            progressObjects.add(reporter.getProgressData());
         }
     }
 
@@ -143,6 +143,11 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
     public Throwable getThrownData() {
         return thrownData;
     }
+    
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
+        this.progressTitle = taskName + " progress";
+    }
 
     /*
     * Get the adjustment value for progress reporting
@@ -188,7 +193,7 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
             units = "minutes";
         }
         double totalProgress = progress + getProgressAdjustment();
-        System.out.format("Search progress: %.0f / %.0f tasks, %.2f%%\t\t%.2f %s elapsed%n", completed, total, totalProgress, time, units);
+        System.out.format("%s: %.0f / %.0f tasks, %.2f%%\t\t%.2f %s elapsed%n", this.progressTitle, completed, total, totalProgress, time, units);
         
         if (timeMinutes >= progressReportDelayNextChangeMinutes) {
             ChangeProgressReportDelay();

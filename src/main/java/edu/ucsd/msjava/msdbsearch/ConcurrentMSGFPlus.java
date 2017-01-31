@@ -1,13 +1,14 @@
 package edu.ucsd.msjava.msdbsearch;
 
 import edu.ucsd.msjava.misc.ProgressData;
+import edu.ucsd.msjava.misc.ProgressReporter;
 
 import java.io.PrintStream;
 import java.util.List;
 import org.apache.commons.io.output.NullOutputStream;
 
 public class ConcurrentMSGFPlus {
-    public static class RunMSGFPlus implements Runnable {
+    public static class RunMSGFPlus implements Runnable, ProgressReporter {
         private final ScoredSpectraMap specScanner;
         private final DBScanner scanner;
         SearchParams params;
@@ -15,10 +16,12 @@ public class ConcurrentMSGFPlus {
         private final int taskNum;
         private ProgressData progress;
 
+        @Override
         public void setProgressData(ProgressData data) {
             progress = data;
         }
 
+        @Override
         public ProgressData getProgressData() {
             return progress;
         }

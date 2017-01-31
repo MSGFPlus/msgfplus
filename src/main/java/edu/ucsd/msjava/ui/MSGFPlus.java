@@ -256,6 +256,7 @@ public class MSGFPlus {
 
         // Thread pool
         ThreadPoolExecutorWithExceptions executor = ThreadPoolExecutorWithExceptions.newFixedThreadPool(numThreads);
+        executor.setTaskName("Search");
 
         int numTasks = Math.min(numThreads * 3, Math.round((float) specSize / 250));
         if (numThreads <= 1) {
