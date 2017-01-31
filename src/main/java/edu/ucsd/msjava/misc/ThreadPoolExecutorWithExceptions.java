@@ -74,6 +74,13 @@ public class ThreadPoolExecutorWithExceptions extends ThreadPoolExecutor {
             ProgressReporter reporter = (ProgressReporter) r;
             progressObjects.remove(reporter.getProgressData());
         }
+        if (r instanceof ExceptionCapturer && t == null) {
+            ExceptionCapturer exCap = (ExceptionCapturer) r;
+            if (exCap.hasException()) {
+                System.out.println("Killing threadpool...");
+                t = exCap.getException();
+            }
+        }
         if (t != null && thrownData == null) {
             // store the throwable, to get meaningful data.
             thrownData = t;
