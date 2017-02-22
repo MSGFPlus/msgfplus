@@ -1,20 +1,20 @@
 # This file is used to specify modifications
 # # for comments
 #
-# Max Number of Modifications per peptide 
+# Max Number of Dynamic/Variable Modifications per peptide 
 # If this value is large, the search takes long.
 NumMods=2
 
 # To input a modification, use the following command:
 # Mass or CompositionStr, Residues, ModType, Position, Name (all the five fields are required).
 # CompositionStr (C[Num]H[Num]N[Num]O[Num]S[Num]P[Num]Br[Num]Cl[Num]Fe[Num])
-# 	- C (Carbon), H (Hydrogen), N (Nitrogen), O (Oxygen), S (Sulfer), P (Phosphorus), Br (Bromine), Cl (Chlorine), Fe (Iron), and Se (Selenium) are allowed.
+# 	- C (Carbon), H (Hydrogen), N (Nitrogen), O (Oxygen), S (Sulfur), P (Phosphorus), Br (Bromine), Cl (Chlorine), Fe (Iron), and Se (Selenium) are allowed.
 # 	- Negative numbers are allowed.
 # 	- E.g. C2H2O1 (valid), H2C1O1 (invalid) 
 # Mass can be used instead of CompositionStr. It is important to specify accurate masses (integer masses are insufficient).
 # 	- E.g. 15.994915 
 # Residues: affected amino acids (must be upper letters)
-# 	- Must be uppor letters or *
+# 	- Must be upper letters or *
 # 	- Use * if this modification is applicable to any residue. 
 # 	- * should not be "anywhere" modification (e.g. "15.994915, *, opt, any, Oxidation" is not allowed.) 
 # 	- E.g. NQ, *
@@ -44,7 +44,23 @@ C2H2O,*,opt,Prot-N-term,Acetyl			# Acetylation Protein N-term
 #CH2,K,opt,any,Methyl				# Methylation K
 #HO3P,STY,opt,any,Phospho			# Phosphorylation STY
 
-# Custom amino acids: only supports empirical formulas of elements C H N O S.
-# If other elements are needed, or a specific mass is needed, they can be added as fixed modifications to the custom amino acid on following lines.
-# Warning: maximum 255 C, 255 H, 63 N, 63 O, 15 S
-C5H7N1O2S0,J,custom,P,Hydroxylation     # Hydroxyproline
+# Custom amino acids (default: none)
+# Formula, letter symbol, custom, unused, name
+# Formula:
+# 	- Only supports empirical formulas of elements C H N O S.
+# 	- If other elements are needed, or a specific mass is needed, they can be added as fixed modifications to the custom amino acid on following lines.
+# 	- Warning: maximum 255 C, 255 H, 63 N, 63 O, 15 S
+# Letter symbol:
+# 	- Can be B, J, O, U, X, Z
+# custom:
+# 	- Special ModType "custom" to denote custom amino acids
+# unused:
+# 	- Field is currently not used internally, but the parser requires a value here
+# name:
+# 	- Name of custom amino acid
+# 	- Not used internally or output to results, but the parser requires a value here
+#
+# NOTE: All modifications that affect the custom amino acid(s) must be specified below the custom amino acid(s).
+#
+# Example:
+#C5H7N1O2S0,J,custom,P,Hydroxylation     # Hydroxyproline
