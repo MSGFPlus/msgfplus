@@ -509,4 +509,22 @@ public class CompactFastaSequence implements Sequence {
         return numUniqueProteins / (float) numProteins;
     }
 
+    public void printTooManyDuplicateSequencesMessage(String fileName, String toolName) {
+        printTooManyDuplicateSequencesMessage(fileName, toolName, -1);
+    }
+
+    public void printTooManyDuplicateSequencesMessage(String fileName, String toolName, float ratio) {
+        System.err.println();
+        System.err.println("Error while indexing: " + fileName + " (too many redundant proteins)");
+        if (ratio > 0) {
+            System.err.println("Ratio of unique proteins: " + ratio);
+        }
+        System.err.println("If the database contains forward and reverse proteins, run " + toolName + " (or BuildSA) again with \"-tda 0\"");
+        System.err.println();
+        System.err.println("If the database does not contain forward and reverse proteins, " +
+            "this error is probably caused by multiple duplicate protein sequences. " +
+            "You can consolidate the duplicates using 'Validate Fasta File' tool in Protein Digestion Simulator, " +
+            "available at https://omics.pnl.gov/software/protein-digestion-simulator with " +
+            "source code at https://github.com/PNNL-Comp-Mass-Spec/Protein-Digestion-Simulator");
+    }
 }

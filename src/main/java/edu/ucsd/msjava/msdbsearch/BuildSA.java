@@ -90,9 +90,7 @@ public class BuildSA {
             CompactFastaSequence tdaSequence = new CompactFastaSequence(concatTargetDecoyDBFile.getPath());
             float ratioUniqueProteins = tdaSequence.getRatioUniqueProteins();
             if (ratioUniqueProteins < 0.5f) {
-                System.err.println("Error while indexing: " + concatTargetDecoyDBFile.getName() + " (too many redundant proteins)");
-                System.err.println("Ratio of unique proteins: " + ratioUniqueProteins);
-                System.err.println("If the database contains forward and reverse proteins, run MS-GF+ (or BuildSA) again with \"-tda 0\"");
+                tdaSequence.printTooManyDuplicateSequencesMessage(concatTargetDecoyDBFile.getName(), "MS-GF+", ratioUniqueProteins);
                 System.exit(-1);
             }
 

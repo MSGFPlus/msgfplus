@@ -192,8 +192,7 @@ public class MSGFPlus {
         if (useTDA) {
             float ratioUniqueProteins = fastaSequence.getRatioUniqueProteins();
             if (ratioUniqueProteins < 0.5f) {
-                System.err.println("Error while indexing: " + databaseFile.getName() + " (too many redundant proteins)");
-                System.err.println("If the database contains forward and reverse proteins, run MS-GF+ (or BuildSA) again with \"-tda 0\"");
+                fastaSequence.printTooManyDuplicateSequencesMessage(databaseFile.getName(), "MS-GF+");
                 System.exit(-1);
             }
 

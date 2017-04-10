@@ -47,9 +47,7 @@ public class TestSA {
         float ratioUniqueProteins = fastaSequence.getRatioUniqueProteins();
         if(ratioUniqueProteins < 0.5f)
         {
-            System.err.println("Error while indexing: " + databaseFile.getName() + " (too many redundant proteins)");
-            System.err.println("UniqueProteinRation: " + ratioUniqueProteins);
-            System.err.println("If the database contains forward and reverse proteins, run MS-GF+ (or BuildSA) again with \"-tda 0\"");
+            fastaSequence.printTooManyDuplicateSequencesMessage(databaseFile.getName(), "MS-GF+", ratioUniqueProteins);
             System.exit(-1);
         }
         
