@@ -218,10 +218,13 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
             System.out.println("Smoothing complete.");
 
         // output
-        if (!isText)
-            gen.writeParameters(outputFile);
-        else
-            gen.writeParametersPlainText(outputFile);
+        
+        gen.writeParameters(outputFile);
+        gen.writeParametersPlainText(new File(outputFile.getPath()+".txt"));
+        //if (!isText)
+        //    gen.writeParameters(outputFile);
+        //else
+        //    gen.writeParametersPlainText(outputFile);
 
         if (verbose)
             System.out.println("Writing Done.");
