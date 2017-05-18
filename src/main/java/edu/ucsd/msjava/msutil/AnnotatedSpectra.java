@@ -224,21 +224,28 @@ public class AnnotatedSpectra implements ProgressReporter, ExceptionCapturer {
             String tsvResultFileName = resultFileName.substring(0, resultFileName.lastIndexOf('.')) + ".tsv";
             tsvResultFile = new File(tsvResultFileName);
             if (!tsvResultFile.exists()) {
-                try {
-                    System.out.println("Converting " + resultFile.getName());
-                    tsvResultFile = File.createTempFile("__AnnotatedSpectra", ".tsv");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                tsvResultFile.deleteOnExit();
+                if (!tsvResultFile.canWrite()) {
+                    MzIDParser parser = new MzIDParser(resultFile);
+                    parser.writeToTSVFile(tsvResultFile);
+                } else {
+                    try {
+                        System.out.println("Converting " + resultFile.getName());
+                        tsvResultFile = File.createTempFile("__AnnotatedSpectra", ".tsv");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
-                MzIDParser parser = new MzIDParser(resultFile);
-                parser.writeToTSVFile(tsvResultFile);
+                    tsvResultFile.deleteOnExit();
+
+                    MzIDParser parser = new MzIDParser(resultFile);
+                    parser.writeToTSVFile(tsvResultFile);
+                }
             } else {
                 System.out.println(tsvResultFileName + " already exists.");
             }
-        } else if (resultFile.getName().endsWith(".tsv"))
+        } else if (resultFile.getName().endsWith(".tsv")) {
             tsvResultFile = resultFile;
+        }
 
 
         BufferedLineReader in = null;
