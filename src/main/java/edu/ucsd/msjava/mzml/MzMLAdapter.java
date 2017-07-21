@@ -1,9 +1,10 @@
 package edu.ucsd.msjava.mzml;
 
+import org.slf4j.LoggerFactory;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+
 import edu.ucsd.msjava.mzid.Constants;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import uk.ac.ebi.jmzidml.model.mzidml.CvParam;
 import uk.ac.ebi.jmzml.model.mzml.CVParam;
 import uk.ac.ebi.jmzml.model.mzml.SourceFile;
@@ -11,8 +12,6 @@ import uk.ac.ebi.jmzml.xml.io.MzMLObjectIterator;
 import uk.ac.ebi.jmzml.xml.io.MzMLUnmarshaller;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.List;
 
 public class MzMLAdapter {
 
@@ -86,11 +85,10 @@ public class MzMLAdapter {
     public static void turnOffLogs() {
         if (!logOff) {
             @SuppressWarnings("unchecked")
-            List<Logger> loggers = Collections.<Logger>list(LogManager.getCurrentLoggers());
-            loggers.add(LogManager.getRootLogger());
-            for (Logger logger : loggers) {
-                logger.setLevel(Level.OFF);
-            }
+            LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+            context.reset();
+            Logger rootLogger = context.getLogger(Logger.ROOT_LOGGER_NAME);
+            rootLogger.detachAndStopAllAppenders();
         }
     }
 

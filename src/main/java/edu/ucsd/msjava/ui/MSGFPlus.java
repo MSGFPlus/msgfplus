@@ -21,8 +21,8 @@ import java.util.logging.Logger;
 
 
 public class MSGFPlus {
-    public static final String VERSION = "Release (v2017.05.18)";
-    public static final String RELEASE_DATE = "18 May 2017";
+    public static final String VERSION = "Release (v2017.07.21)";
+    public static final String RELEASE_DATE = "21 July 2017";
 
     public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
     public static final String DECOY_PROTEIN_PREFIX = "XXX";
