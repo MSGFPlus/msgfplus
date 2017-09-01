@@ -37,7 +37,8 @@ public class ComputeFDR {
 
         int i = 0;
         while (i < argv.length) {
-            // 	-f resuleFileName dbCol decoyPrefix or -f targetFileName decoyFileName
+            //  -f resultFileName dbCol decoyPrefix  OR
+            //  -f targetFileName decoyFileName
             if (argv[i].equalsIgnoreCase("-f")) {
                 if (i + 2 >= argv.length)
                     printUsageAndExit("Invalid parameter: " + argv[i]);
@@ -46,14 +47,16 @@ public class ComputeFDR {
                     printUsageAndExit(argv[i + 1] + " doesn't exist.");
                 else if (!targetFile.isFile())
                     printUsageAndExit(argv[i + 1] + " is not a file.");
-                if (i + 3 < argv.length && !argv[i + 3].startsWith("-"))    // concatenated; -f resultFileName dbCol decoyPrefix
+                if (i + 3 < argv.length && !argv[i + 3].startsWith("-"))
                 {
+                    // concatenated; -f resultFileName dbCol decoyPrefix
                     dbCol = Integer.parseInt(argv[i + 2]);
                     decoyPrefix = argv[i + 3];
                     isConcatenated = true;
                     i += 4;
-                } else    // separate; -f targetFileName decoyFileName
+                } else
                 {
+                    // separate; -f targetFileName decoyFileName
                     decoyFile = new File(argv[i + 2]);
                     if (!decoyFile.exists())
                         printUsageAndExit(argv[i + 2] + " doesn't exist.");
@@ -197,8 +200,9 @@ public class ComputeFDR {
                                   float fdrThreshold, float pepFDRThreshold, File outputFile) {
         TargetDecoyAnalysis tda;
         TSVPSMSet target, decoy;
-        if (dbCol >= 0)    // both target and decoy are in the same file
+        if (dbCol >= 0)
         {
+            // both target and decoy are in the same file
             target = new TSVPSMSet(targetFile, delimeter, hasHeader, scoreCol, isGreaterBetter, specFileCol, specIndexCol, pepCol, reqStrList).decoy(dbCol, decoyPrefix, true);
             target.read();
             decoy = new TSVPSMSet(targetFile, delimeter, hasHeader, scoreCol, isGreaterBetter, specFileCol, specIndexCol, pepCol, reqStrList).decoy(dbCol, decoyPrefix, false);
