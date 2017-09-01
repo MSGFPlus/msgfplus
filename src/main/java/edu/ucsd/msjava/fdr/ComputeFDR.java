@@ -186,7 +186,7 @@ public class ComputeFDR {
                 "\t [-h 0/1] (0: no header, 1: header (default))\n" +
                 "\t [-fdr fdrThreshold]\n" +
                 "\t [-pepfdr pepFDRThreshod]\n" +
-                "\t [-decoy 0/1 (0: include decoy, 1: don't include decoy (default))\n"
+                "\t [-decoy 0/1 (0: don't include decoy (default), 1: include decoy)]\n"
         );
         System.exit(-1);
     }
