@@ -190,6 +190,16 @@
             <scope>test</scope>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.2.7</version>
+        </dependency>
+        <dependency>
+            <groupId>jaxb</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.0.2</version>
+        </dependency>
     </dependencies>
   
     <repositories>

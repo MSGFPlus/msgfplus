@@ -24,6 +24,8 @@ public class AnalysisProtocolCollectionGen {
         this.params = params;
         this.aaSet = aaSet;
         analysisProtocolCollection = new AnalysisProtocolCollection();
+        modMap = new HashMap<edu.ucsd.msjava.msutil.Modification, uk.ac.ebi.jmzidml.model.mzidml.SearchModification>();
+        fixedModMap = new HashMap<String, List<edu.ucsd.msjava.msutil.Modification>>();
         generateSpectrumIdentificationProtocol();
     }
 
@@ -108,8 +110,10 @@ public class AnalysisProtocolCollectionGen {
         userParamList.add(Constants.makeUserParam("ChargeCarrierMass", String.valueOf(params.getChargeCarrierMass())));
         spectrumIdentificationProtocol.setAdditionalSearchParams(additionalSearchParams);
 
-        ModificationParams modParams = getModificationParam();
-        spectrumIdentificationProtocol.setModificationParams(modParams);
+        if (!aaSet.getModifications().isEmpty()) {
+            ModificationParams modParams = getModificationParam();
+            spectrumIdentificationProtocol.setModificationParams(modParams);
+        }
 
 //        enzymes.setIndependent(false);
 //        if(enzyme == null || enzyme == edu.ucsd.msjava.msutil.Enzyme.NOENZYME)
@@ -188,9 +192,6 @@ public class AnalysisProtocolCollectionGen {
     }
 
     public ModificationParams getModificationParam() {
-        modMap = new HashMap<edu.ucsd.msjava.msutil.Modification, uk.ac.ebi.jmzidml.model.mzidml.SearchModification>();
-        fixedModMap = new HashMap<String, List<edu.ucsd.msjava.msutil.Modification>>();
-
         ModificationParams modParams = new ModificationParams();
         List<SearchModification> searchModList = modParams.getSearchModification();
 

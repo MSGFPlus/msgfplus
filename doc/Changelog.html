@@ -14,6 +14,15 @@
     </p>
 
     <p>
+        <b>01/30/2018 v2018.01.30</b>
+    </p>
+    <ul>
+        <li>MzIdentML creation: Don't output an empty ModificationParams element when there are no modifications (because not including it complies with the XML Schema, while including it with no child nodes does not)</li>
+        <li>Java 9 compatibility: add dependencies on com.sun.xml.bind:jaxb-impl and jaxb:activation to support use with Java 9 (with some warnings). Without this change, users must supply the Java VM argument "--add-modules=java.xml.bind,java.activation"</li>
+        <li>Fix a type in the usage output of ComputeFDR (thanks to GitHub user Jong-hun-Park)</li>
+    </ul>
+
+    <p>
         <b>08/23/2017 v2017.08.23</b>
     </p>
     <ul>
