@@ -87,6 +87,14 @@
                             </transformers>
                             <filters>
                                 <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
                                     <artifact>it.unimi.dsi:fastutil</artifact>
                                     <includes>
                                         <!-- Added a maven shade plugin step with minimize-jar set to true to mzIdentML pom to determine the needed fastutil classes.
