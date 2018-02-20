@@ -12,42 +12,46 @@
     <a href="index.html">MS-GF+ Documentation home</a>
     </p>
 
-    <p class="note">MS-GFDB has been renamed to <a href="MSGFPlus.html">MS-GF+</a>. MS-GF+ has all the functionalities provided by MS-GFDB.</p>
+    <p class="note">
+    MS-GFDB is an old application that is no longer under development.  
+    It was supserseded by <a href="MSGFPlus.html">MS-GF+</a>. <br>
+    MS-GF+ has all the functionalities provided by MS-GFDB, plus numerous improvements.
+    </p>
 
-    <h3>Differences of MS-GF+ compared to MS-GFDB</h3>
+    <h3>Differences between MS-GF+ and MS-GFDB</h3>
 
     <ul>
       <li>
         <b>Input</b>
         <ul>
           <li style="margin-bottom: 10px;">
-            <span style="color:#3366ff;">Supports mzML</span> in addition to mzXML, mgf, ms2, pkl and _dta.txt</li>
-          <li style="margin-bottom: 10px;">"-t PrecursorMassTolerance" became an optional parameter (default 20ppm)</li>
-          <li style="margin-bottom: 10px;">"-c13 0/1/2" was replaced to "-ti IsotopeErrorRange".
+            <span style="color:#3366ff;">MS-GF+ supports mzML</span> in addition to mzXML, mgf, ms2, pkl and _dta.txt</li>
+          <li style="margin-bottom: 10px;">"-t PrecursorMassTolerance" is optional with MS-GF+ (default 20ppm)</li>
+          <li style="margin-bottom: 10px;">"-c13 0/1/2" was changed to "-ti IsotopeErrorRange" in MS-GF+
             <ul>
               <li>IsotopeErrorRange: MinIsotopeError,MaxIsotopeError (both are inclusive)</li>
               <li>-c13 x == -ti 0,x</li>
             </ul>
           </li>
-          <li style="margin-bottom: 10px;">"-nnet" was replaced to "-ntt".
+          <li style="margin-bottom: 10px;">"-nnet" was changed to "-ntt" in MS-GF+
             <ul>
               <li>-nnet 0 == -ntt 2, -nnet 1 == -ntt 1, -nnet 2 == -ntt 0</li>
             </ul>
           </li>
-          <li style="margin-bottom: 10px;">ModificationFile format change
+          <li style="margin-bottom: 10px;">Modification file format change
             <ul>
-              <li>The name of the modification should match the PSI-MS name (accessible from <a href="http://www.unimod.org/">http://www.unimod.org</a>)</li>
-              <li>CompositionStr can take Br, Cl, Fe, Se in addition to C, H, N, O, S, and P.</li>
+              <li>In MS-GF+, the name of the modification should match the PSI-MS name (accessible from <a href="http://www.unimod.org/">http://www.unimod.org</a>)</li>
+              <li>CompositionStr can take Br, Cl, Fe, Se in addition to C, H, N, O, S, and P</li>
               <li>The sequence of the atoms can be arbitrary.
                 <ul>
-                  <li>Previously C2H2O was valid but OH2C2 was invalid.</li>
-                  <li>Now, both are valid.</li>
+                  <li>Previously C2H2O was valid but OH2C2 was invalid</li>
+                  <li>With MS-GF+, both are valid</li>
                 </ul>
               </li>
             </ul>
           </li>
-          <li style="margin-bottom: 10px;">"-uniformAAProb 0/1" was deleted.</li>
-          <li style="margin-bottom: 10px;">"-addFeatures 0/1" was added. "-addFeatures 1" will output the following extra features for each PSM (will be useful to downstream tools like Percolator or IDPicker):
+          <li style="margin-bottom: 10px;">"-uniformAAProb 0/1" was deleted in MS-GF+</li>
+          <li style="margin-bottom: 10px;">"-addFeatures 0/1" was added to MS-GF+; "-addFeatures 1" will output the following extra features for each PSM (will be useful to downstream tools like Percolator or IDPicker):
             <ul>
               <li>MS2IonCurrent: Summed intensity of all product ions</li>
               <li>ExplainedIonCurrentRatio: Summed intensity of all matched product ions (e.g. b, b-H2O, y, etc.) divided by MS2IonCurrent</li>
@@ -55,33 +59,33 @@
               <li>CTermIonCurrentRatio: Summed intensity of all matched suffix ions (e.g. y, y-H2O, etc.) divided by MS2IonCurrent</li>
             </ul>
           </li>
-          <li style="margin-bottom: 10px;">"-showQValue 0/1" was added.</li>
-          <li style="margin-bottom: 10px;">"-showDecoy 0/1" was added.</li>
+          <li style="margin-bottom: 10px;">"-showQValue 0/1" was added to MS-GF+</li>
+          <li style="margin-bottom: 10px;">"-showDecoy 0/1" was added to MS-GF+</li>
         </ul>
       </li>
       <li>
         <b>Output</b>
         <ul>
           <li style="margin-bottom: 10px;">
-            <span style="color:#3366ff;">Output format is the HUPO PSI mzIdentML version 1.1 (*.mzid).</span>*** See <a href="http://www.psidev.info/mzidentml">http://www.psidev.info/mzidentml</a> for details.
+            <span style="color:#3366ff;">Output format for MS-GF+ is the HUPO PSI mzIdentML version 1.1 (*.mzid)</span>; see&nbsp;<a href="http://www.psidev.info/mzidentml">http://www.psidev.info/mzidentml</a> for details.
             <ul>
-              <li>Decoy protein prefix was changed to "XXX" ("REV" previously).</li>
+              <li>Decoy protein prefix is "XXX" in MS-GF+ (vs. "REV" in MS-GFDB)</li>
             </ul>
           </li>
-          <li style="margin-bottom: 10px;">Provides a converter from mzIdentML to tsv (the resulting tsv file will be similar to the MS-GFDB output file).
+          <li style="margin-bottom: 10px;">MS-GF+ provides a converter from mzIdentML to tsv (the resulting tsv file will be similar to the MS-GFDB output file).
             <ul>
-              <li>The converter is included in the MSGFPlus.jar file.</li>
-              <li>Can be run by "java -Xmx2000M edu.ucsd.msjava.ui.MzIDToTsv".</li>
+              <li>The converter is included in the MSGFPlus.jar file</li>
+              <li>It can be run by "java -Xmx2000M edu.ucsd.msjava.ui.MzIDToTsv"</li>
             </ul>
           </li>
           <li>Difference between the MS-GFDB output and the MS-GF+ tsv output
             <ul>
-              <li>SpecID (native spectrum ID) is reported instead of SpecIndex</li>
-              <li>IsotopeError is reported.</li>
-              <li>When a peptide matches to multiple proteins, all protein accessions will be reported.</li>
-              <li>SpecProb was renamed to SpecEValue</li>
-              <li>EValue (database-level E-value) is reported instead of PValue (database-level P-value).</li>
-              <li>FDR and PepFDR were renamed to QValue and PepQValue, respectively.</li>
+              <li>MS-GF+ includes SpecID (native spectrum ID) instead of SpecIndex</li>
+              <li>MS-GF+ reports IsotopeError</li>
+              <li>When a peptide matches to multiple proteins, all protein accessions will be reported by MS-GF+</li>
+              <li>SpecProb was renamed to SpecEValue in MS-GF+</li>
+              <li>MS-GF+ reports EValue (database-level E-value) instead of PValue (database-level P-value)</li>
+              <li>FDR and PepFDR were renamed to QValue and PepQValue in MS-GF+</li>
             </ul>
           </li>
         </ul>
@@ -222,7 +226,7 @@
         <ul>
           <li>Modification file name. ModificationFile contains the modifications to be considered in the search.</li>
           <li>If -mod option is not specified, standard amino acids with fixed Carboamidomethylation C will be used.</li>
-          <li>See an <a href="MSGFDB_ModFile.html" title="MS-GFDB Modification File Example">example modification file</a> .</li>
+          <li>See an <a href="MSGFDB_ModFile.html">example MS-GFDB modification file</a>.</li>
         </ul>
       </li>
       <li style="margin-bottom: 10px;">

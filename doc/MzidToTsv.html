@@ -62,7 +62,7 @@
           <li>This parameter controls the output format for shared peptides (peptides matched to multiple proteins).</li>
           <li>When "-unroll 0" (Default), a PSM matched to a shared peptide will be printed as a single line.
             <ul>
-              <li>Peptide column does not show neighboring amino acids (e.g. IGAYLFVDMAHVAGLIAAGVYPNPVPHAHVVTSTTHK).</li>
+              <li>Peptide column does not show neighboring amino acids (e.g. QVHPDTGISSK).</li>
               <li>Protein column shows all proteins in a single line.</li>
               <li>Example: MyProtein(pre=K,post=T);MyProteinIsoform(pre=K,post=T)</li>
               <li>
@@ -72,7 +72,7 @@
           </li>
           <li>When "-unroll 1", a PSM matched to a shared peptide will be printed in multiple lines.
             <ul>
-              <li>Peptide column shows neighboring amino acids (e.g. K.IGAYLFVDMAHVAGLIAAGVYPNPVPHAHVVTSTTHK.T).</li>
+              <li>Peptide column shows neighboring amino acids (e.g. K.QVHPDTGISSK.A).</li>
               <li>Different peptide-protein matches are printed in different lines.</li>
               <li>
                 <a href="examples/test_Unrolled.tsv">Download example file</a>

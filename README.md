@@ -16,8 +16,8 @@ and Concatenated DTA files (_dta.txt).
 Requirements
 ======
 
-JRE 1.6 or greater
-Main memory 2GB or greater (recommended 4GB)
+JRE 1.6 or greater\
+Memory 2GB or greater (recommended 4GB); larger FASTA files require more memory
 
 Downloads / Updates
 ======
@@ -35,13 +35,14 @@ An example: v10282 became v2016.01.20
 Installation
 ======
 
-Unzip MSGFPlus.zip
+Unzip MSGFPlus.zip\
 Place MSGFPlus.jar in any folder
 
 Usage Information
 ======
 
 Type `java -jar MSGFPlus.jar` for command line arguments
+
 To convert an mzid output file into a tsv file, run `java -cp MSGFPlus.jar edu.ucsd.msjava.ui.MzIDToTsv`
 For detailed documentation, see the "doc" subfolder, or visit:
 * [GitHub repo HTML help pages](http://htmlpreview.github.io/?https://github.com/sangtaekim/msgfplus/blob/master/doc/index.html)
@@ -51,7 +52,7 @@ For detailed documentation, see the "doc" subfolder, or visit:
 Contact Information
 ======
 
-PNNL Proteomics [proteomics@pnnl.gov]
+PNNL Proteomics [proteomics@pnnl.gov]\
 Sangtae Kim [sangtae.kim (at) gmail.com]
 
 Publications
