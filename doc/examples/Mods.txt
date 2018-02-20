@@ -62,5 +62,9 @@ C2H2O,*,opt,Prot-N-term,Acetyl			# Acetylation Protein N-term
 #
 # NOTE: All modifications that affect the custom amino acid(s) must be specified below the custom amino acid(s).
 #
-# Example:
+# Example 1:
 #C5H7N1O2S0,J,custom,P,Hydroxylation     # Hydroxyproline
+#
+# Example 2:
+#C3H5NO,   U, custom, U, Selenocysteine   # Custom amino acids can only have C, H, N, O, and S
+#79.9166,  U, fix, any, Se80              # Use a static mod to add Se
