@@ -44,6 +44,11 @@ Usage Information
 Type `java -jar MSGFPlus.jar` for command line arguments
 
 To convert an mzid output file into a tsv file, run `java -cp MSGFPlus.jar edu.ucsd.msjava.ui.MzIDToTsv`
+
+Alternatively, use the Mzid-To-Tsv-Converter, which is a faster converter that supports larger result files. 
+It is a C# application that works on Windows or on Linux using mono. 
+Download the Mzid-To-Tsv-Converter <a href="https://github.com/PNNL-Comp-Mass-Spec/Mzid-To-Tsv-Converter/releases">from GitHub</a>.
+
 For detailed documentation, see the "doc" subfolder, or visit:
 * [GitHub repo HTML help pages](http://htmlpreview.github.io/?https://github.com/sangtaekim/msgfplus/blob/master/doc/index.html)
 * https://omics.pnl.gov/software/ms-gf

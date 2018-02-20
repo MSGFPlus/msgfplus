@@ -13,8 +13,26 @@
         <a href="index.html">MS-GF+ Documentation home</a>
     </p>
 
-    <h1>MzIDToTsv</h1>
-    <p>Converts MS-GF+ output (<b>.mzid) into the tsv format (</b>.tsv)</p>
+    <p>There are two options for converting an MS-GF+ output file (<b>.mzid</b>) into a tab-separated file (<b>.tsv</b>)</p>
+    <ol>
+    <li>The MzIDToTsv utility built into MSGFPlus.jar
+        <ul>
+        <li>Easy to access (though syntax is a bit tricky; see below)</li>
+        <li>Can be slow for large .mzid files</li>
+        </ul>
+    </li>
+    <li>The Mzid-To-Tsv-Converter standalone application, <a href="https://github.com/PNNL-Comp-Mass-Spec/Mzid-To-Tsv-Converter/releases">available on GitHub</a>
+        <ul>
+        <li>Fast conversion</li>
+        <li>Handles large .mzid files</li>
+        <li>Runs natively on Windows, but requires mono to use on Linux</li>
+        </ul>
+    </li>
+    </ol>
+
+    <h2>MzIDToTsv Utility</h2>
+
+    <p>Converts MS-GF+ output (<b>.mzid</b>) into the tsv format (<b>.tsv</b>)</p>
 
     <div class="codePanel">
       <pre class="code">Usage: java -Xmx3500M -cp MSGFPlus.jar edu.ucsd.msjava.ui.MzIDToTsv
