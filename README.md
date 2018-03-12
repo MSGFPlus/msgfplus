@@ -22,12 +22,12 @@ Memory 2GB or greater (recommended 4GB); larger FASTA files require more memory
 Downloads / Updates
 ======
 
-* https://github.com/sangtaekim/msgfplus/releases
-* http://omics.pnl.gov/software/ms-gf
+* https://github.com/MSGFPlus/msgfplus/releases
+* https://omics.pnl.gov/software/ms-gf
 
 *Version number notes*
 
-As of [January 20, 2016 (commit 375d462)](https://github.com/sangtaekim/msgfplus/commit/375d462e30cbe460b699091a7d6ba52bc192aba1) the version numbering scheme changed.
+As of [January 20, 2016 (commit 375d462)](https://github.com/MSGFPlus/msgfplus/commit/375d462e30cbe460b699091a7d6ba52bc192aba1) the version numbering scheme changed.
 Previously the version number was the SVN commit number; git does not have simple commit numbers, so MSGFPlus was changed to a date-based version numbering scheme.
 
 An example: v10282 became v2016.01.20
@@ -50,7 +50,7 @@ It is a C# application that works on Windows or on Linux using mono.
 Download the Mzid-To-Tsv-Converter <a href="https://github.com/PNNL-Comp-Mass-Spec/Mzid-To-Tsv-Converter/releases">from GitHub</a>.
 
 For detailed documentation, see the "doc" subfolder, or visit:
-* [GitHub repo HTML help pages](http://htmlpreview.github.io/?https://github.com/sangtaekim/msgfplus/blob/master/doc/index.html)
+* [GitHub repo HTML help pages](http://htmlpreview.github.io/?https://github.com/MSGFPlus/msgfplus/blob/master/doc/index.html)
 * https://omics.pnl.gov/software/ms-gf
 * https://bix-lab.ucsd.edu/pages/viewpage.action?pageId=13533355
 
@@ -74,4 +74,4 @@ http://www.ncbi.nlm.nih.gov/pubmed/?term=18597511
 Source
 ======
 
-https://github.com/sangtaekim/msgfplus
+https://github.com/MSGFPlus/msgfplus
