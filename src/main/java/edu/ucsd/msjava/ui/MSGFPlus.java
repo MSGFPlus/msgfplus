@@ -226,9 +226,15 @@ public class MSGFPlus {
         System.out.print("Reading spectra finished ");
         System.out.format("(elapsed time: %.2f sec)\n", (float) (System.currentTimeMillis() - time) / 1000);
 
-        numThreads = Math.min(numThreads, Math.round((float) specSize / 250));
         if (numThreads <= 0)
             numThreads = 1;
+
+        int spectraPerTaskMinimum = 250;
+        int maxThreads = Math.max(1, Math.round((float) specSize / spectraPerTaskMinimum)); // 250 spectra/task(or thread) minimum for efficiency; going smaller slows down processing
+        if (maxThreads < numThreads) {
+            System.out.println("Note: " + spectraPerTaskMinimum + " spectra per thread minimum; using " + maxThreads + " threads instead of " + numThreads);
+            numThreads = maxThreads;
+        }
 
         System.out.println("Using " + numThreads + (numThreads == 1 ? " thread." : " threads."));
 
@@ -257,7 +263,7 @@ public class MSGFPlus {
         ThreadPoolExecutorWithExceptions executor = ThreadPoolExecutorWithExceptions.newFixedThreadPool(numThreads);
         executor.setTaskName("Search");
 
-        int numTasks = Math.min(numThreads * 3, Math.round((float) specSize / 250));
+        int numTasks = Math.min(numThreads * 3, Math.round((float) specSize / spectraPerTaskMinimum));
         if (numThreads <= 1) {
             numTasks = 1;
         }
