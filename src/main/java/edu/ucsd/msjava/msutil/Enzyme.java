@@ -65,33 +65,15 @@ public class Enzyme implements ParamObject {
     private Enzyme(String name, String residues, boolean isNTerm, String description, String psiCvAccession) {
         this.name = name;
         this.description = description;
-        /* +++Start CWRU-CPB
-         *
-         * null is passed as the residue string for both non-specific and
+        /* null is passed as the residue string for both non-specific and
          * "no cleavage", so in order to distiguish the desired behavior we
          * inspect the controlled vocabulary name of the enzyme to determine if
          * if it is "no cleavage"
-         *
          */
         if (psiCvAccession != null && psiCvAccession.equals("MS:1001955")) {
-            AminoAcidSet aminoAcids = AminoAcidSet.getStandardAminoAcidSet();
-            this.residues = new char[aminoAcids.size()];
+            this.residues = new char[0];
             this.isResidueCleavable = new boolean[128];
-            int i = 0;
-            for(AminoAcid aminoAcid : aminoAcids) {
-                char residue = aminoAcid.getResidue();
-                if (!Character.isUpperCase(residue)) {
-                    System.err.println("Enzyme residues must be upper cases: " + residue);
-                    System.exit(-1);
-                }
-                this.residues[i] = residue;
-                isResidueCleavable[residue] = false;
-                i++;
-            }
         }   
-        /*
-         * +++End CWRU-CPB
-         */
         
         else if (residues != null) {
             this.residues = new char[residues.length()];
