@@ -65,7 +65,17 @@ public class Enzyme implements ParamObject {
     private Enzyme(String name, String residues, boolean isNTerm, String description, String psiCvAccession) {
         this.name = name;
         this.description = description;
-        if (residues != null) {
+        /* null is passed as the residue string for both non-specific and
+         * "no cleavage", so in order to distiguish the desired behavior we
+         * inspect the controlled vocabulary name of the enzyme to determine if
+         * if it is "no cleavage"
+         */
+        if (psiCvAccession != null && psiCvAccession.equals("MS:1001955")) {
+            this.residues = new char[0];
+            this.isResidueCleavable = new boolean[128];
+        }   
+        
+        else if (residues != null) {
             this.residues = new char[residues.length()];
             this.isResidueCleavable = new boolean[128];
             for (int i = 0; i < residues.length(); i++) {
