@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/MSGF-Plus.iml" filepath="$PROJECT_DIR$/MSGF-Plus.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/MSGFPlus.iml" filepath="$PROJECT_DIR$/.idea/MSGFPlus.iml" />
     </modules>
   </component>
 </project>
