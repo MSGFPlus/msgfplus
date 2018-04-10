@@ -326,11 +326,11 @@ public class CompactSuffixArray {
 
         try {
             DataOutputStream indexOut = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(indexFile)));
-            DataOutputStream nLcpOut = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(nlcpFile)));
+            DataOutputStream nlcpOut = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(nlcpFile)));
             indexOut.writeInt((int) sequence.getSize());
             indexOut.writeInt(sequence.getId());
-            nLcpOut.writeInt((int) sequence.getSize());
-            nLcpOut.writeInt(sequence.getId());
+            nlcpOut.writeInt((int) sequence.getSize());
+            nlcpOut.writeInt(sequence.getId());
             SuffixFactory.Suffix prevBucketSuffix = null;
 //			byte[] neighboringLcps = new byte[(int)sequence.getSize()];         // the computed neighboring lcps
 
@@ -351,7 +351,7 @@ public class CompactSuffixArray {
                     }
                     // write information to file
                     indexOut.writeInt(first.getIndex());
-                    nLcpOut.writeByte(lcp);
+                    nlcpOut.writeByte(lcp);
                     SuffixFactory.Suffix prevSuffix = first;
 
                     for (int j = 1; j < sortedSuffixes.length; j++) {
@@ -359,7 +359,7 @@ public class CompactSuffixArray {
                         //store the information
                         indexOut.writeInt(thisSuffix.getIndex());
                         lcp = thisSuffix.getLCP(prevSuffix, BUCKET_SIZE);
-                        nLcpOut.writeByte(lcp);
+                        nlcpOut.writeByte(lcp);
                         prevSuffix = thisSuffix;
                     }
                     prevBucketSuffix = sortedSuffixes[0];
@@ -375,10 +375,10 @@ public class CompactSuffixArray {
             indexOut.flush();
             indexOut.close();
 
-            nLcpOut.writeLong(lastModified);
-            nLcpOut.writeInt(CompactSuffixArray.COMPACT_SUFFIX_ARRAY_FILE_FORMAT_ID);
-            nLcpOut.flush();
-            nLcpOut.close();
+            nlcpOut.writeLong(lastModified);
+            nlcpOut.writeInt(CompactSuffixArray.COMPACT_SUFFIX_ARRAY_FILE_FORMAT_ID);
+            nlcpOut.flush();
+            nlcpOut.close();
 
             // Do not compute Llcps and Rlcps
         } catch (IOException e) {
