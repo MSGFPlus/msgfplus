@@ -18,36 +18,57 @@ public class CompactSuffixArray {
     public static final int COMPACT_SUFFIX_ARRAY_FILE_FORMAT_ID = 8294;
 
     /***** CONSTANTS *****/
-    // The default extension of a suffix array file.
+    /**
+     * Default extension of a suffix array file.
+     */
     protected static final String EXTENSION_INDICES = ".csarr";
+
     protected static final String EXTENSION_NLCPS = ".cnlcp";
 
-    // the size of the bucket for the suffix array creation
+    /**
+     * Size of the bucket for the suffix array creation
+     */
     protected static final int BUCKET_SIZE = 5;
 
-    // the size of an int primitive type in bytes
+    /**
+     * Size of an int primitive type in bytes
+     */
     protected static final int INT_BYTE_SIZE = Integer.SIZE / Byte.SIZE;
 
     /***** MEMBERS *****/
-    // the indices of the sorted suffixes
-//	DataInputStream indices;
+    /**
+     * Tracks indices of the sorted suffixes
+     */
     private final File indexFile;
 
-    // precomputed LCPs of neighboring suffixes
-//	DataInputStream neighboringLcps;
+    /**
+     * Tracks precomputed LCPs of neighboring suffixes
+     */
     private final File nlcpFile;
 
-    // the sequence representing all the suffixes
+    /**
+     * Sequence representing all the suffixes
+     */
     private CompactFastaSequence sequence;
 
-    // the class that generates suffixes from the given adapter
+    /**
+     * Class that generates suffixes from the given adapter
+     */
     private SuffixFactory factory;
 
-    // the number of suffixes in this array
+    /**
+     * Number of suffixes in this suffix array
+     */
     private int size;
 
-    // the number of distinct peptides
+    /**
+     * Maximum peptide length
+     */
     private int maxPeptideLength;
+
+    /**
+     * number of distinct peptides
+     */
     private int[] numDisinctPeptides;
 
 
@@ -64,7 +85,7 @@ public class CompactSuffixArray {
         indexFile = new File(sequence.getBaseFilepath() + EXTENSION_INDICES);
         nlcpFile = new File(sequence.getBaseFilepath() + EXTENSION_NLCPS);
 
-        // create the file if it doesn't exist.
+        // create the file if it doesn't exist or the metadata differs
         if (!indexFile.exists() || !nlcpFile.exists() || !isCompactSuffixArrayValid(sequence.getLastModified())) {
             createSuffixArrayFiles(sequence, indexFile, nlcpFile);
         }
@@ -177,7 +198,6 @@ public class CompactSuffixArray {
      * Helper method that initializes the suffixArray object from the file.
      * Initializes indices, leftMiddleLcps, middleRightLcps and neighboringLcps.
      *
-     * @param suffixFile the suffix array file.
      * @return returns the id of this file for consistency check.
      */
     private int checkID() {
@@ -209,16 +229,16 @@ public class CompactSuffixArray {
     /**
      * Helper method that creates the suffixFile.
      *
-     * @param sequence   the Adapter object that represents the database (text).
-     * @param suffixFile the output file.
+     * @param sequence  the Adapter object that represents the database (text).
+     * @param indexFile newly created index file.
+     * @param nlcpFile  newly created nlcp file.
      */
     private void createSuffixArrayFiles(CompactFastaSequence sequence, File indexFile, File nlcpFile) {
         System.out.println("Creating the suffix array indexed file... Size: " + sequence.getSize());
 
         // helper local class
         class Bucket {
-            // how much to increment once we reach the maximum occupancy for a bucket
-//			private static final int INCREMENT_SIZE = 10;
+
             private int[] items;
             private int size;
 
@@ -236,7 +256,7 @@ public class CompactSuffixArray {
              */
             public void add(int item) {
                 if (this.size >= items.length) {
-//					this.items = Arrays.copyOf(this.items, this.size+INCREMENT_SIZE);
+					// Double the capacity of this.items
                     this.items = Arrays.copyOf(this.items, this.size * 2);
 //					if(this.size > 100)
 //						System.out.println(item+":"+this.size);

@@ -24,34 +24,56 @@ public class CompactFastaSequence implements Sequence {
     public static final String SEQ_FILE_EXTENSION = ".cseq";
     public static final String ANNOTATION_FILE_EXTENSION = ".canno";
 
-    //this is the file in which the sequence was generated
+    /**
+     * The base filename (FASTA file path, without the file extension)
+     */
     private String baseFilepath;
 
     private TreeMap<Integer, String> annotations;
 
-    // the contents of the sequence concatenated into a long string
+    /**
+     * Contents of the sequence concatenated into a long string
+     */
     private byte[] sequence;
 
-    // the number of characters in the buffer
+    /**
+     * Number of characters in the buffer
+     */
     private int size;
 
-    // the alphabet map
+    /**
+     * Alphabet map
+     */
     private HashMap<Character, Byte> alpha2byte;
 
-    // the reverse translation map
+    /**
+     * Reverse translation map
+     */
     private HashMap<Byte, Character> byte2alpha;
 
-    // the string representation of the alphabet
+    /**
+     * String representation of the alphabet
+     */
     private String alphabetString;
 
-    // the identifier for this sequence
+    /**
+     * Identifier for this sequence
+     */
     private int id;
 
+    /**
+     * Long representing the time the file was last modified,
+     * measured in milliseconds since the epoch (00:00:00 GMT, January 1, 1970)
+     */
     private long lastModified;
 
-    private boolean truncateAnnotation = false;    // if true, store annotations only before first blank
+    /**
+     * When true, store annotations only before first blank
+     */
+    private boolean truncateAnnotation = false;
 
     /***** CONSTRUCTORS *****/
+
     /**
      * Constructor. The alphabet will be created dynamically according from the
      * fasta file.
@@ -69,7 +91,6 @@ public class CompactFastaSequence implements Sequence {
      * @param filepath     the path to the fasta file.
      * @param alphabet     the specifications alphabet string. This could take the
      *                     predefined AminoAcid strings defined in this class or customized strings.
-     * @param seqExtension the extension to use for the sequence file.
      */
     private CompactFastaSequence(String filepath, String alphabet) {
 
@@ -272,7 +293,11 @@ public class CompactFastaSequence implements Sequence {
     }
 
     /***** HELPER METHODS *****/
-    // helper method, initialize the alphabet with given colon separated string
+
+    /**
+     * Initialize the alphabet with given colon separated string
+     * @param s
+     */
     private void initializeAlphabet(String s) {
         String[] tokens = s.split(":");
         this.alpha2byte = new HashMap<Character, Byte>();
@@ -288,7 +313,11 @@ public class CompactFastaSequence implements Sequence {
         }
     }
 
-    // helper method to read and write the processed files given the alphabet
+    /**
+     * Read and write the processed files given the alphabet
+     * @param filepath
+     * @param alphabet
+     */
     private void createObjectFromRawFile(String filepath, String alphabet) {
         initializeAlphabet(alphabet);
         int size = 0;
@@ -308,12 +337,12 @@ public class CompactFastaSequence implements Sequence {
 
             DataOutputStream seqOut = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(seqFilepath)));
             seqOut.writeInt(size);
-            seqOut.writeInt(formatId);    // added
+            seqOut.writeInt(formatId);
             seqOut.writeInt(id);
             seqOut.writeLong(lastModified);
 
             PrintStream metaOut = new PrintStream(new BufferedOutputStream(new FileOutputStream(metaFilepath)));
-            metaOut.println(formatId);    // added
+            metaOut.println(formatId);
             metaOut.println(id);
             metaOut.println(lastModified);
             metaOut.println(alphabet);
@@ -377,7 +406,10 @@ public class CompactFastaSequence implements Sequence {
         }
     }
 
-    // read the metainformation file
+    /**
+     * Read the meta information file (.canno)
+     * @return
+     */
     private FileSignature readMetaInfo() {
         String filepath = this.baseFilepath + ANNOTATION_FILE_EXTENSION;
         try {
@@ -405,7 +437,10 @@ public class CompactFastaSequence implements Sequence {
         return null;
     }
 
-    // read the sequence in binary
+    /**
+     * Read the sequence in binary
+     * @return
+     */
     private FileSignature readSequence() {
         String filepath = this.baseFilepath + SEQ_FILE_EXTENSION;
         try {
