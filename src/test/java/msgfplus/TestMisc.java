@@ -39,7 +39,7 @@ public class TestMisc {
             {
                 // These test cases correspond to those in the UnitTests project of the
                 // Peptide Hit Results Processor.  See:
-                // https://github.com/PNNL-Comp-Mass-Spec/PHRP/blob/master/UnitTests/PeptideCleavageStateCalculatorTests.vb
+                // https://github.com/PNNL-Comp-Mass-Spec/PHRP/blob/master/UnitTests/PeptideCleavageStateCalculatorTests.cs
 
                 // Fully tryptic peptides
                 put("K.ACDEFGR.S", 2); // Normal, fully tryptic peptide
