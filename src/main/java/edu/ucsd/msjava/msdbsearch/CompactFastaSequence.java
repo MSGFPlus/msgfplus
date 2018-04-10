@@ -123,16 +123,60 @@ public class CompactFastaSequence implements Sequence {
             seqIdSignature = readSequence();
         }
 
-        if (metaIdSignature == null || seqIdSignature == null
-                || metaIdSignature.getFormatId() != COMPACT_FASTA_SEQUENCE_FILE_FORMAT_ID
-                || seqIdSignature.getFormatId() != COMPACT_FASTA_SEQUENCE_FILE_FORMAT_ID
-                || metaIdSignature.getId() != seqIdSignature.getId()
-                || metaIdSignature.getLastModified() != lastModified
-                || seqIdSignature.getLastModified() != lastModified
-                ) {
+        boolean indexingRequired = false;
+
+        if (metaIdSignature == null || seqIdSignature == null) {
+            System.out.println("Re-creating the .canno file since metaIdSignature is null or seqIdSignature is null");
+            indexingRequired = true;
+        }
+
+        if (metaIdSignature.getFormatId() != COMPACT_FASTA_SEQUENCE_FILE_FORMAT_ID) {
+            System.out.println("Re-creating the .canno file since the metaIdSignature is not " +
+                    COMPACT_FASTA_SEQUENCE_FILE_FORMAT_ID + ", it is " + metaIdSignature.getFormatId());
+            indexingRequired = true;
+        }
+
+        if (seqIdSignature.getFormatId() != COMPACT_FASTA_SEQUENCE_FILE_FORMAT_ID) {
+            System.out.println("Re-creating the .canno file since the seqIdSignature is not " +
+                    COMPACT_FASTA_SEQUENCE_FILE_FORMAT_ID + ", it is " + seqIdSignature.getFormatId());
+            indexingRequired = true;
+        }
+
+        if (metaIdSignature.getId() != seqIdSignature.getId()) {
+            System.out.println("Re-creating the .canno file since the metaIdSignature ID " +
+                    "doesn't match seqIdSignature ID: " +
+                    metaIdSignature.getId() + " vs. " + seqIdSignature.getId());
+            indexingRequired = true;
+        }
+
+        if (metaIdSignature.getLastModified() != seqIdSignature.getLastModified()) {
+            System.out.println("Re-creating the .canno file since metaIdSignature LastModified " +
+                    "doesn't match seqIdSignature LastModified: " +
+                    metaIdSignature.getLastModified() + " vs. " + seqIdSignature.getLastModified());
+            indexingRequired = true;
+        }
+
+        if (!CompactSuffixArray.NearlyEqualFileTimes(metaIdSignature.getLastModified(), lastModified)) {
+            System.out.println("Re-creating the .canno file since metaIdSignature LastModified " +
+                    "is not within 2 seconds of the file modification time on disk: " +
+                    "Expected " + metaIdSignature.getLastModified() + " but actually " + lastModified);
+            indexingRequired = true;
+        }
+
+        if (indexingRequired) {
             createObjectFromRawFile(filepath, alphabet);
             metaIdSignature = readMetaInfo();
             seqIdSignature = readSequence();
+        } else {
+            /*
+            System.out.println("Metadata matches; no need to re-index");
+
+            System.out.println("metaIdSignature ID: " + metaIdSignature.getId());
+            System.out.println("seqIdSignature ID:  " + seqIdSignature.getId());
+            System.out.println("metaIdSignature LastModified: " + metaIdSignature.getLastModified());
+            System.out.println("seqIdSignature LastModified:  " + seqIdSignature.getLastModified());
+            System.out.println("FASTA LastModified on disk:   " + lastModified + " for " + filepath);
+            */
         }
 
         initializeAlphabet(this.alphabetString);
