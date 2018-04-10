@@ -148,14 +148,29 @@ public class CompactSuffixArray {
                 int id = raf.readInt();
                 raf.close();
 
-                if (lastModifiedRecorded != lastModified || id != COMPACT_SUFFIX_ARRAY_FILE_FORMAT_ID)
+                if (!NearlyEqualFileTimes(lastModifiedRecorded, lastModified)) {
+                    System.out.println("Re-creating suffix array files since the cached LastModified time is not within 2 seconds " +
+                            "of the LastModified time of the sequence file:" +
+                            " Time cached in " + f.getName() + " is " + lastModifiedRecorded +
+                            " while the sequence file has " + lastModified);
                     return false;
+                }
+
+                if (id != COMPACT_SUFFIX_ARRAY_FILE_FORMAT_ID) {
+                    System.out.println("Re-creating suffix array files since " + f.getName() +
+                            " has file format ID " + id + " instead of " + COMPACT_SUFFIX_ARRAY_FILE_FORMAT_ID);
+                    return false;
+                }
+
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+
+        //System.out.println("LastModified times in the existing csarr and cnlcp files " +
+        //        "match the LastModified time of the sequence file (" + lastModified + ")");
 
         return true;
     }
@@ -484,4 +499,23 @@ public class CompactSuffixArray {
         indices.close();
         nlcps.close();
     }
+
+    /**
+     * Compares two timestamps (typically the lastModified value for a file)
+     * If they agree within 2 seconds, returns True, otherwise false
+     * @param time1 First file time (milliseconds since 1/1/1970)
+     * @param time2 Second file time (milliseconds since 1/1/1970)
+     * @return True if the times agree within 2 seconds
+     */
+    public static boolean NearlyEqualFileTimes(long time1, long time2)
+    {
+        double timeDiffSeconds = (time1 - time2) / 1000.0;
+        if (Math.abs(timeDiffSeconds) <= 2.05)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
 }
