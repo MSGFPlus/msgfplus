@@ -99,8 +99,10 @@ public class CompactFastaSequence implements Sequence {
         String basepath = filepath.substring(0, filepath.length() - extension.length() - 1);
 
         this.baseFilepath = basepath;
-        if (!extension.equalsIgnoreCase("fasta") && !extension.equalsIgnoreCase("fa")) {
-            System.err.println("Input error: not a fasta file");
+        if (!extension.equalsIgnoreCase("fasta") &&
+            !extension.equalsIgnoreCase("fa") &&
+            !extension.equalsIgnoreCase("faa")) {
+            System.err.println("Input error: not a fasta file (extension must be .fasta or .fa or .faa)");
             System.exit(-1);
         }
 
