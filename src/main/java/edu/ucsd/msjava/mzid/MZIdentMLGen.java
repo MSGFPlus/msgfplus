@@ -62,6 +62,7 @@ public class MZIdentMLGen {
     private Map<Integer, DBSequence> dbSeqMap;
     private Map<Integer, Boolean> isDecoyMap;
     private Map<String, Peptide> pepMap;
+    private Map<String, PeptideEvidence> pepEvMap;
     private Map<String, List<PeptideEvidenceRef>> evRefListMap;
 
     private AnalysisProtocolCollectionGen apcGen;
@@ -80,6 +81,7 @@ public class MZIdentMLGen {
         dbSeqMap = new HashMap<Integer, DBSequence>();
         isDecoyMap = new HashMap<Integer, Boolean>();
         pepMap = new LinkedHashMap<String, Peptide>();
+        pepEvMap = new LinkedHashMap<String, PeptideEvidence>();
         evRefListMap = new HashMap<String, List<PeptideEvidenceRef>>();
 
         init();
@@ -645,6 +647,17 @@ public class MZIdentMLGen {
                 pepEv.setId(pepEvKey);
 
                 pepEv.setIsDecoy(isDecoyMap.get(protStartIndex));
+
+                if (pepEvMap.get(pepEvKey) != null) {
+                    // Avoid duplicate peptide evidences
+                    // currently only occurs when there are 2 results for a single peptide/mod/dbseq combo,
+                    // one where match.isNTermMetCleaved() is true and sa.getSequence().getCharAt(index + 1) == 'M' is false,
+                    // and another where match.isNTermMetCleaved() is false.
+                    pepEv = pepEvMap.get(pepEvKey);
+                }
+                else {
+                    pepEvMap.put(pepEvKey, pepEv);
+                }
 
                 peptideEvidenceList.add(pepEv);
 
