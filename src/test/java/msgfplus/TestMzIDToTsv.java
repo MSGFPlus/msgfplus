@@ -3,8 +3,11 @@ package msgfplus;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import edu.ucsd.msjava.msutil.AminoAcidSet;
@@ -16,16 +19,18 @@ import edu.ucsd.msjava.parser.TSVParser;
 import edu.ucsd.msjava.ui.MzIDToTsv;
 
 public class TestMzIDToTsv {
+
     @Test
-    public void testConversionError()
-    {
-        File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug");
-        
-        File mzidFile = new File(dir.getPath()+File.separator+"Cb_A19397_BHI_TCA_BR4_5d_A_FIXED_dta-nr_30x_01.mzid");
-        File tsvFile = new File(dir.getPath()+File.separator+"test.tsv");
+    public void testConversionError() throws URISyntaxException, IOException {
+
+        File mzidFile = new File(TestMzIDToTsv.class.getClassLoader().getResource("test.mzid").toURI());
+
+        File tsvFile = File.createTempFile("test", ".mgf");
         
         String[] argv = {"-i", mzidFile.getPath(), "-o", tsvFile.getPath()};
         MzIDToTsv.main(argv);
+
+        tsvFile.deleteOnExit();
     }
 
     @Test
@@ -42,13 +47,11 @@ public class TestMzIDToTsv {
     }
     
     @Test
-    public void testConversion()
-    {
-        File dir = new File("C:\\cygwin\\home\\kims336\\Data\\QCShew");
-        
-        File mzidFile = new File(dir.getPath()+File.separator+"10ppm_TI_1_2_Len50_NumPeak5.mzid");
-        File tsvFile = new File(dir.getPath()+File.separator+"test.tsv");
-        
+    public void testConversion() throws IOException, URISyntaxException {
+
+        File mzidFile = new File(TestMzIDToTsv.class.getClassLoader().getResource("test.mzid").toURI());
+
+        File tsvFile = File.createTempFile("test", ".mgf");
         String[] argv = {"-i", mzidFile.getPath(), "-o", tsvFile.getPath(), "-showFormula", "1"};
         MzIDToTsv.main(argv);
     }
@@ -61,6 +64,8 @@ public class TestMzIDToTsv {
     }
     
     @Test
+    @Ignore
+
     public void testMolecularFormula()
     {
         File tsvFile = new File("\\\\protoapps\\UserData\\Sangtae\\Examples\\EmpFormulaExample.tsv");
