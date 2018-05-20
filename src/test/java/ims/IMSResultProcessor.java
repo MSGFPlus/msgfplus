@@ -5,11 +5,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import edu.ucsd.msjava.parser.BufferedLineReader;
 public class IMSResultProcessor {
+
 	@Test
+    @Ignore
 	public void filterIMSResults() throws Exception
 	{
 		File result = new File("C:\\cygwin\\home\\kims336\\Data\\IMS_Sarc\\SarcCtrl_P21_1mgml_IMS6_AgTOF07_210min_CID_01_05Oct12_Frodo_Precursors_Removed_Collision_Energy_Collapsed_0801.tsv");
