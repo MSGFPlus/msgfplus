@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import edu.ucsd.msjava.ipa.IPA;
@@ -25,7 +26,9 @@ import edu.ucsd.msjava.parser.TSVResultParser;
 import edu.ucsd.msjava.ui.MSGFPlus;
 
 public class TestIPA {
+
 	@Test
+	@Ignore
 	public void getXIC() throws Exception
 	{
 		File dir = new File("/Users/kims336/Research/Data/ASMS2013/IPA");
@@ -70,9 +73,10 @@ public class TestIPA {
 	}
 	
 	@Test
+	@Ignore
 	public void testReadingPeaks() throws Exception
 	{
-		File peaksFile = new File("D:\\Research\\Data\\ASMS2013\\NewDeconMSn\\QC_Shew_12_02_2_1Aug12_Cougar_12-06-11_peaks.txt");
+		File peaksFile = new File(TestIPA.class.getClassLoader().getResource("test2.ms2").toURI());
 		BufferedLineReader in = new BufferedLineReader(peaksFile.getPath());
 		String s;
 		int lineNum = 0;
@@ -198,7 +202,7 @@ public class TestIPA {
 		{
 			Spectrum spec = itr.next();
 			++numSpectra;
-			if(scanSet.add(spec.getScanNum()) == true)
+			if(scanSet.add(spec.getScanNum()))
 			{
 				System.out.println(spec.getScanNum());
 			}

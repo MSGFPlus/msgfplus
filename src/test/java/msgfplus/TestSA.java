@@ -1,6 +1,7 @@
 package msgfplus;
 
 import java.io.File;
+import java.net.URISyntaxException;
 
 import org.junit.Test;
 
@@ -14,11 +15,8 @@ import edu.ucsd.msjava.suffixarray.SuffixArraySequence;
 
 public class TestSA {
     @Test
-    public void getAAProbabilities()
-    {
-        File dbFile = new File("D:\\Research\\Data\\CommonContaminants\\H_sapiens_Uniprot_SPROT_2013-05-01_withContam.fasta");
-//        SuffixArraySequence sequence = new SuffixArraySequence(dbFile.getPath());
-//        SuffixArray sa = new SuffixArray(sequence);
+    public void getAAProbabilities() throws URISyntaxException {
+        File dbFile = new File(TestSA.class.getClassLoader().getResource("human-uniprot-contaminants.fasta").toURI());
         AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
         DBScanner.setAminoAcidProbabilities(dbFile.getPath(), aaSet);
         for(AminoAcid aa : aaSet)
@@ -28,20 +26,18 @@ public class TestSA {
     }
     
     @Test
-    public void getNumCandidatePeptides()
-    {
-        File dbFile = new File("/Users/kims336/Research/Data/Andy/IPI_human_3.87_withContam.fasta");
+    public void getNumCandidatePeptides() throws URISyntaxException {
+        File dbFile = new File(TestSA.class.getClassLoader().getResource("human-uniprot-contaminants.fasta").toURI());
         SuffixArraySequence sequence = new SuffixArraySequence(dbFile.getPath());
         SuffixArray sa = new SuffixArray(sequence);
-        AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(System.getProperty("user.home")+"/Research/Data/Andy/TestMods.txt");
+        AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(new File(TestSA.class.getClassLoader().getResource("Mods.txt").toURI()).getAbsolutePath());
         System.out.println("NumPeptides: " + sa.getNumCandidatePeptides(aaSet, 2364.981689453125f, new Tolerance(10, true)));
     }
 
     
     @Test
-    public void testRedundantProteins()
-    {
-        File databaseFile = new File("D:\\Research\\Data\\IPRG2014\\sprot-ecoli-4spiked-20131016.fasta");
+    public void testRedundantProteins() throws URISyntaxException {
+        File databaseFile = new File(TestSA.class.getClassLoader().getResource("ecoli.fasta").toURI());
         
         CompactFastaSequence fastaSequence = new CompactFastaSequence(databaseFile.getPath());
         float ratioUniqueProteins = fastaSequence.getRatioUniqueProteins();

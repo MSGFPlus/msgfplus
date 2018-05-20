@@ -1,15 +1,13 @@
 package msgfplus;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
+import java.io.*;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import edu.ucsd.msjava.misc.ConvertToMgf;
@@ -23,7 +21,6 @@ import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Composition;
 import edu.ucsd.msjava.msutil.Enzyme;
 import edu.ucsd.msjava.msutil.InstrumentType;
-import edu.ucsd.msjava.msutil.Pair;
 import edu.ucsd.msjava.msutil.Peptide;
 import edu.ucsd.msjava.msutil.Protocol;
 import edu.ucsd.msjava.msutil.SpectraAccessor;
@@ -33,6 +30,7 @@ import edu.ucsd.msjava.parser.TSVParser;
 public class TestMisc {
 
     @Test
+    @Ignore
     public void testCleavageState() {
 
         Map<String, Integer> peptides = new HashMap<String, Integer>(){
@@ -110,16 +108,15 @@ public class TestMisc {
     }
     
     @Test
-    public void testMzMLParser()
-    {
-        File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug");
-        File mzMLFile = new File(dir.getPath()+File.separator+"PTSS4105SN15613_c_ms2_rt100.mzML");
-        File mgfFile = new File(dir.getPath()+File.separator+"PTSS4105SN15613_c_ms2_rt100.mgf");
+    public void testMzMLParser() throws URISyntaxException, IOException {
+        File mzMLFile = new File(TestMisc.class.getClassLoader().getResource("tiny.pwiz.mzML").toURI());
+        File mgfFile = File.createTempFile("tiny.pwiz", "mgf");
         try {
             ConvertToMgf.convert(mzMLFile, mgfFile, false, null, null, -1, -1, -1, false);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        mgfFile.deleteOnExit();
     }
     
     @Test
@@ -135,6 +132,7 @@ public class TestMisc {
     }
     
     @Test
+    @Ignore
     public void generateTRexPRMSpectrum()
     {
         File specFile = new File("D:\\Research\\Data\\TRex\\TRex_GLVGAPGLRGLPGK.mgf");
@@ -173,6 +171,7 @@ public class TestMisc {
     }        
 
     @Test
+    @Ignore
     public void generateTRexPRMSpectra()
     {
         File outputFile = new File("D:\\Research\\Data\\TRex\\MaxCharge4\\TRex48216_Vectors.txt");
