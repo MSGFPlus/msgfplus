@@ -3,6 +3,8 @@ package msgfplus;
 import java.io.File;
 import java.net.URISyntaxException;
 
+import edu.ucsd.msjava.msdbsearch.SuffixArrayForMSGFDB;
+import edu.ucsd.msjava.msutil.Composition;
 import org.junit.Test;
 
 import edu.ucsd.msjava.msdbsearch.CompactFastaSequence;
@@ -55,6 +57,22 @@ public class TestSA {
             System.exit(-1);
         }
         
+    }
+
+    @Test
+    public void testTSA() throws Exception {
+        File dbFile = new File(TestSA.class.getClassLoader().getResource("human-uniprot-contaminants.fasta").toURI());
+        SuffixArraySequence sequence = new SuffixArraySequence(dbFile.getPath());
+
+        long time;
+        System.out.println("SuffixArrayForMSGFDB");
+        time = System.currentTimeMillis();
+        SuffixArrayForMSGFDB sa2 = new SuffixArrayForMSGFDB(sequence);
+        System.out.println("Time: " + (System.currentTimeMillis() - time));
+        int numCandidates = sa2.getNumCandidatePeptides(AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys(), (383.8754f - (float) Composition.ChargeCarrierMass()) * 3 - (float) Composition.H2O, new Tolerance(2.5f, false));
+        System.out.println("NumCandidatePeptides: " + numCandidates);
+        int length10 = sa2.getNumDistinctPeptides(10);
+        System.out.println("NumUnique10: " + length10);
     }
     
 }

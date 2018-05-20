@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import edu.ucsd.msjava.msdbsearch.CompactFastaSequence;
+import edu.ucsd.msjava.msdbsearch.ReverseDB;
+import edu.ucsd.msjava.ui.MSGFPlus;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -242,6 +245,21 @@ public class TestMisc {
             out.println(nominalMass+"\t"+0);
         }
         System.out.println("Done.");            
-    }        
+    }
+
+
+    @Test
+    public void testReverseDB() throws URISyntaxException, IOException {
+        File dbFile = new File(TestSA.class.getClassLoader().getResource("ecoli.fasta").toURI());
+        File dbDecoyFile = File.createTempFile("ecoli-reverse", ".fasta");
+        ReverseDB.reverseDB(dbFile.getAbsolutePath(), dbDecoyFile.getAbsolutePath(), true, MSGFPlus.DECOY_PROTEIN_PREFIX);
+
+        CompactFastaSequence tdaSequence = new CompactFastaSequence(dbDecoyFile.getPath());
+        float ratioUniqueProteins = tdaSequence.getRatioUniqueProteins();
+        if (ratioUniqueProteins < 0.5f) {
+            tdaSequence.printTooManyDuplicateSequencesMessage(dbDecoyFile.getName(), "MS-GF+", ratioUniqueProteins);
+        }
+
+    }
     
 }
