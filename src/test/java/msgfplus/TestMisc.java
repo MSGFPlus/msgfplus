@@ -251,7 +251,7 @@ public class TestMisc {
     @Test
     public void testReverseDB() throws URISyntaxException, IOException {
         File dbFile = new File(TestSA.class.getClassLoader().getResource("ecoli.fasta").toURI());
-        File dbDecoyFile = File.createTempFile("ecoli-reverse", ".fasta");
+        File dbDecoyFile = File.createTempFile("ecoli-reversed", ".fasta");
         ReverseDB.reverseDB(dbFile.getAbsolutePath(), dbDecoyFile.getAbsolutePath(), true, MSGFPlus.DECOY_PROTEIN_PREFIX);
 
         CompactFastaSequence tdaSequence = new CompactFastaSequence(dbDecoyFile.getPath());
@@ -259,6 +259,8 @@ public class TestMisc {
         if (ratioUniqueProteins < 0.5f) {
             tdaSequence.printTooManyDuplicateSequencesMessage(dbDecoyFile.getName(), "MS-GF+", ratioUniqueProteins);
         }
+
+        dbDecoyFile.deleteOnExit();
 
     }
     

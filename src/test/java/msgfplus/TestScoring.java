@@ -1,12 +1,14 @@
 package msgfplus;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Iterator;
 
 import edu.ucsd.msjava.msutil.*;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import edu.ucsd.msjava.msscorer.NewRankScorer;
@@ -18,17 +20,16 @@ import edu.ucsd.msjava.ui.ScoringParamGen;
 
 
 public class TestScoring {
+
     @Test
-    public void testReadingParamFile()
-    {
-        String paramFile = "D:\\Research\\Data\\Ansong_TMT_Velos\\params\\HCD_HighRes_Tryp_TMT.param";
+    public void testReadingParamFile() throws URISyntaxException {
+        String paramFile = new File(TestScoring.class.getClassLoader().getResource("HCD_HighRes_Tryp_TMT.param").toURI()).getAbsolutePath();
         NewRankScorer scorer = new NewRankScorer(paramFile);
     }
         
         @Test
-        public void testWritingParamAsPlainText()
-        {
-            String paramFile = "D:\\Data\\UVPD_MSGF_Training\\MSGFPlus\\HCD_QExactive_Tryp.param";
+        public void testWritingParamAsPlainText() throws URISyntaxException {
+            String paramFile = new File(TestScoring.class.getClassLoader().getResource("HCD_QExactive_Tryp.param").toURI()).getAbsolutePath();
             NewRankScorer scorer = new NewRankScorer(paramFile);
             
             Path paramPath = Paths.get(paramFile);
@@ -40,6 +41,7 @@ public class TestScoring {
         }
     
     @Test
+    @Ignore
     public void testScoringParamGen()
     {
         File resultPath = new File("C:\\cygwin\\home\\kims336\\Data\\Scoring");
@@ -60,6 +62,7 @@ public class TestScoring {
     }        
     
     @Test
+    @Ignore
     public void testScoringParamGenFromMgf()
     {
         ActivationMethod actMethod = ActivationMethod.HCD;
@@ -83,6 +86,7 @@ public class TestScoring {
     }
     
     @Test
+    @Ignore
     public void testGeneratingIonProbabilities()
     {
         File mgfFile = new File("D:\\Research\\Data\\TrainingMSGFPlus\\AnnotatedSpectra\\CID_LowRes_Tryp.mgf");

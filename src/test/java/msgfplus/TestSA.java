@@ -16,6 +16,7 @@ import edu.ucsd.msjava.suffixarray.SuffixArray;
 import edu.ucsd.msjava.suffixarray.SuffixArraySequence;
 
 public class TestSA {
+
     @Test
     public void getAAProbabilities() throws URISyntaxException {
         File dbFile = new File(TestSA.class.getClassLoader().getResource("human-uniprot-contaminants.fasta").toURI());
@@ -39,7 +40,7 @@ public class TestSA {
     
     @Test
     public void testRedundantProteins() throws URISyntaxException {
-        File databaseFile = new File(TestSA.class.getClassLoader().getResource("ecoli.fasta").toURI());
+        File databaseFile = new File(TestSA.class.getClassLoader().getResource("ecoli-reversed.fasta").toURI());
         
         CompactFastaSequence fastaSequence = new CompactFastaSequence(databaseFile.getPath());
         float ratioUniqueProteins = fastaSequence.getRatioUniqueProteins();
