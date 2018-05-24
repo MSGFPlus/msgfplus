@@ -3,9 +3,11 @@ package msgfplus;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import edu.ucsd.msjava.msgf.Histogram;
@@ -25,6 +27,7 @@ import edu.ucsd.msjava.ui.ScoringParamGen;
 public class TestMSGFPlus {
     
     @Test
+    @Ignore
     public void testQCShew()
     {
         File dir = new File("C:\\cygwin\\home\\kims336\\Data\\QCShew");
@@ -53,6 +56,7 @@ public class TestMSGFPlus {
     }
     
     @Test
+    @Ignore
     public void testSingleSpec()
     {
         File dir = new File("C:\\cygwin\\home\\kims336\\Data\\MSGFPlusTest");
@@ -76,6 +80,7 @@ public class TestMSGFPlus {
     }
 
     @Test
+    @Ignore
     public void testMultiThreading()
     {
         File dir = new File("C:\\cygwin\\home\\kims336\\Data\\QCShew");
@@ -105,6 +110,7 @@ public class TestMSGFPlus {
     }
     
     @Test
+    @Ignore
     public void testNegativeDeNovoScore()
     {
         File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Noble");
@@ -137,6 +143,7 @@ public class TestMSGFPlus {
     }
     
     @Test
+    @Ignore
     public void testNTermMetCleavage()
     {
         File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug\\2014-04-30msgf-bug");
@@ -160,6 +167,7 @@ public class TestMSGFPlus {
     }
     
     @Test
+    @Ignore
     public void testCTermNTT()
     {
         File dir = new File("C:\\cygwin\\home\\kims336\\Data\\MSGFPlusTest\\");
@@ -183,6 +191,7 @@ public class TestMSGFPlus {
     }
     
     @Test
+    @Ignore
     public void testTerminomics()
     {
         File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug\\");
@@ -205,49 +214,8 @@ public class TestMSGFPlus {
         
         assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
     }
+    
 
-    
-    @Test
-    public void testMzIdGen()
-    {
-//        File specFile = new File("/Users/kims336/Research/Data/CPTAC/test.mgf");
-//        File dbFile = new File("/Users/kims336/Research/Data/CPTAC/test.fasta");
-//        File modFile = new File("/Users/kims336/Research/Data/CPTAC/Mods.txt");
-//
-//        String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), "-mod", modFile.getPath()};
-//        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
-//        paramManager.addMSGFPlusParams();
-//        assertTrue(paramManager.parseParams(argv) == null);
-//        assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
-    }
-    
-    @Test
-    public void testUserScoringParams()
-    {
-//        File specFile = new File("/Users/kims336/Research/Data/CPTAC/test.mgf");
-//        File dbFile = new File("/Users/kims336/Research/Data/CPTAC/test.fasta");
-//        File modFile = new File("/Users/kims336/Research/Data/CPTAC/Mods.txt");
-//
-//        String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), "-mod", modFile.getPath(), "-protocol", "2", "-m", "3"};
-//        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
-//        paramManager.addMSGFPlusParams();
-//        assertTrue(paramManager.parseParams(argv) == null);
-//        assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
-    }
-    
-    @Test
-    public void testMultipleInputSpectra()
-    {
-//        File specPath = new File("/Users/kims336/Research/Data/TrainingITRAQ/Global/mzMLFiles");
-//        File dbFile = new File("/Users/kims336/Research/Data/TrainingITRAQ/Global/ID_003632_9011437E.fasta");
-//        File modFile = new File("/Users/kims336/Research/Data/TrainingITRAQ/Global/Mods.txt");
-//
-//        String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-mod", modFile.getPath(), "-ti", "0,1", "-tda", "1", "-ntt", "2", "-protocol", "2"};
-//        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
-//        paramManager.addMSGFPlusParams();
-//        paramManager.parseParams(argv);
-//        MSGFPlus.runMSGFPlus(paramManager);
-    }
     
     @Test
     public void testScoringParamGen()
@@ -266,6 +234,7 @@ public class TestMSGFPlus {
     }
     
     @Test
+    @Ignore
     public void testMgf()
     {
         File specPath = new File("C:\\cygwin\\home\\kims336\\Research\\Data\\Test\\test.mgf");
@@ -279,6 +248,7 @@ public class TestMSGFPlus {
     }
 
     @Test
+    @Ignore
     public void testCrossLink()
     {
         File specPath = new File(System.getProperty("user.home")+"/Research/Data/Eric/CuMB_006e_scan2089.mgf");
@@ -292,14 +262,14 @@ public class TestMSGFPlus {
     }
     
     @Test
-    public void testModFileReading()
-    {
-        File modFile = new File("/Users/kims336/Research/Data/Mouse_Brain_Phospho/Mods.txt");
+    public void testModFileReading() throws URISyntaxException {
+        File modFile = new File(TestMSGFPlus.class.getClassLoader().getResource("Mods.txt").toURI());
         AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
         aaSet.printAASet();
     }
     
     @Test
+    @Ignore
     public void testProfieSpectraDetector()
     {
 //        File specFile = new File("C:\\cygwin\\home\\kims336\\Data\\Centroiding\\QC_Shew_13_02_pt5_2_pH7p5_23Apr13_Frodo_12-12-04.mgf");
@@ -321,6 +291,7 @@ public class TestMSGFPlus {
     }
     
     @Test
+    @Ignore
     public void testDuplicatedProteins() throws Exception
     {
         File tsvFile = new File("/Users/kims336/Research/Data/Nikola/NoEnzyme.tsv");
@@ -359,6 +330,7 @@ public class TestMSGFPlus {
     }
     
     @Test
+    @Ignore
     public void testPrecursorError() throws Exception
     {
         File specPath = new File(System.getProperty("user.home")+"/Research/Data/Matt/test_dta.txt");
@@ -375,6 +347,7 @@ public class TestMSGFPlus {
     }
     
     @Test
+    @Ignore
     public void testMissingPeptides() throws Exception
     {
         File specPath = new File(System.getProperty("user.home")+"/Research/Data/Matt/test.mgf");
@@ -391,6 +364,7 @@ public class TestMSGFPlus {
     }
     
     @Test
+    @Ignore
     public void testPrePost() throws Exception
     {
         File specPath = new File("C:\\cygwin\\home\\kims336\\Research\\Data\\Matt\\test.mgf");
@@ -407,6 +381,7 @@ public class TestMSGFPlus {
     }
 
     @Test
+    @Ignore
     public void testNoEnzymeSearch() throws Exception
     {
         File specPath = new File("C:\\cygwin\\home\\kims336\\Research\\Data\\Matt\\test.mgf");
@@ -423,6 +398,7 @@ public class TestMSGFPlus {
     }
 
     @Test
+    @Ignore
     public void testCTermFixedMod() throws Exception
     {
         File dir = new File("C:\\cygwin\\home\\kims336\\Data\\MSGFPlusTest");
@@ -443,6 +419,7 @@ public class TestMSGFPlus {
     }
 
     @Test
+    @Ignore
     public void testScoringParamGenETD()
     {
         File resultPath = new File("/Users/kims336/Research/Data/TrainingITRAQ/Global/beforeTraining/CPTAC_OvC_JB5427_iTRAQ_01_9Apr12_Cougar_12-03-21.mzid");
@@ -465,6 +442,7 @@ public class TestMSGFPlus {
     }
     
     @Test
+    @Ignore
     public void testQExactiveParam()
     {
         File specPath = new File(System.getProperty("user.home")+"/Research/Data/Tabb/TCGA-7D-HCD-QExactive/test.mgf");
@@ -480,6 +458,7 @@ public class TestMSGFPlus {
     }
     
     @Test
+    @Ignore
     public void testScoringProtocol()
     {
         File specPath = new File(System.getProperty("user.home")+"/Research/Data/Tabb/TCGA-7D-HCD-QExactive/test.mgf");
@@ -496,6 +475,7 @@ public class TestMSGFPlus {
     }    
     
     @Test
+    @Ignore
     public void testMultipleNTermMod()
     {
         File specPath = new File(System.getProperty("user.home")+"/Research/Data/Debug/test.mgf");
@@ -512,6 +492,7 @@ public class TestMSGFPlus {
     }
     
     @Test
+    @Ignore
     public void testTMT()
     {
         File specPath = new File(System.getProperty("user.home")+"/Research/Data/Tabb/TCGA-7D-HCD-QExactive/test.mgf");
@@ -528,6 +509,7 @@ public class TestMSGFPlus {
     }        
     
     @Test
+    @Ignore
     public void testWaLP()
     {
 //        File dir = new File("/Users/kims336/Research/Data/Jesse");
@@ -547,6 +529,7 @@ public class TestMSGFPlus {
     }    
     
     @Test
+    @Ignore
     public void testSharedPeptides()
     {
         File dir = new File("D:\\Research\\Data\\MSGFPercolator");
@@ -570,6 +553,7 @@ public class TestMSGFPlus {
     }    
     
     @Test
+    @Ignore
     public void testAdditionalFeatures()
     {
         File dir = new File("C:\\cygwin\\home\\sangtaekim\\Research\\Data\\CompRef\\Global\\");
@@ -592,6 +576,7 @@ public class TestMSGFPlus {
     }
     
     @Test
+    @Ignore
     public void testLongPeptides()
     {
         File dir = new File("C:\\cygwin\\home\\kims336\\Data\\QCShew");
@@ -613,6 +598,7 @@ public class TestMSGFPlus {
     }
     
     @Test
+    @Ignore
     public void testCentroiding()
     {
         File specFile = new File("C:\\cygwin\\home\\kims336\\Data\\Debug\\ALZ_VP2P101_C_SCX_02_7Dec08_Draco_08-10-29_dta.txt");
@@ -630,6 +616,7 @@ public class TestMSGFPlus {
     }
     
     @Test
+    @Ignore
     public void testNumVariantsPerPeptide()
     {
         File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug");
@@ -652,9 +639,8 @@ public class TestMSGFPlus {
     }
     
     @Test
-    public void charge1Hisgogram()
-    {
-        File specFile = new File("D:\\Research\\Data\\QCShew\\QC_Shew_12_02_2_1Aug12_Cougar_12-06-11_mzML.mgf");
+    public void charge1Hisgogram() throws URISyntaxException {
+        File specFile = new File(TestMSGFPlus.class.getClassLoader().getResource("tiny.pwiz.mzML").toURI());
         SpectraAccessor specAcc = new SpectraAccessor(specFile);
         Histogram<Integer> ticHist = new Histogram<Integer>();
         while(specAcc.getSpecItr().hasNext())
@@ -680,6 +666,7 @@ public class TestMSGFPlus {
     }
     
     @Test
+    @Ignore
     public void testCharge1Detection()
     {
         File dir = new File("D:\\Research\\Data\\QCShew\\");
@@ -700,6 +687,7 @@ public class TestMSGFPlus {
     }
     
     @Test
+    @Ignore
     public void testOrbiHCDScoring()
     {
         File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug");
@@ -722,6 +710,7 @@ public class TestMSGFPlus {
     }
 
     @Test
+    @Ignore
     public void testCCMSXMLParsing()
     {
         File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug");
@@ -731,9 +720,8 @@ public class TestMSGFPlus {
     }
     
     @Test
-    public void testDoubleMods()
-    {
-        File mod = new File("C:\\cygwin\\home\\kims336\\Data\\Debug\\Mods.txt");
+    public void testDoubleMods() throws URISyntaxException {
+        File mod = new File(TestMSGFPlus.class.getClassLoader().getResource("Mods.txt").toURI());
         AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(mod.getPath());
         aaSet.printAASet();
     }
@@ -754,6 +742,7 @@ public class TestMSGFPlus {
     }
     
     @Test
+    @Ignore
     public void testDuplicatePepEv()
     {
         File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Mayo");
@@ -775,6 +764,7 @@ public class TestMSGFPlus {
     }
 
     @Test
+    @Ignore
     public void testNTermMods()
     {
 //        -s Nterm_GBSA_50_Try_24h_11Oct13_Leopard_13-05-21_dta.txt -d DB/ID_003532_E796316B.fasta -mod Mods.txt -ntt 1        
@@ -796,6 +786,7 @@ public class TestMSGFPlus {
     }
     
     @Test
+    @Ignore
     public void testTMTNewParam()
     {
         File specPath = new File("D:\\Research\\Data\\Ansong_TMT_Velos\\test.mgf");
@@ -816,15 +807,15 @@ public class TestMSGFPlus {
     }        
     
     @Test
-    public void testAspN()
-    {
-        File modFile = new File("C:\\cygwin\\home\\kims336\\Data\\Debug\\MSGFDB_Mods.txt");
+    public void testAspN() throws URISyntaxException {
+        File modFile = new File(TestMSGFPlus.class.getClassLoader().getResource("Mods.txt").toURI());
         AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
         Peptide peptide = aaSet.getPeptide("DmASRCWRWWGWSAWPRTRLPPAGSTPSFCHHFSTQEK");
         System.out.println(peptide.toString());
     }
     
     @Test
+    @Ignore
     public void testNegativeTI()
     {
         File dir = new File("C:\\cygwin\\home\\kims336\\Data\\MSGFPlusTest");
@@ -851,6 +842,7 @@ public class TestMSGFPlus {
     }
     
     @Test
+    @Ignore
     public void testNewPeptideMzId()
     {
         File dir = new File("C:\\cygwin\\home\\kims336\\Research\\MSGFPlusTest");

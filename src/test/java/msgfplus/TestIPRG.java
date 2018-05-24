@@ -4,13 +4,16 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import edu.ucsd.msjava.params.ParamManager;
 import edu.ucsd.msjava.ui.MSGFPlus;
 
 public class TestIPRG {
+
     @Test
+    @Ignore
     public void countProteins()
     {
         String[] accessions = { "P62894", "P00924", "P00330", "P02769"};

@@ -81,7 +81,7 @@ public class BuildSA {
             File concatTargetDecoyDBFile = new File(outputDir.getPath() + File.separator + concatDBFileName);
             if (!concatTargetDecoyDBFile.exists()) {
                 System.out.println("Creating " + concatDBFileName + ".");
-                if (ReverseDB.reverseDB(databaseFile.getPath(), concatTargetDecoyDBFile.getPath(), true, MSGFPlus.DECOY_PROTEIN_PREFIX) == false) {
+                if (!ReverseDB.reverseDB(databaseFile.getPath(), concatTargetDecoyDBFile.getPath(), true, MSGFPlus.DECOY_PROTEIN_PREFIX)) {
                     System.err.println("Cannot create decoy database file!");
                     System.exit(-1);
                 }

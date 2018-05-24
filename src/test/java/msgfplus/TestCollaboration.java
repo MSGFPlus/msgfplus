@@ -4,13 +4,17 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import edu.ucsd.msjava.params.ParamManager;
 import edu.ucsd.msjava.ui.MSGFPlus;
 
+@Ignore
 public class TestCollaboration {
+
     @Test
+    @Ignore
     public void testSujunLiIndiana()
     {
         File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Sujun");
