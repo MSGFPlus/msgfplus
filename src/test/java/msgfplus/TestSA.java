@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 
 import edu.ucsd.msjava.msdbsearch.SuffixArrayForMSGFDB;
 import edu.ucsd.msjava.msutil.Composition;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import edu.ucsd.msjava.msdbsearch.CompactFastaSequence;
@@ -39,6 +40,7 @@ public class TestSA {
 
     
     @Test
+    @Ignore
     public void testRedundantProteins() throws URISyntaxException {
         File databaseFile = new File(TestSA.class.getClassLoader().getResource("ecoli-reversed.fasta").toURI());
         

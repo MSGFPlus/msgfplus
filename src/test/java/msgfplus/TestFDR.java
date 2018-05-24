@@ -2,6 +2,7 @@ package msgfplus;
 
 import java.io.File;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import edu.ucsd.msjava.fdr.ComputeFDR;
@@ -9,12 +10,14 @@ import edu.ucsd.msjava.fdr.ComputeQValue;
 
 public class TestFDR {
     @Test
+    @Ignore
     public void testFdrMultipleMatches()
     {
         File dir = new File("C:\\cygwin\\home\\kims336\\Data\\MSGFPlusTest");
     }
     
     @Test
+    @Ignore
     public void testComputeQValue()
     {
         File dir = new File(System.getProperty("user.home")+"/Research/Data/QCShew");
@@ -32,6 +35,7 @@ public class TestFDR {
     }
     
     @Test
+    @Ignore
     public void testPepFDR()
     {
         File dir = new File(System.getProperty("user.home")+"/Research/Data/Heejung/FDRTest");
@@ -49,6 +53,7 @@ public class TestFDR {
     }
 
     @Test
+    @Ignore
     public void testTRexFDR()
     {
         File dir = new File("D:\\Research\\Data\\TRex\\MaxCharge4");
