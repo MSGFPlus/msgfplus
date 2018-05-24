@@ -148,6 +148,7 @@ public class ConvertToMgf {
                 }
             }
             spec.outputMgf(out, writeActivationMethod);
+            out.flush();
 //			System.out.println(spec.getID() + " " + spec.getScanNum());
             numSpecs++;
         }
