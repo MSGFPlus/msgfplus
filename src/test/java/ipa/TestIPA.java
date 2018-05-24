@@ -30,7 +30,7 @@ public class TestIPA {
 
 	@Test
 	public void iPRG2013() throws URISyntaxException {
-		File specFile = new File(TestIPA.class.getClassLoader().getResource("iprg-2013/F13.mzXML").toURI());
+		File specFile = new File(TestIPA.class.getClassLoader().getResource("iprg-2013/F13.mgf").toURI());
 		File dbFile = new File(TestIPA.class.getClassLoader().getResource("iprg-2013/Homo_sapiens_non-redundant.GRCh37.68.pep.all_FPKM-cRAP.fasta").toURI());
 		File modFile = new File(TestIPA.class.getClassLoader().getResource("iprg-2013/Mods.txt").toURI());
 
@@ -50,7 +50,7 @@ public class TestIPA {
 
 	@Test
 	public void countDiffScans() throws URISyntaxException {
-		File deconMSnSpecFile = new File(TestIPA.class.getClassLoader().getResource("iprg-2013/F13.mzXML").toURI());
+		File deconMSnSpecFile = new File(TestIPA.class.getClassLoader().getResource("iprg-2013/F13.mgf").toURI());
 		SpectraAccessor deconMSnSpecAccessor = new SpectraAccessor(deconMSnSpecFile);
 		Iterator<Spectrum> itr = deconMSnSpecAccessor.getSpecItr();
 		

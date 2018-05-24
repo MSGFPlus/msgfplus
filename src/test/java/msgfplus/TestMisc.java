@@ -2,10 +2,7 @@ package msgfplus;
 
 import java.io.*;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import edu.ucsd.msjava.msdbsearch.CompactFastaSequence;
 import edu.ucsd.msjava.msdbsearch.ReverseDB;
@@ -121,6 +118,7 @@ public class TestMisc {
         }
         mgfFile.deleteOnExit();
     }
+
     
     @Test
     public void testTrypsinCredit()

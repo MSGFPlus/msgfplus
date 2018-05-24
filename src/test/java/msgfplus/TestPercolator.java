@@ -15,7 +15,7 @@ public class TestPercolator {
     @Test
     public void testAddFeatures() throws URISyntaxException {
 
-        File specFile = new File(TestPercolator.class.getClassLoader().getResource("iprg-2013/F13.mzXML").toURI());
+        File specFile = new File(TestPercolator.class.getClassLoader().getResource("iprg-2013/F13.mgf").toURI());
         File dbFile = new File(TestPercolator.class.getClassLoader().getResource("iprg-2013/Homo_sapiens_non-redundant.GRCh37.68.pep.all_FPKM-cRAP.fasta").toURI());
         File modFile = new File(TestPercolator.class.getClassLoader().getResource("iprg-2013/Mods.txt").toURI());
         String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), "-addFeatures", "1", "-m", "3"};
