@@ -94,7 +94,7 @@ public class ConcurrentMSGFDB {
                 boolean replicateMergedResults
         ) {
             this.specScanner = specScanner;
-            this.scanner = new DBScanner(specScanner, sa, enzyme, aaSet, numPeptidesPerSpec, minPeptideLength, maxPeptideLength, Constants.NUM_VARIANTS_PER_PEPTIDE, 0, false);
+            this.scanner = new DBScanner(specScanner, sa, enzyme, aaSet, numPeptidesPerSpec, minPeptideLength, maxPeptideLength, Constants.NUM_VARIANTS_PER_PEPTIDE, 0, false, -1);
             this.numberOfAllowableNonEnzymaticTermini = numberOfAllowableNonEnzymaticTermini;
             this.storeScoreDist = storeScoreDist;
             this.specFileName = specFileName;
