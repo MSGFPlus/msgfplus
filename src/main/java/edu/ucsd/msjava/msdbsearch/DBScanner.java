@@ -333,7 +333,7 @@ public class DBScanner {
                         else peptideLengthIndex = 1;
                     } else peptideLengthIndex = lcp;
                 }
-                
+
                 for (; peptideLengthIndex <= maxPeptideLength && index + peptideLengthIndex < size - 1; peptideLengthIndex++)    // ith character of a peptide
                 {
                     if (Thread.currentThread().isInterrupted()) {
@@ -390,10 +390,10 @@ public class DBScanner {
                             }
                         }
                     }
-                    
+
                     if (peptideLengthIndex < minPeptideLength)
                         continue;
-                    
+
 //					System.out.println(sequence.getSubsequence(index+1, index+i+1));
 //					if(sequence.getSubsequence(index+1, index+i+1).equalsIgnoreCase("KYPCRYCEK"))
 //					{
@@ -434,22 +434,22 @@ public class DBScanner {
                         if (Thread.currentThread().isInterrupted()) {
                             return;
                         }
-                        
-                        /* Check for edge case where peptides derived from the 
+
+                        /* Check for edge case where peptides derived from the
                          * start of a protien sequence containing an N-terminus
-                         * methionine may have more missed cleavages than the 
-                         * peptides derived from removing the methionine when 
+                         * methionine may have more missed cleavages than the
+                         * peptides derived from removing the methionine when
                          * digesting with N-term enzymes.
                          *
-                         * E.g., a grid that considers methionine cleavage on 
+                         * E.g., a grid that considers methionine cleavage on
                          * protein sequence 'MDT' will return peptides
                          * ['MDT','DT']. If we are using AspN as the enzyme
-                         * the MDT peptide has one missed cleavage and the DT 
+                         * the MDT peptide has one missed cleavage and the DT
                          * peptide has zero. We want to skip the peptides that
                          * are over the maximum number of missed cleavages.
                          */
                         if(candidatePepGrid.gridIsOverMaxMissedCleavages(j)) continue;
-                                
+
                         float theoPeptideMass = candidatePepGrid.getPeptideMass(j);
 //						/// Debug
 //						System.out.println("PepStr: " + candidatePepGrid.getPeptideSeq(j) + " GridSize:" + candidatePepGrid.size());

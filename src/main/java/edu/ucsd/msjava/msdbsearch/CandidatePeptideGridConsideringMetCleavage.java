@@ -42,14 +42,14 @@ public class CandidatePeptideGridConsideringMetCleavage extends CandidatePeptide
         */
         boolean op1 = super.addResidue(length, residue);
         boolean op2 = false;
-        
+
         if (isProteinNTermWithHeadingMet) {
             if (length == 2)        // Second aa after M (e.g. _.M'G')
                 op2 = candidatePepGridMetCleaved.addProtNTermResidue(residue);
             else
                 op2 = candidatePepGridMetCleaved.addResidue(length - 1, residue);
         }
-        
+
         /* Fail once both grids are rejecting extension */
         return op1 || op2;
     }
@@ -155,15 +155,15 @@ public class CandidatePeptideGridConsideringMetCleavage extends CandidatePeptide
         else
             return candidatePepGridMetCleaved.getNumMods(index - sizeNormPep);
     }
-    
+
     @Override
     public boolean gridIsOverMaxMissedCleavages(int index) {
         /* Protein sequence did not start with methionine */
         if (!isProteinNTermWithHeadingMet)
             return super.gridIsOverMaxMissedCleavages(index);
-        
+
         /* Protein sequence did begin with methionine, so route the test to the
-         * appropriate grid based on the argument index. 
+         * appropriate grid based on the argument index.
          */
         int sizeNormPep = super.size();
         if (index < sizeNormPep)
@@ -171,15 +171,15 @@ public class CandidatePeptideGridConsideringMetCleavage extends CandidatePeptide
         else
             return candidatePepGridMetCleaved.gridIsOverMaxMissedCleavages(index - sizeNormPep);
     }
-    
+
     @Override
     public int getPeptideNumMissedCleavages(int index) {
         /* Protein sequence did not start with methionine */
         if (!isProteinNTermWithHeadingMet)
             return super.getPeptideNumMissedCleavages(index);
-        
+
         /* Protein sequence did begin with methionine, so route the test to the
-         * appropriate grid based on the argument index. 
+         * appropriate grid based on the argument index.
          */
         int sizeNormPep = super.size();
         if (index < sizeNormPep)

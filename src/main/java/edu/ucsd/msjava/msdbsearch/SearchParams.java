@@ -182,7 +182,7 @@ public class SearchParams {
     public double getChargeCarrierMass() {
         return chargeCarrierMass;
     }
-    
+
     public int getMaxMissedCleavages() {
         return maxMissedCleavages;
     }
@@ -191,7 +191,7 @@ public class SearchParams {
         // Charge carrier mass
         chargeCarrierMass = paramManager.getDoubleValue("ccm");
         Composition.setChargeCarrierMass(chargeCarrierMass);
-        
+
         // Spectrum file
         FileParameter specParam = paramManager.getSpecFileParam();
         File specPath = specParam.getFile();
@@ -322,15 +322,15 @@ public class SearchParams {
 
         minDeNovoScore = paramManager.getIntValue("minDeNovoScore");
 
-        /* Make sure max missed cleavages is valid value and that it is not 
+        /* Make sure max missed cleavages is valid value and that it is not
          * being mixed with an unspecific or no-cleave enzyme
          *
-         * String comparison to name is fragile here. It would be better if 
+         * String comparison to name is fragile here. It would be better if
          * there was a stable identifier to use for the comparision.
          */
         maxMissedCleavages = paramManager.getIntValue("maxMissedCleavages");
         if(maxMissedCleavages == 0) {
-            return "MaxMissedCleavages must be -1 (unlimited) or an integer greater than 0";
+            return "MaxMissedCleavages must be and integer greater than or equal to -1";
         }
         else if(maxMissedCleavages > 0 && enzyme.getName().equals("UnspecificCleavage")) {
             return "Cannot specify a MaxMissedCleavages when using unspecific cleavage enzyme";
@@ -338,7 +338,7 @@ public class SearchParams {
         else if(maxMissedCleavages > 0 && enzyme.getName().equals("NoCleavage")) {
             return "Cannot specify a MaxMissedCleavages when using no cleavage enzyme";
         }
-        
+
         return null;
     }
 
