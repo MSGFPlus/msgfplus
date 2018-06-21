@@ -329,13 +329,10 @@ public class SearchParams {
          * there was a stable identifier to use for the comparision.
          */
         maxMissedCleavages = paramManager.getIntValue("maxMissedCleavages");
-        if(maxMissedCleavages == 0) {
-            return "MaxMissedCleavages must be and integer greater than or equal to -1";
-        }
-        else if(maxMissedCleavages > 0 && enzyme.getName().equals("UnspecificCleavage")) {
+        if(maxMissedCleavages > -1 && enzyme.getName().equals("UnspecificCleavage")) {
             return "Cannot specify a MaxMissedCleavages when using unspecific cleavage enzyme";
         }
-        else if(maxMissedCleavages > 0 && enzyme.getName().equals("NoCleavage")) {
+        else if(maxMissedCleavages > -1 && enzyme.getName().equals("NoCleavage")) {
             return "Cannot specify a MaxMissedCleavages when using no cleavage enzyme";
         }
 
