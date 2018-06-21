@@ -348,12 +348,18 @@ public class ParamManager {
         addFeatureParam.registerEntry("output basic scores only").setDefault();
         addFeatureParam.registerEntry("output additional features");
         addParameter(addFeatureParam);
-        
+
         DoubleParameter chargeCarrierMassParam = new DoubleParameter("ccm", "ChargeCarrierMass", "Mass of charge carrier, Default: mass of proton (1.00727649)");
         chargeCarrierMassParam.minValue(0.1);
         chargeCarrierMassParam.setMaxInclusive();
         chargeCarrierMassParam.defaultValue(Composition.PROTON);
         addParameter(chargeCarrierMassParam);
+
+        /* Maximum number of missed cleavages to allow on searched pepetides */
+        IntParameter maxMissedCleavages = new IntParameter("maxMissedCleavages", "MaxMissedCleavages", "Exclude peptides with more than this number of missed cleavages from the search, Default: -1 (no limit)");
+        maxMissedCleavages.minValue(-1);
+        maxMissedCleavages.defaultValue(-1);
+        addParameter(maxMissedCleavages);
 
         addExample("Example (high-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzXML -d IPI_human_3.79.fasta -t 20ppm -ti -1,2 -ntt 2 -tda 1 -o testMSGFPlus.mzid");
         addExample("Example (low-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzXML -d IPI_human_3.79.fasta -t 0.5Da,2.5Da -ntt 2 -tda 1 -o testMSGFPlus.mzid");
