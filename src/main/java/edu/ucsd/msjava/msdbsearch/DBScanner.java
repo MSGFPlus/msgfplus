@@ -435,7 +435,8 @@ public class DBScanner {
                             return;
                         }
 
-                        /* Check for edge case where peptides derived from the
+                        /* 
+                         * Check for edge case where peptides derived from the
                          * start of a protien sequence containing an N-terminus
                          * methionine may have more missed cleavages than the
                          * peptides derived from removing the methionine when
@@ -447,6 +448,7 @@ public class DBScanner {
                          * the MDT peptide has one missed cleavage and the DT
                          * peptide has zero. We want to skip the peptides that
                          * are over the maximum number of missed cleavages.
+                         *
                          */
                         if(candidatePepGrid.gridIsOverMaxMissedCleavages(j)) continue;
 
