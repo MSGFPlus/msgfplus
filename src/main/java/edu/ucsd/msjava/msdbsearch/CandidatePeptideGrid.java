@@ -258,7 +258,7 @@ public class CandidatePeptideGrid {
             }
             size[length] = newIndex;
         }
-        
+
         this.length = length;
 
         /* If we are imposing a limit on the maximum number of missed cleavages
