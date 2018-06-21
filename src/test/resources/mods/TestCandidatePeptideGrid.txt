@@ -1,0 +1,3 @@
+NumMods=3
+C2H3N1O1,C,fix,any,Carbamidomethyl
+HO3P,STY,opt,any,Phospho

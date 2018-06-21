@@ -50,6 +50,7 @@ public class SearchParams {
     private int minNumPeaksPerSpectrum;
     private int minDeNovoScore;
     private double chargeCarrierMass;
+    private int maxMissedCleavages;
 
     public SearchParams() {
     }
@@ -182,11 +183,15 @@ public class SearchParams {
         return chargeCarrierMass;
     }
 
+    public int getMaxMissedCleavages() {
+        return maxMissedCleavages;
+    }
+
     public String parse(ParamManager paramManager) {
         // Charge carrier mass
         chargeCarrierMass = paramManager.getDoubleValue("ccm");
         Composition.setChargeCarrierMass(chargeCarrierMass);
-        
+
         // Spectrum file
         FileParameter specParam = paramManager.getSpecFileParam();
         File specPath = specParam.getFile();
@@ -317,6 +322,20 @@ public class SearchParams {
 
         minDeNovoScore = paramManager.getIntValue("minDeNovoScore");
 
+        /* Make sure max missed cleavages is valid value and that it is not
+         * being mixed with an unspecific or no-cleave enzyme
+         *
+         * String comparison to name is fragile here. It would be better if
+         * there was a stable identifier to use for the comparision.
+         */
+        maxMissedCleavages = paramManager.getIntValue("maxMissedCleavages");
+        if(maxMissedCleavages > -1 && enzyme.getName().equals("UnspecificCleavage")) {
+            return "Cannot specify a MaxMissedCleavages when using unspecific cleavage enzyme";
+        }
+        else if(maxMissedCleavages > -1 && enzyme.getName().equals("NoCleavage")) {
+            return "Cannot specify a MaxMissedCleavages when using no cleavage enzyme";
+        }
+
         return null;
     }
 
@@ -348,7 +367,7 @@ public class SearchParams {
         buf.append("\tMinPeptideLength: " + this.minPeptideLength + "\n");
         buf.append("\tMaxPeptideLength: " + this.maxPeptideLength + "\n");
         buf.append("\tNumMatchesPerSpec: " + this.numMatchesPerSpec + "\n");
-
+        buf.append("\tMaxMissedCleavages: "+this.maxMissedCleavages + "\n");
         buf.append("\tChargeCarrierMass: " + this.chargeCarrierMass);
 
         if (Math.abs(this.chargeCarrierMass - PROTON) < 0.005) {
