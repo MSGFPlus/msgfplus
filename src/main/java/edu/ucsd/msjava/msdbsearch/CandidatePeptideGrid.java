@@ -117,41 +117,41 @@ public class CandidatePeptideGrid {
     public String getPeptideSeq(int index) {
         return peptide[index].toString();
     }
-    
+
     /**
      * Test whether the peptide currently represented by the grid contains more
      * than the maximum number of allowed missed cleavages.
-     * 
+     *
      * @param index This parameter is unused, but is necessary because of how
      * this class is extended by CandidatePeptideGridConsideringMetCleavage,
      * which uses the index to route the call to one of two different grids.
-     * 
-     * @return true for over the maximum number of allowed missed cleavages, 
+     *
+     * @return true for over the maximum number of allowed missed cleavages,
      * false otherwise.
-     * 
+     *
      * @see CandidatePeptideGridConsideringMetCleavage
      */
     public boolean gridIsOverMaxMissedCleavages(int index) {
         return maxNumMissedCleavages != -1 && nMissedCleavages[length] > maxNumMissedCleavages;
     }
-    
+
     /**
      * Return the number of missed cleavages in the peptides the grid is
      * representing.
-     * 
+     *
      * @param index This parameter is unused, but is necessary because of how
      * this class is extended by CandidatePeptideGridConsideringMetCleavage,
      * which uses the index to route the call to one of two different grids.
-     * 
-     * @return The number of missed cleavages in the current grid peptide 
+     *
+     * @return The number of missed cleavages in the current grid peptide
      * sequence.
-     * 
+     *
      * @see CandidatePeptideGridConsideringMetCleavage
      */
     public int getPeptideNumMissedCleavages(int index) {
         return nMissedCleavages[length];
     }
-    
+
     public int getNumMods(int index) {
         return numMods[index][length];
     }
@@ -231,7 +231,7 @@ public class CandidatePeptideGrid {
             peptide[parentIndex].append(aaResidueArr[0]);
         }
         size[length] = parentSize;
-        
+
         // modified residue: copy prms up to length-1 into new array
         if (aaMassArr.length > 1 && parentSize < maxNumVariantsPerPeptide) {
             int newIndex = parentSize;
@@ -258,16 +258,17 @@ public class CandidatePeptideGrid {
             }
             size[length] = newIndex;
         }
-        this.length = length;
         
+        this.length = length;
+
         /* If we are imposing a limit on the maximum number of missed cleavages
          * allowed on candidate peptides.
          */
         if(maxNumMissedCleavages != -1 && !enzymeIsNonSpecific) {
             /* If enzyme cleaves before the amino acid (N-term enzyme), and this
-             * is not the first amino acid of the peptide, then it is a missed 
+             * is not the first amino acid of the peptide, then it is a missed
              * cleavage.
-             * 
+             *
              * E.g., AspN cleaves before D, so peptide YYD has a missed cleavage
              * at position 3, but peptide DYY has no missed cleavages.
              */
@@ -277,9 +278,9 @@ public class CandidatePeptideGrid {
 
             /* For C-term enzymes, we need to look backward one residue to
              * determine if adding this residue creates a missed cleavage.
-             * 
-             * E.g., for Trpysin, if the previous residue is K but we are 
-             * extending the peptide with another amino acid, the new peptide 
+             *
+             * E.g., for Trpysin, if the previous residue is K but we are
+             * extending the peptide with another amino acid, the new peptide
              * has 1 missed cleavage at position length-1 because the K did not
              * cleave.
              */
@@ -292,7 +293,7 @@ public class CandidatePeptideGrid {
             else {
                 nMissedCleavages[length] = nMissedCleavages[length-1];
             }
-            
+
             /* Store the look back residue to avoid repeated String parsing */
             residues[length]=aaResidueArr[0];
 
@@ -300,7 +301,7 @@ public class CandidatePeptideGrid {
              * missed cleavages */
             if(nMissedCleavages[length] > maxNumMissedCleavages) return false;
         }
-        
+
         return true;
     }
 
