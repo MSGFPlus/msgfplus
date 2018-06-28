@@ -64,7 +64,8 @@ public class PeptideEnumerator {
 
         Enzyme enzyme = Enzyme.TRYPSIN;
 
-        CandidatePeptideGrid candidatePepGrid = new CandidatePeptideGrid(aaSet, MAX_PEPTIDE_LENGTH, Constants.NUM_VARIANTS_PER_PEPTIDE);
+        /* No limit on maximum number of missed cleavages */
+        CandidatePeptideGrid candidatePepGrid = new CandidatePeptideGrid(aaSet, enzyme, MAX_PEPTIDE_LENGTH, Constants.NUM_VARIANTS_PER_PEPTIDE, -1);
         int[] numMissedCleavages = new int[MAX_PEPTIDE_LENGTH + 1];
         int nnet = 0;
         for (int bufferIndex = 0; bufferIndex < size; bufferIndex++) {
