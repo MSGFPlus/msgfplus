@@ -93,11 +93,11 @@ public class Tolerance implements Serializable { // Serializable is needed in or
     @Override
     public String toString() {
         if (unit == Unit.Da)
-            return value + "Da";
+            return value + " Da";
         else if (unit == Unit.PPM)
-            return value + "ppm";
+            return value + " ppm";
         else if (unit == Unit.Th)
-            return value + "Th";
+            return value + " Th";
         else
             return null;
     }
@@ -105,19 +105,21 @@ public class Tolerance implements Serializable { // Serializable is needed in or
     public static Tolerance parseToleranceStr(String tolStr) {
         Float val = null;
         Unit unit = null;
-        if (tolStr.endsWith("ppm")) {
+        String tolStrLCase = tolStr.toLowerCase();
+
+        if (tolStrLCase.endsWith("ppm")) {
             try {
                 val = Float.parseFloat(tolStr.substring(0, tolStr.length() - 3).trim());
                 unit = Unit.PPM;
             } catch (NumberFormatException e) {
             }
-        } else if (tolStr.endsWith("Da")) {
+        } else if (tolStrLCase.endsWith("da")) {
             try {
                 val = Float.parseFloat(tolStr.substring(0, tolStr.length() - 2).trim());
                 unit = Unit.Da;
             } catch (NumberFormatException e) {
             }
-        } else if (tolStr.endsWith("Th")) {
+        } else if (tolStrLCase.endsWith("th")) {
             try {
                 val = Float.parseFloat(tolStr.substring(0, tolStr.length() - 2).trim());
                 unit = Unit.Th;
