@@ -396,10 +396,11 @@ public class Enzyme implements ParamObject {
         enzymeTable = new HashMap<String, Enzyme>();
         registeredEnzymeList = new ArrayList<Enzyme>();
 
-        // Do not include "UnspecificCleavage" in HashMap enzymeTable
+        // Add "UnspecificCleavage" to registeredEnzymeList
+        // but do not call register to put it in the HashMap enzymeTable
         registeredEnzymeList.add(UnspecificCleavage); // 0
 
-//		register(UnspecificCleavage.name, UnspecificCleavage);
+	    // Skip (see above): register(UnspecificCleavage.name, UnspecificCleavage);
         register(TRYPSIN.name, TRYPSIN);              // 1
         register(CHYMOTRYPSIN.name, CHYMOTRYPSIN);    // 2
         register(LysC.name, LysC);                    // 3
