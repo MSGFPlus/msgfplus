@@ -12,7 +12,7 @@ import java.util.HashMap;
  * @author sangtaekim
  */
 public class ParamParser {
-    public static class Parameters extends HashMap<String, String> {
+    public static class Parameters extends CaseInsensitiveMap {
         /**
          *
          */

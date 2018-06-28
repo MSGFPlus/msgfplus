@@ -12,7 +12,7 @@ import java.util.Map.Entry;
 
 
 public class ParamManager {
-    private LinkedHashMap<String, Parameter> params;
+    private CaseInsensitiveLinkedHashMapParam params;
     private String toolName;
     private String version;
     private String date;
@@ -24,7 +24,7 @@ public class ParamManager {
         this.version = version;
         this.date = date;
         this.command = command;
-        params = new LinkedHashMap<String, Parameter>();
+        params = new CaseInsensitiveLinkedHashMapParam();
     }
 
     public boolean addParameter(Parameter param) {
