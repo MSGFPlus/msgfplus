@@ -20,6 +20,13 @@ public class InstrumentType implements ParamObject {
         return name;
     }
 
+    public String getNameAndDescription() {
+        if (name.equals(description))
+            return name;
+        else
+            return name + " (" + description + ")";
+    }
+
     public String getDescription() {
         return description;
     }
@@ -66,7 +73,7 @@ public class InstrumentType implements ParamObject {
 
     static {
         LOW_RESOLUTION_LTQ = new InstrumentType("LowRes", "Low-res LCQ/LTQ", false);
-        HIGH_RESOLUTION_LTQ = new InstrumentType("HighRes", "Orbitrap/FTICR", true);
+        HIGH_RESOLUTION_LTQ = new InstrumentType("HighRes", "Orbitrap/FTICR/Lumos", true);
         TOF = new InstrumentType("TOF", "TOF", true);
         QEXACTIVE = new InstrumentType("QExactive", "Q-Exactive", true);
 //		TRIPLETOF = new InstrumentType("TripleTOF", "TripleTOF 5600", true);
