@@ -16,8 +16,8 @@ and Concatenated DTA files (_dta.txt).
 Requirements
 ======
 
-JRE 1.6 or greater\
-Memory 2GB or greater (recommended 4GB); larger FASTA files require more memory
+Java Runtime v1.6 or higher (use 64-bit Java)\
+At least 2GB of memory (recommended to use 4GB); larger FASTA files require more memory
 
 Downloads / Updates
 ======
@@ -41,7 +41,7 @@ Place MSGFPlus.jar in any folder
 Usage Information
 ======
 
-Type `java -jar MSGFPlus.jar` for command line arguments
+Type `java -jar MSGFPlus.jar` for command line arguments.
 
 To convert an mzid output file into a tsv file, run `java -cp MSGFPlus.jar edu.ucsd.msjava.ui.MzIDToTsv`
 
@@ -50,7 +50,7 @@ It is a C# application that works on Windows or on Linux using mono.
 Download the Mzid-To-Tsv-Converter <a href="https://github.com/PNNL-Comp-Mass-Spec/Mzid-To-Tsv-Converter/releases">from GitHub</a>.
 
 For detailed documentation, see the "doc" subfolder, or visit:
-* [GitHub repo HTML help pages](http://htmlpreview.github.io/?https://github.com/MSGFPlus/msgfplus/blob/master/doc/index.html)
+* [GitHub repo HTML help pages](https://htmlpreview.github.io/?https://github.com/MSGFPlus/msgfplus/blob/master/doc/index.html)
 * https://omics.pnl.gov/software/ms-gf
 * https://bix-lab.ucsd.edu/pages/viewpage.action?pageId=13533355
 
@@ -63,13 +63,13 @@ Sangtae Kim [sangtae.kim (at) gmail.com]
 Publications
 ======
 
-MS-GF+: Universal Database Search Tool for Mass Spectrometry, Sangtae Kim, Pavel A. Pevzner, 
-Nat Commun. 2014 Oct 31;5:5277. doi: 10.1038/ncomms6277.
-http://www.ncbi.nlm.nih.gov/pubmed/?term=25358478
+MS-GF+ makes progress towards a universal database search tool for proteomics, Sangtae Kim and Pavel A. Pevzner,
+Nat Commun. 2014 Oct 31;5:5277. doi: 10.1038/ncomms6277.\
+https://www.ncbi.nlm.nih.gov/pubmed/?term=25358478
 
-Spectral Probabilities and Generating Functions of Tandem Mass Spectra: A Strike against Decoy Databases, Sangtae Kim, Nitin Gupta and Pavel Pevzner,
-J Proteome Res. 2008 Aug;7(8):3354-63. doi: 10.1021/pr8001244.
-http://www.ncbi.nlm.nih.gov/pubmed/?term=18597511
+Spectral Probabilities and Generating Functions of Tandem Mass Spectra: A Strike against Decoy Databases, Sangtae Kim, Nitin Gupta, and Pavel Pevzner,
+J Proteome Res. 2008 Aug;7(8):3354-63. doi: 10.1021/pr8001244.\
+https://www.ncbi.nlm.nih.gov/pubmed/?term=18597511
 
 Source
 ======

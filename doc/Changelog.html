@@ -14,7 +14,29 @@
     </p>
 
     <p>
-        <b>01/30/2018 v2018.01.30</b>
+        <b>v2018.06.28</b>
+    </p>
+    <ul>
+        <li>Add option to specify the maximum number of missed cleavages (thanks to Sean at <a href="http://proteomics.case.edu/">CWRU-CPB</a>)</li>
+        <li>Make command line argument names case-insensitive</li>
+        <li>Add additional checks to prevent the output of duplicate peptide evidences (fixes <a href="https://github.com/MSGFPlus/msgfplus/issues/24">Issue #24</a>)</li>
+    </ul>
+
+    <p>
+        <b>v2018.04.09</b>
+    </p>
+    <ul>
+        <li>When the EnzymeID is 9 (NoCleavage) do not cleavage after any residue (thanks to Sean at <a href="http://proteomics.case.edu/">CWRU-CPB</a>)
+          <ul>
+            <li>Previously EnzymeID 0 and EnzymeID 9 were identical.</li>
+            <li>Now EnzymeID 0 cleaves after every residue while EnzymeID 9 won't cleave after any residue (useful for peptidomics)</li>
+          </ul>
+        </li>
+        <li>Allow the fasta file to have extension .faa (in addition to .fasta and .fa)</li>
+    </ul>
+
+    <p>
+        <b>v2018.01.30</b>
     </p>
     <ul>
         <li>MzIdentML creation: Don't output an empty ModificationParams element when there are no modifications (because not including it complies with the XML Schema, while including it with no child nodes does not)</li>
@@ -23,21 +45,21 @@
     </ul>
 
     <p>
-        <b>08/23/2017 v2017.08.23</b>
+        <b>v2017.08.23</b>
     </p>
     <ul>
         <li>MzIdentML creation: Change how the peptide ids are created, to further reduce possibility of duplicate peptide ids</li>
     </ul>
 
     <p>
-        <b>07/21/2017 v2017.07.21</b>
+        <b>v2017.07.21</b>
     </p>
     <ul>
         <li>Performance improvements when reading mzML and mzIdentML files</li>
     </ul>
 
     <p>
-        <b>05/18/2017 v2017.05.18</b>
+        <b>v2017.05.18</b>
     </p>
     <ul>
         <li>Add scoring parameters for UVPD TMT6Plex</li>
@@ -48,7 +70,7 @@
     </ul>
 
     <p>
-        <b>01/27/2017 v2017.01.27</b>
+        <b>v2017.01.27</b>
     </p>
     <ul>
         <li>Reduce the number of exceptions seen when a thread exits with an exception - There were multiple exceptions being displayed that were the result of killing the other threads.</li>
@@ -60,7 +82,7 @@
     </ul>
 
     <p>
-        <b>01/10/2017 v2017.01.10</b>
+        <b>v2017.01.10</b>
     </p>
     <ul>
         <li>Allow CustomAminoAcid formulas to not specify a number if it is 1.</li>
@@ -68,42 +90,42 @@
     </ul>
 
     <p>
-        <b>12/12/2016 v2016.12.12</b>
+        <b>v2016.12.12</b>
     </p>
     <ul>
         <li>Properly output the unitCvRef when outputting the scan start time. Since v2016.08.31</li>
     </ul>
 
     <p>
-        <b>12/08/2016 v2016.12.08</b>
+        <b>v2016.12.08</b>
     </p>
     <ul>
         <li>Internal PeptideId change for mzid files<br/>Last version had a possibility of duplicate peptide ID strings, when the same mod was possible on the first residue and the N-terminal, or on the last residue and the C-terminal. N-terminal mods are now added prior to the first residue, prefixed with '[', and C-terminal mods are added after the last residue, prefixed by ']'</li>
     </ul>
 
     <p>
-        <b>12/02/2016 v2016.12.02</b>
+        <b>v2016.12.02</b>
     </p>
     <ul>
         <li>Fix some oddities with the mzid file peptide id strings</li>
     </ul>
 
     <p>
-        <b>11/29/2016 v2016.11.29</b>
+        <b>v2016.11.29</b>
     </p>
     <ul>
         <li>Clean up some debugging messages, and limit the number of times in a single search</li>
     </ul>
 
     <p>
-        <b>10/26/2016 v2016.10.26</b>
+        <b>v2016.10.26</b>
     </p>
     <ul>
         <li>Minimum spectra per thread reduced from 1000 to 250</li>
     </ul>
 
     <p>
-        <b>10/24/2016 v2016.10.24</b>
+        <b>v2016.10.24</b>
     </p>
     <ul>
         <li>Return a non-zero exit code if an error occurs</li>
@@ -111,28 +133,28 @@
     </ul>
 
     <p>
-        <b>10/14/2016 v2016.10.14</b>
+        <b>v2016.10.14</b>
     </p>
     <ul>
         <li>Fix: handling of -m (FragmentMethodID) when processing .mgf files</li>
     </ul>
 
     <p>
-      <b>10/10/2016 v2016.10.10</b>
+      <b>v2016.10.10</b>
     </p>
     <ul>
       <li>Fix: mzid output - Peptide IDs were being mishandled and led to creating incorrect PeptideEvidence references in SpectrumIdentificationItems. Also, added more information to the Peptide IDs to decrease the possibility of ID collision on edge cases.</li>
     </ul>
 
     <p>
-      <b>09/22/2016 v2016.09.22</b>
+      <b>v2016.09.22</b>
     </p>
     <ul>
       <li>New: Add the ability to set the charge carrier mass to something besides the mass of a proton.</li>
     </ul>
 
     <p>
-      <b>08/31/2016 v2016.08.31</b>
+      <b>v2016.08.31</b>
     </p>
     <ul>
       <li>Fix: output the scan start time units to the mzid file when the input is mzML; previously only the value (without the units specified) was being output, which was ambiguous and did not comply with the CV specification</li>
@@ -140,7 +162,7 @@
     </ul>
     
     <p>
-      <b>07/26/2016 v2016.07.26</b>
+      <b>v2016.07.26</b>
     </p>
     <ul>
       <li>Add UVPD as a dissociation method</li>
@@ -149,7 +171,7 @@
     </ul>
 
     <p>
-      <b>06/29/2016 v2016.06.29</b>
+      <b>v2016.06.29</b>
     </p>
     <ul>
       <li>Clean up the mzid output a little, reducing file size (v2016.06.15 introduced a change that resulted in larger mzid files)</li>
@@ -157,7 +179,7 @@
     </ul>
     
     <p>
-      <b>06/15/2016 v2016.06.15</b>
+      <b>v2016.06.15</b>
     </p>
     <ul>
       <li>Fix the mzid output when the modification is unknown to unimod. (cvRef now correctly references PSI-MS, and the value will be the name provided in the Mods.txt file)</li>
@@ -166,7 +188,7 @@
     </ul>
     
     <p>
-      <b>05/25/2016 v2016.05.25</b>
+      <b>v2016.05.25</b>
     </p>
     <ul>
       <li>Output the residue letter and mass of any custom amino acids to the "MassTable" portion of the mzid.</li>
@@ -174,21 +196,21 @@
     </ul>
     
     <p>
-      <b>02/12/2016 v2016.02.12</b>
+      <b>v2016.02.12</b>
     </p>
     <ul>
       <li>Ensure that ETciD and EThcD are handled as ETD when using a _dta.txt file with a _ScanType.txt file</li>
     </ul>
     
     <p>
-      <b>01/29/2016 v2016.01.29</b>
+      <b>v2016.01.29</b>
     </p>
     <ul>
       <li>Added ability to enter custom amino acids using the Mods.txt file.</li>
     </ul>
     
     <p>
-      <b>01/21/2016 v2016.01.21</b>
+      <b>v2016.01.21</b>
     </p>
     <ul>
       <li>Changed the versioning system - SVN revisions don't work for Git repositories. Now commit date is used for the version.</li>
@@ -198,7 +220,7 @@
     </ul>
     
     <p>
-      <b>07/16/2014 v10089</b>
+      <b>2014-07-16 v10089</b>
     </p>
     <ul>
       <li>Fixed a bug that crashes when C-term mod mass is below -57Da.</li>
@@ -206,7 +228,7 @@
     </ul>
 
     <p>
-      <b>06/30/2014 v10072</b>
+      <b>2014-06-30 v10072</b>
     </p>
     <ul>
       <li>Optimization for multithreaded performance.</li>
@@ -214,7 +236,7 @@
     </ul>
 
     <p>
-      <b>02/10/2014 v9949</b>
+      <b>2014-02-10 v9949</b>
     </p>
     <ul>
       <li>New scoring parameters are added for HCD/Q-Exactive/Trypsin/TMT. Parameters for HCD/HighRes/Trypsin/TMT have also been changed. As a result, for HCD spectra of TMT peptides, the number of identifications has been significantly increased.</li>
@@ -225,7 +247,7 @@
     </ul>
 
     <p>
-      <b>08/28/2013 v9881</b>
+      <b>2013-08-28 v9881</b>
     </p>
     <ul>
       <li>Change in database indexing format. The index file keeps non-standard amino acids (characters other than 20 standard residue characters). Previously, non-standard amino acids were converted into ‘?’ while indexing. It caused a problem when converting mzid into pepXML using idconvert (ProteoWizard).</li>
@@ -234,7 +256,7 @@
     </ul>
 
     <p>
-      <b>08/28/2013 v9733</b>
+      <b>2013-08-28 v9733</b>
     </p>
     <ul>
       <li>Added parameters for CID-LowRes-NoCleavage.</li>
@@ -242,7 +264,7 @@
     </ul>
 
     <p>
-      <b>04/03/2013 v9517</b>
+      <b>2013-04-03 v9517</b>
     </p>
     <ul>
       <li>Previously separate SpectrumIdentificationItems were created for the same peptide if "pre" is different (e.g. R.SIPDSMNYGDEEENK and K.SIPDSMNYGDEEENK). Now they show up as the same SpectrumIdentificationItem. If the score is different due to different NTT (e.g. G.SIPDSMNYGDEEENK), a separate SpectrumIdentificationItem is created.</li>
@@ -250,14 +272,14 @@
     </ul>
 
     <p>
-      <b>04/03/2013 v9501</b>
+      <b>2013-04-03 v9501</b>
     </p>
     <ul>
       <li>Previously, spectra are ignored in the search if the number of peaks is less than 20 for all types spectra. Now, for TOF spectra (i.e. -inst 2), this number has been changed to 3.</li>
     </ul>
 
     <p>
-      <b>04/02/2013 v9494</b>
+      <b>2013-04-02 v9494</b>
     </p>
     <ul>
       <li>The following features are added in the SpectrumIdentificationItem when "-addFeatures 1"
@@ -271,7 +293,7 @@
     </ul>
 
     <p>
-      <b>03/25/2013 v9436</b>
+      <b>2013-03-25 v9436</b>
     </p>
     <ul>
       <li>Added TMT scoring model for HCD/HighRes (-m 3 -inst 1)</li>
@@ -280,7 +302,7 @@
     </ul>
 
     <p>
-      <b>03/05/2013 v9324</b>
+      <b>2013-03-05 v9324</b>
     </p>
     <ul>
       <li>Added Q-Exactive unlabeled phosphorylation parameters</li>
@@ -288,21 +310,21 @@
     </ul>
 
     <p>
-      <b>02/27/2013 v9324</b>
+      <b>2013-02-27 v9324</b>
     </p>
     <ul>
       <li>Minor bug fix: mistakenly assigning 3 mods to a N-term amino acid.</li>
     </ul>
 
     <p>
-      <b>02/15/2013 v9312</b>
+      <b>2013-02-15 v9312</b>
     </p>
     <ul>
       <li>Added scoring parameter sets for Q-Exactive iTRAQ (-inst 3 -protocol 2) and iTRAQ phosphopeptide enriched (-inst 3 -protocol 3) samples.</li>
     </ul>
 
     <p>
-      <b>02/15/2013 v9284</b>
+      <b>2013-02-15 v9284</b>
     </p>
     <ul>
       <li>When "-protocol" parameter is missing, MS-GF+ automatically selects an appropriate protocol depending on the modification file.</li>
@@ -310,21 +332,21 @@
     </ul>
 
     <p>
-      <b>02/14/2013 v9249</b>
+      <b>2013-02-14 v9249</b>
     </p>
     <ul>
       <li>Scoring parameters for Q-Exactive (-inst 3) have been added.</li>
     </ul>
 
     <p>
-      <b>02/04/2013 v9244</b>
+      <b>2013-02-04 v9244</b>
     </p>
     <ul>
       <li>A bug (crash with an exception) in edu.ucsd.msjava.ui.ScoringParamGen has been fixed.</li>
     </ul>
 
     <p>
-      <b>01/03/2013 v9176</b>
+      <b>2013-01-03 v9176</b>
     </p>
     <ul>
       <li>"-ti" parameter accepts only two comma separated integers, i.e., "-ti 1" will be rejected.</li>
@@ -332,7 +354,7 @@
     </ul>
 
     <p>
-      <b>12/19/2012 v9107</b>
+      <b>2012-12-19 v9107</b>
     </p>
     <ul>
       <li>"No enzyme" (-e 1) was renamed to "unspecific cleavage".</li>
@@ -347,7 +369,7 @@
     </ul>
 
     <p>
-      <b>12/10/2012 v9014</b>
+      <b>2012-12-10 v9014</b>
     </p>
     <ul>
       <li>The following bug has been fixed
@@ -358,7 +380,7 @@
     </ul>
 
     <p>
-      <b>11/30/2012 v9012</b>
+      <b>2012-11-30 v9012</b>
     </p>
     <ul>
       <li>The following bugs have been fixed
@@ -373,14 +395,14 @@
     </ul>
 
     <p>
-      <b>11/09/2012 v8884</b>
+      <b>2012-11-09 v8884</b>
     </p>
     <ul>
       <li>Bug fix: crashing while reading mzML files converted from wiff</li>
     </ul>
 
     <p>
-      <b>11/09/2012 v8873</b>
+      <b>2012-11-09 v8873</b>
     </p>
     <ul>
       <li>Fixed a bug of ignoring N-term peptide when N-term Met cleaved peptide exists.</li>
@@ -388,14 +410,14 @@
     </ul>
 
     <p>
-      <b>10/30/2012 v8806</b>
+      <b>2012-10-30 v8806</b>
     </p>
     <ul>
       <li>Fixed a bug in edu.ucsd.msjava.misc.MS2ToMgf</li>
     </ul>
 
     <p>
-      <b>10/29/2012 v8792</b>
+      <b>2012-10-29 v8792</b>
     </p>
     <ul>
       <li>Fixed bugs to ignore N-term fixed mods in the output</li>
@@ -403,28 +425,28 @@
     </ul>
 
     <p>
-      <b>10/11/2012 v8719</b>
+      <b>2012-10-11 v8719</b>
     </p>
     <ul>
       <li>Fixed bugs reporting NaN as additional features when spectrum has charge 0</li>
     </ul>
 
     <p>
-      <b>10/04/2012 v8605</b>
+      <b>2012-10-04 v8605</b>
     </p>
     <ul>
       <li>Updates to handle multiple charge states in the ms2 format</li>
     </ul>
 
     <p>
-      <b>10/03/2012 v8597</b>
+      <b>2012-10-03 v8597</b>
     </p>
     <ul>
       <li>Fixed the bug to erroneously report precursorMz in converted tsv files</li>
     </ul>
 
     <p>
-      <b>09/26/2012 v8540</b>
+      <b>2012-09-26 v8540</b>
     </p>
     <ul>
       <li>Update MS2 parser to support <a href="http://noble.gs.washington.edu/proj/crux/ms2-format.html">http://noble.gs.washington.edu/proj/crux/ms2-format.html</a>
@@ -433,7 +455,7 @@
     </ul>
 
     <p>
-      <b>09/20/2012 v8490</b>
+      <b>2012-09-20 v8490</b>
     </p>
     <ul>
       <li>Fix the following bugs:
@@ -448,7 +470,7 @@
     </ul>
 
     <p>
-      <b>09/18/2012 v8477</b>
+      <b>2012-09-18 v8477</b>
     </p>
     <ul>
       <li>The extension of target/decoy concatenated database file has changed from .revConcat.fasta to .revCat.fasta.</li>
@@ -457,7 +479,7 @@
     </ul>
 
     <p>
-      <b>09/18/2012 v8472</b>
+      <b>2012-09-18 v8472</b>
     </p>
     <ul>
       <li>Bug fix: N-term or C-term residue-specific modifications (e.g. pyro-glu from Q) will have locations 1 (N-term) or length (C-term).</li>
@@ -465,14 +487,14 @@
     </ul>
 
     <p>
-      <b>09/17/2012 v8449</b>
+      <b>2012-09-17 v8449</b>
     </p>
     <ul>
       <li>Fix a bug in parsing Agilent mzML files</li>
     </ul>
 
     <p>
-      <b>09/13/2012 v8442</b>
+      <b>2012-09-13 v8442</b>
     </p>
     <ul>
       <li>Fix the bug ignoring PSMs with IsotopeError=0, when MinIsotopeError was negative</li>
@@ -486,7 +508,7 @@
     </ul>
 
     <p>
-      <b>08/30/2012 v8299</b>
+      <b>2012-08-30 v8299</b>
     </p>
 
     <ul>
@@ -496,7 +518,7 @@
     </ul>
 
     <p>
-      <b>08/29/2012 v8297</b>
+      <b>2012-08-29 v8297</b>
     </p>
     <ul>
       <li>Fix minor bugs</li>
@@ -504,7 +526,7 @@
     </ul>
 
     <p>
-      <b>08/27/2012 v8283</b>
+      <b>2012-08-27 v8283</b>
     </p>
     <ul>
       <li>Fix minor bugs</li>
