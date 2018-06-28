@@ -262,8 +262,13 @@ public class ParamManager {
      * Add parameters for MS-GF+
      */
     public void addMSGFPlusParams() {
+        // -s SpectrumFile (*.mzML, *.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt)
         addSpecFileParam();
+
+        // -d DatabaseFile (*.fasta or *.fa)
         addDBFileParam();
+
+        // [-o OutputFile (*.mzid)] (Default: [SpectrumFileName].mzid)
         addMzIdOutputFileParam();
 
         ToleranceParameter pmTolParam = new ToleranceParameter("t", "PrecursorMassTolerance", "e.g. 2.5Da, 20ppm or 0.5Da,2.5Da, Default: 20ppm");

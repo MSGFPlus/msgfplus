@@ -206,7 +206,7 @@ public class SearchParams {
             if (outputFile == null) {
                 String outputFilePath = specPath.getPath().substring(0, specPath.getPath().lastIndexOf('.')) + ".mzid";
                 outputFile = new File(outputFilePath);
-//				if(outputFile.exists())
+//				if (outputFile.exists())
 //					return outputFile.getPath() + " already exists!";
             }
 
@@ -220,7 +220,7 @@ public class SearchParams {
                 if (specParam.isSupported(specFormat)) {
                     String outputFileName = f.getName().substring(0, f.getName().lastIndexOf('.')) + ".mzid";
                     File outputFile = new File(outputFileName);
-//					if(outputFile.exists())
+//					if (outputFile.exists())
 //						return outputFile.getPath() + " already exists!";
                     dbSearchIOList.add(new DBSearchIOFiles(f, specFormat, outputFile));
                 }
@@ -329,10 +329,9 @@ public class SearchParams {
          * there was a stable identifier to use for the comparision.
          */
         maxMissedCleavages = paramManager.getIntValue("maxMissedCleavages");
-        if(maxMissedCleavages > -1 && enzyme.getName().equals("UnspecificCleavage")) {
+        if (maxMissedCleavages > -1 && enzyme.getName().equals("UnspecificCleavage")) {
             return "Cannot specify a MaxMissedCleavages when using unspecific cleavage enzyme";
-        }
-        else if(maxMissedCleavages > -1 && enzyme.getName().equals("NoCleavage")) {
+        } else if (maxMissedCleavages > -1 && enzyme.getName().equals("NoCleavage")) {
             return "Cannot specify a MaxMissedCleavages when using no cleavage enzyme";
         }
 
@@ -367,7 +366,7 @@ public class SearchParams {
         buf.append("\tMinPeptideLength: " + this.minPeptideLength + "\n");
         buf.append("\tMaxPeptideLength: " + this.maxPeptideLength + "\n");
         buf.append("\tNumMatchesPerSpec: " + this.numMatchesPerSpec + "\n");
-        buf.append("\tMaxMissedCleavages: "+this.maxMissedCleavages + "\n");
+        buf.append("\tMaxMissedCleavages: " + this.maxMissedCleavages + "\n");
         buf.append("\tChargeCarrierMass: " + this.chargeCarrierMass);
 
         if (Math.abs(this.chargeCarrierMass - PROTON) < 0.005) {

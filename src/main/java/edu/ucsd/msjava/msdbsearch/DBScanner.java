@@ -435,7 +435,7 @@ public class DBScanner {
                             return;
                         }
 
-                        /* 
+                        /*
                          * Check for edge case where peptides derived from the
                          * start of a protien sequence containing an N-terminus
                          * methionine may have more missed cleavages than the
@@ -450,7 +450,8 @@ public class DBScanner {
                          * are over the maximum number of missed cleavages.
                          *
                          */
-                        if(candidatePepGrid.gridIsOverMaxMissedCleavages(j)) continue;
+                        if (candidatePepGrid.gridIsOverMaxMissedCleavages(j))
+                            continue;
 
                         float theoPeptideMass = candidatePepGrid.getPeptideMass(j);
 //						/// Debug
@@ -920,12 +921,15 @@ public class DBScanner {
         }
         for (int i = 0; i < 128; i++) {
             if (!aaSet.contains((char) i) && aaCount[i] > 0) {
-                System.out.println("Warning: Sequence database contains " + aaCount[i] + " counts of letter '" + (char) i + "', which does not correspond to an amino acid.");
+                System.out.println("Warning: Sequence database contains " +
+                        aaCount[i] + " counts of letter '" + (char) i +
+                        "', which does not correspond to an amino acid.");
             }
         }
 
         if (!success) {
-            System.out.println("Warning: database does not contain all standard amino acids. Probability 0.05 will be used for all amino acids.");
+            System.out.println("Warning: database does not contain all standard amino acids. " +
+                    "Probability 0.05 will be used for all amino acids.");
             for (AminoAcid aa : aaSet.getAllAminoAcidArr())
                 aa.setProbability(0.05f);
         }

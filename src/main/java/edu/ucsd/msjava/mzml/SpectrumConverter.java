@@ -42,6 +42,7 @@ public class SpectrumConverter {
         float precursorMz = -1;
         float scanStartTime = -1;
         boolean scanStartTimeIsSeconds = true;
+
         // Scan list to get monoisotopic m/z
         ScanList scanList = jmzMLSpec.getScanList();
         if (scanList != null && scanList.getCount().intValue() > 0
@@ -50,10 +51,10 @@ public class SpectrumConverter {
                 if (cvParam.getAccession().equals("MS:1000016")) {
                     scanStartTime = Float.parseFloat(cvParam.getValue());
                     if (cvParam.getUnitAccession().equals("UO:0000031")) {
-                        //in minutes
+                        // in minutes
                         scanStartTimeIsSeconds = false;
                     } else if (cvParam.getUnitAccession().equals("UO:0000010")) {
-                        //in seconds
+                        // in seconds
                         scanStartTimeIsSeconds = true;
                     }
                 }
@@ -103,7 +104,7 @@ public class SpectrumConverter {
                 } else if (param.getAccession().equals("MS:1000042"))    // peak intensity
                 {
                     precursorIntensity = Float.parseFloat(param.getValue());
-                }    //MS:1000511
+                }
             }
 
             spec.setPrecursor(new Peak(precursorMz, precursorIntensity, precursorCharge));

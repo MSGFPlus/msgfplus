@@ -39,7 +39,7 @@ public class CandidatePeptideGridConsideringMetCleavage extends CandidatePeptide
          * and we have two grids: 'M' and '', and add D to both we get 'MD' and
          * 'D' where the grid with 'MD' now has a missed cleavage and the
          * other with 'D' does not.
-        */
+         */
         boolean op1 = super.addResidue(length, residue);
         boolean op2 = false;
 

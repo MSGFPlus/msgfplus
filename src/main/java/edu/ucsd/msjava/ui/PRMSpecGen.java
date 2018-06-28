@@ -157,7 +157,7 @@ public class PRMSpecGen {
             System.out.println("Error: " + message + "\n");
         System.out.println("PRMSpecGen v" + MSGFDB.VERSION + " (" + MSGFDB.RELEASE_DATE + ")");
         System.out.print("Usage: java -Xmx500M -cp MSGFDB.jar ui.PRMSpecGen\n"
-                        + "\t-s SpectrumFile (*.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt)\n" //, *.mgf, *.pkl, *.ms2)\n"
+                        + "\t-s SpectrumFile (*.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt)\n"
 //				+ "\t-f FragMassTolerance (fragment mass tolerance in ppm or Da. The value must be less than 0.5Da or 100ppm. E.g. 0.5Da or 30ppm)\n"
                         + "\t-o outputFileName (e.g. PRMSpec.mgf)\n"
                         + "\t[-m FragmentationMethodID] (0: as written in the spectrum or CID if no info (Default), 1: CID, 2: ETD, 3: HCD)\n"

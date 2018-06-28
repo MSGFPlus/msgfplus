@@ -268,7 +268,7 @@ public class SuffixArray {
      *
      * @param nLcps the neigboring lcps.
      * @param lLcps the left-middle lpcs.
-     * @param rLcps the middle=right lcps.
+     * @param rLcps the middle-right lcps.
      * @param start start index (inclusive).
      * @param end   end index (inclusive).
      * @return the LCP between these two indices.
