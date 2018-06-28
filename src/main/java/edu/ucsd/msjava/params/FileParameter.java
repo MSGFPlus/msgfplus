@@ -1,6 +1,7 @@
 package edu.ucsd.msjava.params;
 
 import edu.ucsd.msjava.msutil.FileFormat;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -82,6 +83,7 @@ public class FileParameter extends Parameter {
                 for (FileFormat format : fileFormats) {
                     if (!format.isCaseSensitive())
                         fileName = fileName.toLowerCase();
+
                     for (String suffix : format.getSuffixes()) {
                         if (!format.isCaseSensitive())
                             suffix = suffix.toLowerCase();
@@ -92,8 +94,21 @@ public class FileParameter extends Parameter {
                     }
                 }
             }
-            if (this.fileFormat == null)
-                return "extension does not match";
+
+            if (this.fileFormat == null) {
+                ArrayList knownFileExtensions = new ArrayList<String>();
+                for (FileFormat format : fileFormats) {
+                    if (format == FileFormat.DIRECTORY)
+                        continue;
+
+                    for (String suffix : format.getSuffixes()) {
+                        knownFileExtensions.add(suffix);
+                    }
+                }
+
+                return "extension does not match a known file type: " +
+                        StringUtils.join(knownFileExtensions, ", ");
+            }
         }
 
         if (this.mustExist && !path.exists())

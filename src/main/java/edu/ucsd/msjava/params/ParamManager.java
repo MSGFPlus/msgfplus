@@ -119,7 +119,7 @@ public class ParamManager {
                     String error = param.parse(argv[i + 1]);
                     if (error != null) {
                         String err = "Invalid value for parameter " + argv[i] + ": " + argv[i + 1];
-                        err += " (" + error + ")";
+                        err += "\n        (" + error + ")";
                         return err;
                     }
                     param.setValueAssigned();
