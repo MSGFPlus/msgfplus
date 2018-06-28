@@ -360,8 +360,8 @@ public class ParamManager {
         chargeCarrierMassParam.defaultValue(Composition.PROTON);
         addParameter(chargeCarrierMassParam);
 
-        /* Maximum number of missed cleavages to allow on searched pepetides */
-        IntParameter maxMissedCleavages = new IntParameter("maxMissedCleavages", "MaxMissedCleavages", "Exclude peptides with more than this number of missed cleavages from the search, Default: -1 (no limit)");
+        /* Maximum number of missed cleavages to allow on searched peptides */
+        IntParameter maxMissedCleavages = new IntParameter("maxMissedCleavages", "Count", "Exclude peptides with more than this number of missed cleavages from the search, Default: -1 (no limit)");
         maxMissedCleavages.minValue(-1);
         maxMissedCleavages.defaultValue(-1);
         addParameter(maxMissedCleavages);
