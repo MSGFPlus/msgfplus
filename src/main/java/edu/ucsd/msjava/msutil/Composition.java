@@ -28,7 +28,6 @@ public class Composition extends Matter {
     public static final double ISOTOPE = C13 - C;
     public static final double ISOTOPE2 = C14 - C;
     public static final double PROTON = 1.00727649;
-    //	public static final double PROTON = 1.007825035;
     public static final double NEUTRON = 1.0086650;
     public static final double SODIUM_CHARGE_CARRIER_MASS = 22.98922189;
     public static final double POTASSIUM_CHARGE_CARRIER_MASS = 38.96315989;
@@ -43,9 +42,11 @@ public class Composition extends Matter {
         setChargeCarrierMass(PROTON);
     }
 
-    int number; // MSB 8 (C) 8 (H) 6 (N) 6 (O) 4 (S)
-    static final double[] monoMass = new double[]{C, H, N, O, S};
-    static final float[] avgMass = new float[]{12.011f, 1.00794f, 14.00674f, 15.9994f, 32.066f};
+    int number;
+
+    // Unused:
+    // static final double[] monoMass = new double[]{C, H, N, O, S};
+    // static final float[] avgMass = new float[]{12.011f, 1.00794f, 14.00674f, 15.9994f, 32.066f};
     
     public static final double OffsetY() {
         return offsetY;
@@ -167,14 +168,15 @@ public class Composition extends Matter {
                         (number & 0x0000000F) * Composition.S);
     }
 
-    public static float getAvgMass(int number) {
-        return
-                ((number & 0xFF000000) >>> 24) * avgMass[0] +
-                        ((number & 0x00FF0000) >> 16) * avgMass[1] +
-                        ((number & 0x0000FC00) >> 10) * avgMass[2] +
-                        ((number & 0x000003F0) >> 4) * avgMass[3] +
-                        (number & 0x0000000F) * avgMass[4];
-    }
+    // Unused:
+    // public static float getAvgMass(int number) {
+    //     return
+    //             ((number & 0xFF000000) >>> 24) * avgMass[0] +
+    //                     ((number & 0x00FF0000) >> 16) * avgMass[1] +
+    //                    ((number & 0x0000FC00) >> 10) * avgMass[2] +
+    //                     ((number & 0x000003F0) >> 4) * avgMass[3] +
+    //                     (number & 0x0000000F) * avgMass[4];
+    // }
 
     @Override
     public float getMass() {
@@ -190,9 +192,10 @@ public class Composition extends Matter {
         return getC() * 12 + getH() * 1 + getN() * 14 + getO() * 16 + getS() * 32;
     }
 
-    public float getAvgMass() {
-        return getC() * avgMass[0] + getH() * avgMass[1] + getN() * avgMass[2] + getO() * avgMass[3] + getS() * avgMass[4];
-    }
+    // Unused:
+    //public float getAvgMass() {
+    //    return getC() * avgMass[0] + getH() * avgMass[1] + getN() * avgMass[2] + getO() * avgMass[3] + getS() * avgMass[4];
+    //}
 
     public String toString() {
         return new String(getC() + " " + getH() + " " + getN() + " " + getO() + " " + getS());
