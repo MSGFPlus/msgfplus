@@ -1,6 +1,7 @@
 package edu.ucsd.msjava.mzml;
 
 import edu.ucsd.msjava.msutil.ActivationMethod;
+import edu.ucsd.msjava.msutil.CvParamInfo;
 import edu.ucsd.msjava.msutil.Peak;
 import uk.ac.ebi.jmzml.model.mzml.*;
 
@@ -57,6 +58,20 @@ public class SpectrumConverter {
                         // in seconds
                         scanStartTimeIsSeconds = true;
                     }
+                }
+                // is_a: MS:1002892 ! ion mobility attribute cvParams
+                else if (cvParam.getAccession().equals("MS:1001581")      // FAIMS compensation voltage
+                        || cvParam.getAccession().equals("MS:1002476")    // ion mobility drift time
+                        || cvParam.getAccession().equals("MS:1002815")) { // inverse reduced ion mobility
+                    CvParamInfo cvParamInfo;
+                    if (cvParam.getUnitAccession() != null && !cvParam.getUnitAccession().isEmpty()) {
+                        cvParamInfo = new CvParamInfo(cvParam.getAccession(), cvParam.getName(), cvParam.getValue(), cvParam.getUnitAccession(), cvParam.getUnitName());
+                    }
+                    else {
+                        cvParamInfo = new CvParamInfo(cvParam.getAccession(), cvParam.getName(), cvParam.getValue());
+                    }
+
+                    spec.addAddlCvParam(cvParamInfo);
                 }
             }
             for (UserParam param : scanList.getScan().get(0).getUserParam()) {

@@ -298,6 +298,18 @@ public class MZIdentMLGen {
                 sir.getCvParam().add(cvParam);
             }
 
+            if (spec.getAddlCvParams() != null) {
+                for (CvParamInfo cvParamInfo : spec.getAddlCvParams()) {
+                    CvParam cvParam = Constants.makeCvParam(cvParamInfo.getAccession(), cvParamInfo.getName());
+                    cvParam.setValue(cvParamInfo.getValue());
+                    if (cvParamInfo.getHasUnit()) {
+                        cvParam.setUnitCv(Constants.unitCV);
+                        cvParam.setUnitAccession(cvParamInfo.getUnitAccession());
+                        cvParam.setUnitName(cvParamInfo.getUnitName());
+                    }
+                    sir.getCvParam().add(cvParam);
+                }
+            }
 
             int rank = 0;
             int resultCount = 0;

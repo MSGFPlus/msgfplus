@@ -47,6 +47,8 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 //	private Float fractionIonCurrent = null;
 //	private Integer numMS1Features = null;
 
+    private ArrayList<CvParamInfo> addlCvParams;
+
     private Float isolationWindowTargetMz = null;
 
     /***** CONSTRUCTORS *****/
@@ -266,6 +268,14 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
      */
     public int getMSLevel() {
         return this.msLevel;
+    }
+
+    /**
+     * Gets additional cvParams to output as cvParams under the mzIdentML SpectrumIdentificationResult
+     * @return cvParam necessary info
+     */
+    public ArrayList<CvParamInfo> getAddlCvParams() {
+        return this.addlCvParams;
     }
 
     /***** SETTERS *****/
@@ -494,6 +504,18 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 
         if (ticBelowPrecursor / tic > 0.9f)
             precursor.setCharge(1);
+    }
+    
+    /**
+     * Add an additional cvParam to output as a cvParam under the mzIdentML SpectrumIdentificationResult
+     * @param cvParam
+     */
+    public void addAddlCvParam(CvParamInfo cvParam) {
+        if (addlCvParams == null){
+            addlCvParams = new ArrayList<CvParamInfo>();
+        }
+
+        addlCvParams.add(cvParam);
     }
 
     /****** FUNCTIONS *****/
