@@ -67,6 +67,7 @@ public class MzMLAdapter {
                         || accNum == 1001508 || accNum == 1001526 || accNum == 1001528
                         || accNum == 1001531 || accNum == 1001532
                         || accNum == 1001559 || accNum == 1001562
+                        || accNum == 1002818
                         ) {
                     spectrumIDFormatCvParam = Constants.makeCvParam(param.getAccession(), param.getName());
                     return spectrumIDFormatCvParam;
