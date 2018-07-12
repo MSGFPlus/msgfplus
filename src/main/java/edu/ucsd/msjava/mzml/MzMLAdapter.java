@@ -65,9 +65,9 @@ public class MzMLAdapter {
                 if (accNum >= 1000768 && accNum <= 1000777
                         || accNum == 1000823 || accNum == 1000824 || accNum == 1000929
                         || accNum == 1001508 || accNum == 1001526 || accNum == 1001528
-                        || accNum == 1001531 || accNum == 1001532
-                        || accNum == 1001559 || accNum == 1001562
-                        || accNum == 1002818
+                        || accNum == 1001531 || accNum == 1001532 || accNum == 1001559
+                        || accNum == 1001562 || accNum == 1002818 || accNum == 1001480
+                        || accNum == 1002303 || accNum == 1002532 || accNum == 1002898
                         ) {
                     spectrumIDFormatCvParam = Constants.makeCvParam(param.getAccession(), param.getName());
                     return spectrumIDFormatCvParam;
