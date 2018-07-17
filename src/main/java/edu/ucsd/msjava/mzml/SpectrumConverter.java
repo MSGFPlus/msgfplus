@@ -46,8 +46,7 @@ public class SpectrumConverter {
 
         // Scan list to get monoisotopic m/z
         ScanList scanList = jmzMLSpec.getScanList();
-        if (scanList != null && scanList.getCount().intValue() > 0
-                && scanList.getScan().size() > 0 && scanList.getScan().get(0).getUserParam().size() > 0) {
+        if (scanList != null && scanList.getCount().intValue() > 0 && scanList.getScan().size() > 0) {
             for (CVParam cvParam : scanList.getScan().get(0).getCvParam()) {
                 if (cvParam.getAccession().equals("MS:1000016")) {
                     scanStartTime = Float.parseFloat(cvParam.getValue());
