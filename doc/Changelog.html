@@ -14,6 +14,16 @@
     </p>
 
     <p>
+        <b>v2018.07.17</b>
+    </p>
+    <ul>
+        <li>Change how rank is set in mzid results to properly comply with the mzIdentML specification (noticed thanks to adder in <a href="https://github.com/MSGFPlus/msgfplus/issues/40">Issue #40</a>)</li>
+        <li>Get the scan retention time (and other cvParams) from the mzML ScanList for non-Thermo instruments (removed a check for a userParam that would prevent accessing the cvParams)</li>
+        <li>Add support for newer nativeID formats (in part thanks to <a href="https://github.com/chambm">Matt Chambers</a>' <a href="https://github.com/MSGFPlus/msgfplus/pull/41">pull request</a>)</li>
+        <li>Read some additional CV Params from mzML and output them to mzIdentML (fixes <a href="https://github.com/MSGFPlus/msgfplus/issues/32">Issue #32</a>)</li>
+    </ul>
+
+    <p>
         <b>v2018.06.28</b>
     </p>
     <ul>
