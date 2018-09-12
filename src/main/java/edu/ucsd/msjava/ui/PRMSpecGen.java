@@ -16,7 +16,7 @@ public class PRMSpecGen {
     public static void main(String argv[]) {
         long time = System.currentTimeMillis();
         if (argv.length < 2 || argv.length % 2 != 0)
-            printUsageAndExit("The number of parameters must be even.");
+            printUsageAndExit("The number of parameters must be even. If a file path has a space, surround it with double quotes.");
 
         File specFile = null;
         SpecFileFormat specFormat = null;
@@ -153,6 +153,7 @@ public class PRMSpecGen {
     }
 
     public static void printUsageAndExit(String message) {
+        System.out.println();
         if (message != null)
             System.out.println("Error: " + message + "\n");
         System.out.println("PRMSpecGen v" + MSGFDB.VERSION + " (" + MSGFDB.RELEASE_DATE + ")");

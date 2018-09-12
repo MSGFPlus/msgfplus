@@ -65,15 +65,18 @@ public class ParamParser {
     }
 
     public static Parameters parseFromString(String paramString) {
+        String errMsg = "Number of parameters must be even. If a file path has a space, surround it with double quotes.";
+
         Parameters params = new Parameters();
         String[] token = paramString.split("\\s+");
         if (token.length % 2 != 0) {
-            System.err.println("Number of parameters must be even!");
+            System.err.println(errMsg);
             System.exit(-1);
         }
+
         for (int i = 0; i < token.length; i += 2) {
             if (!token[i].startsWith("-") || i + 1 >= token.length) {
-                System.err.println("Number of parameters must be even!");
+                System.err.println(errMsg);
             }
             params.put(token[i].trim(), token[i + 1].trim());
         }

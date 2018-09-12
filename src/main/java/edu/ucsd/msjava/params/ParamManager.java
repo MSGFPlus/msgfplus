@@ -106,7 +106,7 @@ public class ParamManager {
         }
 
         if (argv.length < 2 || argv.length % 2 != 0) {
-            return "The number of parameters must be even.";
+            return "The number of parameters must be even. If a file path has a space, surround it with double quotes.";
         }
 
         for (int i = 0; i < argv.length; i += 2) {

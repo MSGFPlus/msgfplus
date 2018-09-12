@@ -7,9 +7,16 @@ import java.io.File;
 
 public class BuildSA {
 
+    /**
+     * Constructor
+     * @param argv
+     */
     public static void main(String argv[]) {
+        if (argv.length < 1)
+            printUsageAndExit("");
+
         if (argv.length < 2 || argv.length % 2 != 0)
-            printUsageAndExit("The number of parameters must be even.");
+            printUsageAndExit("The number of parameters must be even. If a file path has a space, surround it with double quotes.");
 
         File dbPath = null;
         File outputDir = null;
