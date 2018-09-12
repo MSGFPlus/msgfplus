@@ -40,12 +40,23 @@ public class BuildSA {
         buildSA(dbPath, outputDir, mode);
     }
 
+    /**
+     * Show the syntax
+     * @param message
+     */
     public static void printUsageAndExit(String message) {
-        System.out.println("Error: " + message);
-        System.out.print("Usage: java -Xmx3500M BuildSA\n" +
-                "\t-d DatabaseFile (*.fasta or *.fa)\n" +
-//				"\t-o OutputDir\n" +
-                "\t[-tda 0/1/2] (0: Target database only, 1: Concatenated target-decoy database only, 2: All (Default))\n");
+        System.out.println();
+        if (!message.isEmpty()) {
+            System.out.println("Error: " + message);
+            System.out.println();
+        }
+        System.out.println("Usage: java -Xmx3500M -cp MSGFPlus.jar edu.ucsd.msjava.msdbsearch.BuildSA");
+        System.out.println("\t-d DatabaseFile (*.fasta or *.fa or *.faa; if a directory path, index all FASTA files)");
+        System.out.println("\t[-tda 0/1/2] (0: Target database only, 1: Concatenated target-decoy database only, 2: Both (Default))");
+        System.out.println("\t[-o OutputDir] (Directory to save index files; default is the same as the input file)");
+        System.out.println();
+        System.out.println("Documentation: https://github.com/MSGFPlus/msgfplus");
+
         System.exit(-1);
     }
 

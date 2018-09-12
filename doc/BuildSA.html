@@ -16,12 +16,13 @@
     <h1>BuildSA</h1>
 
     <p>
-      Index a protein database for fast searching.
+      Index a protein database (FASTA file) for fast searching.
     </p>
     <div class="codePanel">
-      <pre class="code">Usage: java -Xmx3500M -cp MSGFPlus.jar edu.ucsd.msjava.msdbsearch.BuildSA 
-	<span class="code-keyword">-d DatabaseFile</span> (*.fasta or *.fa)
-	<span class="code-keyword">[-tda 0/1/2]</span> (0: target only, 1: target-decoy database only, 2: both)</pre>
+      <pre class="code">Usage: java -Xmx3500M -cp MSGFPlus.jar edu.ucsd.msjava.msdbsearch.BuildSA
+	    <span class="code-keyword">-d DatabaseFile</span> (*.fasta or *.fa or *.faa; if a directory path, index all FASTA files)
+	    <span class="code-keyword">[-tda 0/1/2]</span> (0: Target database only, 1: Concatenated target-decoy database only, 2: Both (Default))
+	    <span class="code-keyword">[-o OutputDir]</span> (Directory to save index files; default is the same as the input file)</pre>
     </div>
 
     <p style="color:#003366;">
@@ -29,10 +30,10 @@
     </p>
     <ul>
       <li style="margin-bottom: 10px;">
-        <b>-d DbPath</b>
+        <b>-d DatabaseFilePath</b>
         <ul>
-          <li>Name of a protein database (*.fasta or *.fa)</li>
-          <li>Database file must ends with ".fasta" or ".fa".</li>
+          <li>Name of a protein database file, or a directory containing one or more protein database files</li>
+          <li>Database file names must end with ".fasta" or ".fa" or ".faa"</li>
         </ul>
       </li>
       <li>
@@ -43,8 +44,23 @@
           <li>If 2, both the original database and the forward-reverse database file will be indexed.</li>
         </ul>
       </li>
+      <li>
+        <b>-o OutputDirectory</b>
+        <ul>
+          <li>Path to the output directory (use double quotes if the path contains spaces)</li>
+          <li>By default, the index files are created in the same directory as hte Database</li>
+        </ul>
+      </li>
+
     </ul>
 
-    <p>BuildSA creates a suffix array of the protein database. For an input database file DBFileName.fasta, BuildSA will generate 4 auxiliary files (DbFileName.canno, DBFileName.cnlcp, DBFileName.csarr, DBFileName.cseq).It needs to be executed only once per each database file.</p>
+    <p>BuildSA creates a suffix array of the protein database. For an input database file DBFileName.fasta, BuildSA will generate 4 auxiliary files:</p>
+    <ul>
+        <li>DbFileName.canno</li>
+        <li>DBFileName.cnlcp</li>
+        <li>DBFileName.csarr</li>
+        <li>DBFileName.cseq</li>
+    </ul>
+    <p>BuildSA only needs to be executed once for each protein database file.</p>
   </body>
 </html>
