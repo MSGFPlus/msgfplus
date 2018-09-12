@@ -108,6 +108,7 @@ public class BuildSA {
                 System.out.println("Creating " + concatDBFileName + ".");
                 if (!ReverseDB.reverseDB(databaseFile.getPath(), concatTargetDecoyDBFile.getPath(), true, MSGFPlus.DECOY_PROTEIN_PREFIX)) {
                     System.err.println("Cannot create decoy database file!");
+                    System.out.println("Consider using -o to specify the output directory");
                     System.exit(-1);
                 }
             }
@@ -133,14 +134,19 @@ public class BuildSA {
             File targetDBFile = new File(Paths.get(outputDir.getPath(), dbFileName).toString());
             if (!targetDBFile.exists()) {
                 System.out.println("Creating " + targetDBFile.getName() + ".");
-                ReverseDB.copyDB(databaseFile.getPath(), targetDBFile.getPath());
+                if (!ReverseDB.copyDB(databaseFile.getPath(), targetDBFile.getPath())) {
+                    System.err.println("Cannot create target database file!");
+                    System.out.println("Consider using -o to specify the output directory");
+                    System.exit(-1);
+                }
             }
             System.out.println("Building suffix array: " + databaseFile.getPath());
             CompactFastaSequence sequence = new CompactFastaSequence(targetDBFile.getPath());
             new CompactSuffixArray(sequence);
         }
+
+        System.out.println();
     }
-}
 
     /**
      * Return True if the file path ends in .fasta, .fa, or .faa

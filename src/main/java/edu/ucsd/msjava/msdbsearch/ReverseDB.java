@@ -95,6 +95,7 @@ public class ReverseDB {
             out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outFileName)));
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
+            return false;
         }
 
         String s;
@@ -102,13 +103,16 @@ public class ReverseDB {
             in = new BufferedReader(new FileReader(inFileName));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            return false;
         }
+
         try {
             while ((s = in.readLine()) != null) {
                 out.println(s);
             }
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
 
         out.flush();
