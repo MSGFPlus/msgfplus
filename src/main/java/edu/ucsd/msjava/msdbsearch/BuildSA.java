@@ -2,8 +2,11 @@ package edu.ucsd.msjava.msdbsearch;
 
 import edu.ucsd.msjava.ui.MSGFPlus;
 
+import java.io.BufferedWriter;
 import java.io.File;
-
+import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class BuildSA {
@@ -89,14 +92,20 @@ public class BuildSA {
         System.out.println("Done");
     }
 
-    // mode => 0: target only, 1: target-decoy only, 2: both
+    /**
+     * Index a protein database (FASTA file)
+     * @param databaseFile FASTA file path
+     * @param outputDir Output directory
+     * @param mode 0: target only, 1: target-decoy only, 2: both
+     */
     public static void buildSAFiles(File databaseFile, File outputDir, int mode) {
         if (outputDir == null) {
             outputDir = databaseFile.getAbsoluteFile().getParentFile();
         }
 
-        if (!outputDir.exists())
-            outputDir.mkdir();
+        if (!validateOutputDirectory(outputDir)) {
+            System.exit(-1);
+        }
 
         String dbFileName = databaseFile.getName();
 
@@ -161,3 +170,60 @@ public class BuildSA {
                fileNameLcase.endsWith(".faa");
     }
 
+    private static boolean validateOutputDirectory(File outputDir) {
+
+        try {
+            if (!outputDir.exists()) {
+                // Attempt to create the output directory
+                Boolean success = outputDir.mkdir();
+                if (!success) {
+                    System.err.println("Error creating the output directory (access denied?): " + outputDir.getPath());
+                    return false;
+                }
+            }
+        }
+        catch (Throwable ex) {
+            System.err.println("Error validating / creating the output directory: " + outputDir.getPath());
+            return false;
+        }
+
+        // Assure that we can create files in the output directory
+        Path testFilePath = Paths.get(outputDir.getPath(), "WritePermTestFile.tmp");
+
+        if (!Files.isWritable(testFilePath)) {
+
+            Boolean accessDenied = true;
+
+            try {
+                // On Windows 10, Files.isWritable() returns false on a newly created directory where we _do_ have write permission
+                // Try creating a test file
+
+                File testFile = new File(testFilePath.toString());
+                if (testFile.exists())
+                    testFile.delete();
+
+                BufferedWriter writer = new BufferedWriter(new FileWriter(testFile.getPath()));
+                writer.write("test");
+                writer.close();
+
+                if (testFile.exists()) {
+                    // Files.isWritable reports false, but we were able to create a test file
+                    accessDenied = false;
+                    testFile.delete();
+                }
+
+            } catch (Exception ex) {
+                // Ignore exceptions here
+            }
+
+            if (accessDenied) {
+                System.err.println("Write access denied to directory: " + outputDir.getPath());
+                System.out.println("Consider using -o to specify the output directory");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+}
