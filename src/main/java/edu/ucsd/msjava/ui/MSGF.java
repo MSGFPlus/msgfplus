@@ -13,6 +13,7 @@ import edu.ucsd.msjava.params.ParamManager;
 import edu.ucsd.msjava.parser.*;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -156,7 +157,8 @@ public class MSGF {
                 prevFileName = fileName;
                 String filePrefix = fileName.substring(0, fileName.lastIndexOf('.'));
                 String ext = fileName.substring(fileName.lastIndexOf('.'));
-                String specFilePath = specDir.getPath() + File.separatorChar + fileName;
+
+                String specFilePath = Paths.get(specDir.getPath(), fileName).toString();
                 if (ext.equalsIgnoreCase(".mzxml"))    // mzXML
                 {
                     File specFile = new File(specFilePath);

@@ -12,6 +12,7 @@ import edu.ucsd.msjava.params.ToleranceParameter;
 import edu.ucsd.msjava.sequences.Constants;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -165,7 +166,8 @@ public class MSGFDB {
         System.out.println("Loading database files...");
         File dbIndexDir = paramManager.getFile("dd");
         if (dbIndexDir != null) {
-            File newDBFile = new File(dbIndexDir.getAbsolutePath() + File.separator + databaseFile.getName());
+
+            File newDBFile = new File(Paths.get(dbIndexDir.getAbsolutePath(), databaseFile.getName()).toString());
             if (!useTDA) {
                 if (!newDBFile.exists()) {
                     System.out.println("Creating " + newDBFile.getAbsolutePath() + ".");
@@ -177,7 +179,10 @@ public class MSGFDB {
         if (useTDA) {
             String dbFileName = databaseFile.getName();
             String concatDBFileName = dbFileName.substring(0, dbFileName.lastIndexOf('.')) + DECOY_DB_EXTENSION;
-            File concatTargetDecoyDBFile = new File(databaseFile.getAbsoluteFile().getParent() + File.separator + concatDBFileName);
+
+            String concatDBFilePath = Paths.get(databaseFile.getAbsoluteFile().getParent(), concatDBFileName).toString();
+            File concatTargetDecoyDBFile = new File(concatDBFilePath);
+
             if (!concatTargetDecoyDBFile.exists()) {
                 System.out.println("Creating " + concatTargetDecoyDBFile.getAbsolutePath() + ".");
                 if (ReverseDB.reverseDB(databaseFile.getAbsolutePath(), concatTargetDecoyDBFile.getAbsolutePath(), true, DECOY_PROTEIN_PREFIX) == false) {

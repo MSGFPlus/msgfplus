@@ -4,6 +4,7 @@ import edu.ucsd.msjava.ui.MSGFPlus;
 
 import java.io.File;
 
+import java.nio.file.Paths;
 
 public class BuildSA {
 
@@ -102,7 +103,7 @@ public class BuildSA {
         // decoy
         if (mode == 1 || mode == 2) {
             String concatDBFileName = dbFileName.substring(0, dbFileName.lastIndexOf('.')) + MSGFPlus.DECOY_DB_EXTENSION;
-            File concatTargetDecoyDBFile = new File(outputDir.getPath() + File.separator + concatDBFileName);
+            File concatTargetDecoyDBFile = new File(Paths.get(outputDir.getPath(), concatDBFileName).toString());
             if (!concatTargetDecoyDBFile.exists()) {
                 System.out.println("Creating " + concatDBFileName + ".");
                 if (!ReverseDB.reverseDB(databaseFile.getPath(), concatTargetDecoyDBFile.getPath(), true, MSGFPlus.DECOY_PROTEIN_PREFIX)) {
@@ -129,7 +130,7 @@ public class BuildSA {
         }
 
         if (mode == 0 || mode == 2) {
-            File targetDBFile = new File(outputDir.getPath() + File.separator + dbFileName);
+            File targetDBFile = new File(Paths.get(outputDir.getPath(), dbFileName).toString());
             if (!targetDBFile.exists()) {
                 System.out.println("Creating " + targetDBFile.getName() + ".");
                 ReverseDB.copyDB(databaseFile.getPath(), targetDBFile.getPath());
