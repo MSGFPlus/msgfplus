@@ -94,18 +94,16 @@ public class CompactFastaSequence implements Sequence {
      */
     private CompactFastaSequence(String filepath, String alphabet) {
 
+        if (!BuildSA.isFastaFile(filepath)) {
+            System.err.println("Input error: not a fasta file (extension must be .fasta or .fa or .faa)");
+            System.exit(-1);
+        }
+
         String[] tokens = filepath.split("\\.");
         String extension = tokens[tokens.length - 1];
         String basepath = filepath.substring(0, filepath.length() - extension.length() - 1);
 
         this.baseFilepath = basepath;
-        if (!extension.equalsIgnoreCase("fasta") &&
-            !extension.equalsIgnoreCase("fa") &&
-            !extension.equalsIgnoreCase("faa")) {
-            System.err.println("Input error: not a fasta file (extension must be .fasta or .fa or .faa)");
-            System.exit(-1);
-        }
-
         this.lastModified = new File(filepath).lastModified();
 
         String metaFile = basepath + ANNOTATION_FILE_EXTENSION;

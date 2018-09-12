@@ -60,15 +60,21 @@ public class BuildSA {
         System.exit(-1);
     }
 
+    /**
+     * Index a directory with several FASTA files, or the specified FASTA file
+     * @param dbPath
+     * @param outputDir
+     * @param mode
+     */
     public static void buildSA(File dbPath, File outputDir, int mode) {
         if (dbPath.isDirectory()) {
             for (File f : dbPath.listFiles()) {
-                if (!f.getName().endsWith(".fasta") && !f.getName().endsWith(".fa"))
-                    continue;
-                buildSAFiles(f, outputDir, mode);
+                if (isFastaFile(f.getName())) {
+                    buildSAFiles(f, outputDir, mode);
+                }
             }
         } else {
-            if (dbPath.getName().endsWith(".fasta") || dbPath.getName().endsWith(".fa")) {
+            if (isFastaFile(dbPath.getName())) {
                 buildSAFiles(dbPath, outputDir, mode);
             }
         }
@@ -127,4 +133,17 @@ public class BuildSA {
         }
     }
 }
+
+    /**
+     * Return True if the file path ends in .fasta, .fa, or .faa
+     * @param filePath
+     * @return
+     */
+    public static boolean isFastaFile(String filePath) {
+        String fileNameLcase = filePath.toLowerCase();
+
+        return fileNameLcase.endsWith(".fasta") ||
+               fileNameLcase.endsWith(".fa") ||
+               fileNameLcase.endsWith(".faa");
+    }
 
