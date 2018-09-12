@@ -61,6 +61,7 @@ public class ParamManager {
     }
 
     public void printUsageInfo() {
+        System.out.println();
         System.out.println(this.toolName + " " + this.version + " (" + this.date + ")");
         System.out.println();
         System.out.println("Usage: " + this.command);
@@ -89,6 +90,9 @@ public class ParamManager {
         System.out.println();
         for (String example : examples)
             System.out.println(example);
+
+        System.out.println();
+        System.out.println("Documentation: https://github.com/MSGFPlus/msgfplus");
     }
 
     public void printValues() {
@@ -834,6 +838,7 @@ public class ParamManager {
         if (errMessage == null) {
             paramManager.printValues();
         } else {
+            System.out.println();
             System.err.println("[Error] " + errMessage);
             System.out.println();
             paramManager.printUsageInfo();
