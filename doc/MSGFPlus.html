@@ -26,7 +26,7 @@
       <pre class="code">Usage: java -Xmx3500M -jar MSGFPlus.jar
 
 <span class="code-keyword">-s SpectrumFile</span> (*.mzML, *.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt)
-   Spectra should be centroided. Profile spectra will be ignored.
+   Spectra should be centroided (see below for MSConvert example). Profile spectra will be ignored.
 
 <span class="code-keyword">-d DatabaseFile</span> (*.fasta or *.fa or *.faa)
 
@@ -84,12 +84,14 @@
 <span class="code-keyword">[-ccm ChargeCarrierMass]</span> (Mass of charge carrier, <span class="code-object">Default: mass of proton (1.00727649)</span>)
 
 <span class="code-keyword">[-maxMissedCleavages Count]</span> (Exclude peptides with more than this number of missed cleavages from the search, <span class="code-object">Default: -1 (no limit)</span>)
-
-Example (high-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_human_3.79.fasta -inst 1 -t 20ppm -ti -1,2 -ntt 2 -tda 1 -o testMSGFPlus.mzid
-
-Example (low-precision):  java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_human_3.79.fasta -inst 0 -t 0.5Da,2.5Da    -ntt 2 -tda 1 -o testMSGFPlus.mzid
       </pre>
     </div>
+
+    <p>Example command (high-precision spectra):</p>
+    <p class="note"><code>java -Xmx3500M -jar MSGFPlus.jar -s Dataset.mzML -d IPI_human_3.79.fasta -inst 1 -t 20ppm -ti -1,2 -ntt 2 -tda 1 -o PSMs.mzid</code></p>
+
+    <p>Example command (low-precision spectra):</p>
+    <p class="note"><code>java -Xmx3500M -jar MSGFPlus.jar -s Dataset.mzML -d IPI_human_3.79.fasta -inst 0 -t 0.5Da,2.5Da    -ntt 2 -tda 1 -o PSMs.mzid</code></p>
 
     <h3>Parameters:</h3>
     <ul>
@@ -98,9 +100,13 @@ Example (low-precision):  java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_h
         <ul>
           <li>Spectrum file name. Currently, MS-GF+ supports the following file formats: mzML, mzXML, mzML, mgf, ms2, pkl and _dta.txt.</li>
           <li style="color:#990000;">
-            We recommend to use mzML, whenever possible.
+             We recommend to use mzML, whenever possible.
+          </li>
+          <li>
+             For Thermo .raw files, obtain a centroided .mzML using MSConvert, which is part of <a href="http://proteowizard.sourceforge.net/">ProteoWizard</a>.
           </li>
         </ul>
+        <p class="note"><code>MSConvert.exe DatasetName.raw --filter "peakPicking true 1-" --mzML --32</code></p>
       </li>
       <li>
         <b>-d DatabaseFile</b> (*.fasta or *.fa) - Required
@@ -108,9 +114,9 @@ Example (low-precision):  java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_h
           <li>Path to the protein database file. If the database file does not have auxiliary index files (*.canno, *.cnlcp, *.csarr, and *.cseq), MS-GF+ will create them.</li>
           <li>When "-tda 1" option is used, the database specified here must contain only target protein sequences.</li>
         </ul>
+        <p class="note">If multiple MS-GF+ processes access the same database file, it is strongly recommended to index the database prior to the database search by <a href="BuildSA.html">running BuildSA</a>.</p>
       </li>
     </ul>
-    <p class="note">If multiple MS-GF+ processes access the same database file, it is strongly recommended to index the database prior to the database search by <a href="BuildSA.html">running BuildSA</a>.</p>
 
     <ul>
       <li style="margin-bottom: 10px;">
@@ -123,7 +129,7 @@ Example (low-precision):  java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_h
         </ul>
       </li>
       <li style="margin-bottom: 10px;">
-        <b>-t ParentMassTolerance</b>&nbsp;(Default: 20ppm)
+        <b>-t ParentMassTolerance</b> (Default: 20ppm)
         <ul>
           <li>Parent mass tolerance in Da. or ppm. There must be no space between the number and the unit. E.g. <code>2.5Da</code> or <code>20ppm</code></li>
           <li>To set asymmetric tolerances, use a comma to separate left (observed mass &lt; theoretical mass) and <br>right (observed mass &gt; theoretical mass) tolerances.<br>E.g. <code>0.5Da,2.5Da</code></li>
@@ -131,7 +137,7 @@ Example (low-precision):  java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_h
         </ul>
       </li>
       <li style="margin-bottom: 10px;">
-        <b>-ti IsotopeErrorRange</b>&nbsp;(Default: 0,1)
+        <b>-ti IsotopeErrorRange</b> (Default: 0,1)
         <ul>
           <li>Takes into account of the error introduced by choosing non-monoisotopic peak for fragmentation.</li>
           <li>If the parent mass tolerance is equal to or larger than 0.5Da or 500ppm, this parameter will be ignored.</li>
@@ -140,16 +146,16 @@ Example (low-precision):  java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_h
         </ul>
       </li>
       <li style="margin-bottom: 10px;">
-        <b>-thread NumOfThreads</b> (Number of concurrent threads to be executed, Default: Number of available cores)
+        <b>-thread NumOfThreads</b> (Default: Number of available cores)
         <ul>
           <li>Number of concurrent threads to be executed together.</li>
           <li>Default value is the number of available logical cores (e.g. 8 for quad-core processor with hyper-threading support).</li>
         </ul>
       </li>
       <li style="margin-bottom: 10px;">
-        <b>-tasks NumTasks</b> (Override the number of tasks to use on the threads, Default: (internally calculated based on inputs))
+        <b>-tasks NumTasks</b> (Default: internally calculated based on inputs)
         <ul>
-          <li>Manually set the number of tasks to create for the search.</li>
+          <li>Use this to manually set the number of tasks to create for the search.</li>
           <li>More tasks than threads will reduce the memory requirements of the search, but will be slower (how much depends on the inputs).</li>
           <li>If the spectrum file is particularly large, a larger number of tasks will decrease the possibility of out of memory errors.</li>
           <li>If the fasta file being searched is larger than 10MB, more tasks will cause a noticeably longer search time.</li>
@@ -161,39 +167,51 @@ Example (low-precision):  java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_h
         </ul>
       </li>
       <li style="margin-bottom: 10px;">
-        <b>-verbose 0/1</b> (0: Report total progress only (Default), 1: Report total and per-thread progress/status)
+        <b>-verbose 0/1</b> (Default: 0)
         <ul>
           <li>Changes the verbosity of the output</li>
           <li>If 0, only the overall progress is reported, creating the minimal useful output to console.</li>
           <li>If 1, you see all of the output of 0, but with additional console output from each thread and task.</li>
-          <li>1 will produce console output that matches the console output prior to this version.</li>
+          <li>1 will produce console output that matches the console output of older versions.</li>
         </ul>
       </li>
       <li>
-        <b>-tda 0/1</b> (0: Don't search decoy database (default), 1: Search decoy database to compute FDR)
+        <b>-tda 0/1</b> (Default: 0)
         <ul>
-          <li>Indicates whether to search the decoy database or not.</li>
-          <li>If 0, the decoy database is not searched.</li>
-          <li>If 1, FDRs are computed based on the target-decoy approach (i.e. reversed database is appended to the target database and MS-GF+ searches the combined database)
+          <li>Indicates whether to search normal (forward only) protein sequences, 
+              or a decoy file where the reversed protein sequences are appended to the normal protein sequences
             <ul>
-              <li>FDR(t) = #(DecoyPSMs with score equal or above t) / #(TargetPSMs with score equal or above t).</li>
-              <li>PSM: Peptide-Spectrum Match</li>
-              <li>-log(SpecProb) is used as the score to compute FDR.</li>
+             <li>0: Search the protein sequences as listed in the FASTA file (the target database)</li>
+             <li>1: Search a target-decoy database, allowing for the computation of QValues (FDR)</li>
             </ul>
           </li>
+          <li>QValue is defined as the minimum false discovery rate (FDR) at which the test may be called significant (ReversePeptideCount / ForwardPeptideCount)
+            <ul>
+              <li>QValue(t) = (Number of DecoyPSMs with score equal or above t) &divide; (Number of TargetPSMs with score equal or above t)</li>
+              <li>PSM: Peptide-Spectrum Match</li>
+              <li>-log(SpecProb) is used as the score to compute QValue.</li>
+            </ul>
         </ul>
       </li>
+      <p class="note">
+        If <code>-tda 1</code> is specified, MS-GF+ automatically creates a combined target/reversed database file (DBFileName.revConcat.fasta).<br>
+        Thus, when specifying "-d" parameter, DatabaseFile must contain only target proteins.
+      </p>
     </ul>
-    <p class="note">
-     If <code>-tda 1</code> is specified, MS-GF+ automatically creates a combined target/reversed database file (DBFileName.revConcat.fasta).<br>
-     Thus, when specifying "-d" parameter, DatabaseFile must contain only target proteins.
-    </p>
 
     <ul>
       <li style="margin-bottom: 10px;">
-        <b>-m FragmentationMethodID</b> (0: As written in the spectrum or CID if no info (Default), 1: CID, 2: ETD, 3: HCD, 4: UVPD)
+        <b>-m FragmentationMethodID</b> (Default: 0)
         <ul>
-          <li>Fragmentation method identifier (used to determine the scoring model).</li>
+          <li>Fragmentation method identifier (used to determine the scoring model).
+             <ul>
+              <li>0: As written in the spectrum or CID if no info (default)</li>
+              <li>1: CID</li>
+              <li>2: ETD</li>
+              <li>3: HCD</li>
+              <li>4: UVPD</li>
+             </ul>
+          </li>
           <li>If the identifier is 0 and fragmentation method is written in the spectrum file (e.g. mzML files), MS-GF+ will recognize the fragmentation method and use a relevant scoring model.</li>
           <li>If the identifier is 0 and there is no fragmentation method information in the spectrum (e.g. mgf files), CID model will be used by default.</li>
           <li>If the identifier is non-zero and the spectrum has fragmentation method information, only the spectra that match with the identifier will be processed.</li>
@@ -201,9 +219,16 @@ Example (low-precision):  java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_h
         </ul>
       </li>
       <li style="margin-bottom: 10px;">
-        <b>-inst InstrumentID</b> (0: Low-res LCQ/LTQ (Default for CID and ETD), 1: Orbitrap/FTICR/Lumos (Default for HCD), 2: TOF, 3: Q-Exactive)
+        <b>-inst InstrumentID</b>
         <ul>
-          <li>Identifier of the instrument to generate MS/MS spectra (used to determine the scoring model).</li>
+          <li>Identifier of the instrument used to generate MS/MS spectra (this parameter defines the the scoring model).
+             <ul>
+              <li>0: Low-res LCQ/LTQ (Default for CID and ETD)</li>
+              <li>1: Orbitrap/FTICR/Lumos (Default for HCD)</li>
+              <li>2: TOF</li>
+              <li>3: Q-Exactive</li>
+             </ul>
+          </li>
           <li>For "hybrid" spectra with high-precision MS1 and low-precision MS2, use 0.</li>
           <li>For usual low-precision instruments (e.g. Thermo LTQ), use 0.</li>
           <li>If MS/MS fragment ion peaks are of high-precision (e.g. tolerance = 10ppm), use 2.</li>
@@ -248,8 +273,9 @@ Example (low-precision):  java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_h
         </ul>
       </li>
       <li>
-        <b>-ntt 0/1/2</b> (Number of tolerable (tryptic) termini, Default: 2)
+        <b>-ntt 0/1/2</b> (Default: 2)
         <ul>
+          <li>Number of tolerable termini (aka tryptic termini)
           <li>This parameter is used to apply the enzyme cleavage specificity rule when searching the database.</li>
           <li>Specifies the minimum number of termini matching the enzyme specificity rule.
             <ul>
@@ -257,7 +283,8 @@ Example (low-precision):  java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_h
               <li><code>-ntt 2</code> will search for fully tryptic peptides only.</li>
             </ul>
           </li>
-          <li>By default, <code>-ntt 2</code> will be used. Using <code>-ntt 1</code> or <code>-ntt 0</code> will make the search significantly slower.</li>
+          <li>By default, <code>-ntt 2</code> is used.</li>
+          <li>Using <code>-ntt 1</code> or <code>-ntt 0</code> can make the search significantly slower.</li>
         </ul>
     </li>
     </ul>
@@ -304,7 +331,7 @@ Example (low-precision):  java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_h
         </ul>
       </li>
       <li>
-        <b>-addFeatures 0/1</b>
+        <b>-addFeatures 0/1</b> (Default: 0)
         <ul>
           <li>If 0, only basic scores are reported.</li>
           <li>If 1, the following features are reported

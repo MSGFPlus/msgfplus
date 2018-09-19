@@ -17,16 +17,20 @@
     <ol>
     <li>The MzIDToTsv utility built into MSGFPlus.jar
         <ul>
-        <li>Easy to access (though syntax is a bit tricky; see below)</li>
-        <li>Can be slow for large .mzid files</li>
+          <li>Easy to access (though syntax is a bit tricky; see below)</li>
+          <li>Can be slow for large .mzid files</li>
         </ul>
     </li>
     <li>The Mzid-To-Tsv-Converter standalone application, <a href="https://github.com/PNNL-Comp-Mass-Spec/Mzid-To-Tsv-Converter/releases">available on GitHub</a>
         <ul>
-        <li>Fast conversion</li>
-        <li>Handles large .mzid files</li>
-        <li>Runs natively on Windows, but requires mono to use on Linux</li>
+          <li>Fast conversion</li>
+          <li>Handles large .mzid files</li>
+          <li>Runs natively on Windows, but requires mono to use on Linux</li>
+          <li>Example command:
         </ul>
+        <p class="note">
+          <code>MzidToTsvConverter.exe -mzid:SearchResults.mzid -unroll -showDecoy</code>
+        </p>
     </li>
     </ol>
 
