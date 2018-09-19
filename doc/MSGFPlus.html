@@ -216,6 +216,7 @@
           <li>If the identifier is 0 and there is no fragmentation method information in the spectrum (e.g. mgf files), CID model will be used by default.</li>
           <li>If the identifier is non-zero and the spectrum has fragmentation method information, only the spectra that match with the identifier will be processed.</li>
           <li>If the identifier is non-zero and the spectrum has no fragmentation method information, MS-GF+ will process all spectra assuming the specified fragmentation method.</li>
+          <li>If the identifier is 4, MS/MS spectra from the same precursor ion (e.g. CID/ETD pairs, CID/HCD/ETD triplets) will be merged and the &quot;merged&quot; spectrum will be used for searching instead of individual spectra. See Kim et al., MCP 2010 for details.</li>
         </ul>
       </li>
       <li style="margin-bottom: 10px;">
@@ -240,7 +241,7 @@
       <li style="margin-bottom: 10px;">
         <b>-e EnzymeID</b> (Default: 1)
         <ul>
-          <li>Enzyme identifier.</li>
+          <li>Enzyme identifier.
             <ul>
               <li>0: unspecific cleavage</li>
               <li>1: Trypsin (default)</li>
@@ -253,23 +254,28 @@
               <li>8: alphaLP</li>
               <li>9: no cleavage</li>
              </ul>
+          </li>
           <li>Use 9 for peptidomics studies</li>
         </ul>
       </li>
       <li style="margin-bottom: 10px;">
         <b>-p ProtocolID</b> (Default: 0)
         <ul>
-          <li>Protocol identifier. Protocols are used to enable scoring parameters for enriched and/or labeled samples.</li>
-          <li>0: Automatic (Default)</li>
-            <ul>
-              <li>This will set the protocol based on the names of the modifications in Mods.txt</li>
-              <li>It looks for names (case insensitive) that start with "itraq", "phospho", and "tmt"</li>
-            </ul>
-          <li>1: Phosphorylation: for phosphopeptide enriched samples</li>
-          <li>2: iTRAQ: for iTRAQ-labeled samples</li>
-          <li>3: iTRAQPhospho: for phosphopeptide enriched and iTRAQ-labeled samples</li>
-          <li>4: TMT: for TMT-labeled samples</li>
-          <li>5: Standard: for samples not in the above categories (no protocol)</li>
+          <li>Protocol identifier. Protocols are used to enable scoring parameters for enriched and/or labeled samples.
+		    <ul>
+              <li>0: Automatic (Default)
+                <ul>
+                  <li>This will set the protocol based on the names of the modifications in Mods.txt</li>
+                  <li>It looks for names (case insensitive) that start with "itraq", "phospho", and "tmt"</li>
+                </ul>
+              </li>
+              <li>1: Phosphorylation: for phosphopeptide enriched samples</li>
+              <li>2: iTRAQ: for iTRAQ-labeled samples</li>
+              <li>3: iTRAQPhospho: for phosphopeptide enriched and iTRAQ-labeled samples</li>
+              <li>4: TMT: for TMT-labeled samples</li>
+              <li>5: Standard: for samples not in the above categories (no protocol)</li>
+		    </ul>
+          </li>
         </ul>
       </li>
       <li>
