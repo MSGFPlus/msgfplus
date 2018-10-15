@@ -46,6 +46,7 @@ public class MgfSpectrumParser implements SpectrumParser {
         float precursorIntensity = 0;
         int precursorCharge = 0;
         ActivationMethod activation = null;
+        float elutionTimeSeconds = 0;
 //		Float toleranceVal = null;
 //		Tolerance.Unit toleranceUnit = null;
 
@@ -118,6 +119,9 @@ public class MgfSpectrumParser implements SpectrumParser {
                     String activationName = buf.substring(buf.indexOf("=") + 1);
                     activation = ActivationMethod.get(activationName);
                     spec.setActivationMethod(activation);
+                } else if (buf.startsWith("RTINSECONDS")) {
+                    String[] token = buf.substring(buf.indexOf("=") + 1).split("\\s+");
+                    elutionTimeSeconds = Float.valueOf(token[0]);
                 }
 //  			else if(buf.startsWith("TOL="))
 //  			{
@@ -160,6 +164,10 @@ public class MgfSpectrumParser implements SpectrumParser {
                         }
                     }
                     spec.setPrecursor(new Peak(precursorMz, precursorIntensity, precursorCharge));
+                    if (elutionTimeSeconds > 0) {
+                        spec.setRt(elutionTimeSeconds);
+                        spec.setRtIsSeconds(true);
+                    }
 //  				if(toleranceVal != null && toleranceUnit != null)
 //  				{
 //  					Tolerance precursorTolerance = new Tolerance(toleranceVal, toleranceUnit);
