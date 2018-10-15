@@ -299,9 +299,9 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
     }
 
     /**
-     * Sets the annotation with a Sequence object.
+     * Sets the annotation with a Sequence string.
      *
-     * @param annotation annotation object.
+     * @param seq annotation object.
      */
     public void addSEQ(String seq) {
         if (seqList == null)
@@ -348,7 +348,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
     /**
      * Sets the spectrum index of this spectrum.
      *
-     * @param scanNum scan spectrum index.
+     * @param specIndex scan spectrum index.
      */
     public void setSpecIndex(int specIndex) {
         this.specIndex = specIndex;
