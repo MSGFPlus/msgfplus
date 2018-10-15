@@ -106,11 +106,12 @@ public class MgfSpectrumParser implements SpectrumParser {
                         spec.setStartScanNum(startScanNum);
                         spec.setEndScanNum(endScanNum);
                     } else {
-                        // for mgf files, scan number is set as the zero based sequence number of the spectrum
+                        // Look for a single integer after the equals sign
                         try {
                             int scanNum = Integer.valueOf(buf.substring(buf.indexOf("=") + 1));
                             spec.setScanNum(scanNum);
                         } catch (NumberFormatException e) {
+                            // Not an integer; the scan number will be the zero based sequence number of the spectrum
                         }
                     }
                 } else if (buf.startsWith("ACTIVATION")) {
@@ -137,10 +138,26 @@ public class MgfSpectrumParser implements SpectrumParser {
 //  			}
                 else if (buf.startsWith("END IONS")) {
                     assert (spec != null);
-                    if (spec.getScanNum() == -1 && spec.getTitle() != null && spec.getTitle().matches("Scan:\\d+\\s.+")) {
-                        String[] token = spec.getTitle().split("\\s++");
-                        int scanNum = Integer.parseInt(token[0].substring("Scan:".length()));
-                        spec.setScanNum(scanNum);
+                    if (spec.getScanNum() == -1 && title != null) {
+                        if (title.matches("Scan:\\d+\\s.+")) {
+                            // Title line is of the form Scan:ScanNumber AdditionalText
+                            // for example, "Scan:8492 Charge:2"
+                            // Extract the integer after "Scan:"
+                            // Split on spaces
+                            String[] token = title.split("\\s++");
+                            int scanNum = Integer.parseInt(token[0].substring("Scan:".length()));
+                            spec.setScanNum(scanNum);
+                        } else if (title.matches(".+\\.\\d+\\.\\d+\\.\\d+$")) {
+                            // Title line is of the form DatasetName.ScanStart.ScanEnd.Charge
+                            // for example, DatasetName.8492.8492.2
+                            // Split on periods
+                            String[] token = title.split("\\.");
+
+                            int startScanNum = Integer.parseInt(token[token.length - 3]);
+                            int endScanNum = Integer.parseInt(token[token.length - 2]);
+                            spec.setStartScanNum(startScanNum);
+                            spec.setEndScanNum(endScanNum);
+                        }
                     }
                     spec.setPrecursor(new Peak(precursorMz, precursorIntensity, precursorCharge));
 //  				if(toleranceVal != null && toleranceUnit != null)
