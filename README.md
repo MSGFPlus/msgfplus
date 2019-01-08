@@ -1,16 +1,16 @@
 Overview
 ======
 
-MS-GF+ (aka MSGF+ or MSGFPlus) performs peptide identification by scoring 
-MS/MS spectra against peptides derived from a protein sequence database. 
-It supports the HUPO PSI standard input file (mzML) and saves results in 
-the mzIdentML format, though results can easily be transformed to TSV. 
+MS-GF+ (aka MSGF+ or MSGFPlus) performs peptide identification by scoring
+MS/MS spectra against peptides derived from a protein sequence database.
+It supports the HUPO PSI standard input file (mzML) and saves results in
+the mzIdentML format, though results can easily be transformed to TSV.
 ProteomeXchange supports Complete data submissions using MS-GF+ search results.
 
-MS-GF+ is optimized for a variety of spectral types, i.e., combinations 
-of fragmentation method, instrument, enzyme, and experimental protocols. 
-It supports a variety of input file formats, including mzML, mzXML, 
-Mascot Generic File (mgf), MS2 files, Micromass Peak List files (pkl), 
+MS-GF+ is optimized for a variety of spectral types, i.e., combinations
+of fragmentation method, instrument, enzyme, and experimental protocols.
+It supports a variety of input file formats, including mzML, mzXML,
+Mascot Generic File (mgf), MS2 files, Micromass Peak List files (pkl),
 and Concatenated DTA files (_dta.txt).
 
 Requirements
@@ -45,12 +45,13 @@ Type `java -jar MSGFPlus.jar` for command line arguments.
 
 To convert an mzid output file into a tsv file, run `java -cp MSGFPlus.jar edu.ucsd.msjava.ui.MzIDToTsv`
 
-Alternatively, use the Mzid-To-Tsv-Converter, which is a faster converter that supports larger result files. 
-It is a C# application that works on Windows or on Linux using mono. 
+Alternatively, use the Mzid-To-Tsv-Converter, which is a faster converter that supports larger result files.
+It is a C# application that works on Windows or on Linux using mono.
 Download the Mzid-To-Tsv-Converter <a href="https://github.com/PNNL-Comp-Mass-Spec/Mzid-To-Tsv-Converter/releases">from GitHub</a>.
 
-For detailed documentation, see the "doc" subfolder, or visit:
-* [GitHub repo HTML help pages](https://htmlpreview.github.io/?https://github.com/MSGFPlus/msgfplus/blob/master/doc/index.html)
+For detailed documentation, see the "docs" subfolder, or visit:
+* [GitHub project help pages](https://msgfplus.github.io/msgfplus/)
+* [GitHub repo HTML help pages - same as above, but may have issues](https://htmlpreview.github.io/?https://github.com/MSGFPlus/msgfplus/blob/master/docs/index.html)
 * (previously at https://bix-lab.ucsd.edu/pages/viewpage.action?pageId=13533355)
 
 Contact Information
