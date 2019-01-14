@@ -152,7 +152,7 @@ public class PNNLSpectrumParser implements SpectrumParser {
         BufferedLineReader in = null;
         try {
             in = new BufferedLineReader(scanTypeFile.getPath());
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

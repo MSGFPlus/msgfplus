@@ -4,7 +4,7 @@ import edu.ucsd.msjava.msutil.ScanType;
 import edu.ucsd.msjava.msutil.SpectraIterator;
 import edu.ucsd.msjava.msutil.Spectrum;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -12,7 +12,7 @@ public class PNNLSpectraIterator extends SpectraIterator {
 
     private HashMap<Integer, ScanType> scanNumScanTypeMap;
 
-    public PNNLSpectraIterator(String fileName) throws FileNotFoundException {
+    public PNNLSpectraIterator(String fileName) throws IOException {
         super(fileName, new PNNLSpectrumParser());
         scanNumScanTypeMap = PNNLSpectrumParser.getScanTypeMap(fileName);
     }

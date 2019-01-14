@@ -251,7 +251,7 @@ public class AnnotatedSpectra implements ProgressReporter, ExceptionCapturer {
         BufferedLineReader in = null;
         try {
             in = new BufferedLineReader(tsvResultFile.getPath());
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

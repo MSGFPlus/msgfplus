@@ -9,6 +9,7 @@ import uk.ac.ebi.jmzidml.model.mzidml.CvParam;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Iterator;
 
 public class SpectraAccessor {
@@ -71,7 +72,7 @@ public class SpectraAccessor {
             } else if (specFormat == SpecFileFormat.DTA_TXT)
                 try {
                     specItr = new PNNLSpectraIterator(specFile.getPath());
-                } catch (FileNotFoundException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             else {
@@ -86,7 +87,7 @@ public class SpectraAccessor {
                     return null;
                 try {
                     specItr = new SpectraIterator(specFile.getPath(), parser);
-                } catch (FileNotFoundException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }

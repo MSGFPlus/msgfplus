@@ -204,7 +204,7 @@ public class PRMSpecGen {
             try {
                 specItr = new SpectraIterator(specFile.getPath(), parser);
                 specMap = new SpectraMap(specFile.getPath(), parser);
-            } catch (FileNotFoundException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }

@@ -189,7 +189,7 @@ public class MSProfile {
 //				iterator = new SpectraIterator(specFile.getPath(), new PklSpectrumParser());
 //			else if(format == SpecFileFormat.MS2)
 //				iterator = new SpectraIterator(specFile.getPath(), new MS2SpectrumParser());
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

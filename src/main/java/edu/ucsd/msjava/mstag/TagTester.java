@@ -7,6 +7,7 @@ import edu.ucsd.msjava.msutil.WindowFilter;
 import edu.ucsd.msjava.parser.MgfSpectrumParser;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 
 /**
@@ -19,7 +20,7 @@ public class TagTester {
     /**
      * @param args
      */
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException {
         String filePath = "/Users/jung/Research/USTags/centroidedMGF/IPYS_TD_Scere010_Orbitrap_001c.mgf";
         SpectraIterator si = new SpectraIterator(filePath, new MgfSpectrumParser());
 

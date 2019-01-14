@@ -3,6 +3,7 @@ package edu.ucsd.msjava.parser;
 import edu.ucsd.msjava.msutil.Peptide;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -11,7 +12,7 @@ public class OMSSAParser {
         BufferedLineReader in = null;
         try {
             in = new BufferedLineReader(fileName);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

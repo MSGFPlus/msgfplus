@@ -9,6 +9,7 @@ import edu.ucsd.msjava.parser.BufferedLineReader;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -142,7 +143,7 @@ public class MS1SpectraMap {
         BufferedLineReader in = null;
         try {
             in = new BufferedLineReader(peaksFile.getPath());
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

@@ -5,6 +5,7 @@ import edu.ucsd.msjava.msutil.Peptide;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Collections;
 
 public class MSGFDBParser {
@@ -13,7 +14,7 @@ public class MSGFDBParser {
         BufferedLineReader in = null;
         try {
             in = new BufferedLineReader(fileName);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         String s;

@@ -65,7 +65,7 @@ public class InsPecTParser {
         BufferedLineReader in = null;
         try {
             in = new BufferedLineReader(fileName);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

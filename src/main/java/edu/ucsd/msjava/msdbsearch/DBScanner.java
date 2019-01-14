@@ -889,7 +889,7 @@ public class DBScanner {
         BufferedLineReader in = null;
         try {
             in = new BufferedLineReader(databaseFileName);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

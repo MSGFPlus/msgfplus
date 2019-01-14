@@ -3,6 +3,7 @@ package edu.ucsd.msjava.params;
 import edu.ucsd.msjava.parser.BufferedLineReader;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -12,7 +13,7 @@ public class UserParam {
         BufferedLineReader in = null;
         try {
             in = new BufferedLineReader(fileName);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         String s;

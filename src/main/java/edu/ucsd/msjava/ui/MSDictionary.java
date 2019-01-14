@@ -16,6 +16,7 @@ import edu.ucsd.msjava.suffixarray.SuffixArraySequence;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Iterator;
 
 public class MSDictionary {
@@ -73,7 +74,7 @@ public class MSDictionary {
 
             try {
                 specIterator = new SpectraIterator(specFileName, parser);
-            } catch (FileNotFoundException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }

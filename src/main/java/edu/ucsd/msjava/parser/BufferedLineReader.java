@@ -1,14 +1,12 @@
 package edu.ucsd.msjava.parser;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import net.pempek.unicode.UnicodeBOMInputStream;
 
 public class BufferedLineReader extends BufferedReader implements LineReader {
 
-    public BufferedLineReader(String fileName) throws FileNotFoundException {
-        super(new FileReader(fileName));
+    public BufferedLineReader(String fileName) throws IOException {
+        super(new InputStreamReader(new UnicodeBOMInputStream(new FileInputStream(fileName))));
     }
 
     @Override

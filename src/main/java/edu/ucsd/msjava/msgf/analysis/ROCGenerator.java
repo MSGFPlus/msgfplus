@@ -6,6 +6,7 @@ import edu.ucsd.msjava.parser.BufferedLineReader;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -193,7 +194,7 @@ public class ROCGenerator {
         BufferedLineReader in = null;
         try {
             in = new BufferedLineReader(file.getPath());
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

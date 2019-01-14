@@ -98,7 +98,7 @@ public class LibraryScanner {
         BufferedLineReader in = null;
         try {
             in = new BufferedLineReader(libFilePath);
-        } catch (FileNotFoundException e1) {
+        } catch (IOException e1) {
             e1.printStackTrace();
         }
 
@@ -231,7 +231,7 @@ public class LibraryScanner {
         BufferedLineReader in = null;
         try {
             in = new BufferedLineReader(libFilePath);
-        } catch (FileNotFoundException e1) {
+        } catch (IOException e1) {
             e1.printStackTrace();
         }
 

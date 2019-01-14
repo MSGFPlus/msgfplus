@@ -1,5 +1,7 @@
 package edu.ucsd.msjava.parser;
 
+import net.pempek.unicode.UnicodeBOMInputStream;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -45,6 +47,29 @@ public class BufferedRandomAccessLineReader implements LineReader {
         fillBuffer();
     }
 
+    /**
+     * Compare the bytes in buf to the bytes associated with the given Byte Order Mark class
+     * @param buf
+     * @param bomType
+     * @return True if the bytes match, otherwise false
+     */
+    private boolean bytesMatchesBOM(byte[] buf, UnicodeBOMInputStream.BOM bomType) {
+        byte[] bomBytes = bomType.getBytes();
+        int matchCount = 0;
+
+        if (buf.length < bomBytes.length)
+            return false;
+
+        for (int i = 0; i < bomBytes.length; i++) {
+            if (buf[i] == bomBytes[i])
+                matchCount++;
+            else
+                break;
+        }
+
+        return (matchCount == bomBytes.length);
+    }
+
     private int fillBuffer() {
         ByteBuffer tempBuffer = null;
         int bytesRead = -1;
@@ -69,7 +94,42 @@ public class BufferedRandomAccessLineReader implements LineReader {
     public String readLine() {
         if (pointer >= fileSize)
             return null;
+
+        Boolean startOfFile = (pointer == 0);
+
         String str = readLineFromBuffer();
+
+        if (startOfFile) {
+            // Check for byte order marks
+            byte[] buf = str.getBytes();
+            int copyOffset = 0;
+
+            if (buf.length >= 4) {
+                if (bytesMatchesBOM(buf, UnicodeBOMInputStream.BOM.UTF_32_LE)) {
+                    copyOffset = 4;
+                } else if (bytesMatchesBOM(buf, UnicodeBOMInputStream.BOM.UTF_32_BE)) {
+                    copyOffset = 4;
+                }
+            }
+
+            if (copyOffset == 0 && buf.length >= 3) {
+                if (bytesMatchesBOM(buf, UnicodeBOMInputStream.BOM.UTF_8)) {
+                    copyOffset = 3;
+                }
+            }
+
+            if (copyOffset == 0 && buf.length >= 2) {
+                if (bytesMatchesBOM(buf, UnicodeBOMInputStream.BOM.UTF_16_LE)) {
+                    copyOffset = 2;
+                } else if (bytesMatchesBOM(buf, UnicodeBOMInputStream.BOM.UTF_16_BE)) {
+                    copyOffset = 2;
+                }
+            }
+
+            if (copyOffset > 0) {
+                str = new String(java.util.Arrays.copyOfRange(buf, copyOffset, buf.length));
+            }
+        }
 
         if (bufPointer == bufLength && bufLength == bufSize) {
             fillBuffer();

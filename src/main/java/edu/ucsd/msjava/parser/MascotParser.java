@@ -19,7 +19,7 @@ public class MascotParser {
         BufferedLineReader in = null;
         try {
             in = new BufferedLineReader(fileName);
-        } catch (FileNotFoundException e1) {
+        } catch (IOException e1) {
             e1.printStackTrace();
         }
 
@@ -248,7 +248,7 @@ public class MascotParser {
         BufferedLineReader in = null;
         try {
             in = new BufferedLineReader(fileName);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

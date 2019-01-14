@@ -5,6 +5,7 @@ import edu.ucsd.msjava.parser.LineReader;
 import edu.ucsd.msjava.parser.SpectrumParser;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Iterator;
 
 
@@ -18,7 +19,7 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
     LineReader lineReader;
     private int specIndex;
 
-    public SpectraIterator(String fileName, SpectrumParser parser) throws FileNotFoundException {
+    public SpectraIterator(String fileName, SpectrumParser parser) throws IOException {
         nextSpecFilePath = fileName;
         lineReader = new BufferedLineReader(fileName);
         this.parser = parser;
@@ -82,7 +83,7 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
                 nextSpecFilePath = filenames[nextFileIndex++];
                 lineReader = new BufferedLineReader(getNextSpectrumFilePath());
                 break;
-            } catch (FileNotFoundException e) {
+            } catch (IOException e) {
                 // Suppress file not found error - when files in directory has disappeared while reading other files
             }
         }

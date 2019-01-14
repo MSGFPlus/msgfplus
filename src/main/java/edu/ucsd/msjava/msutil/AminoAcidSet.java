@@ -679,7 +679,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         BufferedLineReader in = null;
         try {
             in = new BufferedLineReader(fileName);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         int numMods = 2;
@@ -835,7 +835,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         BufferedLineReader in = null;
         try {
             in = new BufferedLineReader(fileName);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -1051,7 +1051,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         BufferedLineReader in = null;
         try {
             in = new BufferedLineReader(fileName);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         String s;

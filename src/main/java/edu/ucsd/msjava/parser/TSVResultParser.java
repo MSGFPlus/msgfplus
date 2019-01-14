@@ -39,7 +39,7 @@ public class TSVResultParser {
         BufferedLineReader in = null;
         try {
             in = new BufferedLineReader(tsvFile.getPath());
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         String header = in.readLine();

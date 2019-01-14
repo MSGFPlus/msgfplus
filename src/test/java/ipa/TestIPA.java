@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -350,7 +351,7 @@ public class TestIPA {
 					System.out.println(mqPep);
 				}
 			}
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		System.out.println("MaxQuantOnly: " + numMQOnly);

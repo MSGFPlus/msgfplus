@@ -29,7 +29,7 @@ public class MSGFPlusResultSet {
         BufferedLineReader in = null;
         try {
             in = new BufferedLineReader(msgfPlusResultFile.getPath());
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         String s;

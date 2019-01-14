@@ -8,6 +8,7 @@ import edu.ucsd.msjava.parser.LineReader;
 import edu.ucsd.msjava.parser.MgfSpectrumParser;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Random;
 
@@ -116,7 +117,7 @@ public class SwedCAD {
         SpectraIterator itr = null;
         try {
             itr = new SpectraIterator(specFileName, new MgfSpectrumParser());
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         Histogram<Integer> hist = new Histogram<Integer>();
@@ -159,7 +160,7 @@ public class SwedCAD {
         LineReader in = null;
         try {
             in = new BufferedLineReader(fileName);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSet();

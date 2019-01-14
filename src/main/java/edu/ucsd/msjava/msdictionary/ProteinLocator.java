@@ -6,6 +6,7 @@ import edu.ucsd.msjava.suffixarray.SuffixArraySequence;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -21,7 +22,7 @@ public class ProteinLocator {
         BufferedLineReader in = null;
         try {
             in = new BufferedLineReader(fileName);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -55,7 +56,7 @@ public class ProteinLocator {
 
         try {
             in = new BufferedLineReader(fileName);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         while ((s = in.readLine()) != null) {
