@@ -248,6 +248,38 @@ public class TestMSGFPlus {
     }
 
     @Test
+    public void testMgf2()
+    {
+        File specPath = new File("C:\\DMS_WorkDir1\\QC_Shew_17_02_b_Bane_4Jan19_18-10-06.mgf");
+        File dbFile = new File("C:\\DMS_Temp_Org\\ID_003456_9B916A8B.fasta");
+
+        String[] argv = {
+                "-s", specPath.getPath(),
+                "-d", dbFile.getPath(),
+                "-t", "20ppm",
+                "-m","0",
+                "-inst", "3",
+                "-e", "1",
+                "-ti", "-1,2",
+                "-ntt", "1",
+                "-tda", "1",
+                "-minLength", "6",
+                "-maxLength", "50",
+                "-minCharge", "2",
+                "-maxCharge", "5",
+                "-n", "1",
+                "-thread", "7",
+                "-mod", "MSGFPlus_Mods.txt",
+                "-minNumPeaks", "5",
+                "-addFeatures", "1"};
+
+        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        paramManager.addMSGFPlusParams();
+        paramManager.parseParams(argv);
+        MSGFPlus.runMSGFPlus(paramManager);
+    }
+
+    @Test
     @Ignore
     public void testCrossLink()
     {
