@@ -155,11 +155,20 @@ public class BufferedRandomAccessLineReader implements LineReader {
         }
 
         String str;
-        if (bufPointer > 0 && buffer[bufPointer - 1] == CR)
-            str = new String(buffer, startIndex, (bufPointer - startIndex - 1));
-        else
-            str = new String(buffer, startIndex, (bufPointer - startIndex));
-        return str;
+        try {
+            if (bufPointer > 0 && buffer[bufPointer - 1] == CR)
+                str = new String(buffer, startIndex, (bufPointer - startIndex - 1));
+            else
+                str = new String(buffer, startIndex, (bufPointer - startIndex));
+
+            return str;
+
+        } catch (java.lang.ArrayIndexOutOfBoundsException e) {
+            System.out.println("bufPointer " + bufPointer + " is larger than the buffer array, length " + buffer.length);
+            throw e;
+        }
+
+
     }
 
     public long getPosition() {
