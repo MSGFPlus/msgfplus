@@ -25,7 +25,8 @@ public class SortedSpectraIterator implements Iterator<Spectrum> {
     /**
      * Constructor taking the file name.
      *
-     * @param fileName
+     * @param itr
+     * @param map
      */
     public SortedSpectraIterator(Iterator<Spectrum> itr, SpectrumAccessorBySpecIndex map) {
         int numSpecs = 0;

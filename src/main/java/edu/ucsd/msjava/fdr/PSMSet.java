@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 
 public abstract class PSMSet {
     protected ArrayList<ScoredString> psmList;    // resultLine, psm
-    protected HashMap<String, Float> peptideScoreTable;    // peptide -> best score
+    protected HashMap<String, Float> peptideScoreTable;    // peptide -> best score (Spec_EValue)
 
     public ArrayList<ScoredString> getPSMList() {
         return psmList;

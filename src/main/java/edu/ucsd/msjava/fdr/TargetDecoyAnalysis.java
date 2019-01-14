@@ -198,6 +198,7 @@ public class TargetDecoyAnalysis {
                 if (targetIndex <= decoyIndex)
                     fdr = 1;
                 else {
+                    // pit is "portion of incorrect target PSMs" and is always 1 (in practice)
                     fdr = Math.round(decoyIndex * pit) / (float) targetIndex;    // simple formulation by Kall et et., JPR 2008
 //					fdr = (2*decoyIndex)/(float)(targetIndex + decoyIndex);	// Elias and Gygi, Nat. Methods 2007
                 }
@@ -207,7 +208,7 @@ public class TargetDecoyAnalysis {
                 fdrMap.put(decoyScore, fdr);
                 if (fdr >= 1)
                     break;
-//				System.out.println("1: " + decoyScore+":"+fdr);
+//				System.out.println("1: " + decoyScore + ":" + fdr);
             }
         }
 
