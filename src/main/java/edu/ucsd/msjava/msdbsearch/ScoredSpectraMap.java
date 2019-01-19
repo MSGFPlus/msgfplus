@@ -205,6 +205,7 @@ public class ScoredSpectraMap {
                 scorer.doNotUseError();
         }
         int count = 0;
+        int countIgnored = 0;
         int total = toIndex - fromIndex;
         for (SpecKey specKey : specKeyList.subList(fromIndex, toIndex)) {
             if (Thread.currentThread().isInterrupted()) {
@@ -228,18 +229,32 @@ public class ScoredSpectraMap {
             float tolDaLeft = leftParentMassTolerance.getToleranceAsDa(peptideMass);
             int maxNominalPeptideMass = NominalMass.toNominalMass(peptideMass) + Math.round(tolDaLeft - 0.4999f) - this.minIsotopeError;
 
-            if (scorer.supportEdgeScores()) {
-                specKeyScorerMap.put(specKey, new DBScanScorer(scoredSpec, maxNominalPeptideMass));
-            } else {
-                specKeyScorerMap.put(specKey, new FastScorer(scoredSpec, maxNominalPeptideMass));
-            }
+            if (maxNominalPeptideMass > 0) {
+                if (scorer.supportEdgeScores()) {
+                    specKeyScorerMap.put(specKey, new DBScanScorer(scoredSpec, maxNominalPeptideMass));
+                } else {
+                    specKeyScorerMap.put(specKey, new FastScorer(scoredSpec, maxNominalPeptideMass));
+                }
 
-            if (specKeyRankScorerMap != null) {
-                specKeyRankScorerMap.put(specKey, scorer);
+                if (specKeyRankScorerMap != null) {
+                    specKeyRankScorerMap.put(specKey, scorer);
+                }
+            } else {
+                countIgnored++;
+                if (countIgnored <= 4) {
+                    System.out.println("... ignoring spectrum at index " +
+                            String.format("%1$5s", specKey.getSpecIndex()) +
+                            " with invalid precursor ion of " + spec.getParentMass() + " m/z");
+                }
             }
 
             count++;
             progress.report(count, total);
+        }
+
+        if (countIgnored > 1) {
+            String threadName = Thread.currentThread().getName();
+            System.out.println("Warning: Ignored " + countIgnored + " spectra with invalid precursor ions (" + threadName + ")");
         }
     }
 

@@ -60,7 +60,11 @@ public class Peak implements Comparable<Peak> {
      * @return (m/z - H) * charge.
      */
     public float getMass() {
-        return (mz - (float) Composition.ChargeCarrierMass()) * (float) charge;
+        Float monoMass = (mz - (float)Composition.ChargeCarrierMass()) * (float)charge;
+        if (monoMass > 0)
+            return monoMass;
+        else
+            return 0;
     }
 
 
@@ -86,7 +90,7 @@ public class Peak implements Comparable<Peak> {
     /**
      * Gets a new peak with different mass
      *
-     * @param modMass mass
+     * @param mz m/z
      * @return a new peak with mass
      */
     public Peak getShiftedPeak(float mz) {

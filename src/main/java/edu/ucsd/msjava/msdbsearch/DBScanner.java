@@ -726,6 +726,9 @@ public class DBScanner {
             Spectrum spec = specScanner.getSpectraAccessor().getSpectrumBySpecIndex(specIndex);
             for (DatabaseMatch match : matchQueue) {
                 NewRankScorer scorer = specScanner.getRankScorer(new SpecKey(specIndex, match.getCharge()));
+                if (scorer == null)
+                    continue;
+
                 spec.setCharge(match.getCharge());
                 PSMFeatureFinder addFeatures = new PSMFeatureFinder(spec, aaSet.getPeptide(match.getPepSeq()), scorer);
                 for (Pair<String, String> feature : addFeatures.getAllFeatures())

@@ -150,7 +150,11 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
      * @return the peptide mass in Daltons.
      */
     public float getPeptideMass() {
-        return precursor.getMass() - (float) Composition.H2O;
+        Float peptideMass = precursor.getMass();
+        if (peptideMass > 0)
+            return peptideMass - (float)Composition.H2O;
+        else
+            return 0;
     }
 
     /**
