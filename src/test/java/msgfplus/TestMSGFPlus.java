@@ -218,6 +218,7 @@ public class TestMSGFPlus {
 
     
     @Test
+    @Ignore
     public void testScoringParamGen()
     {
         File resultPath = new File("/Users/kims336/Research/Data/TrainingITRAQ/Phospho/test");
@@ -759,6 +760,7 @@ public class TestMSGFPlus {
     }
     
     @Test
+    @Ignore
     public void testMzIdOutput()
     {
 //        File mzidFile = new File("C:\\cygwin\\home\\kims336\\Data\\Mayo\\reproducibilitySample.mzid");
