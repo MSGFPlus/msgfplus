@@ -22,8 +22,8 @@ import java.util.logging.Logger;
 
 
 public class MSGFPlus {
-    public static final String VERSION = "Release (v2019.01.11)";
-    public static final String RELEASE_DATE = "11 January 2019";
+    public static final String VERSION = "Release (v2019.01.18)";
+    public static final String RELEASE_DATE = "18 January 2019";
 
     public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
     public static final String DECOY_PROTEIN_PREFIX = "XXX";
@@ -400,6 +400,7 @@ public class MSGFPlus {
         System.out.print("Writing results finished ");
         System.out.format("(elapsed time: %.2f sec)\n", (float) (System.currentTimeMillis() - time) / 1000);
 
+        System.out.println("File: " + outputFile.getPath());
         return null;
     }
 }
