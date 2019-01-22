@@ -92,7 +92,12 @@ public class ParamManager {
             System.out.println(example);
 
         System.out.println();
-        System.out.println("Documentation: https://github.com/MSGFPlus/msgfplus");
+        System.out.println();
+        System.out.println("For Thermo .raw files, obtain a centroided .mzML file using MSConvert, which is part of ProteoWizard (http://proteowizard.sourceforge.net/)");
+        System.out.println("  MSConvert.exe DatasetName.raw --filter \"peakPicking true 1-\" --mzML --32");
+        System.out.println();
+        System.out.println("Documentation: https://msgfplus.github.io/msgfplus/");
+        System.out.println("Releases:      https://github.com/MSGFPlus/msgfplus/releases");
     }
 
     public void printValues() {
@@ -150,6 +155,7 @@ public class ParamManager {
         specFileParam.addFileFormat(SpecFileFormat.DTA_TXT);
         specFileParam.addFileFormat(FileFormat.DIRECTORY);
         specFileParam.fileMustExist();
+        specFileParam.setAdditionalDescription("Spectra should be centroided (see below for MSConvert example). Profile spectra will be ignored.");
         addParameter(specFileParam);
     }
 
@@ -372,8 +378,8 @@ public class ParamManager {
         maxMissedCleavages.defaultValue(-1);
         addParameter(maxMissedCleavages);
 
-        addExample("Example (high-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_human_3.79.fasta -inst 1 -t 20ppm -ti -1,2 -ntt 2 -tda 1 -o testMSGFPlus.mzid");
-        addExample("Example (low-precision):  java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_human_3.79.fasta -inst 0 -t 0.5Da,2.5Da    -ntt 2 -tda 1 -o testMSGFPlus.mzid");
+        addExample("Example (high-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_human_3.79.fasta -inst 1 -t 20ppm -ti -1,2 -ntt 2 -tda 1 -o testMSGFPlus.mzid -mod Mods.txt");
+        addExample("Example (low-precision):  java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_human_3.79.fasta -inst 0 -t 0.5Da,2.5Da    -ntt 2 -tda 1 -o testMSGFPlus.mzid -mod Mods.txt");
 
         // Hidden parameters
         FileParameter dbIndexDirParam = new FileParameter("dd", "DBIndexDir", "Path to the directory containing database index files");
