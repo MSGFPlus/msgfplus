@@ -1,7 +1,7 @@
 package edu.ucsd.msjava.parser;
 
 import net.pempek.unicode.UnicodeBOMInputStream;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -120,7 +120,7 @@ public class BufferedRandomAccessLineReader implements LineReader {
             str = new String(java.util.Arrays.copyOfRange(buf, copyOffset, buf.length));
         }
 
-        return new Pair<>(str, copyOffset);
+        return Pair.of(str, copyOffset);
     }
 
     private int fillBuffer() {
