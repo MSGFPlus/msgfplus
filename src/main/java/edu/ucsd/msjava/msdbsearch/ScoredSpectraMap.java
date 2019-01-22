@@ -156,16 +156,22 @@ public class ScoredSpectraMap {
             Spectrum spec = specAcc.getSpectrumBySpecIndex(specIndex);
             float peptideMass = (spec.getPrecursorPeak().getMz() - (float) Composition.ChargeCarrierMass()) * specKey.getCharge() - (float) Composition.H2O;
 
-            for (int delta = this.minIsotopeError; delta <= maxIsotopeError; delta++) {
-                float mass1 = peptideMass - delta * (float) Composition.ISOTOPE;
-                double mass1Key = (double) mass1;
-                while (pepMassSpecKeyMap.get(mass1Key) != null)
-                    mass1Key = Math.nextUp(mass1Key);
-                pepMassSpecKeyMap.put(mass1Key, specKey);
+            if (peptideMass > 0) {
+                for (int delta = this.minIsotopeError; delta <= maxIsotopeError; delta++) {
+                    float mass1 = peptideMass - delta * (float) Composition.ISOTOPE;
+                    double mass1Key = (double) mass1;
+                    while (pepMassSpecKeyMap.get(mass1Key) != null)
+                        mass1Key = Math.nextUp(mass1Key);
+                    pepMassSpecKeyMap.put(mass1Key, specKey);
+                }
+                specIndexChargeToSpecKeyMap.put(new Pair<Integer, Integer>(specIndex, specKey.getCharge()), specKey);
+
+//			    if(specKeyToleranceMap != null && spec.getPrecursorTolerance() != null)
+//				    specKeyToleranceMap.put(specKey, spec.getPrecursorTolerance());
+
+            } else {
+                // Skip since precursor m/z is zero
             }
-            specIndexChargeToSpecKeyMap.put(new Pair<Integer, Integer>(specIndex, specKey.getCharge()), specKey);
-//			if(specKeyToleranceMap != null && spec.getPrecursorTolerance() != null)
-//				specKeyToleranceMap.put(specKey, spec.getPrecursorTolerance());
         }
         return this;
     }
