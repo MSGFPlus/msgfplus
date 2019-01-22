@@ -251,7 +251,8 @@ public class TestMSGFPlus {
     @Test
     public void testMgf2()
     {
-        File specPath = new File("C:\\DMS_WorkDir1\\QC_Shew_17_02_b_Bane_4Jan19_18-10-06.mgf");
+        // File specPath = new File("C:\\DMS_WorkDir1\\QC_Shew_17_02_b_Bane_4Jan19_18-10-06.mgf");
+        File specPath = new File("C:\\DMS_WorkDir1\\RawTools\\QC_Shew_17_02_b_Bane_4Jan19_18-10-06_15scans_WithBOM.mgf");
         File dbFile = new File("C:\\DMS_Temp_Org\\ID_003456_9B916A8B.fasta");
 
         String[] argv = {
@@ -269,7 +270,7 @@ public class TestMSGFPlus {
                 "-minCharge", "2",
                 "-maxCharge", "5",
                 "-n", "1",
-                "-thread", "7",
+                "-thread", "1",
                 "-mod", "MSGFPlus_Mods.txt",
                 "-minNumPeaks", "5",
                 "-addFeatures", "1"};
@@ -277,7 +278,13 @@ public class TestMSGFPlus {
         ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
         paramManager.addMSGFPlusParams();
         paramManager.parseParams(argv);
-        MSGFPlus.runMSGFPlus(paramManager);
+
+        String errMsg = MSGFPlus.runMSGFPlus(paramManager);
+
+        if (errMsg != null) {
+            System.out.println("Error: " + errMsg);
+            fail(errMsg);
+        }
     }
 
     @Test
