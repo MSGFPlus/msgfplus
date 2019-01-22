@@ -98,7 +98,7 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
     private void parseFirstSpectrum() {
         currentSpectrum = parser.readSpectrum(lineReader);
 
-        if (currentSpectrum == null) throw new Error("Error while parsing spectrum");
+        if (currentSpectrum == null) throw new Error("Error while parsing the first  spectrum");
         if (currentSpectrum != null) {
             hasNext = true;
             currentSpectrum.determineIsCentroided();

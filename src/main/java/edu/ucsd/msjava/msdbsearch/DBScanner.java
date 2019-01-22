@@ -437,7 +437,7 @@ public class DBScanner {
 
                         /*
                          * Check for edge case where peptides derived from the
-                         * start of a protien sequence containing an N-terminus
+                         * start of a protein sequence containing an N-terminus
                          * methionine may have more missed cleavages than the
                          * peptides derived from removing the methionine when
                          * digesting with N-term enzymes.

@@ -721,7 +721,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 
     /**
      * Goes through the peaks and set their rank by intensity.
-     * Rank 1: higest intensity peak
+     * Rank 1: highest intensity peak
      */
     public void setRanksOfPeaks() {
         ArrayList<Peak> intensitySorted = new ArrayList<Peak>(this);

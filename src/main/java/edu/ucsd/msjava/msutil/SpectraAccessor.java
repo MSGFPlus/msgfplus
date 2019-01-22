@@ -55,6 +55,7 @@ public class SpectraAccessor {
         }
 
         if (specMap == null) {
+            System.out.println("No spectra were found");
             System.out.println("File: " + specFile.getAbsolutePath());
             System.out.println("Format: " + specFormat.getPSIName());
         }
