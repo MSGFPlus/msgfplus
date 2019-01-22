@@ -22,8 +22,8 @@ import java.util.logging.Logger;
 
 
 public class MSGFPlus {
-    public static final String VERSION = "Release (v2019.01.18)";
-    public static final String RELEASE_DATE = "18 January 2019";
+    public static final String VERSION = "Release (v2019.01.21)";
+    public static final String RELEASE_DATE = "21 January 2019";
 
     public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
     public static final String DECOY_PROTEIN_PREFIX = "XXX";
@@ -123,6 +123,10 @@ public class MSGFPlus {
 
         // DB file
         File databaseFile = params.getDatabaseFile();
+
+        if (databaseFile == null) {
+            return "Database file is not defined; use -d";
+        }
 
         // PM tolerance
         Tolerance leftParentMassTolerance = params.getLeftParentMassTolerance();
