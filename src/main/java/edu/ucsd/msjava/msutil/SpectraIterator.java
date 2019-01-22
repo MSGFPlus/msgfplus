@@ -21,7 +21,9 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
 
     public SpectraIterator(String fileName, SpectrumParser parser) throws IOException {
         nextSpecFilePath = fileName;
+
         lineReader = new BufferedLineReader(fileName);
+
         this.parser = parser;
         specIndex = 0;
         parseFirstSpectrum();
@@ -81,7 +83,7 @@ public class SpectraIterator implements Iterator<Spectrum>, Iterable<Spectrum> {
         while (nextFileIndex < filenames.length) {
             try {
                 nextSpecFilePath = filenames[nextFileIndex++];
-                lineReader = new BufferedLineReader(getNextSpectrumFilePath());
+                lineReader = new BufferedLineReader(nextSpecFilePath);
                 break;
             } catch (IOException e) {
                 // Suppress file not found error - when files in directory has disappeared while reading other files

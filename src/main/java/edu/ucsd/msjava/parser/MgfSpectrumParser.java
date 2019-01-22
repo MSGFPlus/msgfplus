@@ -14,6 +14,8 @@ import java.util.Map;
  */
 public class MgfSpectrumParser implements SpectrumParser {
 
+    private long linesRead;
+
     /**
      * Amino acid set to be used to parse "SEQ="
      */
@@ -27,6 +29,7 @@ public class MgfSpectrumParser implements SpectrumParser {
      */
     public MgfSpectrumParser aaSet(AminoAcidSet aaSet) {
         this.aaSet = aaSet;
+        linesRead = 0;
         return this;
     }
 
@@ -54,7 +57,17 @@ public class MgfSpectrumParser implements SpectrumParser {
         boolean parse = false;   // parse only after the BEGIN IONS
         boolean sorted = true;
         float prevMass = 0;
-        while ((buf = lineReader.readLine()) != null) {
+
+        while (true) {
+            String dataLine = (buf = lineReader.readLine());
+            if (dataLine == null)
+                break;
+
+            if (linesRead == 0) {
+                buf = BufferedRandomAccessLineReader.stripBOM(buf);
+            }
+            linesRead++;
+
             if (buf.length() == 0)
                 continue;
 
@@ -195,7 +208,15 @@ public class MgfSpectrumParser implements SpectrumParser {
         long offset = 0;
         int specIndex = 0;
         SpectrumMetaInfo metaInfo = null;
-        while ((buf = lineReader.readLine()) != null) {
+        while (true) {
+            String dataLine = (buf = lineReader.readLine());
+            if (dataLine == null)
+                break;
+
+            if (offset == 0 && lineReader.getBOMLength() > 0) {
+                offset += lineReader.getBOMLength();
+            }
+
             if (buf.startsWith("BEGIN IONS")) {
                 specIndex++;
                 metaInfo = new SpectrumMetaInfo();
