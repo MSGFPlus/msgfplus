@@ -1,6 +1,7 @@
 package edu.ucsd.msjava.parser;
 
 import net.pempek.unicode.UnicodeBOMInputStream;
+import javafx.util.Pair;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -22,6 +23,7 @@ public class BufferedRandomAccessLineReader implements LineReader {
     private long fileSize;
     int startIndex;
     int bufSize;
+    int bomLength;
 
     public BufferedRandomAccessLineReader(String fileName) {
         this(fileName, DEFAULT_BUFFER_SIZE);
@@ -53,7 +55,7 @@ public class BufferedRandomAccessLineReader implements LineReader {
      * @param bomType
      * @return True if the bytes match, otherwise false
      */
-    private boolean bytesMatchesBOM(byte[] buf, UnicodeBOMInputStream.BOM bomType) {
+    private static boolean bytesMatchBOM(byte[] buf, UnicodeBOMInputStream.BOM bomType) {
         byte[] bomBytes = bomType.getBytes();
         int matchCount = 0;
 
@@ -68,6 +70,57 @@ public class BufferedRandomAccessLineReader implements LineReader {
         }
 
         return (matchCount == bomBytes.length);
+    }
+
+    /**
+     * Check for a byte order mark at the start of str
+     * Returns the updated string with the byte order mark, if present
+     * @param str
+     * @return
+     */
+    public static String stripBOM(String str) {
+        Pair<String, Integer> result = stripBOMAndGetLength(str);
+        return result.getKey();
+    }
+
+    /**
+     * Check for a byte order mark at the start of str
+     * If found, remove it
+     * @param str
+     * @return Key/value pair where the key is the updated string and the value is the byte order mark length
+     */
+    public static Pair<String, Integer> stripBOMAndGetLength(String str) {
+        // Check for byte order marks
+        byte[] buf = str.getBytes();
+        int copyOffset = 0;
+
+        if (buf.length >= 4) {
+            if (bytesMatchBOM(buf, net.pempek.unicode.UnicodeBOMInputStream.BOM.UTF_32_LE)) {
+                copyOffset = 4;
+            } else if (bytesMatchBOM(buf, net.pempek.unicode.UnicodeBOMInputStream.BOM.UTF_32_BE)) {
+                copyOffset = 4;
+            }
+        }
+
+        if (copyOffset == 0 && buf.length >= 3) {
+            if (bytesMatchBOM(buf, net.pempek.unicode.UnicodeBOMInputStream.BOM.UTF_8)) {
+                copyOffset = 3;
+            }
+        }
+
+        if (copyOffset == 0 && buf.length >= 2) {
+            if (bytesMatchBOM(buf, net.pempek.unicode.UnicodeBOMInputStream.BOM.UTF_16_LE)) {
+                copyOffset = 2;
+            } else if (bytesMatchBOM(buf, net.pempek.unicode.UnicodeBOMInputStream.BOM.UTF_16_BE)) {
+                copyOffset = 2;
+            }
+        }
+
+        if (copyOffset > 0) {
+            str = new String(java.util.Arrays.copyOfRange(buf, copyOffset, buf.length));
+        }
+
+        return new Pair<>(str, copyOffset);
     }
 
     private int fillBuffer() {
@@ -100,34 +153,12 @@ public class BufferedRandomAccessLineReader implements LineReader {
         String str = readLineFromBuffer();
 
         if (startOfFile) {
-            // Check for byte order marks
-            byte[] buf = str.getBytes();
-            int copyOffset = 0;
+            // Check for a byte order mark
+            Pair<String, Integer> result = stripBOMAndGetLength(str);
 
-            if (buf.length >= 4) {
-                if (bytesMatchesBOM(buf, UnicodeBOMInputStream.BOM.UTF_32_LE)) {
-                    copyOffset = 4;
-                } else if (bytesMatchesBOM(buf, UnicodeBOMInputStream.BOM.UTF_32_BE)) {
-                    copyOffset = 4;
-                }
-            }
-
-            if (copyOffset == 0 && buf.length >= 3) {
-                if (bytesMatchesBOM(buf, UnicodeBOMInputStream.BOM.UTF_8)) {
-                    copyOffset = 3;
-                }
-            }
-
-            if (copyOffset == 0 && buf.length >= 2) {
-                if (bytesMatchesBOM(buf, UnicodeBOMInputStream.BOM.UTF_16_LE)) {
-                    copyOffset = 2;
-                } else if (bytesMatchesBOM(buf, UnicodeBOMInputStream.BOM.UTF_16_BE)) {
-                    copyOffset = 2;
-                }
-            }
-
-            if (copyOffset > 0) {
-                str = new String(java.util.Arrays.copyOfRange(buf, copyOffset, buf.length));
+            bomLength = result.getValue();
+            if (bomLength > 0) {
+                str = result.getKey();
             }
         }
 
@@ -169,6 +200,15 @@ public class BufferedRandomAccessLineReader implements LineReader {
         }
 
 
+    }
+
+    /**
+     * Byte order mark length: non-zero for Unicode files with a byte order mark
+     * See https://en.wikipedia.org/wiki/Byte_order_mark
+     * @return
+     */
+    public int getBOMLength() {
+        return bomLength;
     }
 
     public long getPosition() {
