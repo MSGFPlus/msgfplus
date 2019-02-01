@@ -423,6 +423,36 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
     private List<Modification.Instance> modifications;
 
+    /**
+     * Add a dynamic or static modification that applies to a residue or the N- or C-terminus
+     * @param modFileName Mod file name
+     * @param lineNum Line number
+     * @param dataLine Text from this line in the mod file
+     * @param mods Existing mod instances
+     * @param modIns New mod instance
+     * @return True if successful, false if the same modification is defined for the same residue twice
+     */
+    private static boolean addModInstance(
+            String modFileName, int lineNum, String dataLine,
+            ArrayList<Modification.Instance> mods, Modification.Instance modIns) {
+
+        for (Modification.Instance comparisonItem : mods) {
+            if (modIns.getResidue() == comparisonItem.getResidue() &&
+                    modIns.getLocation() == comparisonItem.getLocation() &&
+                    modIns.getModification().getName().equals(comparisonItem.getModification().getName())) {
+                System.err.println(
+                        "Error: The same modification is defined for the same residue twice; \n" +
+                        "the duplicate definition is on line " +
+                        lineNum + " in file " + modFileName + ": " + dataLine);
+
+                return false;
+            }
+        }
+
+        mods.add(modIns);
+        return true;
+    }
+
     private void applyModifications(ArrayList<Modification.Instance> mods) {
         this.modifications = mods;
 
@@ -826,7 +856,10 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                         Modification.Instance modIns = new Modification.Instance(mod, residue, location);
                         if (isFixedModification)
                             modIns.fixedModification();
-                        mods.add(modIns);
+
+                        if (!addModInstance(modFile.getName(), lineNum, modSetting, mods, modIns)) {
+                            System.exit(-1);
+                        }
                     }
                 } else {
                     AminoAcid aa = new AminoAcid(residueStr.charAt(0), name, new Composition(compStr));
@@ -893,7 +926,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     char residue = 'C';
                     Modification mod = Modification.Carbamidomethyl;
                     Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere).fixedModification();
-                    mods.add(modIns);
+                    if (!addModInstance(modFile.getName(), lineNum, dataLine, mods, modIns)) {
+                        System.exit(-1);
+                    }
                 } else if (value.equals("c58")) {
                     char residue = 'C';
                     Modification mod = Modification.Carboxymethyl;
@@ -990,7 +1025,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     Modification.Instance modIns = new Modification.Instance(mod, residue, location);
                     if (isFixedModification)
                         modIns.fixedModification();
-                    mods.add(modIns);
+                    if (!addModInstance(modFile.getName(), lineNum, dataLine, mods, modIns)) {
+                        System.exit(-1);
+                    }
                 }
             } else if (dataLine.startsWith(oxidationKey))    // predefined Oxidized methionine
             {
@@ -999,7 +1036,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 for (int i = 0; i < residueStr.length(); i++) {
                     char residue = residueStr.charAt(i);
                     Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere);
-                    mods.add(modIns);
+                    if (!addModInstance(modFile.getName(), lineNum, dataLine, mods, modIns)) {
+                        System.exit(-1);
+                    }
                 }
             } else if (dataLine.startsWith(lysMetKey))    // predefined lysine methylation
             {
@@ -1008,7 +1047,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 for (int i = 0; i < residueStr.length(); i++) {
                     char residue = residueStr.charAt(i);
                     Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere);
-                    mods.add(modIns);
+                    if (!addModInstance(modFile.getName(), lineNum, dataLine, mods, modIns)) {
+                        System.exit(-1);
+                    }
                 }
             } else if (dataLine.startsWith(pyrogluKey))    // predefined pyro glu Q
             {
@@ -1017,7 +1058,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 for (int i = 0; i < residueStr.length(); i++) {
                     char residue = residueStr.charAt(i);
                     Modification.Instance modIns = new Modification.Instance(mod, residue, Location.N_Term);
-                    mods.add(modIns);
+                    if (!addModInstance(modFile.getName(), lineNum, dataLine, mods, modIns)) {
+                        System.exit(-1);
+                    }
                 }
             } else if (dataLine.startsWith(phosphoKey))    // predefined STY phosphorylation
             {
@@ -1026,7 +1069,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 for (int i = 0; i < residueStr.length(); i++) {
                     char residue = residueStr.charAt(i);
                     Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere);
-                    mods.add(modIns);
+                    if (!addModInstance(modFile.getName(), lineNum, dataLine, mods, modIns)) {
+                        System.exit(-1);
+                    }
                 }
             } else if (dataLine.startsWith(ntermCarbamylKey))    // predefined N-terminal carbamylation
             {
@@ -1035,7 +1080,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 for (int i = 0; i < residueStr.length(); i++) {
                     char residue = residueStr.charAt(i);
                     Modification.Instance modIns = new Modification.Instance(mod, residue, Location.N_Term);
-                    mods.add(modIns);
+                    if (!addModInstance(modFile.getName(), lineNum, dataLine, mods, modIns)) {
+                        System.exit(-1);
+                    }
                 }
             } else if (dataLine.startsWith(ntermAcetylKey))    // predefined N-terminal acetylation
             {
@@ -1044,7 +1091,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 for (int i = 0; i < residueStr.length(); i++) {
                     char residue = residueStr.charAt(i);
                     Modification.Instance modIns = new Modification.Instance(mod, residue, Location.N_Term);
-                    mods.add(modIns);
+                    if (!addModInstance(modFile.getName(), lineNum, dataLine, mods, modIns)) {
+                        System.exit(-1);
+                    }
                 }
             }
         }
