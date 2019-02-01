@@ -862,8 +862,17 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                         }
                     }
                 } else {
-                    AminoAcid aa = new AminoAcid(residueStr.charAt(0), name, new Composition(compStr));
-                    customAAResidues += residueStr.charAt(0);
+                    char customAminoAcidSymbol = residueStr.charAt(0);
+
+                    AminoAcid aa = new AminoAcid(customAminoAcidSymbol, name, new Composition(compStr));
+                    if (customAAResidues.contains(Character.toString(customAminoAcidSymbol))) {
+                        System.err.println(
+                                "Error: Duplicate custom amino acid symbol; \n" +
+                                "the duplicate definition is on line " +
+                                lineNum + " in file " + modFile.getName() + ": " + modSetting);
+                        System.exit(-1);
+                    }
+                    customAAResidues += customAminoAcidSymbol;
                     customAA.add(aa);
                 }
             }
