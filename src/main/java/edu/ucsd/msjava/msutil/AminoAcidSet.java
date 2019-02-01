@@ -22,6 +22,13 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
     private static HashMap<Location, Location[]> locMap;
 
+    /**
+     * This tracks any default mods that the user has defined
+     * Keys are mod names and values are the mod mass that the user defined for this modification
+     * This list is used to warn users of non-standard mod masses for default mods
+     */
+    private static Hashtable<String, Double> defaultModUsage = new Hashtable<>();
+
     static {
         locMap = new HashMap<Location, Location[]>();
         locMap.put(Location.Anywhere, new Location[]{Location.Anywhere, Location.N_Term, Location.C_Term, Location.Protein_N_Term, Location.Protein_C_Term});
@@ -808,6 +815,10 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
                 String name = modInfo[4].trim().split("\\s+")[0].trim();
                 if (!isCustomAminoAcid) {
+                    if (isModConflict(modFile.getName(), lineNum, modSetting, name, modMass)) {
+                        System.exit(-1);
+                    }
+
                     Modification mod = Modification.register(name, modMass);
 
                     for (int i = 0; i < residueStr.length(); i++) {
@@ -967,6 +978,10 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 }
 
                 String name = residueStr + " " + modMass;
+
+                if (isModConflict(modFile.getName(), lineNum, dataLine, name, modMass)) {
+                    System.exit(-1);
+                }
 
                 Modification mod = Modification.register(name, modMass);
 
@@ -1290,6 +1305,63 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             System.exit(-1);
         }
         return symbol;
+    }
+
+    /**
+     * Checks for a conflicting mod definition by modification name
+     * @param modFileName Mod file name
+     * @param lineNum Line number
+     * @param dataLine Text from this line in the mod file
+     * @param modName Modification name (case-sensitive)
+     * @param modMass Monoisotopic mass
+     * @return True if an existing mod is defined with this name but a different mass
+     */
+    private static boolean isModConflict(
+            String modFileName, int lineNum, String dataLine,
+            String modName, double modMass) {
+
+        if (!Modification.isModConflict(modName, modMass)) {
+            return false;
+        }
+
+        // Conflicting mod
+        Modification existingMod = Modification.getModByName(modName);
+
+        // Is the user overriding one of the default mods?
+        Double existingOverrideMass = defaultModUsage.get(modName);
+        if (existingOverrideMass != null) {
+            // The mass has already been overridden and a warning has already been shown
+            // Make sure the new mass is close to existingOverrideMass
+            if (Math.abs(existingOverrideMass.doubleValue() - modMass) <= Modification.MOD_MASS_COMPARISON_THRESHOLD) {
+                // Similar masses; no issue
+                return false;
+            }
+        } else {
+
+            for (Modification defaultMod : Modification.getDefaultModList()) {
+                if (defaultMod.getName().equals(modName)) {
+                    // Warn the user
+                    System.out.println(
+                            "Warning: Non-standard modification mass defined on line " +
+                                    lineNum + " in file " + modFileName + ": " + dataLine);
+
+                    System.out.println("Modification " + modName + " typically has mass " + existingMod.getAccurateMass());
+                    System.out.println("Overriding with user-defined value of " + modMass);
+
+                    defaultModUsage.put(modName, modMass);
+                    return false;
+                }
+            }
+        }
+
+        System.err.println(
+                "Error: Two modifications are defined with the same name but different masses; \n" +
+                "the duplicate definition is on line " +
+                lineNum + " in file " + modFileName + ": " + dataLine);
+
+        System.err.println("Modification " + modName + " is already defined with mass " + existingMod.getAccurateMass());
+        System.err.println("The duplicate definition has mass " + modMass);
+        return true;
     }
 
     private List<ModifiedAminoAcid> modAAList = new ArrayList<ModifiedAminoAcid>();
