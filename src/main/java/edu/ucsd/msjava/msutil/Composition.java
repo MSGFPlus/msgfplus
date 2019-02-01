@@ -186,7 +186,7 @@ public class Composition extends Matter {
 
     @Override
     public float getMass() {
-        return (float) (getC() * Composition.C + getH() * Composition.H + getN() * Composition.N + getO() * Composition.O + getS() * Composition.S);
+        return (float)getAccurateMass();
     }
 
     @Override
