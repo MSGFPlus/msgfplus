@@ -42,6 +42,10 @@ public class Composition extends Matter {
         setChargeCarrierMass(PROTON);
     }
 
+    /**
+     * Tracks composition when the empirical formula only has C, N, N, O, and S
+     * (uses bit masks)
+     */
     int number;
 
     // Unused:
@@ -116,8 +120,10 @@ public class Composition extends Matter {
         }
         if (number > 0)
             compTable.put(element, number);
-        this.number = new Composition(compTable.get('C'),
-                compTable.get('H'), compTable.get('N'), compTable.get('O'), compTable.get('S')).number;
+        this.number = new Composition(
+                compTable.get('C'), compTable.get('H'),
+                compTable.get('N'), compTable.get('O'),
+                compTable.get('S')).number;
 
     }
     //  public static final Composition getInstance(int C, int H, int N, int O, int S)
@@ -162,10 +168,10 @@ public class Composition extends Matter {
     public static float getMonoMass(int number) {
         return (float) (
                 ((number & 0xFF000000) >>> 24) * Composition.C +
-                        ((number & 0x00FF0000) >> 16) * Composition.H +
-                        ((number & 0x0000FC00) >> 10) * Composition.N +
-                        ((number & 0x000003F0) >> 4) * Composition.O +
-                        (number & 0x0000000F) * Composition.S);
+                ((number & 0x00FF0000) >> 16) * Composition.H +
+                ((number & 0x0000FC00) >> 10) * Composition.N +
+                ((number & 0x000003F0) >> 4) * Composition.O +
+                (number & 0x0000000F) * Composition.S);
     }
 
     // Unused:
@@ -185,7 +191,11 @@ public class Composition extends Matter {
 
     @Override
     public double getAccurateMass() {
-        return (getC() * Composition.C + getH() * Composition.H + getN() * Composition.N + getO() * Composition.O + getS() * Composition.S);
+        return (getC() * Composition.C +
+                getH() * Composition.H +
+                getN() * Composition.N +
+                getO() * Composition.O +
+                getS() * Composition.S);
     }
 
     public int getNominalMass() {
@@ -230,6 +240,12 @@ public class Composition extends Matter {
         return false;
     }
 
+    /**
+     * Compute the mass of an empirical formula
+     * Supports C, H, N, O, S, P, Br, Cl, Fe, and Se
+     * @param compositionStr
+     * @return
+     */
     public static Double getMass(String compositionStr) {
         if (!compositionStr.matches("(([A-Z][a-z]?([+-]\\d+|\\d*)))+"))
             return null;
@@ -282,16 +298,17 @@ public class Composition extends Matter {
         }
 
         double modMass =
-                compTable.get("C") * Composition.C
-                        + compTable.get("H") * Composition.H
-                        + compTable.get("N") * Composition.N
-                        + compTable.get("O") * Composition.O
-                        + compTable.get("S") * Composition.S
-                        + compTable.get("P") * Composition.P
-                        + compTable.get("Br") * Composition.Br
-                        + compTable.get("Cl") * Composition.Cl
-                        + compTable.get("Fe") * Composition.Fe
-                        + compTable.get("Se") * Composition.Se;
+                compTable.get("C") * Composition.C +
+                compTable.get("H") * Composition.H +
+                compTable.get("N") * Composition.N +
+                compTable.get("O") * Composition.O +
+                compTable.get("S") * Composition.S +
+                compTable.get("P") * Composition.P +
+                compTable.get("Br") * Composition.Br +
+                compTable.get("Cl") * Composition.Cl +
+                compTable.get("Fe") * Composition.Fe +
+                compTable.get("Se") * Composition.Se;
+
         return modMass;
     }
 
