@@ -49,12 +49,25 @@ public class Modification {
         return composition;
     }
 
+
+    /**
+     * Register a modification by name and mass
+     * @param name Modification name
+     * @param mass Monoisotopic mass
+     * @return
+     */
     public static Modification register(String name, double mass) {
         Modification mod = new Modification(name, mass);
         modTable.put(name, mod);
         return mod;
     }
 
+    /**
+     * Register a modification by name and composition
+     * @param name Modification name
+     * @param composition Modification empirical formula
+     * @return
+     */
     public static Modification register(String name, Composition composition) {
         Modification mod = new Modification(name, composition);
         modTable.put(name, mod);
