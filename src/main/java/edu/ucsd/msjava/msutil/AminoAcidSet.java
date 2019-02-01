@@ -3,7 +3,7 @@ package edu.ucsd.msjava.msutil;
 import edu.ucsd.msjava.msutil.Modification.Location;
 import edu.ucsd.msjava.parser.BufferedLineReader;
 
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -675,45 +675,50 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     private static AminoAcidSet standardAASetWithCarboxyomethylatedCys = null;
     private static AminoAcidSet standardAASetWithCarbamidomethylatedCysWithTerm = null;
 
-    public static AminoAcidSet getAminoAcidSetFromModFile(String fileName) {
-        BufferedLineReader in = null;
+    public static AminoAcidSet getAminoAcidSetFromModFile(String modFilePath) {
+        BufferedLineReader reader = null;
+
+        File modFile = new File(modFilePath);
+
         try {
-            in = new BufferedLineReader(fileName);
+            reader = new BufferedLineReader(modFile.getPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
         int numMods = 2;
 
         // parse modifications
-        ArrayList<Modification.Instance> mods = new ArrayList<Modification.Instance>();
-        ArrayList<AminoAcid> customAA = new ArrayList<AminoAcid>();
+        ArrayList<Modification.Instance> mods = new ArrayList<>();
+        ArrayList<AminoAcid> customAA = new ArrayList<>();
         String customAAResidues = "";
-        String s;
+        String dataLine;
         int lineNum = 0;
-        while ((s = in.readLine()) != null) {
+        while ((dataLine = reader.readLine()) != null) {
             lineNum++;
-            String[] tokenArr = s.split("#");
-            if (tokenArr.length == 0)
+            String[] tokenArray = dataLine.split("#");
+            if (tokenArray.length == 0)
                 continue;
-            s = tokenArr[0].trim();
-            if (s.length() == 0)
+
+            String modSetting = tokenArray[0].trim();
+            if (modSetting.length() == 0) {
                 continue;
             else if (s.startsWith("NumMods=")) {
                 try {
-                    numMods = Integer.parseInt(s.split("=")[1].trim());
+                    numMods = Integer.parseInt(modSetting.split("=")[1].trim());
                 } catch (NumberFormatException e) {
                     System.err.println(fileName + ": Invalid NumMods option at line " + lineNum + ": " + s);
                     e.printStackTrace();
                     System.exit(-1);
                 }
             } else {
-                String[] token = s.split(",");
-                if (token.length != 5)
+                String[] modInfo = modSetting.split(",");
+                if (modInfo.length < 5) {
                     continue;
+                }
 
                 // Mass or Composition
                 double modMass = 0;
-                String compStr = token[0].trim();
+                String compStr = modInfo[0].trim();
                 Double mass = Composition.getMass(compStr);
                 if (mass != null)
                     modMass = mass;
@@ -728,7 +733,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 }
 
                 // Residues
-                String residueStr = token[1].trim();
+                String residueStr = modInfo[1].trim();
                 boolean isResidueStrLegitimate = true;
                 boolean matchesCustomAA = false;
                 if (!residueStr.equals("*")) {
@@ -752,11 +757,11 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 boolean isFixedModification = false;
                 boolean isCustomAminoAcid = false;
                 boolean modTypeParseFailed = false;
-                if (token[2].trim().equalsIgnoreCase("fix"))
+                if (modInfo[2].trim().equalsIgnoreCase("fix"))
                     isFixedModification = true;
-                else if (token[2].trim().equalsIgnoreCase("opt"))
+                else if (modInfo[2].trim().equalsIgnoreCase("opt"))
                     isFixedModification = false;
-                else if (token[2].trim().equalsIgnoreCase("custom"))
+                else if (modInfo[2].trim().equalsIgnoreCase("custom"))
                     isCustomAminoAcid = true;
                 else
                     modTypeParseFailed = true;
@@ -783,7 +788,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 // Location
                 Modification.Location location = null;
                 String customResidueBase = "";
-                String locStr = token[3].trim().split("\\s+")[0].trim();
+                String locStr = modInfo[3].trim().split("\\s+")[0].trim();
                 if (locStr.equalsIgnoreCase("any"))
                     location = Modification.Location.Anywhere;
                 else if (locStr.equalsIgnoreCase("N-Term") || locStr.equalsIgnoreCase("NTerm"))
@@ -801,7 +806,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     System.exit(-1);
                 }
 
-                String name = token[4].trim().split("\\s+")[0].trim();
+                String name = modInfo[4].trim().split("\\s+")[0].trim();
                 if (!isCustomAminoAcid) {
                     Modification mod = Modification.register(name, modMass);
 
@@ -824,17 +829,20 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         aaSet.setMaxNumberOfVariableModificationsPerPeptide(numMods);
 
         try {
-            in.close();
+            reader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
         return aaSet;
     }
 
-    public static AminoAcidSet getAminoAcidSetFromXMLFile(String fileName) {
-        BufferedLineReader in = null;
+    public static AminoAcidSet getAminoAcidSetFromXMLFile(String modFilePath) {
+
+        File modFile = new File(modFilePath);
+
+        BufferedLineReader reader = null;
         try {
-            in = new BufferedLineReader(fileName);
+            reader = new BufferedLineReader(modFile.getPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -848,28 +856,28 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         String lysMetKey = "<parameter name=\"ptm.LYSINE_METHYLATION\">on</parameter>";
         String pyrogluKey = "<parameter name=\"ptm.PYROGLUTAMATE_FORMATION\">on</parameter>";
         String phosphoKey = "<parameter name=\"ptm.PHOSPHORYLATION\">on</parameter>";
-        String ntermCarbamyKey = "<parameter name=\"ptm.NTERM_CARBAMYLATION\">on</parameter>";
+        String ntermCarbamylKey = "<parameter name=\"ptm.NTERM_CARBAMYLATION\">on</parameter>";
         String ntermAcetylKey = "<parameter name=\"ptm.NTERM_ACETYLATION\">on</parameter>";
         String ptmKey = "<parameter name=\"ptm.custom_PTM\">";
         String closeKey = "</parameter>";
 
         // parse modifications
         ArrayList<Modification.Instance> mods = new ArrayList<Modification.Instance>();
-        String s;
+        String dataLine;
         int lineNum = 0;
-        while ((s = in.readLine()) != null) {
+        while ((dataLine = reader.readLine()) != null) {
             lineNum++;
-            if (s.startsWith(numModsKey)) {
+            if (dataLine.startsWith(numModsKey)) {
                 try {
-                    String value = s.substring(numModsKey.length(), s.lastIndexOf(closeKey));
+                    String value = dataLine.substring(numModsKey.length(), dataLine.lastIndexOf(closeKey));
                     numMods = Integer.parseInt(value);
                 } catch (NumberFormatException e) {
                     System.err.println(fileName + ": Invalid ptm.mods option at line " + lineNum + ": " + s);
                     e.printStackTrace();
                     System.exit(-1);
                 }
-            } else if (s.startsWith(cysKey)) {
-                String value = s.substring(cysKey.length(), s.lastIndexOf(closeKey));
+            } else if (dataLine.startsWith(cysKey)) {
+                String value = dataLine.substring(cysKey.length(), dataLine.lastIndexOf(closeKey));
                 if (value.equals("c57")) {
                     char residue = 'C';
                     Modification mod = Modification.Carbamidomethyl;
@@ -891,9 +899,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     System.err.println(fileName + ": Invalid Cycteine protecting group at line " + lineNum + ": " + s);
                     System.exit(-1);
                 }
-            } else if (s.startsWith(ptmKey))    // custom PTM
+            } else if (dataLine.startsWith(ptmKey))    // custom PTM
             {
-                String value = s.substring(ptmKey.length(), s.lastIndexOf(closeKey));
+                String value = dataLine.substring(ptmKey.length(), dataLine.lastIndexOf(closeKey));
                 String[] token = value.split(",");
 
                 if (token.length != 3) {
@@ -969,7 +977,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                         modIns.fixedModification();
                     mods.add(modIns);
                 }
-            } else if (s.startsWith(oxidationKey))    // predefined Oxidation
+            } else if (dataLine.startsWith(oxidationKey))    // predefined Oxidized methionine
             {
                 String residueStr = "M";
                 Modification mod = Modification.Oxidation;
@@ -978,7 +986,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere);
                     mods.add(modIns);
                 }
-            } else if (s.startsWith(lysMetKey))    // predefined
+            } else if (dataLine.startsWith(lysMetKey))    // predefined lysine methylation
             {
                 String residueStr = "K";
                 Modification mod = Modification.Methyl;
@@ -987,7 +995,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere);
                     mods.add(modIns);
                 }
-            } else if (s.startsWith(pyrogluKey))    // predefined
+            } else if (dataLine.startsWith(pyrogluKey))    // predefined pyro glu Q
             {
                 String residueStr = "Q";
                 Modification mod = Modification.PyroGluQ;
@@ -996,7 +1004,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     Modification.Instance modIns = new Modification.Instance(mod, residue, Location.N_Term);
                     mods.add(modIns);
                 }
-            } else if (s.startsWith(phosphoKey))    // predefined
+            } else if (dataLine.startsWith(phosphoKey))    // predefined STY phosphorylation
             {
                 String residueStr = "STY";
                 Modification mod = Modification.Phospho;
@@ -1005,7 +1013,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere);
                     mods.add(modIns);
                 }
-            } else if (s.startsWith(ntermCarbamyKey))    // predefined
+            } else if (dataLine.startsWith(ntermCarbamylKey))    // predefined N-terminal carbamylation
             {
                 String residueStr = "*";
                 Modification mod = Modification.Carbamyl;
@@ -1014,7 +1022,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     Modification.Instance modIns = new Modification.Instance(mod, residue, Location.N_Term);
                     mods.add(modIns);
                 }
-            } else if (s.startsWith(ntermAcetylKey))    // predefined
+            } else if (dataLine.startsWith(ntermAcetylKey))    // predefined N-terminal acetylation
             {
                 String residueStr = "*";
                 Modification mod = Modification.Acetyl;
@@ -1029,7 +1037,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         aaSet.setMaxNumberOfVariableModificationsPerPeptide(numMods);
 
         try {
-            in.close();
+            reader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1043,35 +1051,43 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     /**
      * Gets standard amino acids from file
      *
-     * @param fileName amino acid set file name.
+     * @param aaFilePath amino acid set file name.
      * @return amino acid set object.
      */
-    public static AminoAcidSet getAminoAcidSet(String fileName) {
+    public static AminoAcidSet getAminoAcidSet(String aaFilePath) {
         AminoAcidSet aaSet = new AminoAcidSet();
-        BufferedLineReader in = null;
+        BufferedLineReader reader = null;
+
+        File aaFile = new File(aaFilePath);
+
         try {
-            in = new BufferedLineReader(fileName);
+            reader = new BufferedLineReader(aaFile.getPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String s;
+
+        String dataLine;
         int lineNum = 0;
         int fileType = 0;    // 0: G,Glycine,57.021464   1: G=57.021463723
-        while ((s = in.readLine()) != null) {
+        while ((dataLine = reader.readLine()) != null) {
             lineNum++;
-            if (s.startsWith("#") || s.length() == 0)
+            if (dataLine.startsWith("#") || dataLine.length() == 0)
                 continue;
-            if (fileType == 0 && Character.isDigit(s.charAt(0))) {
+
+            if (fileType == 0 && Character.isDigit(dataLine.charAt(0))) {
                 fileType = 1;
                 continue;
             }
 
             AminoAcid aa;
-            if (fileType == 0)    // composition is available e.g. G, Glycine, C2H3N1O1
-            {
-                String[] token = s.split(",");
-                if (token.length != 3)
+            if (fileType == 0) {
+                // Composition is available, e.g.
+                // G, Glycine, C2H3N1O1
+
+                String[] token = dataLine.split(",");
+                if (token.length != 3) {
                     continue;
+                }
                 String residueStr = token[0].trim();
                 if (residueStr.length() != 1) {
                     System.err.println("Invalid amino acid file format: " + fileName);
@@ -1086,13 +1102,13 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 }
                 String name = token[1].trim();
 
-                // composition is available
                 if (token[2].matches("(C\\d+)*(H\\d+)*(N\\d+)*(O\\d+)*(S\\d+)*")) {
-                    String compositionStr = token[2].trim();    // e.g. C5H9N1O1S1
+                    // Defined via a composition, e.g. C5H9N1O1S1
+                    String compositionStr = token[2].trim();
                     Composition composition = new Composition(compositionStr);
                     aa = AminoAcid.getAminoAcid(residue, name, composition);
-                } else    // composition is not available, there should be a mass
-                {
+                } else {
+                    // Not a composition; should be a mass
                     double mass = -1;
                     try {
                         mass = Double.parseDouble(token[2]);
@@ -1102,11 +1118,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     }
                     aa = AminoAcid.getCustomAminoAcid(residue, name, mass);
                 }
-            } else    // fileType == 1, only masses (and probabilities) are available (e.g. D=115 or D=115,0.0467)
-            {
-                String[] token = s.split("=");
-                if (token.length != 2 || token[0].length() != 1 || !Character.isLetter(token[0].charAt(0))) {
-                    System.err.println("Invalid AASet File format at line" + lineNum + ": " + s);
+            } else {
+                // fileType == 1, only masses (and probabilities) are available (e.g. D=115 or D=115,0.0467)
+                String[] token = dataLine.split("=");
                     System.exit(-1);
                 }
                 char residue = token[0].charAt(0);
@@ -1133,8 +1147,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             aaSet.addAminoAcid(aa);
         }
         aaSet.finalizeSet();
+
         try {
-            in.close();
+            reader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1196,6 +1211,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             }
             // terminal has 60 has mass, this is arbitrary
 //			aaSet.registerAminoAcid(new AminoAcid('X', "STOP", new Composition(2,6,1,1,0)));
+
             // modified by Sangtae
             aaSet.addAminoAcid(AminoAcid.getCustomAminoAcid('X', new Composition(2, 6, 1, 1, 0).getMass()));
 
