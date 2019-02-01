@@ -739,7 +739,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             String modSetting = tokenArray[0].trim();
             if (modSetting.length() == 0) {
                 continue;
-            else if (s.startsWith("NumMods=")) {
+            } else if (modSetting.toLowerCase().startsWith("nummods=")) {
                 try {
                     numMods = Integer.parseInt(modSetting.split("=")[1].trim());
                 } catch (NumberFormatException e) {
