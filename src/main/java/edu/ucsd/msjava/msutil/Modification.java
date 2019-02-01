@@ -11,6 +11,11 @@ import java.util.Hashtable;
  * @author sangtaekim
  */
 public class Modification {
+    /**
+     * Threshold to use when determining if two modifications have the same mass
+     */
+    public static final double MOD_MASS_COMPARISON_THRESHOLD = 0.01;
+
     private final String name;
     private final double mass;
     private final int nominalMass;
@@ -49,6 +54,56 @@ public class Modification {
         return composition;
     }
 
+    public static Modification[] getDefaultModList() {
+        return defaultModList;
+    }
+    /**
+     * Looks for an existing mod with the given name
+     * @param name Modification name (case-sensitive)
+     * @param mass Monoisotopic mass
+     * @return True if an existing mod exists, and the mass is different (by more than 0.001 Da); otherwise false
+     */
+    public static boolean isModConflict(String name, double mass) {
+        return isModConflict(name, mass, MOD_MASS_COMPARISON_THRESHOLD);
+    }
+
+    /**
+     * Looks for an existing mod with the given name
+     * @param name Modification name (case-sensitive)
+     * @param mass Monoisotopic mass
+     * @return True if an existing mod exists, and the mass is different (by more than massTolerance Da); otherwise false
+     */
+    public static boolean isModConflict(String name, double mass, double massTolerance) {
+        Modification existingMod = modTable.get(name);
+
+        if (existingMod == null)
+            return false;
+
+        if (Math.abs(existingMod.mass - mass) > massTolerance)
+            return true;
+
+        return false;
+    }
+
+    /**
+     * Looks for an existing mod with the given name
+     * @param name Modification name (case-sensitive)
+     * @param composition Modification empirical formula
+     * @return True if an existing mod exists, and the mass is different (by more than 0.001 Da); otherwise false
+     */
+    public static boolean isModConflict(String name, Composition composition) {
+        return isModConflict(name, composition.getAccurateMass(), MOD_MASS_COMPARISON_THRESHOLD);
+    }
+
+    /**
+     * Looks for an existing mod with the given name
+     * @param name Modification name (case-sensitive)
+     * @param composition Modification empirical formula
+     * @return True if an existing mod exists, and the mass is different (by more than massTolerance Da); otherwise false
+     */
+    public static boolean isModConflict(String name, Composition composition, double massTolerance) {
+        return isModConflict(name, composition.getAccurateMass(), massTolerance);
+    }
 
     /**
      * Register a modification by name and mass
@@ -74,7 +129,7 @@ public class Modification {
         return mod;
     }
 
-    //	public static Modification get(String name) { return modTable.get(name); }
+    public static Modification getModByName(String name) { return modTable.get(name); }
     public static Modification Carbamidomethyl = new Modification("Carbamidomethyl", new Composition(2, 3, 1, 1, 0));
     public static Modification Carboxymethyl = new Modification("Carboxymethyl", new Composition(2, 2, 2, 0, 0));
     public static Modification NIPCAM = new Modification("NIPCAM", new Composition(5, 9, 1, 1, 0));
@@ -88,7 +143,7 @@ public class Modification {
     public static Modification PyroCarbamidomethyl = new Modification("Pyro-carbamidomethyl", Composition.getMass("H-3N-1"));
 
     // static member
-    private static Modification[] modList =
+    private static Modification[] defaultModList =
             {
                     Carbamidomethyl,
                     Carboxymethyl,
@@ -107,7 +162,7 @@ public class Modification {
 
     static {
         modTable = new Hashtable<String, Modification>();
-        for (Modification mod : modList)
+        for (Modification mod : defaultModList)
             modTable.put(mod.getName(), mod);
     }
 
