@@ -43,7 +43,7 @@ public class Composition extends Matter {
     }
 
     /**
-     * Tracks composition when the empirical formula only has C, N, N, O, and S
+     * Tracks composition when the empirical formula only has C, H, N, O, and S
      * (uses bit masks)
      */
     int number;
