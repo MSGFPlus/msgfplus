@@ -231,7 +231,7 @@ public class SuffixArray {
         // check that the files are consistent
         if (id != sequence.getId()) {
             System.err.println(suffixFile + " was not created from the sequence " + sequence.getBaseFilepath());
-            System.err.println("Please recreate the suffix array file.");
+            System.err.println("Please recreate the suffix array file by deleting the .canno, .cseq, and .csarr files.");
             System.exit(-1);
         }
 

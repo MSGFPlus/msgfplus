@@ -58,8 +58,9 @@ public class TestSA {
         float fractionDecoyProteins = fastaSequence.getFractionDecoyProteins();
         if(fractionDecoyProteins < 0.4f || fractionDecoyProteins > 0.6f)
         {
-            System.err.println("Error while reading: " + databaseFile.getName() + " (fraction of decoy proteins: "+ fractionDecoyProteins+ ")");
-            System.err.println("Delete " + databaseFile.getName() + " and run MS-GF+ again.");
+            System.err.println("Error while reading: " + databaseFile.getName() + " (fraction of decoy proteins: " + fractionDecoyProteins + ")");
+            System.err.println("Delete " + databaseFile.getName() + " and run MS-GF+ (or BuildSA) again.");
+            System.err.println("Decoy protein names should start with " + fastaSequence.getDecoyProteinPrefix());
             System.exit(-1);
         }
         
