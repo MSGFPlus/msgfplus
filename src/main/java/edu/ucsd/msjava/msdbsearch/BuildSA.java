@@ -1,6 +1,7 @@
 package edu.ucsd.msjava.msdbsearch;
 
 import edu.ucsd.msjava.ui.MSGFPlus;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -25,6 +26,8 @@ public class BuildSA {
         File dbPath = null;
         File outputDir = null;
         int mode = 2;
+        String decoyProteinPrefix = MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX;
+
         for (int i = 0; i < argv.length; i += 2) {
             if (!argv[i].startsWith("-") || i + 1 >= argv.length)
                 printUsageAndExit("Invalid parameters");
@@ -43,12 +46,14 @@ public class BuildSA {
                     mode = 2;
                 else
                     printUsageAndExit("Invalid parameter: -tda " + argv[i + 1]);
+            } else if (argv[i].equalsIgnoreCase("-decoy")) {
+                decoyProteinPrefix = argv[i + 1];
             }
         }
         if (dbPath == null)
             printUsageAndExit("Database must be specified!");
 
-        buildSA(dbPath, outputDir, mode);
+        buildSA(dbPath, outputDir, mode, decoyProteinPrefix);
     }
 
     /**
