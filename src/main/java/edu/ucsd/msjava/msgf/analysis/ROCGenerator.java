@@ -21,7 +21,6 @@ public class ROCGenerator {
         String identifier = null;
 
         // optional
-        File outputFile = null;
         boolean isGreaterBetter = false;
         boolean hasHeader = true;
         File decoyFile = null;
@@ -77,10 +76,6 @@ public class ROCGenerator {
                 }
                 isGreaterBetter = argv[i + 2].equalsIgnoreCase("1");
                 i += 3;
-            } else if (argv[i].equalsIgnoreCase("-o")) {
-                if (i + 1 >= argv.length)
-                    printUsageAndExit("Invalid parameter: " + argv[i]);
-                outputFile = new File(argv[i + 1]);
             } else if (argv[i].equalsIgnoreCase("-h")) {
                 if (argv[i + 1].equalsIgnoreCase("0"))
                     hasHeader = false;
@@ -140,8 +135,8 @@ public class ROCGenerator {
 
         printROCCurve(identifier, targetFile, decoyFile,
                 scoreCol, isGreaterBetter,
-                isConcatenated, hasHeader, dbCol, decoyPrefix, outputFile);
                 delimiter, scanNumCol, pepCol, reqStrList,
+                isConcatenated, hasHeader, dbCol, decoyPrefix);
     }
 
     public static void printUsageAndExit(String message) {
@@ -149,7 +144,6 @@ public class ROCGenerator {
         System.out.print("usage: java ROCGenerator \n" +
                 "\t -f resultFileName dbCol decoyPrefix or -f targetFileName decoyFileName\n" +
                 "\t -s scoreCol 0/1 (0: smaller better, 1: greater better)\n" +
-                "\t [-o outputFile]\n" +
                 "\t [-delim delimiter] (default: \\t)\n" +
                 "\t [-p pepCol] (if specified, the peptide level FDRs will be calculated)\n" +
                 "\t [-n scanNumCol] (if specified, only best score per spectrum will be considered)\n" +
