@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -27,21 +28,20 @@ import edu.ucsd.msjava.ui.ScoringParamGen;
 public class TestMSGFPlus {
     
     @Test
-    @Ignore
     public void testQCShew()
     {
-        File dir = new File("C:\\cygwin\\home\\kims336\\Data\\QCShew");
+        File workDir = new File("C:\\DMS_WorkDir1");
 
-        File specFile = new File(dir.getPath()+File.separator+"QC_Shew_12_02_2_1Aug12_Cougar_12-06-11_dta.txt");
-        File dbFile = new File(dir.getPath()+File.separator+"ID_003456_9B916A8B.fasta");
-        File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
+        File specFile = Paths.get(workDir.getPath(), "QC_Shew_17_02_b_Bane_4Jan19_18-10-06.mzML").toFile();
+        File dbFile = Paths.get(workDir.getPath(),"ID_003456_9B916A8B.fasta").toFile();
+        File modFile = Paths.get(workDir.getPath(), "MSGFPlus_Mods.txt").toFile();
         
-//        File outputFile = new File(dir.getPath()+File.separator+"Test"+"2013-07-26"+".txt");
         String versionString = MSGFPlus.VERSION.split("\\s+")[1];
         versionString = versionString.substring(versionString.indexOf('(')+1, versionString.lastIndexOf(')'));
         String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
-                "-mod", modFile.getPath(), "-t", "10ppm", "-tda", "1", "-m", "1", "-ti", "0,1", "-ntt", "1", //"-thread", "2",
-                "-o", dir.getPath()+File.separator+"Test_"+versionString+".mzid"
+                "-mod", modFile.getPath(), "-t", "10ppm", "-tda", "1", "-m", "0", "-ti", "0,1", "-ntt", "1", //"-thread", "2",
+                "-o", Paths.get(workDir.getPath(), "Test_" + versionString + ".mzid").toString(),
+                "-decoy", "REV_"
                 }; 
 
         ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
@@ -59,11 +59,11 @@ public class TestMSGFPlus {
     @Ignore
     public void testSingleSpec()
     {
-        File dir = new File("C:\\cygwin\\home\\kims336\\Data\\MSGFPlusTest");
+        File workDir = new File("C:\\cygwin\\home\\kims336\\Data\\MSGFPlusTest");
 
-        File specFile = new File(dir.getPath()+File.separator+"test.mgf");
-        File dbFile = new File(dir.getPath()+File.separator+"test.fasta");
-        File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
+        File specFile = Paths.get(workDir.getPath(), "test.mgf").toFile();
+        File dbFile = Paths.get(workDir.getPath(), "test.fasta").toFile();
+        File modFile = Paths.get(workDir.getPath(), "Mods.txt").toFile();
         String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
                 "-minDeNovoScore", "-1000",
                 "-mod", modFile.getPath()//, "-t", "25ppm", "-ti", "0,1"//, "-tda", "1", "-m", "1"
@@ -83,18 +83,18 @@ public class TestMSGFPlus {
     @Ignore
     public void testMultiThreading()
     {
-        File dir = new File("C:\\cygwin\\home\\kims336\\Data\\QCShew");
+        File workDir = new File("C:\\cygwin\\home\\kims336\\Data\\QCShew");
 
-        File specFile = new File(dir.getPath()+File.separator+"QC_Shew_12_02_2_1Aug12_Cougar_12-06-11_dta.txt");
-        File dbFile = new File(dir.getPath()+File.separator+"ID_003456_9B916A8B.fasta");
-        File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
+        File specFile = Paths.get(workDir.getPath(), "QC_Shew_12_02_2_1Aug12_Cougar_12-06-11_dta.txt").toFile();
+        File dbFile = Paths.get(workDir.getPath(), "ID_003456_9B916A8B.fasta").toFile();
+        File modFile = Paths.get(workDir.getPath(), "Mods.txt").toFile();
         
-//        File outputFile = new File(dir.getPath()+File.separator+"Test"+"2013-07-26"+".txt");
+//        File outputFile = Paths.get(dir.getPath(), "Test"+"2013-07-26"+".txt").toFile();
         String versionString = MSGFPlus.VERSION.split("\\s+")[1];
         versionString = versionString.substring(versionString.indexOf('(')+1, versionString.lastIndexOf(')'));
         String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
                 "-mod", modFile.getPath(), "-t", "10ppm", "-tda", "1", "-m", "1", "-ti", "0,1", "-ntt", "1", "-thread", "2",
-                "-o", dir.getPath()+File.separator+"Test_Multithreading.mzid",
+                "-o", Paths.get(workDir.getPath(), "Test_Multithreading.mzid").toString(),
                 "-thread", "2"
                 }; 
 
@@ -113,12 +113,12 @@ public class TestMSGFPlus {
     @Ignore
     public void testNegativeDeNovoScore()
     {
-        File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Noble");
+        File workDir = new File("C:\\cygwin\\home\\kims336\\Data\\Noble");
 
-        File specFile = new File(dir.getPath()+File.separator+"test.mgf");
-        File dbFile = new File(dir.getPath()+File.separator+"decoy0000.fa");
-        File modFile = new File(dir.getPath()+File.separator+"msgf.malaria.prm");
-//        File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
+        File specFile = Paths.get(workDir.getPath(), "test.mgf").toFile();
+        File dbFile = Paths.get(workDir.getPath(), "decoy0000.fa").toFile();
+        File modFile = Paths.get(workDir.getPath(), "msgf.malaria.prm").toFile();
+//        File modFile = Paths.get(workDir.getPath(), "Mods.txt").toFile();
         String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
                 "-minDeNovoScore", "-1000",
                 "-minNumPeaks", "5",
@@ -146,12 +146,12 @@ public class TestMSGFPlus {
     @Ignore
     public void testNTermMetCleavage()
     {
-        File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug\\2014-04-30msgf-bug");
+        File workDir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug\\2014-04-30msgf-bug");
 
-        File specFile = new File(dir.getPath()+File.separator+"6456.ms2");
-        File dbFile = new File(dir.getPath()+File.separator+"sample1.fa");
-        File outputFile = new File(dir.getPath()+File.separator+"6456.sample1.sangtae.mzid");
-        //File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
+        File specFile = Paths.get(workDir.getPath(), "6456.ms2").toFile();
+        File dbFile = Paths.get(workDir.getPath(), "sample1.fa").toFile();
+        File outputFile = Paths.get(workDir.getPath(), "6456.sample1.sangtae.mzid").toFile();
+        //File modFile = Paths.get(workDir.getPath(), "Mods.txt").toFile();
         String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), "-o", outputFile.getPath(), "-ignoreMetCleavage", "0", "-n", "2"
 //                "-mod", modFile.getPath()//, "-t", "25ppm", "-ti", "0,1"//, "-tda", "1", "-m", "1"
 //                , "-maxLength", "250"
@@ -170,10 +170,10 @@ public class TestMSGFPlus {
     @Ignore
     public void testCTermNTT()
     {
-        File dir = new File("C:\\cygwin\\home\\kims336\\Data\\MSGFPlusTest\\");
+        File workDir = new File("C:\\cygwin\\home\\kims336\\Data\\MSGFPlusTest\\");
 
-        File specFile = new File(dir.getPath()+File.separator+"testNTT.mgf");
-        File dbFile = new File(dir.getPath()+File.separator+"testNTT.fasta");
+        File specFile = Paths.get(workDir.getPath(), "testNTT.mgf").toFile();
+        File dbFile = Paths.get(workDir.getPath(), "testNTT.fasta").toFile();
         String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath() 
 //                "-mod", modFile.getPath(), "-t", "20ppm"//, "-ti", "0,1"//, "-tda", "1", "-m", "1"
 //                , "-maxLength", "250"
@@ -194,11 +194,11 @@ public class TestMSGFPlus {
     @Ignore
     public void testTerminomics()
     {
-        File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug\\");
+        File workDir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug\\");
 
-        File specFile = new File(dir.getPath()+File.separator+"testCTermFixedMod.mgf");
-        File dbFile = new File(dir.getPath()+File.separator+"testCTermFixedMod.fasta");
-        File modFile = new File(dir.getPath()+File.separator+"testCTermFixedMod_Mods.txt");
+        File specFile = Paths.get(workDir.getPath(), "testCTermFixedMod.mgf").toFile();
+        File dbFile = Paths.get(workDir.getPath(), "testCTermFixedMod.fasta").toFile();
+        File modFile = Paths.get(workDir.getPath(), "testCTermFixedMod_Mods.txt").toFile();
         String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
                 "-mod", modFile.getPath(), "-t", "20ppm"//, "-ti", "0,1"//, "-tda", "1", "-m", "1"
 //                , "-maxLength", "250"
@@ -249,6 +249,7 @@ public class TestMSGFPlus {
     }
 
     @Test
+    @Ignore
     public void testMgf2()
     {
         // File specPath = new File("C:\\DMS_WorkDir1\\QC_Shew_17_02_b_Bane_4Jan19_18-10-06.mgf");
@@ -441,11 +442,11 @@ public class TestMSGFPlus {
     @Ignore
     public void testCTermFixedMod() throws Exception
     {
-        File dir = new File("C:\\cygwin\\home\\kims336\\Data\\MSGFPlusTest");
+        File workDir = new File("C:\\cygwin\\home\\kims336\\Data\\MSGFPlusTest");
 
-        File specFile = new File(dir.getPath()+File.separator+"testHwang.mgf");
-        File dbFile = new File(dir.getPath()+File.separator+"testHwang.fasta");
-        File modFile = new File(dir.getPath()+File.separator+"testHwang.txt");
+        File specFile = Paths.get(workDir.getPath(), "testHwang.mgf").toFile();
+        File dbFile = Paths.get(workDir.getPath(), "testHwang.fasta").toFile();
+        File modFile = Paths.get(workDir.getPath(), "testHwang.txt").toFile();
 
 
 //        String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "2.5Da,2.5Da", "-n", "1", "-ntt", "2", "-mod", modFile.getPath(), "-ti", "1"};
@@ -552,9 +553,9 @@ public class TestMSGFPlus {
     @Ignore
     public void testWaLP()
     {
-//        File dir = new File("/Users/kims336/Research/Data/Jesse");
-//        File specPath = new File(dir.getPath() + File.separator + "test.mgf");
-//        File dbFile = new File(dir.getPath() + File.separator + "test.fasta");
+//        File workDir = new File("/Users/kims336/Research/Data/Jesse");
+//        File specPath = Paths.get(workDir.getPath(), "test.mgf").toFile();
+//        File dbFile = Paths.get(workDir.getPath(), "test.fasta").toFile();
 
         File specPath = new File(System.getProperty("user.home")+"/Research/Data/Jesse/test.mgf");
         File dbFile = new File(System.getProperty("user.home")+"/Research/Data/Jesse/test.fasta");
@@ -572,15 +573,15 @@ public class TestMSGFPlus {
     @Ignore
     public void testSharedPeptides()
     {
-        File dir = new File("D:\\Research\\Data\\MSGFPercolator");
+        File workDir = new File("D:\\Research\\Data\\MSGFPercolator");
 
-        File specFile = new File(dir.getPath()+File.separator+"testCID.mgf");
-        File dbFile = new File(dir.getPath()+File.separator+"testCID.fasta");
+        File specFile = Paths.get(workDir.getPath(), "testCID.mgf").toFile();
+        File dbFile = Paths.get(workDir.getPath(), "testCID.fasta").toFile();
         String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath()};
 
-//        File specFile = new File(dir.getPath()+File.separator+"testITRAQ.mgf");
-//        File dbFile = new File(dir.getPath()+File.separator+"testITRAQ.fasta");
-//        File modFile = new File(dir.getPath()+File.separator+"testITRAQMods.txt");
+//        File specFile = Paths.get(workDir.getPath(), "testITRAQ.mgf").toFile();
+//        File dbFile = Paths.get(workDir.getPath(), "testITRAQ.fasta").toFile();
+//        File modFile = Paths.get(workDir.getPath(), "testITRAQMods.txt").toFile();
 //        String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), "-addFeatures", "1", "-mod", modFile.getPath(), "-m", "3"};
         
         ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
@@ -596,11 +597,11 @@ public class TestMSGFPlus {
     @Ignore
     public void testAdditionalFeatures()
     {
-        File dir = new File("C:\\cygwin\\home\\sangtaekim\\Research\\Data\\CompRef\\Global\\");
+        File workDir = new File("C:\\cygwin\\home\\sangtaekim\\Research\\Data\\CompRef\\Global\\");
 
-        File specFile = new File(dir.getPath()+File.separator+"test.mgf");
-        File dbFile = new File(dir.getPath()+File.separator+"test.fasta");
-        File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
+        File specFile = Paths.get(workDir.getPath(), "test.mgf").toFile();
+        File dbFile = Paths.get(workDir.getPath(), "test.fasta").toFile();
+        File modFile = Paths.get(workDir.getPath(), "Mods.txt").toFile();
         String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
                 "-mod", modFile.getPath(), "-t", "10ppm", "-m", "3", //}; 
                 "-addFeatures", "1"};
@@ -619,11 +620,11 @@ public class TestMSGFPlus {
     @Ignore
     public void testLongPeptides()
     {
-        File dir = new File("C:\\cygwin\\home\\kims336\\Data\\QCShew");
+        File workDir = new File("C:\\cygwin\\home\\kims336\\Data\\QCShew");
 
-        File specFile = new File(dir.getPath()+File.separator+"QC_Shew_12_02_pt5_a4_10Apr13_Draco_13-02-14_dta.txt");
-        File dbFile = new File(dir.getPath()+File.separator+"ID_003456_9B916A8B.fasta");
-        File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
+        File specFile = Paths.get(workDir.getPath(), "QC_Shew_12_02_pt5_a4_10Apr13_Draco_13-02-14_dta.txt").toFile();
+        File dbFile = Paths.get(workDir.getPath(), "ID_003456_9B916A8B.fasta").toFile();
+        File modFile = Paths.get(workDir.getPath(), "Mods.txt").toFile();
         String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
                 "-mod", modFile.getPath(), "-t", "10ppm", "-tda", "1", "-m", "3",
                 "-maxLength", "250"}; 
@@ -659,11 +660,11 @@ public class TestMSGFPlus {
     @Ignore
     public void testNumVariantsPerPeptide()
     {
-        File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug");
+        File workDir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug");
 
-        File specFile = new File(dir.getPath()+File.separator+"test.mgf");
-        File dbFile = new File(dir.getPath()+File.separator+"test.fasta");
-        File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
+        File specFile = Paths.get(workDir.getPath(), "test.mgf").toFile();
+        File dbFile = Paths.get(workDir.getPath(), "test.fasta").toFile();
+        File modFile = Paths.get(workDir.getPath(), "Mods.txt").toFile();
         String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
                 "-mod", modFile.getPath(), "-t", "10ppm", "-tda", "1", "-m", "1", "-ti", "0,1"
 //                    , "-maxLength", "250"
@@ -709,10 +710,10 @@ public class TestMSGFPlus {
     @Ignore
     public void testCharge1Detection()
     {
-        File dir = new File("D:\\Research\\Data\\QCShew\\");
+        File workDir = new File("D:\\Research\\Data\\QCShew\\");
 
-        File specFile = new File(dir.getPath()+File.separator+"charge1.mgf");
-        File dbFile = new File(dir.getPath()+File.separator+"charge1.fasta");
+        File specFile = Paths.get(workDir.getPath(), "charge1.mgf").toFile();
+        File dbFile = Paths.get(workDir.getPath(), "charge1.fasta").toFile();
         String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
                 "-t", "20ppm"
                 }; 
@@ -730,10 +731,10 @@ public class TestMSGFPlus {
     @Ignore
     public void testOrbiHCDScoring()
     {
-        File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug");
+        File workDir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug");
 
-        File specFile = new File(dir.getPath()+File.separator+"test.mgf");
-        File dbFile = new File(dir.getPath()+File.separator+"test.fasta");
+        File specFile = Paths.get(workDir.getPath(), "test.mgf").toFile();
+        File dbFile = Paths.get(workDir.getPath(), "test.fasta").toFile();
         String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
                 "-m", "3", "-ntt", "1", "-inst", "1", "-n", "1", "-addFeatures", "1"
                 }; 
@@ -753,8 +754,8 @@ public class TestMSGFPlus {
     @Ignore
     public void testCCMSXMLParsing()
     {
-        File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug");
-        File paramFile = new File(dir.getPath()+File.separator+"params.xml");
+        File workDir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug");
+        File paramFile = Paths.get(workDir.getPath(), "params.xml").toFile();
         AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile(paramFile.getPath());
         aaSet.printAASet();
     }
@@ -786,13 +787,13 @@ public class TestMSGFPlus {
     @Ignore
     public void testDuplicatePepEv()
     {
-        File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Mayo");
+        File workDir = new File("C:\\cygwin\\home\\kims336\\Data\\Mayo");
 
-//        File specFile = new File(dir.getPath()+File.separator+"test.mgf");
-        File specFile = new File(dir.getPath()+File.separator+"reproducibilitySample.mgf");
-        File dbFile = new File(dir.getPath()+File.separator+"H_sapiens_Uniprot_SPROT_2013-05-01_withContam.fasta");
+//        File specFile = Paths.get(workDir.getPath(), "test.mgf").toFile();
+        File specFile = Paths.get(workDir.getPath(), "reproducibilitySample.mgf").toFile();
+        File dbFile = Paths.get(workDir.getPath(), "H_sapiens_Uniprot_SPROT_2013-05-01_withContam.fasta").toFile();
         String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
-                "-n", "5", "-o", dir.getPath()+File.separator+"AllAll.mzid"
+                "-n", "5", "-o", Paths.get(workDir.getPath(), "AllAll.mzid").toString()
                 }; 
 
         ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
@@ -809,10 +810,10 @@ public class TestMSGFPlus {
     public void testNTermMods()
     {
 //        -s Nterm_GBSA_50_Try_24h_11Oct13_Leopard_13-05-21_dta.txt -d DB/ID_003532_E796316B.fasta -mod Mods.txt -ntt 1        
-        File dir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug");
-        File specFile = new File(dir.getPath()+File.separator+"test.mgf");
-        File dbFile = new File(dir.getPath()+File.separator+"test.fasta");
-        File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
+        File workDir = new File("C:\\cygwin\\home\\kims336\\Data\\Debug");
+        File specFile = Paths.get(workDir.getPath(), "test.mgf").toFile();
+        File dbFile = Paths.get(workDir.getPath(), "test.fasta").toFile();
+        File modFile = Paths.get(workDir.getPath(), "Mods.txt").toFile();
         String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
                 "-mod", modFile.getPath(), "-ntt", "1"
                 }; 
@@ -859,11 +860,11 @@ public class TestMSGFPlus {
     @Ignore
     public void testNegativeTI()
     {
-        File dir = new File("C:\\cygwin\\home\\kims336\\Data\\MSGFPlusTest");
+        File workDir = new File("C:\\cygwin\\home\\kims336\\Data\\MSGFPlusTest");
 
-        File specFile = new File(dir.getPath()+File.separator+"test.mgf");
-        File dbFile = new File(dir.getPath()+File.separator+"test.fasta");
-        File outputFile = new File(dir.getPath()+File.separator+"testNegativeTI.mzid");
+        File specFile = Paths.get(workDir.getPath(), "test.mgf").toFile();
+        File dbFile = Paths.get(workDir.getPath(), "test.fasta").toFile();
+        File outputFile = Paths.get(workDir.getPath(), "testNegativeTI.mzid").toFile();
         String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), "-o", outputFile.getPath(),
                 "-ti", "0,1"//, "-tda", "1", "-m", "1"
 //                , "-maxLength", "250"
@@ -886,12 +887,12 @@ public class TestMSGFPlus {
     @Ignore
     public void testNewPeptideMzId()
     {
-        File dir = new File("C:\\cygwin\\home\\kims336\\Research\\MSGFPlusTest");
+        File workDir = new File("C:\\cygwin\\home\\kims336\\Research\\MSGFPlusTest");
 
-        File specFile = new File(dir.getPath()+File.separator+"testPTM.mgf");
-        File dbFile = new File(dir.getPath()+File.separator+"testPTM.fasta");
-        File outputFile = new File(dir.getPath()+File.separator+"testPTM.mzid");
-        File modFile = new File(dir.getPath()+File.separator+"Mods.txt");
+        File specFile = Paths.get(workDir.getPath(), "testPTM.mgf").toFile();
+        File dbFile = Paths.get(workDir.getPath(), "testPTM.fasta").toFile();
+        File outputFile = Paths.get(workDir.getPath(), "testPTM.mzid").toFile();
+        File modFile = Paths.get(workDir.getPath(), "Mods.txt").toFile();
         String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), "-o", outputFile.getPath(),
                 "-mod", modFile.getPath()
                 //"-ti", "0,1"//, "-tda", "1", "-m", "1"
