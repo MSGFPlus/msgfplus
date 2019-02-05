@@ -121,7 +121,7 @@ public class ParamManager {
 
         for (int i = 0; i < argv.length; i += 2) {
             if (!argv[i].startsWith("-") || i + 1 >= argv.length || argv[i].length() <= 1) {
-                return "Syntax error.";
+                return "Syntax error; parameter names must start with a dash: " + argv[i];
             } else {
                 String key = argv[i].substring(1);
                 Parameter param = params.get(key);
