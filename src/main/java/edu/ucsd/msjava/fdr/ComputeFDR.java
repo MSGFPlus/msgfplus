@@ -88,6 +88,11 @@ public class ComputeFDR {
                 if (argv[i + 1].equalsIgnoreCase("1"))
                     includeDecoy = true;
                 i += 2;
+            } else if (argv[i].equalsIgnoreCase("-decoyprefix")) {
+                if (i + 1 >= argv.length)
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
+                decoyPrefix = argv[i + 1];
+                i += 2;
             } else if (argv[i].equalsIgnoreCase("-delim")) {
                 if (i + 1 >= argv.length)
                     printUsageAndExit("Invalid parameter: " + argv[i]);
@@ -188,8 +193,9 @@ public class ComputeFDR {
                 "\t [-m colNum keyword (the column 'colNum' must contain 'keyword'. If 'keyword' is delimited by ',' (e.g. A,B,C), then at least one must be matched.)]\n" +
                 "\t [-h 0/1] (0: no header, 1: header (default))\n" +
                 "\t [-fdr fdrThreshold]\n" +
-                "\t [-decoy 0/1 (0: don't include decoy (default), 1: include decoy)]\n"
                 "\t [-pepfdr pepFDRThreshold]\n" +
+                "\t [-decoy 0/1] (0: don't include decoy (default), 1: include decoy)\n" +
+                "\t [-decoyPrefix DecoyProteinPrefix] (default: XXX)\n"
         );
         System.exit(-1);
     }
@@ -244,8 +250,12 @@ public class ComputeFDR {
             boolean considerBestMatchOnly,
             String decoyProteinPrefix) {
 
+        MSGFPlusPSMSet target = new MSGFPlusPSMSet(resultList, false, sa, decoyProteinPrefix);
+        target.setConsiderBestMatchOnly(considerBestMatchOnly);
         target.read();
-        MSGFPlusPSMSet decoy = new MSGFPlusPSMSet(resultList, true, sa).setConsiderBestMatchOnly(considerBestMatchOnly);
+
+        MSGFPlusPSMSet decoy = new MSGFPlusPSMSet(resultList, true, sa, decoyProteinPrefix);
+        decoy.setConsiderBestMatchOnly(considerBestMatchOnly);
         decoy.read();
 
         TargetDecoyAnalysis tda = new TargetDecoyAnalysis(target, decoy);

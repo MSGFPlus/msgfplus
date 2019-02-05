@@ -3,6 +3,7 @@ package edu.ucsd.msjava.msgf.analysis;
 import edu.ucsd.msjava.msutil.Pair;
 import edu.ucsd.msjava.msutil.ScoredString;
 import edu.ucsd.msjava.parser.BufferedLineReader;
+import edu.ucsd.msjava.ui.MSGFPlus;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,7 +31,7 @@ public class ROCGenerator {
         boolean isConcatenated = false;
 
         int dbCol = -1;
-        String decoyPrefix = null;
+        String decoyPrefix = MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX;
 
         ArrayList<Pair<Integer, String>> reqStrList = null;
 
@@ -122,6 +123,11 @@ public class ROCGenerator {
                 for (String requiredStr : token)
                     reqStrList.add(new Pair<Integer, String>(matchCol, requiredStr));
                 i += 3;
+            } else if (argv[i].equalsIgnoreCase("-decoyprefix")) {
+                if (i + 1 >= argv.length)
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
+                decoyPrefix = argv[i + 1];
+                i += 2;
             } else {
                 printUsageAndExit("Invalid parameter");
             }
@@ -149,7 +155,8 @@ public class ROCGenerator {
                 "\t [-n scanNumCol] (if specified, only best score per spectrum will be considered)\n" +
                 "\t [-m colNum keyword (the column 'colNum' must contain 'keyword'. If 'keyword' is delimited by '|' (e.g. A,B,C), then at least one must be matched.)]\n" +
                 "\t [-h 0/1] (0: no header, 1: header (default))\n" +
-                "\t [-i identifier (to generate a Matlab code for ROC curves]\n"
+                "\t [-i identifier] (to generate a Matlab code for ROC curves)\n" +
+                "\t [-decoyPrefix DecoyPrefixName] (default: XXX)\n"
         );
         System.exit(-1);
     }

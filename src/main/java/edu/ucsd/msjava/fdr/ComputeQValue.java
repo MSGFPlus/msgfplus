@@ -1,6 +1,7 @@
 package edu.ucsd.msjava.fdr;
 
 import edu.ucsd.msjava.parser.BufferedLineReader;
+import edu.ucsd.msjava.ui.MSGFPlus;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class ComputeQValue {
 
         float fdrThreshold = 1;
         float pepFDRThreshold = 1;
+        String decoyProteinPrefix = MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX;
 
         int i = 0;
         while (i < argv.length) {
@@ -59,6 +61,11 @@ public class ComputeQValue {
                     printUsageAndExit("Invalid pepCol: " + argv[i + 1]);
                 }
                 i += 2;
+            } else if (argv[i].equalsIgnoreCase("-decoyprefix")) {
+                if (i + 1 >= argv.length)
+                    printUsageAndExit("Invalid parameter: " + argv[i]);
+                decoyProteinPrefix = argv[i + 1];
+                i += 2;
             } else {
                 printUsageAndExit("Invalid parameter");
             }
@@ -67,7 +74,7 @@ public class ComputeQValue {
         if (targetFile == null)
             printUsageAndExit("Target is missing!");
 
-        computeFDR(targetFile, isConcatenated, includeDecoy, fdrThreshold, pepFDRThreshold, outputFile);
+        computeFDR(targetFile, isConcatenated, includeDecoy, fdrThreshold, pepFDRThreshold, outputFile, decoyProteinPrefix);
     }
 
     public static void printUsageAndExit(String message) {
@@ -76,21 +83,22 @@ public class ComputeQValue {
                 "\t -f MSGFPlusFileName (*.tsv)\n" +
                 "\t [-o outputFileName (default: stdout)]\n" +
                 "\t [-fdr fdrThreshold]\n" +
-                "\t [-decoy 0/1 (0: don't include decoy (default), 1: include decoy)\n"
                 "\t [-pepfdr pepFDRThreshold]\n" +
+                "\t [-decoy 0/1] (0: don't include decoy (default), 1: include decoy)\n" +
+                "\t [-decoyPrefix DecoyProteinPrefix] (default: XXX)\n"
         );
         System.exit(-1);
     }
 
     public static void computeFDR(File msgfTsvFile, boolean isConcatenated, boolean includeDecoy,
-                                  float fdrThreshold, float pepFDRThreshold, File outputFile) throws Exception {
+                                  float fdrThreshold, float pepFDRThreshold, File outputFile,
+                                  String decoyProteinPrefix) throws Exception {
         // const
         boolean isGreaterBetter = false;
         boolean hasHeader = true;
         File decoyFile = null;
         String delimiter = "\t";
         ArrayList<Pair<Integer, ArrayList<String>>> reqStrList = new ArrayList<Pair<Integer, ArrayList<String>>>();
-        String decoyPrefix = "XXX";
 
         int scoreCol = -1;
         int specFileCol = -1;
