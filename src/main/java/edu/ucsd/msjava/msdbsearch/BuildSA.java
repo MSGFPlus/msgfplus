@@ -70,6 +70,7 @@ public class BuildSA {
         System.out.println("\t-d DatabaseFile (*.fasta or *.fa or *.faa; if a directory path, index all FASTA files)");
         System.out.println("\t[-tda 0/1/2] (0: Target database only, 1: Concatenated target-decoy database only, 2: Both (Default))");
         System.out.println("\t[-o OutputDir] (Directory to save index files; default is the same as the input file)");
+        System.out.println("\t[-decoy DecoyPrefix] (Prefix for decoy protein names; default is XXX)");
         System.out.println();
         System.out.println("Documentation: https://github.com/MSGFPlus/msgfplus");
 
@@ -81,17 +82,18 @@ public class BuildSA {
      * @param dbPath
      * @param outputDir
      * @param mode
+     * @param decoyProteinPrefix
      */
-    public static void buildSA(File dbPath, File outputDir, int mode) {
+    public static void buildSA(File dbPath, File outputDir, int mode, String decoyProteinPrefix) {
         if (dbPath.isDirectory()) {
             for (File f : dbPath.listFiles()) {
                 if (isFastaFile(f.getName())) {
-                    buildSAFiles(f, outputDir, mode);
+                    buildSAFiles(f, outputDir, mode, decoyProteinPrefix);
                 }
             }
         } else {
             if (isFastaFile(dbPath.getName())) {
-                buildSAFiles(dbPath, outputDir, mode);
+                buildSAFiles(dbPath, outputDir, mode, decoyProteinPrefix);
             }
         }
         System.out.println("Done");
@@ -99,11 +101,12 @@ public class BuildSA {
 
     /**
      * Index a protein database (FASTA file)
-     * @param databaseFile FASTA file path
-     * @param outputDir Output directory
-     * @param mode 0: target only, 1: target-decoy only, 2: both
+     * @param databaseFile       FASTA file path
+     * @param outputDir          Output directory
+     * @param mode               0: target only, 1: target-decoy only, 2: both
+     * @param decoyProteinPrefix Decoy protein prefix
      */
-    public static void buildSAFiles(File databaseFile, File outputDir, int mode) {
+    public static void buildSAFiles(File databaseFile, File outputDir, int mode, String decoyProteinPrefix) {
         if (outputDir == null) {
             outputDir = databaseFile.getAbsoluteFile().getParentFile();
         }
@@ -114,13 +117,24 @@ public class BuildSA {
 
         String dbFileName = databaseFile.getName();
 
+        if (decoyProteinPrefix == null || decoyProteinPrefix.trim().isEmpty())
+            decoyProteinPrefix = MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX;
+
+        // Make sure that decoyProteinPrefix does not end in an underscore, since we add it below
+        while (decoyProteinPrefix.endsWith("_")) {
+            decoyProteinPrefix = decoyProteinPrefix.substring(0, decoyProteinPrefix.length() - 1);
+        }
+
+        if (decoyProteinPrefix.trim().isEmpty())
+            decoyProteinPrefix = MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX;
+
         // decoy
         if (mode == 1 || mode == 2) {
             String concatDBFileName = dbFileName.substring(0, dbFileName.lastIndexOf('.')) + MSGFPlus.DECOY_DB_EXTENSION;
             File concatTargetDecoyDBFile = new File(Paths.get(outputDir.getPath(), concatDBFileName).toString());
             if (!concatTargetDecoyDBFile.exists()) {
                 System.out.println("Creating " + concatDBFileName + ".");
-                if (!ReverseDB.reverseDB(databaseFile.getPath(), concatTargetDecoyDBFile.getPath(), true, MSGFPlus.DECOY_PROTEIN_PREFIX)) {
+                if (!ReverseDB.reverseDB(databaseFile.getPath(), concatTargetDecoyDBFile.getPath(), true, decoyProteinPrefix)) {
                     System.err.println("Cannot create decoy database file!");
                     System.out.println("Consider using -o to specify the output directory");
                     System.exit(-1);
@@ -128,6 +142,8 @@ public class BuildSA {
             }
             System.out.println("Building suffix array: " + concatTargetDecoyDBFile.getPath());
             CompactFastaSequence tdaSequence = new CompactFastaSequence(concatTargetDecoyDBFile.getPath());
+            tdaSequence.setDecoyProteinPrefix(decoyProteinPrefix);
+
             float ratioUniqueProteins = tdaSequence.getRatioUniqueProteins();
             if (ratioUniqueProteins < 0.5f) {
                 tdaSequence.printTooManyDuplicateSequencesMessage(concatTargetDecoyDBFile.getName(), "MS-GF+", ratioUniqueProteins);
@@ -137,7 +153,14 @@ public class BuildSA {
             float fractionDecoyProteins = tdaSequence.getFractionDecoyProteins();
             if (fractionDecoyProteins < 0.4f || fractionDecoyProteins > 0.6f) {
                 System.err.println("Error while reading: " + databaseFile.getName() + " (fraction of decoy proteins: " + fractionDecoyProteins + ")");
-                System.err.println("Delete " + databaseFile.getName() + " and run MS-GF+ again.");
+                if (databaseFile.getName().toLowerCase().endsWith(".revCat.fasta".toLowerCase())) {
+                    System.err.println("Delete " + databaseFile.getName() + " and run MS-GF+ (or BuildSA) again.");
+                } else {
+                    String baseName = FilenameUtils.removeExtension(databaseFile.getName());
+                    System.err.println("Delete files starting with " + baseName +
+                            " (but keep " + databaseFile.getName() + ") and run MS-GF+ (or BuildSA) again.");
+                }
+                System.err.println("Decoy protein names should start with " + tdaSequence.getDecoyProteinPrefix());
                 System.exit(-1);
             }
 
@@ -156,6 +179,8 @@ public class BuildSA {
             }
             System.out.println("Building suffix array: " + databaseFile.getPath());
             CompactFastaSequence sequence = new CompactFastaSequence(targetDBFile.getPath());
+            sequence.setDecoyProteinPrefix(decoyProteinPrefix);
+
             new CompactSuffixArray(sequence);
         }
 

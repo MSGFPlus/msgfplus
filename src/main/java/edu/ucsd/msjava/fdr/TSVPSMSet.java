@@ -1,5 +1,7 @@
 package edu.ucsd.msjava.fdr;
 
+import edu.ucsd.msjava.ui.MSGFPlus;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,11 +46,17 @@ public class TSVPSMSet extends PSMSet {
         this.pepCol = pepCol;
         this.reqStrList = reqStrList;
         dbCol = -1;
+        decoyProteinPrefix = MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX;
     }
 
     public TSVPSMSet decoy(int dbCol, String decoyProteinPrefix, boolean isTarget) {
         this.dbCol = dbCol;
-        this.decoyPrefix = decoyPrefix;
+
+        if (decoyProteinPrefix == null || decoyProteinPrefix.isEmpty())
+            this.decoyProteinPrefix = MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX;
+        else
+            this.decoyProteinPrefix = decoyProteinPrefix;
+
         this.isTarget = isTarget;
         return this;
     }

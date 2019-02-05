@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 
 import edu.ucsd.msjava.msdbsearch.SuffixArrayForMSGFDB;
 import edu.ucsd.msjava.msutil.Composition;
+import edu.ucsd.msjava.ui.MSGFPlus;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -45,6 +46,8 @@ public class TestSA {
         File databaseFile = new File(TestSA.class.getClassLoader().getResource("ecoli-reversed.fasta").toURI());
         
         CompactFastaSequence fastaSequence = new CompactFastaSequence(databaseFile.getPath());
+        fastaSequence.setDecoyProteinPrefix(MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX);
+
         float ratioUniqueProteins = fastaSequence.getRatioUniqueProteins();
         if(ratioUniqueProteins < 0.5f)
         {

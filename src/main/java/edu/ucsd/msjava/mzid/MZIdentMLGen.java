@@ -32,6 +32,7 @@ public class MZIdentMLGen {
     private CompactSuffixArray sa;
     private SpectraAccessor specAcc;
     private final int ioIndex;
+    private final String decoyProteinPrefix;
 
     private float eValueThreshold = Float.MAX_VALUE;
 
@@ -77,6 +78,8 @@ public class MZIdentMLGen {
         this.sa = sa;
         this.specAcc = specAcc;
         this.ioIndex = ioIndex;
+
+        this.decoyProteinPrefix = params.getDecoyProteinPrefix();
 
         dbSeqMap = new HashMap<Integer, DBSequence>();
         isDecoyMap = new HashMap<Integer, Boolean>();
@@ -706,7 +709,7 @@ public class MZIdentMLGen {
             dbSeq.setAccession(accession);
             dbSeq.setId("DBSeq" + (protStartIndex + 1));
 
-            boolean isDecoy = accession.startsWith(MSGFPlus.DECOY_PROTEIN_PREFIX);
+            boolean isDecoy = accession.startsWith(decoyProteinPrefix);
             if (!isDecoy) {
                 CvParam protDescCV = Constants.makeCvParam("MS:1001088", "protein description");
                 protDescCV.setValue(annotation);
@@ -800,7 +803,7 @@ public class MZIdentMLGen {
         if (params.useTDA()) {
             searchDatabase.getCvParam().add(Constants.makeCvParam("MS:1001197", "DB composition target+decoy"));
             CvParam decoyAccCV = Constants.makeCvParam("MS:1001283", "decoy DB accession regexp");
-            decoyAccCV.setValue("^" + MSGFPlus.DECOY_PROTEIN_PREFIX);
+            decoyAccCV.setValue("^" + decoyProteinPrefix);
             searchDatabase.getCvParam().add(decoyAccCV);
             searchDatabase.getCvParam().add(Constants.makeCvParam("MS:1001195", "decoy DB type reverse"));
         }

@@ -14,13 +14,24 @@ public class MSGFPlusPSMSet extends PSMSet {
     private final List<MSGFPlusMatch> msgfPlusPSMList;
     private final boolean isDecoy;
     private final CompactSuffixArray sa;
+    private final String decoyProteinPrefix;
 
     private boolean considerBestMatchOnly = false;
 
-    public MSGFPlusPSMSet(List<MSGFPlusMatch> msgfPlusPSMList, boolean isDecoy, CompactSuffixArray sa) {
+    public MSGFPlusPSMSet(
+            List<MSGFPlusMatch> msgfPlusPSMList,
+            boolean isDecoy,
+            CompactSuffixArray sa,
+            String decoyProteinPrefix) {
+
         this.msgfPlusPSMList = msgfPlusPSMList;
         this.isDecoy = isDecoy;
         this.sa = sa;
+
+        if (decoyProteinPrefix == null || decoyProteinPrefix.trim().isEmpty())
+            this.decoyProteinPrefix = MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX;
+        else
+            this.decoyProteinPrefix = decoyProteinPrefix;
     }
 
     public MSGFPlusPSMSet setConsiderBestMatchOnly(boolean considerBestMatchOnly) {
@@ -33,7 +44,7 @@ public class MSGFPlusPSMSet extends PSMSet {
         return false;
     }
 
-    // set-up 	ArrayList<ScoredString> psmList and HashMap<String,Float> peptideScoreTable
+    // set-up ArrayList<ScoredString> psmList and HashMap<String,Float> peptideScoreTable
     @Override
     public void read() {
         psmList = new ArrayList<ScoredString>();
@@ -53,7 +64,10 @@ public class MSGFPlusPSMSet extends PSMSet {
                 boolean isDecoy = true;
                 for (int index : m.getIndices()) {
                     String protAcc = sa.getSequence().getAnnotation(index);
-                    if (!protAcc.startsWith(MSGFPlus.DECOY_PROTEIN_PREFIX)) {
+
+                    // Note: By default, decoyProteinPrefix will not end in an underscore
+                    // However, if the user defines a custom decoy prefix and they include an underscore, this test will still be valid
+                    if (!protAcc.startsWith(decoyProteinPrefix)) {
                         isDecoy = false;
                         break;
                     }

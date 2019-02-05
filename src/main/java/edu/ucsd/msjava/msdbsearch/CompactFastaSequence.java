@@ -5,12 +5,9 @@ import edu.ucsd.msjava.sequences.Sequence;
 import edu.ucsd.msjava.ui.MSGFPlus;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
-
-
-//import suffixarray.ByteSequence;
-
 
 /**
  * An implementation of the Sequence class allowing a fasta file to be used as
@@ -29,6 +26,9 @@ public class CompactFastaSequence implements Sequence {
      */
     private String baseFilepath;
 
+    /**
+     * Map of protein ID to Protein Name
+     */
     private TreeMap<Integer, String> annotations;
 
     /**
@@ -57,6 +57,11 @@ public class CompactFastaSequence implements Sequence {
     private String alphabetString;
 
     /**
+     * Decoy protein prefix, default is XXX
+     */
+    private String decoyProteinPrefix;
+
+    /**
      * Identifier for this sequence
      */
     private int id;
@@ -75,24 +80,39 @@ public class CompactFastaSequence implements Sequence {
     /***** CONSTRUCTORS *****/
 
     /**
-     * Constructor. The alphabet will be created dynamically according from the
+     * Constructor. The amino acid alphabet will be created dynamically according from the
      * fasta file.
      *
      * @param filepath the path to the fasta file.
      */
     public CompactFastaSequence(String filepath) {
-        this(filepath, Constants.CAPITAL_LETTERS_26);
+        this(filepath, Constants.CAPITAL_LETTERS_26, MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX);
     }
 
     /**
      * Constructor using the specified alphabet set. If there is a letter not in
      * the alphabet, it will be encoded as the TERMINATOR byte.
      *
-     * @param filepath     the path to the fasta file.
-     * @param alphabet     the specifications alphabet string. This could take the
+     * @param filepath     The path to the fasta file.
+     * @param alphabet     The amino acid alphabet string. This could take the
      *                     predefined AminoAcid strings defined in this class or customized strings.
      */
     private CompactFastaSequence(String filepath, String alphabet) {
+        this(filepath, alphabet, MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX);
+    }
+
+    /**
+     * Constructor using the specified alphabet set. If there is a letter not in
+     * the alphabet, it will be encoded as the TERMINATOR byte.
+     *
+     * @param filepath     The path to the fasta file.
+     * @param alphabet     The amino acid alphabet string. This could take the
+     *                     predefined AminoAcid strings defined in this class or customized strings.
+     * @param decoyProteinPrefix    Decoy protein prefix
+     */
+    private CompactFastaSequence(String filepath, String alphabet, String decoyProteinPrefix) {
+
+        this.decoyProteinPrefix = decoyProteinPrefix;
 
         if (!BuildSA.isFastaFile(filepath)) {
             System.err.println("Input error: not a fasta file (extension must be .fasta or .fa or .faa)");
@@ -186,6 +206,10 @@ public class CompactFastaSequence implements Sequence {
     public long getLastModified() {
         return lastModified;
     }
+
+    public String getDecoyProteinPrefix() { return this.decoyProteinPrefix; }
+
+    public void setDecoyProteinPrefix(String decoyProteinPrefix) { this.decoyProteinPrefix = decoyProteinPrefix; }
 
     public CompactFastaSequence truncateAnnotation() {
         truncateAnnotation = true;
@@ -305,11 +329,18 @@ public class CompactFastaSequence implements Sequence {
         return null;
     }
 
+    /**
+     * Determine the fraction of identified proteins that are decoy proteins
+     * @return Fraction, value between 0 and 1
+     */
     public float getFractionDecoyProteins() {
         int numTargetProteins = 0;
         int numDecoyProteins = 0;
         for (String annotation : annotations.values()) {
-            if (annotation.startsWith(MSGFPlus.DECOY_PROTEIN_PREFIX))
+
+            // Note: By default, decoyProteinPrefix will not end in an underscore
+            // However, if the user defines a custom decoy prefix and they include an underscore, this test will still be valid
+            if (annotation.startsWith(decoyProteinPrefix))
                 numDecoyProteins++;
             else
                 numTargetProteins++;

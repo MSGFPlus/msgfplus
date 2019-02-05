@@ -4,6 +4,7 @@ import edu.ucsd.msjava.msutil.AminoAcidSet;
 import edu.ucsd.msjava.msutil.Composition;
 import edu.ucsd.msjava.msutil.Enzyme;
 import edu.ucsd.msjava.sequences.Constants;
+import edu.ucsd.msjava.ui.MSGFPlus;
 
 import java.io.*;
 
@@ -28,18 +29,27 @@ public class PeptideEnumerator {
             printUsageAndExit("Not a fasta file!");
 
         File outputFile = new File(argv[1]);
-        enumerate(fastaFile, outputFile);
+
+        String decoyProteinPrefix;
+        if (argv.length > 2)
+            decoyProteinPrefix = argv[2];
+        else
+            decoyProteinPrefix = MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX;
+        
+        enumerate(fastaFile, outputFile, decoyProteinPrefix);
     }
 
     public static void printUsageAndExit(String message) {
         if (message != null)
             System.out.println(message);
-        System.out.println("Usage: java -Xmx3500M -cp MSGFPlus.jar edu.ucsd.msjava.msdbsearch.PeptideEnumerator FastaFile(*.fasta or *.fa) OutputFile");
+        System.out.println("Usage: java -Xmx3500M -cp MSGFPlus.jar edu.ucsd.msjava.msdbsearch.PeptideEnumerator FastaFile(*.fasta or *.fa) OutputFile [DecoyPrefix]");
         System.exit(-1);
     }
 
-    public static void enumerate(File fastaFile, File outputFile) throws Exception {
+    public static void enumerate(File fastaFile, File outputFile, String decoyProteinPrefix) throws Exception {
         CompactFastaSequence fastaSequence = new CompactFastaSequence(fastaFile.getPath());
+        fastaSequence.setDecoyProteinPrefix(decoyProteinPrefix);
+
         CompactSuffixArray sa = new CompactSuffixArray(fastaSequence, MAX_PEPTIDE_LENGTH);
 
         PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(outputFile)));

@@ -17,9 +17,13 @@ public class CountID {
         float threshold = 0.01f;
         if (argv.length >= 2)
             threshold = Float.parseFloat(argv[1]);
-        String decoyPrefix = MSGFPlus.DECOY_PROTEIN_PREFIX;
+
+        String decoyPrefix;
         if (argv.length == 3)
             decoyPrefix = argv[2];
+        else
+            decoyPrefix = MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX;
+
         countID(argv[0], threshold, decoyPrefix);
     }
 

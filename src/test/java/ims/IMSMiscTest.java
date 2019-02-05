@@ -1,6 +1,8 @@
 package ims;
 
 import java.io.*;
+
+import edu.ucsd.msjava.ui.MSGFPlus;
 import org.junit.Test;
 import edu.ucsd.msjava.msdbsearch.PeptideEnumerator;
 import edu.ucsd.msjava.msutil.SpectraAccessor;
@@ -14,7 +16,7 @@ public class IMSMiscTest {
 
 		File bsaFastaFile = new File(IMSMiscTest.class.getClassLoader().getResource("BSA.fasta").toURI());
 		File outputFile = File.createTempFile("BSAPeptides", "tsv");
-		PeptideEnumerator.enumerate(bsaFastaFile, outputFile);
+		PeptideEnumerator.enumerate(bsaFastaFile, outputFile, MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX);
 		outputFile.deleteOnExit();
 		System.out.println("Done");
 	}
