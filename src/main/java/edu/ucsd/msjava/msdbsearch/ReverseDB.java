@@ -1,5 +1,7 @@
 package edu.ucsd.msjava.msdbsearch;
 
+import edu.ucsd.msjava.ui.MSGFPlus;
+
 import java.io.*;
 
 public class ReverseDB {
@@ -14,12 +16,18 @@ public class ReverseDB {
             System.out.println(ext1 + "," + ext2);
             printUsageAndExit();
         }
-        reverseDB(argv[0], argv[1], false, "XXX");
+        String decoyProteinPrefix;
+        if (argv.length > 2)
+            decoyProteinPrefix = argv[2].trim();
+        else
+            decoyProteinPrefix = MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX;
+
+        reverseDB(argv[0], argv[1], false, decoyProteinPrefix);
 
     }
 
     public static void printUsageAndExit() {
-        System.out.println("usage: java ReverseDB input(fasta) output(fasta)");
+        System.out.println("usage: java ReverseDB input.fasta output.fasta [DecoyProteinPrefix]");
         System.exit(0);
     }
 
@@ -31,6 +39,17 @@ public class ReverseDB {
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
         }
+
+        if (revPrefix == null || revPrefix.trim().isEmpty())
+            revPrefix = MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX;
+
+        // Make sure that revPrefix does not end in an underscore, since we add it below
+        while (revPrefix.endsWith("_")) {
+            revPrefix = revPrefix.substring(0, revPrefix.length() - 1);
+        }
+
+        if (revPrefix.trim().isEmpty())
+            revPrefix = MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX;
 
         String s;
         if (concat) {
