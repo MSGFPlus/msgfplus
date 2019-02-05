@@ -19,7 +19,11 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-
+/**
+ * This class is deprecated
+ * Instead, use MSGFPlus
+ */
+@Deprecated
 public class MSGFDB {
     public static final String VERSION = "8091";
     public static final String RELEASE_DATE = "08/06/2012";

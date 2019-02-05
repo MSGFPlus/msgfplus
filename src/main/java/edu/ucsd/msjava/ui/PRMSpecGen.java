@@ -11,7 +11,7 @@ import edu.ucsd.msjava.sequences.Constants;
 import java.io.*;
 import java.util.Iterator;
 
-
+@Deprecated
 public class PRMSpecGen {
     public static void main(String argv[]) {
         long time = System.currentTimeMillis();
