@@ -642,11 +642,11 @@ public class CompactFastaSequence implements Sequence {
             System.err.println("Ratio of unique proteins: " + ratio);
         }
         System.err.println("If the database contains forward and reverse proteins, run " + toolName + " (or BuildSA) again with \"-tda 0\"");
+        System.err.println("If the decoy protein names do not start with " + MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX + " either rename them, or use the -decoy switch");
         System.err.println();
         System.err.println("If the database does not contain forward and reverse proteins, " +
             "this error is probably caused by multiple duplicate protein sequences. " +
-            "You can consolidate the duplicates using 'Validate Fasta File' tool in Protein Digestion Simulator, " +
-            "available at https://omics.pnl.gov/software/protein-digestion-simulator with " +
-            "source code at https://github.com/PNNL-Comp-Mass-Spec/Protein-Digestion-Simulator");
+            "You can consolidate the duplicates using the 'Validate Fasta File' tool in the Protein Digestion Simulator, " +
+            "available at https://github.com/PNNL-Comp-Mass-Spec/Protein-Digestion-Simulator/releases");
     }
 }
