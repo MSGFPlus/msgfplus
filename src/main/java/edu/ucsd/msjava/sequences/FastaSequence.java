@@ -5,9 +5,6 @@ import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.Map.Entry;
 
-//import suffixarray.ByteSequence;
-
-
 /**
  * An implementation of the Sequence class allowing a fasta file to be used as
  * the database.

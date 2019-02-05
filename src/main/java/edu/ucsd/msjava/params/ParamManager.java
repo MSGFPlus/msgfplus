@@ -45,6 +45,10 @@ public class ParamManager {
         return params.get(key);
     }
 
+    /**
+     * Validates the parameters
+     * @return Error message if an error, otherwise null
+     */
     public String isValid() {
         Iterator<Entry<String, Parameter>> itr = params.entrySet().iterator();
         while (itr.hasNext()) {
@@ -139,8 +143,8 @@ public class ParamManager {
             }
         }
 
-        String error;
-        if ((error = isValid()) != null)
+        String error = isValid();
+        if (error != null)
             return error;
 
         return null;
