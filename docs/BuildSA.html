@@ -22,7 +22,9 @@
       <pre class="code">Usage: java -Xmx3500M -cp MSGFPlus.jar edu.ucsd.msjava.msdbsearch.BuildSA
 	    <span class="code-keyword">-d DatabaseFile</span> (*.fasta or *.fa or *.faa; if a directory path, index all FASTA files)
 	    <span class="code-keyword">[-tda 0/1/2]</span> (0: Target database only, 1: Concatenated target-decoy database only, 2: Both (Default))
-	    <span class="code-keyword">[-o OutputDir]</span> (Directory to save index files; default is the same as the input file)</pre>
+	    <span class="code-keyword">[-o OutputDir]</span> (Directory to save index files; default is the same as the input file)
+	    <span class="code-keyword">[-decoy DecoyPrefix]</span> (Prefix for decoy protein names; default is XXX)
+      </pre>
     </div>
 
     <p style="color:#003366;">
@@ -49,6 +51,15 @@
         <ul>
           <li>Path to the output directory (use double quotes if the path contains spaces)</li>
           <li>By default, the index files are created in the same directory as the Database</li>
+        </ul>
+      </li>
+      <li>
+        <b>-decoy DecoyPrefix</b>
+        <ul>
+          <li>Text to prepend to protein names when including decoy (reverse sequence) proteins in the .revCat.fasta file and related index files</li>
+          <li>Defaults to XXX (though an underscore is also added, giving names like <span class="code-keyword"><code>XXX_Contaminant_TRYP_BOVIN</code></span>)</li>
+          <li>Use <span class="code-keyword"><code>-decoy REV</code></span> to get names like <span class="code-keyword"><code>REV_Contaminant_TRYP_BOVIN</code></span></li>
+          <li>If -decoy is used with BuildSA it should also be used with <a href="MSGFPlus.html">MS-GF+</a></li>
         </ul>
       </li>
 

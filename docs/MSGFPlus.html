@@ -30,6 +30,8 @@
 
 <span class="code-keyword">-d DatabaseFile</span> (*.fasta or *.fa or *.faa)
 
+<span class="code-keyword">[-decoy DecoyPrefix]</span> (Prefix for decoy protein names; default is XXX)
+
 <span class="code-keyword">[-o OutputFile (*.mzid)]</span> (<span class="code-object">Default: [SpectrumFileName].mzid</span>)
 
 <span class="code-keyword">[-t PrecursorMassTolerance]</span> (e.g. 2.5Da, 20ppm or 0.5Da,2.5Da, <span class="code-object">Default: 20ppm</span>)
@@ -116,6 +118,15 @@
         </ul>
         <p class="note">If multiple MS-GF+ processes access the same database file, it is strongly recommended to index the database prior to the database search by <a href="BuildSA.html">running BuildSA</a>.</p>
       </li>
+      <li>
+        <b>-decoy DecoyPrefix</b>
+        <ul>
+          <li>Text to prepend to protein names when including decoy (reverse sequence) proteins in the .revCat.fasta file and related index files</li>
+          <li>Defaults to XXX (though an underscore is also added, giving names like <span class="code-keyword"><code>XXX_Contaminant_TRYP_BOVIN</code></span>)</li>
+          <li>Use <span class="code-keyword"><code>-decoy REV</code></span> to get names like <span class="code-keyword"><code>REV_Contaminant_TRYP_BOVIN</code></span></li>
+        </ul>
+      </li>
+
     </ul>
 
     <ul>
@@ -142,7 +153,7 @@
           <li>Takes into account of the error introduced by choosing non-monoisotopic peak for fragmentation.</li>
           <li>If the parent mass tolerance is equal to or larger than 0.5Da or 500ppm, this parameter will be ignored.</li>
           <li>The combination of -t and -ti determines the precursor mass tolerance.</li>
-          <li>E.g. <code>-t 20ppm -ti -1,2</code> tests abs(ObservedPepMass - TheoreticalPepMass - n * 1.00335Da) &lt; 20ppm for n = -1, 0, 1, 2</li>
+          <li>E.g. <span class="code-keyword"><code>-t 20ppm -ti -1,2</code></span> tests abs(ObservedPepMass - TheoreticalPepMass - n * 1.00335Da) &lt; 20ppm for n = -1, 0, 1, 2</li>
         </ul>
       </li>
       <li style="margin-bottom: 10px;">
@@ -194,7 +205,7 @@
         </ul>
       </li>
       <p class="note">
-        If <code>-tda 1</code> is specified, MS-GF+ automatically creates a combined target/reversed database file (DBFileName.revConcat.fasta).<br>
+        If <span class="code-keyword"><code>-tda 1</code></span> is specified, MS-GF+ automatically creates a combined target/reversed database file (DBFileName.revConcat.fasta).<br>
         Thus, when specifying "-d" parameter, DatabaseFile must contain only target proteins.
       </p>
     </ul>
@@ -286,21 +297,21 @@
           <li>Specifies the minimum number of termini matching the enzyme specificity rule.
             <ul>
               <li>For example, for trypsin, K.ACDEFGHR.C (NTT=2), G.ACDEFGHR.C (NTT=1), K.ACDEFGHI.C (NTT=1) and G.ACDEFGHR.C (NTT=0).</li>
-              <li><code>-ntt 2</code> will search for fully tryptic peptides only.</li>
+              <li><span class="code-keyword"><code>-ntt 2</code></span> will search for fully tryptic peptides only.</li>
             </ul>
           </li>
-          <li>By default, <code>-ntt 2</code> is used.</li>
-          <li>Using <code>-ntt 1</code> or <code>-ntt 0</code> can make the search significantly slower.</li>
+          <li>By default, <span class="code-keyword"><code>-ntt 2</code></span> is used.</li>
+          <li>Using <span class="code-keyword"><code>-ntt 1</code></span> or <span class="code-keyword"><code>-ntt 0</code></span> can make the search significantly slower.</li>
         </ul>
     </li>
     </ul>
 
     <ul>
       <li style="margin-bottom: 10px;">
-        <b>-mod ModificationFile</b> (Default: standard amino acids with fixed C+57, though only if <code>-mod</code> is not specified)
+        <b>-mod ModificationFile</b> (Default: standard amino acids with fixed C+57, though only if <span class="code-keyword"><code>-mod</code></span> is not specified)
         <ul>
           <li>Modification file name. ModificationFile contains the modifications to be considered in the search.</li>
-          <li>If <code>-mod</code> is not specified, standard amino acids with fixed Carbamidomethylation C will be used.</li>
+          <li>If <span class="code-keyword"><code>-mod</code></span> is not specified, standard amino acids with fixed Carbamidomethylation C will be used.</li>
           <li>
             See an <a href="examples/Mods.txt">example MS-GF+ modification file</a>.</li>
         </ul>
