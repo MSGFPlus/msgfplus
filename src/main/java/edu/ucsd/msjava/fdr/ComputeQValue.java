@@ -22,7 +22,7 @@ public class ComputeQValue {
 
         int i = 0;
         while (i < argv.length) {
-            // 	-f resuleFileName dbCol decoyPrefix or -f targetFileName decoyFileName
+            // 	-f resultFileName dbCol decoyPrefix or -f targetFileName decoyFileName
             if (argv[i].equalsIgnoreCase("-f")) {
                 if (i + 1 >= argv.length)
                     printUsageAndExit("Invalid parameter: " + argv[i]);
@@ -76,8 +76,8 @@ public class ComputeQValue {
                 "\t -f MSGFPlusFileName (*.tsv)\n" +
                 "\t [-o outputFileName (default: stdout)]\n" +
                 "\t [-fdr fdrThreshold]\n" +
-                "\t [-pepfdr pepFDRThreshod]\n" +
                 "\t [-decoy 0/1 (0: don't include decoy (default), 1: include decoy)\n"
+                "\t [-pepfdr pepFDRThreshold]\n" +
         );
         System.exit(-1);
     }
@@ -88,7 +88,7 @@ public class ComputeQValue {
         boolean isGreaterBetter = false;
         boolean hasHeader = true;
         File decoyFile = null;
-        String delimeter = "\t";
+        String delimiter = "\t";
         ArrayList<Pair<Integer, ArrayList<String>>> reqStrList = new ArrayList<Pair<Integer, ArrayList<String>>>();
         String decoyPrefix = "XXX";
 
@@ -102,7 +102,7 @@ public class ComputeQValue {
         String header = in.readLine();
         if (header == null) // || (!header.startsWith("#") && !header.startsWith("PSMId")))
         {
-            System.out.println("Not a valid MSGFDB result file!");
+            System.out.println("Not a valid MS-GF+ result file!");
             System.exit(0);
         }
         String[] headerToken = header.split("\t");
@@ -142,7 +142,8 @@ public class ComputeQValue {
 
         ComputeFDR.computeFDR(msgfTsvFile, decoyFile,
                 scoreCol, isGreaterBetter,
-                delimeter, specFileCol, specIndexCol, pepCol, reqStrList,
-                isConcatenated, includeDecoy, hasHeader, dbCol, decoyPrefix, fdrThreshold, pepFDRThreshold, outputFile);
+                delimiter, specFileCol, specIndexCol, pepCol, reqStrList,
+                isConcatenated, includeDecoy, hasHeader,
+                dbCol, decoyProteinPrefix, fdrThreshold, pepFDRThreshold, outputFile);
     }
 }

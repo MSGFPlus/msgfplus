@@ -14,7 +14,7 @@ public class FilterDatabase {
         File dbFile = null;
         File resultFile = null;
         int pepColumn = -1;
-        String delimeter = "\t";
+        String delimiter = "\t";
 
         for (int i = 0; i < argv.length; i += 2) {
             if (!argv[i].startsWith("-") || i + 1 >= argv.length)
@@ -30,7 +30,7 @@ public class FilterDatabase {
             } else if (argv[i].equalsIgnoreCase("-p")) {
                 pepColumn = Integer.parseInt(argv[i + 1]);
             } else if (argv[i].equalsIgnoreCase("-delim")) {
-                delimeter = argv[i + 1];
+                delimiter = argv[i + 1];
             }
         }
 
@@ -40,7 +40,7 @@ public class FilterDatabase {
             printUsageAndExit("Invalid resultFile!");
         if (pepColumn < 0)
             printUsageAndExit("Invalid pepColumn!");
-        filterDatabase(dbFile, resultFile, pepColumn, delimeter);
+        filterDatabase(dbFile, resultFile, pepColumn, delimiter);
     }
 
     public static void printUsageAndExit(String message) {
@@ -49,11 +49,11 @@ public class FilterDatabase {
                 "\t-d database(*.fasta)\n" +
                 "\t-r searchResult\n" +
                 "\t-p pepColumn\n" +
-                "\t[-delim delimeter] (default: \\t)");
+                "\t[-delim delimiter] (default: \\t)");
         System.exit(-1);
     }
 
-    public static void filterDatabase(File dbFile, File resultFile, int pepColumn, String delimeter) throws Exception {
+    public static void filterDatabase(File dbFile, File resultFile, int pepColumn, String delimiter) throws Exception {
         SuffixArraySequence sequence = new SuffixArraySequence(dbFile.getPath());
         SuffixArray sa = new SuffixArray(sequence);
         HashSet<String> matchedEntrySet = new HashSet<String>();
@@ -62,7 +62,7 @@ public class FilterDatabase {
         BufferedLineReader in = new BufferedLineReader(resultFile.getPath());
         in.readLine();    // header
         while ((s = in.readLine()) != null) {
-            String[] token = s.split(delimeter);
+            String[] token = s.split(delimiter);
             if (token.length < pepColumn)
                 continue;
             String annotation = token[pepColumn];

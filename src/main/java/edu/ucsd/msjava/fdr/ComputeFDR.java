@@ -22,7 +22,7 @@ public class ComputeFDR {
         boolean isGreaterBetter = false;
         boolean hasHeader = true;
         File decoyFile = null;
-        String delimeter = "\t";
+        String delimiter = "\t";
         int pepCol = -1;
         int specIndexCol = -1;
         boolean isConcatenated = false;
@@ -91,7 +91,7 @@ public class ComputeFDR {
             } else if (argv[i].equalsIgnoreCase("-delim")) {
                 if (i + 1 >= argv.length)
                     printUsageAndExit("Invalid parameter: " + argv[i]);
-                delimeter = argv[i + 1];
+                delimiter = argv[i + 1];
                 i += 2;
             } else if (argv[i].equalsIgnoreCase("-p")) {
                 if (i + 1 >= argv.length)
@@ -171,31 +171,33 @@ public class ComputeFDR {
 
         computeFDR(targetFile, decoyFile,
                 scoreCol, isGreaterBetter,
-                delimeter, specFileCol, specIndexCol, pepCol, reqStrList,
+                delimiter, specFileCol, specIndexCol, pepCol, reqStrList,
                 isConcatenated, includeDecoy, hasHeader, dbCol, decoyPrefix, fdrThreshold, pepFDRThreshold, outputFile);
     }
 
     public static void printUsageAndExit(String message) {
         System.err.println(message);
         System.out.print("Usage: java -cp MSGFDB.jar fdr.ComputeFDR\n" +
-                "\t -f resuleFileName protCol decoyPrefix or -f targetFileName decoyFileName\n" +
+                "\t -f resultFileName protCol decoyPrefix or -f targetFileName decoyFileName\n" +
                 "\t -i specFileCol (SpecFile column number)\n" +
                 "\t -n specIndexCol (specIndex column number)\n" +
                 "\t -p pepCol (peptide column number)\n" +
                 "\t -s scoreCol 0/1 (0: smaller better, 1: greater better)\n" +
                 "\t [-o outputFileName (default: stdout)]\n" +
-                "\t [-delim delimeter] (default: \\t)\n" +
-                "\t [-m colNum keyword (the column 'colNum' must contain 'keyword'. If 'keyword' is delimeted by ',' (e.g. A,B,C), then at least one must be matched.)]\n" +
+                "\t [-delim delimiter] (default: \\t)\n" +
+                "\t [-m colNum keyword (the column 'colNum' must contain 'keyword'. If 'keyword' is delimited by ',' (e.g. A,B,C), then at least one must be matched.)]\n" +
                 "\t [-h 0/1] (0: no header, 1: header (default))\n" +
                 "\t [-fdr fdrThreshold]\n" +
-                "\t [-pepfdr pepFDRThreshod]\n" +
                 "\t [-decoy 0/1 (0: don't include decoy (default), 1: include decoy)]\n"
+                "\t [-pepfdr pepFDRThreshold]\n" +
         );
         System.exit(-1);
     }
 
-    public static void computeFDR(File targetFile, File decoyFile, int scoreCol, boolean isGreaterBetter, String delimeter,
-                                  int specFileCol, int specIndexCol, int pepCol, ArrayList<Pair<Integer, ArrayList<String>>> reqStrList, boolean isConcatenated, boolean includeDecoy,
+    public static void computeFDR(File targetFile, File decoyFile, int scoreCol, boolean isGreaterBetter,
+                                  String delimiter, int specFileCol, int specIndexCol, int pepCol,
+                                  ArrayList<Pair<Integer, ArrayList<String>>> reqStrList,
+                                  boolean isConcatenated, boolean includeDecoy,
                                   boolean hasHeader, int dbCol, String decoyPrefix,
                                   float fdrThreshold, float pepFDRThreshold, File outputFile) {
         TargetDecoyAnalysis tda;
@@ -203,18 +205,20 @@ public class ComputeFDR {
         if (dbCol >= 0)
         {
             // both target and decoy are in the same file
-            target = new TSVPSMSet(targetFile, delimeter, hasHeader, scoreCol, isGreaterBetter, specFileCol, specIndexCol, pepCol, reqStrList).decoy(dbCol, decoyPrefix, true);
+            target = new TSVPSMSet(targetFile, delimiter, hasHeader, scoreCol, isGreaterBetter, specFileCol, specIndexCol, pepCol, reqStrList);
+            target.decoy(dbCol, decoyPrefix, true);
             target.read();
-            decoy = new TSVPSMSet(targetFile, delimeter, hasHeader, scoreCol, isGreaterBetter, specFileCol, specIndexCol, pepCol, reqStrList).decoy(dbCol, decoyPrefix, false);
+
+            decoy = new TSVPSMSet(targetFile, delimiter, hasHeader, scoreCol, isGreaterBetter, specFileCol, specIndexCol, pepCol, reqStrList);
+            decoy.decoy(dbCol, decoyPrefix, false);
             decoy.read();
         } else {
-            target = new TSVPSMSet(targetFile, delimeter, hasHeader, scoreCol, isGreaterBetter, specFileCol, specIndexCol, pepCol, reqStrList);
+            target = new TSVPSMSet(targetFile, delimiter, hasHeader, scoreCol, isGreaterBetter, specFileCol, specIndexCol, pepCol, reqStrList);
             target.read();
-            decoy = new TSVPSMSet(decoyFile, delimeter, hasHeader, scoreCol, isGreaterBetter, specFileCol, specIndexCol, pepCol, reqStrList);
+            decoy = new TSVPSMSet(decoyFile, delimiter, hasHeader, scoreCol, isGreaterBetter, specFileCol, specIndexCol, pepCol, reqStrList);
             decoy.read();
         }
         tda = new TargetDecoyAnalysis(target, decoy);
-
 
         PrintStream out = null;
         if (outputFile != null)
@@ -234,8 +238,12 @@ public class ComputeFDR {
             out.close();
     }
 
-    public static void addQValues(List<MSGFPlusMatch> resultList, CompactSuffixArray sa, boolean considerBestMatchOnly) {
-        MSGFPlusPSMSet target = new MSGFPlusPSMSet(resultList, false, sa).setConsiderBestMatchOnly(considerBestMatchOnly);
+    public static void addQValues(
+            List<MSGFPlusMatch> resultList,
+            CompactSuffixArray sa,
+            boolean considerBestMatchOnly,
+            String decoyProteinPrefix) {
+
         target.read();
         MSGFPlusPSMSet decoy = new MSGFPlusPSMSet(resultList, true, sa).setConsiderBestMatchOnly(considerBestMatchOnly);
         decoy.read();

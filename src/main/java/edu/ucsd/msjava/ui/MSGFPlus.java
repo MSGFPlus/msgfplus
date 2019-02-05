@@ -29,7 +29,7 @@ public class MSGFPlus {
     public static final String DECOY_PROTEIN_PREFIX = "XXX";
 
     public static void main(String argv[]) {
-        long time = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
 
         ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
         paramManager.addMSGFPlusParams();
@@ -65,7 +65,7 @@ public class MSGFPlus {
             System.out.println();
             System.exit(-1);
         } else
-            System.out.format("MS-GF+ complete (total elapsed time: %.2f sec)\n", (System.currentTimeMillis() - time) / (float) 1000);
+            System.out.format("MS-GF+ complete (total elapsed time: %.2f sec)\n", (System.currentTimeMillis() - startTime) / (float) 1000);
     }
 
     public static String runMSGFPlus(ParamManager paramManager) {
@@ -75,12 +75,12 @@ public class MSGFPlus {
             return errorMessage;
         else {
             List<DBSearchIOFiles> ioList = params.getDBSearchIOList();
-            boolean multFiles = false;
+            boolean multiFiles = false;
             if (ioList.size() >= 2) {
                 System.out.println("Processing " + ioList.size() + " spectra");
                 for (DBSearchIOFiles ioFiles : ioList)
                     System.out.println("\t" + ioFiles.getSpecFile().getName());
-                multFiles = true;
+                multiFiles = true;
             }
 
 
@@ -91,7 +91,7 @@ public class MSGFPlus {
                 SpecFileFormat specFormat = ioFiles.getSpecFileFormat();
                 File outputFile = ioFiles.getOutputFile();
 
-                if (multFiles) {
+                if (multiFiles) {
                     if (!outputFile.exists()) {
                         System.out.println("\nProcessing " + specFile.getPath());
                         System.out.println("Writing results to " + outputFile.getPath());
@@ -113,7 +113,7 @@ public class MSGFPlus {
     }
 
     private static String runMSGFPlus(int ioIndex, SpecFileFormat specFormat, File outputFile, SearchParams params) {
-        long time = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
 
         // Check the outputFile is valid for writing
         File parent = outputFile.getParentFile();
@@ -215,7 +215,7 @@ public class MSGFPlus {
 
         CompactSuffixArray sa = new CompactSuffixArray(fastaSequence, params.getMaxPeptideLength());
         System.out.print("Loading database finished ");
-        System.out.format("(elapsed time: %.2f sec)\n", (float) (System.currentTimeMillis() - time) / 1000);
+        System.out.format("(elapsed time: %.2f sec)\n", (float) (System.currentTimeMillis() - startTime) / 1000);
 
         System.out.println("Reading spectra...");
 
@@ -233,7 +233,7 @@ public class MSGFPlus {
             return specFile.getPath() + " does not have any valid spectra";
 
         System.out.print("Reading spectra finished ");
-        System.out.format("(elapsed time: %.2f sec)\n", (float) (System.currentTimeMillis() - time) / 1000);
+        System.out.format("(elapsed time: %.2f sec)\n", (float) (System.currentTimeMillis() - startTime) / 1000);
 
         if (numThreads <= 0)
             numThreads = 1;
@@ -334,14 +334,14 @@ public class MSGFPlus {
                 if (doNotUseEdgeScore)
                     specScanner.turnOffEdgeScoring();
 
-                ConcurrentMSGFPlus.RunMSGFPlus msgfdbExecutor = new ConcurrentMSGFPlus.RunMSGFPlus(
+                ConcurrentMSGFPlus.RunMSGFPlus msgfplusExecutor = new ConcurrentMSGFPlus.RunMSGFPlus(
                         specScanner,
                         sa,
                         params,
                         resultList,
                         i + 1
                 );
-                    executor.execute(msgfdbExecutor);
+                    executor.execute(msgfplusExecutor);
             }
             // Output initial progress report.
             executor.outputProgressReport();
@@ -380,18 +380,19 @@ public class MSGFPlus {
             return "Task terminated; results incomplete. Please run again.";
         }
 
-        time = System.currentTimeMillis();
+        long qValueStartTime = System.currentTimeMillis();
 
         if (params.useTDA()) {
             // Compute Q-values
             System.out.println("Computing q-values...");
             ComputeFDR.addQValues(resultList, sa, false);
             System.out.print("Computing q-values finished ");
-            System.out.format("(elapsed time: %.2f sec)\n", (float) (System.currentTimeMillis() - time) / 1000);
+            System.out.format("(elapsed time: %.2f sec)\n", (float) (System.currentTimeMillis() - qValueStartTime) / 1000);
         }
 
-        // sort by spectral E-values
-        time = System.currentTimeMillis();
+        // Sort by spectral E-values then write to disk
+
+        long saveResultsStartTime = System.currentTimeMillis();
 
         System.out.println("Writing results...");
         Collections.sort(resultList);
@@ -402,7 +403,7 @@ public class MSGFPlus {
         mzidGen.writeResults(outputFile);
 
         System.out.print("Writing results finished ");
-        System.out.format("(elapsed time: %.2f sec)\n", (float) (System.currentTimeMillis() - time) / 1000);
+        System.out.format("(elapsed time: %.2f sec)\n", (float) (System.currentTimeMillis() - saveResultsStartTime) / 1000);
 
         System.out.println("File: " + outputFile.getPath());
         return null;

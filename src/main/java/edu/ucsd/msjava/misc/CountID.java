@@ -24,7 +24,7 @@ public class CountID {
     }
 
     public static void printUsageAndExit() {
-        System.out.println("usage: java CountID MSGFDBORInsPecTResult [FDRThreshold] (0: PSMLevel, 1: PeptideLevel) [DecoyPrefix]");
+        System.out.println("usage: java CountID MSGFPlusOrInsPecTResult [FDRThreshold] (0: PSMLevel, 1: PeptideLevel) [DecoyPrefix]");
         System.exit(-1);
     }
 

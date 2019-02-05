@@ -18,9 +18,9 @@ public class SuffixArrayTest {
 //	    String fastaFile = System.getProperty("user.home")+"/Research/Data/ISBControl/Mix_7/ORBITRAP/Database/18mix.fasta";
 //		String fastaFile = System.getProperty("user.home")+"/Research/Data/IPI/tiny.fasta";
 
-        long time = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         CompactFastaSequence sequence = new CompactFastaSequence(fastaFile);
-        System.out.println("-- Loading fasta file time: " + (System.currentTimeMillis() - time) / 1000.0 + "s");
+        System.out.println("-- Loading fasta file time: " + (System.currentTimeMillis() - startTime) / 1000.0 + "s");
 
 //	    time = System.currentTimeMillis();
 //	    SuffixArrayForMSGFDB sa = new SuffixArrayForMSGFDB(sequence);
@@ -45,8 +45,8 @@ public class SuffixArrayTest {
 //		    System.out.println(sa.getNumCandidatePeptides(peptideMass, tolerance));
 //		    System.out.println("-- Searching time: " + (System.currentTimeMillis() - time)/1000.0 + "s");
 //	    }
-        time = System.currentTimeMillis();
+        long displayStartTime = System.currentTimeMillis();
 //	    sa.printAllPeptides(AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys(), 5, 50);
-        System.out.println("-- Searching time: " + (System.currentTimeMillis() - time) / 1000.0 + "s");
+        System.out.println("-- Display time: " + (System.currentTimeMillis() - displayStartTime) / 1000.0 + "s");
     }
 }

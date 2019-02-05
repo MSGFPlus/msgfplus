@@ -74,7 +74,7 @@ public class ConcurrentMSGFPlus {
             specScanner.setProgressObj(new ProgressData(progress));
 
             // Pre-process spectra
-            long time = System.currentTimeMillis();
+            long startTimePreprocess = System.currentTimeMillis();
             if (Thread.currentThread().isInterrupted()) {
                 return;
             }
@@ -89,14 +89,15 @@ public class ConcurrentMSGFPlus {
                 return;
             }
             output.print(threadName + ": Preprocessing spectra finished ");
-            output.format("(elapsed time: %.2f sec)\n", (float) ((System.currentTimeMillis() - time) / 1000));
+            output.format("(elapsed time: %.2f sec)\n", (float) ((System.currentTimeMillis() - startTimePreprocess) / 1000));
 
             specScanner.getProgressObj().setParentProgressObj(null);
             progress.report(5.0);
             progress.stepRange(80.0);
             scanner.setProgressObj(new ProgressData(progress));
 
-            time = System.currentTimeMillis();
+            long startTimeDbSearch = System.currentTimeMillis();
+
             // DB search
             output.println(threadName + ": Database search...");
             scanner.setThreadName(threadName);
@@ -114,11 +115,11 @@ public class ConcurrentMSGFPlus {
                 return;
             }
             output.print(threadName + ": Database search finished ");
-            output.format("(elapsed time: %.2f sec)\n", (float) ((System.currentTimeMillis() - time) / 1000));
+            output.format("(elapsed time: %.2f sec)\n", (float) ((System.currentTimeMillis() - startTimeDbSearch) / 1000));
 
             progress.stepRange(95.0);
 
-            time = System.currentTimeMillis();
+            long startTimeComputeEvalue = System.currentTimeMillis();
             output.println(threadName + ": Computing spectral E-values...");
             if (Thread.currentThread().isInterrupted()) {
                 return;
@@ -128,7 +129,7 @@ public class ConcurrentMSGFPlus {
                 return;
             }
             output.print(threadName + ": Computing spectral E-values finished ");
-            output.format("(elapsed time: %.2f sec)\n", (float) ((System.currentTimeMillis() - time) / 1000));
+            output.format("(elapsed time: %.2f sec)\n", (float) ((System.currentTimeMillis() - startTimeComputeEvalue) / 1000));
 
             scanner.getProgressObj().setParentProgressObj(null);
             progress.stepRange(100);

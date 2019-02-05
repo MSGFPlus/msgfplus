@@ -9,7 +9,7 @@ public class TSVPSMSet extends PSMSet {
 
     // required
     File file;
-    String delimeter;
+    String delimiter;
     boolean hasHeader;
     int scoreCol;
     boolean isGreaterBetter;
@@ -20,12 +20,12 @@ public class TSVPSMSet extends PSMSet {
 
     // optional
     int dbCol;
-    String decoyPrefix;
+    String decoyProteinPrefix;
     boolean isTarget;
 
     public TSVPSMSet(
             File file,
-            String delimeter,
+            String delimiter,
             boolean hasHeader,
             int scoreCol,
             boolean isGreaterBetter,
@@ -35,7 +35,7 @@ public class TSVPSMSet extends PSMSet {
             ArrayList<Pair<Integer, ArrayList<String>>> reqStrList
     ) {
         this.file = file;
-        this.delimeter = delimeter;
+        this.delimiter = delimiter;
         this.hasHeader = hasHeader;
         this.scoreCol = scoreCol;
         this.isGreaterBetter = isGreaterBetter;
@@ -46,7 +46,7 @@ public class TSVPSMSet extends PSMSet {
         dbCol = -1;
     }
 
-    public TSVPSMSet decoy(int dbCol, String decoyPrefix, boolean isTarget) {
+    public TSVPSMSet decoy(int dbCol, String decoyProteinPrefix, boolean isTarget) {
         this.dbCol = dbCol;
         this.decoyPrefix = decoyPrefix;
         this.isTarget = isTarget;
@@ -67,24 +67,25 @@ public class TSVPSMSet extends PSMSet {
         psmList = new ArrayList<ScoredString>();
         peptideScoreTable = new HashMap<String, Float>();
 
-        BufferedReader in = null;
+        BufferedReader reader = null;
         try {
-            in = new BufferedReader(new FileReader(file));
+            reader = new BufferedReader(new FileReader(file));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            return;
         }
         try {
             if (hasHeader) {
-                header = in.readLine();
+                header = reader.readLine();
             }
 
             String s;
             HashSet<String> specKeySet = new HashSet<String>();
 
-            while ((s = in.readLine()) != null) {
+            while ((s = reader.readLine()) != null) {
                 if (s.startsWith("#"))
                     continue;
-                String[] token = s.split(delimeter);
+                String[] token = s.split(delimiter);
                 if (scoreCol >= token.length || pepCol >= token.length)
                     continue;
 
@@ -103,14 +104,10 @@ public class TSVPSMSet extends PSMSet {
 
                 if (dbCol >= 0) {
                     if (isTarget) {
-//						if(token[dbCol].contains(decoyPrefix))
-//							continue;
-                        if (token[dbCol].startsWith(decoyPrefix))
+                        if (token[dbCol].startsWith(decoyProteinPrefix))
                             continue;
                     } else {
-//						if(!token[dbCol].contains(decoyPrefix))
-//							continue;
-                        if (!token[dbCol].startsWith(decoyPrefix))
+                        if (!token[dbCol].startsWith(decoyProteinPrefix))
                             continue;
                     }
                 }
@@ -150,12 +147,13 @@ public class TSVPSMSet extends PSMSet {
             e.printStackTrace();
         }
 
-        if (in != null)
+        if (reader != null) {
             try {
-                in.close();
+                reader.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
     }
 
     public void writeResults(TargetDecoyAnalysis tda, PrintStream out, float fdrThreshold, float pepFDRThreshold, boolean writeHeader) {
@@ -167,7 +165,7 @@ public class TSVPSMSet extends PSMSet {
 
     public void writeResults(TargetDecoyAnalysis tda, PrintStream out, float fdrThreshold, float pepFDRThreshold, float scoreThreshold, boolean writeHeader) {
         if (writeHeader && header != null)
-            out.println(header + delimeter + "QValue" + delimeter + "PepQValue");
+            out.println(header + delimiter + "QValue" + delimiter + "PepQValue");
         for (ScoredString ss : getPSMList()) {
             float psmFDR = tda.getPSMQValue(ss.getScore());
             if (psmFDR > fdrThreshold)
@@ -175,14 +173,14 @@ public class TSVPSMSet extends PSMSet {
             if (isGreaterBetter && ss.getScore() <= scoreThreshold ||
                     !isGreaterBetter && ss.getScore() >= scoreThreshold)
                 continue;
-            String[] token = ss.getStr().split(delimeter);
+            String[] token = ss.getStr().split(delimiter);
             Float pepFDR = tda.getPepQValueFromAnnotation(token[pepCol]);
             if (pepFDR == null || pepFDR > pepFDRThreshold)
                 continue;
             String prevResult = ss.getStr();
-            if (!prevResult.endsWith(delimeter))
-                prevResult += delimeter;
-            out.println(prevResult + psmFDR + delimeter + pepFDR);
+            if (!prevResult.endsWith(delimiter))
+                prevResult += delimiter;
+            out.println(prevResult + psmFDR + delimiter + pepFDR);
         }
         out.flush();
     }
@@ -201,7 +199,7 @@ public class TSVPSMSet extends PSMSet {
     public int getNumIdentifiedPeptides(TargetDecoyAnalysis tda, float pepFDRThreshold) {
         HashSet<String> pepSet = new HashSet<String>();
         for (ScoredString ss : getPSMList()) {
-            String[] token = ss.getStr().split(delimeter);
+            String[] token = ss.getStr().split(delimiter);
             Float pepFDR = tda.getPepQValueFromAnnotation(token[pepCol]);
             if (pepFDR == null || pepFDR > pepFDRThreshold)
                 continue;

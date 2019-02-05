@@ -24,7 +24,7 @@ public class ROCGenerator {
         boolean isGreaterBetter = false;
         boolean hasHeader = true;
         File decoyFile = null;
-        String delimeter = "\t";
+        String delimiter = "\t";
         int pepCol = -1;
         int scanNumCol = -1;
         boolean isConcatenated = false;
@@ -40,7 +40,7 @@ public class ROCGenerator {
                 identifier = argv[i + 1];
                 i += 2;
             }
-            // 	-f resuleFileName dbCol decoyPrefix or -f targetFileName decoyFileName
+            // 	-f resultFileName dbCol decoyPrefix or -f targetFileName decoyFileName
             else if (argv[i].equalsIgnoreCase("-f")) {
                 if (i + 2 >= argv.length)
                     printUsageAndExit("Invalid parameter: " + argv[i]);
@@ -87,7 +87,7 @@ public class ROCGenerator {
             } else if (argv[i].equalsIgnoreCase("-delim")) {
                 if (i + 1 >= argv.length)
                     printUsageAndExit("Invalid parameter: " + argv[i]);
-                delimeter = argv[i + 1];
+                delimiter = argv[i + 1];
                 i += 2;
             } else if (argv[i].equalsIgnoreCase("-p")) {
                 if (i + 1 >= argv.length)
@@ -134,39 +134,52 @@ public class ROCGenerator {
 
         printROCCurve(identifier, targetFile, decoyFile,
                 scoreCol, isGreaterBetter,
-                delimeter, scanNumCol, pepCol, reqStrList,
                 isConcatenated, hasHeader, dbCol, decoyPrefix, outputFile);
+                delimiter, scanNumCol, pepCol, reqStrList,
     }
 
     public static void printUsageAndExit(String message) {
         System.err.println(message);
         System.out.print("usage: java ROCGenerator \n" +
-                "\t -f resuleFileName dbCol decoyPrefix or -f targetFileName decoyFileName\n" +
+                "\t -f resultFileName dbCol decoyPrefix or -f targetFileName decoyFileName\n" +
                 "\t -s scoreCol 0/1 (0: smaller better, 1: greater better)\n" +
                 "\t [-o outputFile]\n" +
-                "\t [-delim delimeter] (default: \\t)\n" +
+                "\t [-delim delimiter] (default: \\t)\n" +
                 "\t [-p pepCol] (if specified, the peptide level FDRs will be calculated)\n" +
                 "\t [-n scanNumCol] (if specified, only best score per spectrum will be considered)\n" +
-                "\t [-m colNum keyword (the column 'colNum' must contain 'keyword'. If 'keyword' is delimetered by '|' (e.g. A,B,C), then at least one must be matched.)]\n" +
+                "\t [-m colNum keyword (the column 'colNum' must contain 'keyword'. If 'keyword' is delimited by '|' (e.g. A,B,C), then at least one must be matched.)]\n" +
                 "\t [-h 0/1] (0: no header, 1: header (default))\n" +
                 "\t [-i identifier (to generate a Matlab code for ROC curves]\n"
         );
         System.exit(-1);
     }
 
-    public static void printROCCurve(String identifier, File targetFile, File decoyFile, int scoreCol, boolean isGreaterBetter, String delimeter,
-                                     int scanNumCol, int pepCol, ArrayList<Pair<Integer, String>> reqStrList, boolean isConcatenated, boolean hasHeader, int dbCol, String decoyPrefix,
-                                     File outputFile) {
+    public static void printROCCurve(String identifier, File targetFile, File decoyFile,
+                                     int scoreCol, boolean isGreaterBetter, String delimiter,
+                                     int scanNumCol, int pepCol,
+                                     ArrayList<Pair<Integer, String>> reqStrList,
+                                     boolean isConcatenated, boolean hasHeader,
+                                     int dbCol, String decoyPrefix) {
         ArrayList<Float> target = null;
         ArrayList<Float> decoy = null;
 
         if (dbCol >= 0)    // both target and decoy are in the same file
         {
-            target = getScoreList(getScoredStringList(targetFile, scoreCol, isGreaterBetter, delimeter, scanNumCol, pepCol, reqStrList, hasHeader, dbCol, decoyPrefix, true));
-            decoy = getScoreList(getScoredStringList(targetFile, scoreCol, isGreaterBetter, delimeter, scanNumCol, pepCol, reqStrList, hasHeader, dbCol, decoyPrefix, false));
+            target = getScoreList(getScoredStringList(
+                        targetFile, scoreCol, isGreaterBetter, delimiter,
+                        scanNumCol, pepCol, reqStrList, hasHeader, dbCol, decoyPrefix, true));
+
+            decoy = getScoreList(getScoredStringList(
+                        targetFile, scoreCol, isGreaterBetter, delimiter,
+                        scanNumCol, pepCol, reqStrList, hasHeader, dbCol, decoyPrefix, false));
         } else {
-            target = getScoreList(getScoredStringList(targetFile, scoreCol, isGreaterBetter, delimeter, scanNumCol, pepCol, reqStrList, hasHeader, dbCol, decoyPrefix, true));
-            decoy = getScoreList(getScoredStringList(decoyFile, scoreCol, isGreaterBetter, delimeter, scanNumCol, pepCol, reqStrList, hasHeader, dbCol, decoyPrefix, true));
+            target = getScoreList(getScoredStringList(
+                        targetFile, scoreCol, isGreaterBetter, delimiter,
+                        scanNumCol, pepCol, reqStrList, hasHeader, dbCol, decoyPrefix, true));
+
+            decoy = getScoreList(getScoredStringList(
+                        decoyFile, scoreCol, isGreaterBetter, delimiter,
+                        scanNumCol, pepCol, reqStrList, hasHeader, dbCol, decoyPrefix, true));
         }
         printROCCurve(identifier, target, decoy, isGreaterBetter, isConcatenated);
     }
@@ -188,8 +201,11 @@ public class ROCGenerator {
         return list;
     }
 
-    private static ArrayList<ScoredString> getScoredStringList(File file, int scoreCol, boolean isGreaterBetter, String delimeter, int scanNumCol,
-                                                               int pepCol, ArrayList<Pair<Integer, String>> reqStrList, boolean hasHeader, int dbCol, String decoyPrefix, boolean isTarget) {
+    private static ArrayList<ScoredString> getScoredStringList(File file, int scoreCol, boolean isGreaterBetter,
+                                                               String delimiter, int scanNumCol,
+                                                               int pepCol, ArrayList<Pair<Integer, String>> reqStrList,
+                                                               boolean hasHeader, int dbCol,
+                                                               String decoyPrefix, boolean isTarget) {
         ArrayList<ScoredString> list = new ArrayList<ScoredString>();
         BufferedLineReader in = null;
         try {
@@ -209,7 +225,7 @@ public class ROCGenerator {
         while ((s = in.readLine()) != null) {
             if (s.startsWith("#"))
                 continue;
-            String[] token = s.split(delimeter);
+            String[] token = s.split(delimiter);
             if (scoreCol >= token.length || pepCol >= token.length || dbCol >= token.length)
                 continue;
 
