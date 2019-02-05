@@ -6,7 +6,11 @@ import edu.ucsd.msjava.sequences.Constants;
 import edu.ucsd.msjava.suffixarray.SuffixFactory;
 
 import java.io.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * SuffixArray class for fast exact matching.
@@ -96,7 +100,7 @@ public class CompactSuffixArray {
         // check that the files are consistent
         if (id != sequence.getId()) {
             System.err.println("Suffix array files are not consistent: " + indexFile + ", " + nlcpFile + " (" + id + "!=" + sequence.getId() + ")");
-            System.err.println("Please recreate the suffix array file.");
+            System.err.println("Please recreate the suffix array file by deleting the .canno, .cseq, and .csarr files.");
             System.exit(-1);
         }
     }
@@ -149,10 +153,15 @@ public class CompactSuffixArray {
                 raf.close();
 
                 if (!NearlyEqualFileTimes(lastModifiedRecorded, lastModified)) {
+                    Date suffixArrayModificationTime = new Date(lastModifiedRecorded);
+                    Date fastaFileModificationTime = new Date(lastModified);
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+
                     System.out.println("Re-creating suffix array files since the cached LastModified time is not within 2 seconds " +
-                            "of the LastModified time of the sequence file:" +
+                            "of the LastModified time of the sequence file:\n" +
                             " Time cached in " + f.getName() + " is " + lastModifiedRecorded +
-                            " while the sequence file has " + lastModified);
+                            " (" + dateFormat.format(suffixArrayModificationTime) + ")" +
+                            " while the sequence file has " + dateFormat.format(fastaFileModificationTime));
                     return false;
                 }
 

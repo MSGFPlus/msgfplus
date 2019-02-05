@@ -150,36 +150,45 @@ public class CompactFastaSequence implements Sequence {
             indexingRequired = true;
         }
 
-        if (metaIdSignature.getFormatId() != COMPACT_FASTA_SEQUENCE_FILE_FORMAT_ID) {
+        if (!indexingRequired && metaIdSignature.getFormatId() != COMPACT_FASTA_SEQUENCE_FILE_FORMAT_ID) {
             System.out.println("Re-creating the .canno file since the metaIdSignature is not " +
                     COMPACT_FASTA_SEQUENCE_FILE_FORMAT_ID + ", it is " + metaIdSignature.getFormatId());
             indexingRequired = true;
         }
 
-        if (seqIdSignature.getFormatId() != COMPACT_FASTA_SEQUENCE_FILE_FORMAT_ID) {
+        if (!indexingRequired && seqIdSignature.getFormatId() != COMPACT_FASTA_SEQUENCE_FILE_FORMAT_ID) {
             System.out.println("Re-creating the .canno file since the seqIdSignature is not " +
                     COMPACT_FASTA_SEQUENCE_FILE_FORMAT_ID + ", it is " + seqIdSignature.getFormatId());
             indexingRequired = true;
         }
 
-        if (metaIdSignature.getId() != seqIdSignature.getId()) {
+        if (!indexingRequired && metaIdSignature.getId() != seqIdSignature.getId()) {
             System.out.println("Re-creating the .canno file since the metaIdSignature ID " +
-                    "doesn't match seqIdSignature ID: " +
+                    "doesn't match seqIdSignature ID:\n " +
                     metaIdSignature.getId() + " vs. " + seqIdSignature.getId());
             indexingRequired = true;
         }
 
-        if (metaIdSignature.getLastModified() != seqIdSignature.getLastModified()) {
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+
+        long metaIdLastModified = metaIdSignature.getLastModified();
+        long seqIdLastModified = seqIdSignature.getLastModified();
+
+        if (!indexingRequired && metaIdLastModified != seqIdLastModified) {
             System.out.println("Re-creating the .canno file since metaIdSignature LastModified " +
-                    "doesn't match seqIdSignature LastModified: " +
-                    metaIdSignature.getLastModified() + " vs. " + seqIdSignature.getLastModified());
+                    "doesn't match seqIdSignature LastModified:\n " +
+                    " .canno has "   + metaIdLastModified + " (" + dateFormatter.format(metaIdLastModified) + ") " +
+                    " but .cseq has " + seqIdLastModified + " (" + dateFormatter.format(seqIdLastModified) + ")"
+            );
             indexingRequired = true;
         }
 
-        if (!CompactSuffixArray.NearlyEqualFileTimes(metaIdSignature.getLastModified(), lastModified)) {
+        if (!indexingRequired && !CompactSuffixArray.NearlyEqualFileTimes(metaIdLastModified, lastModified)) {
             System.out.println("Re-creating the .canno file since metaIdSignature LastModified " +
-                    "is not within 2 seconds of the file modification time on disk: " +
-                    "Expected " + metaIdSignature.getLastModified() + " but actually " + lastModified);
+                    "is not within 2 seconds of the file modification time on disk:\n" +
+                    " Expected " + metaIdLastModified + " (" + dateFormatter.format(metaIdLastModified) + ")" +
+                    " but actually " + lastModified + " (" + dateFormatter.format(lastModified) + ")"
+            );
             indexingRequired = true;
         }
 
@@ -193,8 +202,8 @@ public class CompactFastaSequence implements Sequence {
 
             System.out.println("metaIdSignature ID: " + metaIdSignature.getId());
             System.out.println("seqIdSignature ID:  " + seqIdSignature.getId());
-            System.out.println("metaIdSignature LastModified: " + metaIdSignature.getLastModified());
-            System.out.println("seqIdSignature LastModified:  " + seqIdSignature.getLastModified());
+            System.out.println("metaIdSignature LastModified: " + metaIdLastModified);
+            System.out.println("seqIdSignature LastModified:  " + seqIdLastModified);
             System.out.println("FASTA LastModified on disk:   " + lastModified + " for " + filepath);
             */
         }
