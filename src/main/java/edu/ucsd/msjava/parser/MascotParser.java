@@ -1,6 +1,7 @@
 package edu.ucsd.msjava.parser;
 
 import edu.ucsd.msjava.msutil.Peptide;
+import edu.ucsd.msjava.ui.MSGFPlus;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,7 +14,6 @@ public class MascotParser {
 
     private MascotParser() {
     }
-
 
     public static PSMList<PSM> parseFromDat(String fileName, boolean isDecoy) {
         BufferedLineReader in = null;
@@ -209,7 +209,7 @@ public class MascotParser {
                                         psm.rawScore(score);
                                         psm.ptm(modVector);
                                         if (isDecoy)
-                                            protein = "XXX" + protein;
+                                            protein = MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX + "_" + protein;
                                         psm.protein(protein);
                                         if (psmArr[queryNum - 1] == null)
                                             psmArr[queryNum - 1] = new SimplePSMList();

@@ -3,6 +3,7 @@ package edu.ucsd.msjava.params;
 import edu.ucsd.msjava.msutil.*;
 import edu.ucsd.msjava.sequences.Constants;
 import edu.ucsd.msjava.ui.MSGF;
+import edu.ucsd.msjava.ui.MSGFPlus;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -173,6 +174,17 @@ public class ParamManager {
         addParameter(dbFileParam);
     }
 
+    public void addDecoyPrefixParam() {
+        addDecoyPrefixParam(MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX);
+    }
+
+    public void addDecoyPrefixParam(String defaultDecoyPrefix) {
+        StringParameter decoyPrefixParam = new StringParameter("decoy", "DecoyPrefix", "Prefix for decoy protein names; default is XXX");
+        // Note that defining a default value auto-sets isOptional to True
+        decoyPrefixParam.defaultValue(defaultDecoyPrefix);
+        addParameter(decoyPrefixParam);
+    }
+
     public void addPMTolParam() {
         ToleranceParameter pmTolParam = new ToleranceParameter("t", "ParentMassTolerance", "e.g. 2.5Da, 30ppm or 0.5Da,2.5Da");
         pmTolParam.setAdditionalDescription("Use a comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (expMass<theoMass) and 2.5Da to the right (expMass>theoMass)");
@@ -279,6 +291,9 @@ public class ParamManager {
 
         // -d DatabaseFile (*.fasta or *.fa)
         addDBFileParam();
+
+        // decoy DecoyPrefix
+        addDecoyPrefixParam();
 
         // [-o OutputFile (*.mzid)] (Default: [SpectrumFileName].mzid)
         addMzIdOutputFileParam();
@@ -746,6 +761,11 @@ public class ParamManager {
 
     public FileParameter getDBFileParam() {
         return ((FileParameter) getParameter("d"));
+    }
+
+    public String getDecoyProteinPrefix() {
+        StringParameter decoyProteinPrefixParam = (StringParameter) getParameter("decoy");
+        return (decoyProteinPrefixParam.value);
     }
 
     public ToleranceParameter getPMTolParam() {

@@ -26,7 +26,7 @@ public class MSGFPlus {
     public static final String RELEASE_DATE = "01 February 2019";
 
     public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
-    public static final String DECOY_PROTEIN_PREFIX = "XXX";
+    public static final String DEFAULT_DECOY_PROTEIN_PREFIX = "XXX";
 
     public static void main(String argv[]) {
         long startTime = System.currentTimeMillis();
@@ -163,6 +163,8 @@ public class MSGFPlus {
                 minNumPeaksPerSpectrum = Constants.MIN_NUM_PEAKS_PER_SPECTRUM;
         }
 
+        String decoyProteinPrefix = params.getDecoyProteinPrefix();
+
         System.out.println("Loading database files...");
 
         File dbIndexDir = params.getDBIndexDir();
@@ -187,7 +189,7 @@ public class MSGFPlus {
 
             if (!concatTargetDecoyDBFile.exists()) {
                 System.out.println("Creating " + concatTargetDecoyDBFile.getPath() + ".");
-                if (ReverseDB.reverseDB(databaseFile.getPath(), concatTargetDecoyDBFile.getPath(), true, DECOY_PROTEIN_PREFIX) == false) {
+                if (ReverseDB.reverseDB(databaseFile.getPath(), concatTargetDecoyDBFile.getPath(), true, decoyProteinPrefix) == false) {
                     return "Cannot create a decoy database file!";
                 }
             }
@@ -198,6 +200,8 @@ public class MSGFPlus {
         aaSet.registerEnzyme(enzyme);
 
         CompactFastaSequence fastaSequence = new CompactFastaSequence(databaseFile.getPath());
+        fastaSequence.setDecoyProteinPrefix(decoyProteinPrefix);
+
         if (useTDA) {
             float ratioUniqueProteins = fastaSequence.getRatioUniqueProteins();
             if (ratioUniqueProteins < 0.5f) {
@@ -209,6 +213,7 @@ public class MSGFPlus {
             if (fractionDecoyProteins < 0.4f || fractionDecoyProteins > 0.6f) {
                 System.err.println("Error while reading: " + databaseFile.getName() + " (fraction of decoy proteins: " + fractionDecoyProteins + ")");
                 System.err.println("Delete " + databaseFile.getName() + " and run MS-GF+ again.");
+                System.err.println("Decoy protein names should start with " + fastaSequence.getDecoyProteinPrefix());
                 System.exit(-1);
             }
         }
@@ -385,7 +390,7 @@ public class MSGFPlus {
         if (params.useTDA()) {
             // Compute Q-values
             System.out.println("Computing q-values...");
-            ComputeFDR.addQValues(resultList, sa, false);
+            ComputeFDR.addQValues(resultList, sa, false, decoyProteinPrefix);
             System.out.print("Computing q-values finished ");
             System.out.format("(elapsed time: %.2f sec)\n", (float) (System.currentTimeMillis() - qValueStartTime) / 1000);
         }

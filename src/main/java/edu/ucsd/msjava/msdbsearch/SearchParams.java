@@ -18,6 +18,7 @@ import static edu.ucsd.msjava.msutil.Composition.SODIUM_CHARGE_CARRIER_MASS;
 public class SearchParams {
     private List<DBSearchIOFiles> dbSearchIOList;
     private File databaseFile;
+    private String decoyProteinPrefix;
     private Tolerance leftParentMassTolerance;
     private Tolerance rightParentMassTolerance;
     private int minIsotopeError;
@@ -62,6 +63,8 @@ public class SearchParams {
     public File getDatabaseFile() {
         return databaseFile;
     }
+
+    public String getDecoyProteinPrefix() {return decoyProteinPrefix; }
 
     public Tolerance getLeftParentMassTolerance() {
         return leftParentMassTolerance;
@@ -229,6 +232,8 @@ public class SearchParams {
 
         // DB file
         databaseFile = paramManager.getDBFileParam().getFile();
+
+        decoyProteinPrefix = paramManager.getDecoyProteinPrefix();
 
         // PM tolerance
         ToleranceParameter tol = ((ToleranceParameter) paramManager.getParameter("t"));
