@@ -183,7 +183,7 @@ public class ParamManager {
     }
 
     public void addDecoyPrefixParam(String defaultDecoyPrefix) {
-        StringParameter decoyPrefixParam = new StringParameter("decoy", "DecoyPrefix", "Prefix for decoy protein names; default is XXX");
+        StringParameter decoyPrefixParam = new StringParameter("decoy", "DecoyPrefix", "Prefix for decoy protein names; default is " + MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX);
         // Note that defining a default value auto-sets isOptional to True
         decoyPrefixParam.defaultValue(defaultDecoyPrefix);
         addParameter(decoyPrefixParam);

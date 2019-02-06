@@ -70,7 +70,7 @@ public class BuildSA {
         System.out.println("\t-d DatabaseFile (*.fasta or *.fa or *.faa; if a directory path, index all FASTA files)");
         System.out.println("\t[-tda 0/1/2] (0: Target database only, 1: Concatenated target-decoy database only, 2: Both (Default))");
         System.out.println("\t[-o OutputDir] (Directory to save index files; default is the same as the input file)");
-        System.out.println("\t[-decoy DecoyPrefix] (Prefix for decoy protein names; default is XXX)");
+        System.out.println("\t[-decoy DecoyPrefix] (Prefix for decoy protein names; default is " + MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX + ")");
         System.out.println();
         System.out.println("Documentation: https://github.com/MSGFPlus/msgfplus");
 
