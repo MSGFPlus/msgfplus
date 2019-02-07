@@ -1,7 +1,8 @@
 #Parent mass tolerance 
 #  Examples: 2.5Da or 30ppm
 #  Use comma to set asymmetric values, for example "0.5Da,2.5Da" will set 0.5Da to the left (expMass<theoMass) and 2.5Da to the right (expMass>theoMass)
-PMTolerance=20ppm
+#PMTolerance=20ppm
+ParentMassTolerance=20ppm
 
 #Max Number of Modifications per peptide 
 # If this value is large, the search will be slow
@@ -30,7 +31,7 @@ FragmentationMethodID=0
 #  2 means TOF
 #  3 means Q-Exactive
 # (note that this is automatically updated by the Analysis Manager based on the instrument type and MSn scan types present for a given dataset)
-InstrumentID=0
+InstrumentID=1
 
 #Enzyme ID
 #  0 means No enzyme used
@@ -66,10 +67,10 @@ showDecoy=1
 NumThreads=All
 
 #Minimum peptide length to consider
-minLength=6
+MinPepLength=9
 
 #Maximum peptide length to consider
-maxLength=50
+MaxPepLength=50
 
 #Minimum precursor charge to consider (if not specified in the spectrum)
 minCharge=2
@@ -79,7 +80,7 @@ maxCharge=5
 
 #Number of matches per spectrum to be reported
 #If this value is greater than 1 then the FDR values computed by MS-GF+ will be skewed by high-scoring 2nd and 3rd hits
-NumMatchesPerSpec=1
+NumMatchesPerSpec=2
 
 #Amino Acid Frequencies
 #  If 0, compute amino acid frequencies from the input database and use them as amino acid probabilities

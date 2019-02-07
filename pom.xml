@@ -5,7 +5,7 @@
     <version>1.0.0-SNAPSHOT</version>
     <name>MSGF-Plus</name>
     <properties>
-        <skipTests>true</skipTests>
+        <skipTests>false</skipTests>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <build>

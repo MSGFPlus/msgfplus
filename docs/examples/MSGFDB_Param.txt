@@ -1,7 +1,8 @@
 #Parent mass tolerance 
 #  Examples: 2.5Da or 30ppm
 #  Use comma to set asymmetric values, for example "0.5Da,2.5Da" will set 0.5Da to the left (expMass<theoMass) and 2.5Da to the right (expMass>theoMass)
-PMTolerance=20ppm
+#PMTolerance=20ppm
+ParentMassTolerance=20ppm
 
 #Max Number of Modifications per peptide 
 # If this value is large, the search will be slow
@@ -14,6 +15,9 @@ StaticMod=229.1629,     K,  fix, any,       TMT6plex
                             
 DynamicMod=O1,          M,  opt, any,       Oxidation             # Oxidized methionine
 DynamicMod=-187.152366, K,  opt, any,       AcNoTMT               # Residue tagged by MSGF+ with static TMT6, but is actually acetylated and does not have TMT
+
+##Custom AA specification
+CustomAA=C3H5NO,        U, custom, U, Selenocysteine      # Custom amino acids can only have C, H, N, O, and S
 
 #Fragmentation Method
 #  0 means as written in the spectrum or CID if no info (Default)
@@ -66,10 +70,10 @@ showDecoy=1
 NumThreads=All
 
 #Minimum peptide length to consider
-minLength=6
+MinPepLength=9
 
 #Maximum peptide length to consider
-maxLength=50
+MaxPepLength=50
 
 #Minimum precursor charge to consider (if not specified in the spectrum)
 minCharge=2
@@ -79,7 +83,7 @@ maxCharge=5
 
 #Number of matches per spectrum to be reported
 #If this value is greater than 1 then the FDR values computed by MS-GF+ will be skewed by high-scoring 2nd and 3rd hits
-NumMatchesPerSpec=1
+NumMatchesPerSpec=2
 
 #Amino Acid Frequencies
 #  If 0, compute amino acid frequencies from the input database and use them as amino acid probabilities

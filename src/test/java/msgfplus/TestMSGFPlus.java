@@ -28,6 +28,7 @@ import edu.ucsd.msjava.ui.ScoringParamGen;
 public class TestMSGFPlus {
     
     @Test
+    @Ignore
     public void testQCShew()
     {
         File workDir = new File("C:\\DMS_WorkDir1");

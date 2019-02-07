@@ -8,7 +8,6 @@ import edu.ucsd.msjava.ui.MSGFPlus;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 
@@ -19,6 +18,111 @@ public class ParamManager {
     private String date;
     private String command;
     private ArrayList<String> examples = new ArrayList<String>();
+
+
+    public enum ParamNameEnum{
+
+        SPECTRUM_FILE("s", "SpectrumFile", "*.mzML, *.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt",
+                "Spectra should be centroided (see below for MSConvert example). Profile spectra will be ignored."),
+
+        DB_FILE("d", "DatabaseFile", "*.fasta or *.fa or *.faa", null),
+
+        DECOY_PREFIX("decoy", "DecoyPrefix",
+                "Prefix for decoy protein names; default is " + MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX, null),
+
+        PARENT_MASS_TOLERANCE("t", "ParentMassTolerance", "e.g. 2.5Da, 30ppm or 0.5Da,2.5Da",
+                "Use a comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (expMass<theoMass) and 2.5Da to the right (expMass>theoMass)"),
+
+        MZID_OUTPUT_FILE("o", "OutputFile (*.mzid)", "Default: [SpectrumFileName].mzid", null),
+        OUTPUT_FILE("o", "OutputFile", "Default: stdout", null),
+        FRAG_METHOD("m", "FragmentMethodID", null, null),
+        INTRUMENT_TYPE("inst", "InstrumentID", null, null),
+        ENZYME_ID("e", "EnzymeID", null, null),
+        PROTOCOL_ID("protocol", "ProtocolID", null, null),
+        MOD_FILE("mod", "ModificationFileName", "Modification file, Default: standard amino acids with fixed C+57; only if -mod is not specified", null),
+        CONFIGURATION_FILE("conf", "ConfigurationFileName", "Configuration file, Default: all parameters are provided by the commandline interface", null),
+
+        NUM_THREADS("thread", "NumThreads", "Number of concurrent threads to be executed, Default: Number of available cores", "This is best set to the number of physical cores in a single NUMA node.\n" +
+                "\t   Generally a single NUMA node is 1 physical processor.\n" +
+                "\t   The default will try to use hyperthreading cores, which can increase the amount of time this process will take.\n" +
+                "\t   This is because the part of Scoring param generation that is multithreaded is also I/O intensive."),
+
+        NUM_TASKS("tasks", "NumTasks", "Override the number of tasks to use on the threads, Default: (internally calculated based on inputs)", "More tasks than threads will reduce the memory requirements of the search, but will be slower (how much depends on the inputs).\n" +
+                "\t   1 <= tasks <= numThreads: will create one task per thread, which is the original behavior.\n" +
+                "\t   tasks = 0: use default calculation - minimum of: (threads*3) and (numSpectra/250).\n" +
+                "\t   tasks < 0: multiply number of threads by abs(tasks) to determine number of tasks (i.e., -2 means \"2 * numThreads\" tasks).\n" +
+                "\t   One task per thread will use the most memory, but will usually finish the fastest.\n" +
+                "\t   2-3 tasks per thread will use comparably less memory, but may cause the search to take 1.5 to 2 times as long."),
+
+        PRECURSOR_MASS_TOLERANCE("t", "PrecursorMassTolerance", "e.g. 2.5Da, 20ppm or 0.5Da,2.5Da, Default: 20ppm", "Use a comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (ObsMass < TheoMass) and 2.5Da to the right (ObsMass > TheoMass)"),
+
+        ISOTOPE_ERROR("ti", "IsotopeErrorRange", "Range of allowed isotope peak errors, Default:0,1", "Takes into account the error introduced by choosing a non-monoisotopic peak for fragmentation.\n" +
+                "\t   The combination of -t and -ti determines the precursor mass tolerance.\n" +
+                "\t   E.g. \"-t 20ppm -ti -1,2\" tests abs(ObservedPepMass - TheoreticalPepMass - n * 1.00335Da) < 20ppm for n = -1, 0, 1, 2."),
+
+        ENZYME_SPECIFICITY("ntt", "NTT", "Number of Tolerable Termini", "E.g. For trypsin, 0: non-tryptic, 1: semi-tryptic, 2: fully-tryptic peptides only."),
+
+        MIN_PEPTIDE_LENGTH("minLength", "MinPepLength", "Minimum peptide length to consider, Default: 6", null),
+        MAX_PEPTIDE_LENGTH("maxLength", "MaxPepLength", "Maximum peptide length to consider, Default: 40", null),
+        MIN_CHARGE("minCharge", "MinCharge", "Minimum precursor charge to consider if charges are not specified in the spectrum file, Default: 2", null),
+        MAX_CHARGE("maxCharge", "MaxCharge", "Maximum precursor charge to consider if charges are not specified in the spectrum file, Default: 3", null),
+        NUM_MATCHES_SPEC("n", "NumMatchesPerSpec", "Number of matches per spectrum to be reported, Default: 1", null),
+        CHARGE_CARRIER_MASSES("ccm", "ChargeCarrierMass", "Mass of charge carrier, Default: mass of proton (1.00727649)", null),
+        MIN_NUM_PEAKS("minNumPeaks", "MinNumPeaksPerSpectrum", "Minimum number of peaks per spectrum, Default: " + Constants.MIN_NUM_PEAKS_PER_SPECTRUM, null),
+        NUM_ISOFORMS("iso", "NumIsoforms", "Number of isoforms to consider per peptide, Default: 128" + Constants.NUM_VARIANTS_PER_PEPTIDE, null),
+
+        MIN_DENOVO_SCORE("minDeNovoScore", "MinDeNovoScore", "Minimum de Novo score, Default: " + Constants.MIN_DE_NOVO_SCORE, null),
+        SPEC_INDEX("index", "SpecIndex", "Range of spectrum index to be considered", null),
+        MAX_MISSCLEAVAGES("maxMissedCleavages", "Count", "Exclude peptides with more than this number of missed cleavages from the search, Default: -1 (no limit)", null),
+        TDA_STRATEGY("tda", "TDA", "Target decoy strategy", null),
+        ADD_FEATURES("addFeatures", "AddFeatures", "Add features in the output", null),
+        DD_DIRECTORY("dd", "DBIndexDir", "Path to the directory containing database index files", null),
+        UNIFORM_AA_PROBABILITY("uniformAAProb", "UniformAAProb", null, null),
+        MAX_NUM_MODS("numMods", "NumMods", "Maximum number of modifications", null),
+        STATIC_MODIFICATION("staticMod", "StaticMod", "Static/Fixed modification", null),
+        DYNAMIC_MODIFICATION("dynamicMod", "DynamicMod", "Dynamic/Variable modification", null),
+        CUSTOM_AA("customAA", "CustomAA", "Custom amino acid", null),
+
+
+        VERBOSE("verbose", null, null,null);
+
+        private String name;
+        private String commandlineName;
+        private String description;
+        private String additionalDescription;
+
+        ParamNameEnum(String commandlineName, String name, String description, String additionalDescription){
+            this.name = name;
+            this.commandlineName = commandlineName;
+            this.description = description;
+            this.additionalDescription = additionalDescription;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getCommandlineName() {
+            return commandlineName;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public String getAdditionalDescription() {
+            return additionalDescription;
+        }
+
+        /**
+         * Check is the parameter line contains the ParamValue
+         * @param line Param Line
+         * @return is the line.
+         */
+        public boolean isLine(String line) {
+            return ((getName()!= null && line.contains(getName().toLowerCase())));
+        }
+    }
 
     public ParamManager(String toolName, String version, String date, String command) {
         this.toolName = toolName;
@@ -151,7 +255,8 @@ public class ParamManager {
     }
 
     public void addSpecFileParam() {
-        FileParameter specFileParam = new FileParameter("s", "SpectrumFile", "*.mzML, *.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt");
+        FileParameter specFileParam = new FileParameter(ParamNameEnum.SPECTRUM_FILE.commandlineName,
+                ParamNameEnum.SPECTRUM_FILE.name, ParamNameEnum.SPECTRUM_FILE.description);
         specFileParam.addFileFormat(SpecFileFormat.MZML);
         specFileParam.addFileFormat(SpecFileFormat.MZXML);
         specFileParam.addFileFormat(SpecFileFormat.MGF);
@@ -160,16 +265,16 @@ public class ParamManager {
         specFileParam.addFileFormat(SpecFileFormat.DTA_TXT);
         specFileParam.addFileFormat(FileFormat.DIRECTORY);
         specFileParam.fileMustExist();
-        specFileParam.setAdditionalDescription("Spectra should be centroided (see below for MSConvert example). Profile spectra will be ignored.");
+        specFileParam.setAdditionalDescription(ParamNameEnum.SPECTRUM_FILE.additionalDescription);
         addParameter(specFileParam);
     }
 
     public void addDBFileParam() {
-        addDBFileParam("d", "*.fasta or *.fa or *.faa", false);
+        addDBFileParam(ParamNameEnum.DB_FILE.commandlineName, ParamNameEnum.DB_FILE.description, false);
     }
 
     public void addDBFileParam(String key, String description, boolean isOptional) {
-        FileParameter dbFileParam = new FileParameter(key, "DatabaseFile", description);
+        FileParameter dbFileParam = new FileParameter(key, ParamNameEnum.DB_FILE.name, description);
         if (isOptional)
             dbFileParam.setAsOptional();
         dbFileParam.addFileFormat(DBFileFormat.FASTA);
@@ -183,28 +288,27 @@ public class ParamManager {
     }
 
     public void addDecoyPrefixParam(String defaultDecoyPrefix) {
-        StringParameter decoyPrefixParam = new StringParameter("decoy", "DecoyPrefix", "Prefix for decoy protein names; default is " + MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX);
+        StringParameter decoyPrefixParam = new StringParameter(ParamNameEnum.DECOY_PREFIX.commandlineName, ParamNameEnum.DECOY_PREFIX.name, ParamNameEnum.DECOY_PREFIX.description);
         // Note that defining a default value auto-sets isOptional to True
         decoyPrefixParam.defaultValue(defaultDecoyPrefix);
         addParameter(decoyPrefixParam);
     }
 
     public void addPMTolParam() {
-        ToleranceParameter pmTolParam = new ToleranceParameter("t", "ParentMassTolerance", "e.g. 2.5Da, 30ppm or 0.5Da,2.5Da");
-        pmTolParam.setAdditionalDescription("Use a comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (expMass<theoMass) and 2.5Da to the right (expMass>theoMass)");
+        ToleranceParameter pmTolParam = new ToleranceParameter(ParamNameEnum.PARENT_MASS_TOLERANCE.commandlineName, ParamNameEnum.PARENT_MASS_TOLERANCE.name, ParamNameEnum.PARENT_MASS_TOLERANCE.description);
+        pmTolParam.setAdditionalDescription(ParamNameEnum.PARENT_MASS_TOLERANCE.additionalDescription);
         addParameter(pmTolParam);
     }
 
     public void addMzIdOutputFileParam() {
-        FileParameter outputParam = new FileParameter("o", "OutputFile (*.mzid)", "Default: [SpectrumFileName].mzid");
+        FileParameter outputParam = new FileParameter(ParamNameEnum.MZID_OUTPUT_FILE.commandlineName, ParamNameEnum.MZID_OUTPUT_FILE.name, ParamNameEnum.MZID_OUTPUT_FILE.description);
         outputParam.addFileFormat(new FileFormat(".mzid").setCaseSensitive());
         outputParam.setAsOptional();
-//		outputParam.fileMustNotExist();
         addParameter(outputParam);
     }
 
     public void addOutputFileParam() {
-        FileParameter outputParam = new FileParameter("o", "OutputFile", "Default: stdout");
+        FileParameter outputParam = new FileParameter(ParamNameEnum.OUTPUT_FILE.commandlineName, ParamNameEnum.OUTPUT_FILE.name, ParamNameEnum.OUTPUT_FILE.description);
         outputParam.setAsOptional();
         outputParam.fileMustNotExist();
         addParameter(outputParam);
@@ -222,7 +326,7 @@ public class ParamManager {
      * @param doNotAddMergeMode
      */
     public void addFragMethodParam(ActivationMethod defaultMethod, boolean doNotAddMergeMode) {
-        ObjectEnumParameter<ActivationMethod> fragParam = new ObjectEnumParameter<ActivationMethod>("m", "FragmentMethodID");
+        ObjectEnumParameter<ActivationMethod> fragParam = new ObjectEnumParameter<ActivationMethod>(ParamNameEnum.FRAG_METHOD.commandlineName, ParamNameEnum.FRAG_METHOD.name);
         ActivationMethod[] methods = ActivationMethod.getAllRegisteredActivationMethods();
         for (ActivationMethod m : methods) {
             if (doNotAddMergeMode && m == ActivationMethod.FUSION)
@@ -239,7 +343,7 @@ public class ParamManager {
     }
 
     public void addInstTypeParam(InstrumentType defaultInst) {
-        ObjectEnumParameter<InstrumentType> instParam = new ObjectEnumParameter<InstrumentType>("inst", "MS2DetectorID");
+        ObjectEnumParameter<InstrumentType> instParam = new ObjectEnumParameter<InstrumentType>(ParamNameEnum.INTRUMENT_TYPE.commandlineName, ParamNameEnum.INTRUMENT_TYPE.name);
         InstrumentType[] allInstTypes = InstrumentType.getAllRegisteredInstrumentTypes();
         for (InstrumentType inst : allInstTypes) {
             instParam.registerObject(inst);
@@ -254,7 +358,7 @@ public class ParamManager {
     }
 
     public void addEnzymeParam(Enzyme defaulEnzyme) {
-        ObjectEnumParameter<Enzyme> enzParam = new ObjectEnumParameter<Enzyme>("e", "EnzymeID");
+        ObjectEnumParameter<Enzyme> enzParam = new ObjectEnumParameter<Enzyme>(ParamNameEnum.ENZYME_ID.commandlineName, ParamNameEnum.ENZYME_ID.name);
         Enzyme[] allEnzymes = Enzyme.getAllRegisteredEnzymes();
         for (Enzyme e : allEnzymes) {
             enzParam.registerObject(e);
@@ -269,7 +373,7 @@ public class ParamManager {
     }
 
     public void addProtocolParam(Protocol defaultProtocol) {
-        ObjectEnumParameter<Protocol> protocolParam = new ObjectEnumParameter<Protocol>("protocol", "ProtocolID");
+        ObjectEnumParameter<Protocol> protocolParam = new ObjectEnumParameter<Protocol>(ParamNameEnum.PROTOCOL_ID.commandlineName, ParamNameEnum.PROTOCOL_ID.name);
         Protocol[] protocols = Protocol.getAllRegisteredProtocols();
         for (Protocol protocol : protocols) {
             protocolParam.registerObject(protocol);
@@ -280,10 +384,17 @@ public class ParamManager {
     }
 
     public void addModFileParam() {
-        FileParameter modParam = new FileParameter("mod", "ModificationFileName", "Modification file, Default: standard amino acids with fixed C+57; only if -mod is not specified");
+        FileParameter modParam = new FileParameter(ParamNameEnum.MOD_FILE.commandlineName, ParamNameEnum.MOD_FILE.name, ParamNameEnum.MOD_FILE.description);
         modParam.setAsOptional();
         modParam.fileMustExist();
         addParameter(modParam);
+    }
+
+    public void addConfigFileParam(){
+        FileParameter configFile = new FileParameter(ParamNameEnum.CONFIGURATION_FILE.commandlineName, ParamNameEnum.CONFIGURATION_FILE.name, ParamNameEnum.CONFIGURATION_FILE.description);
+        configFile.setAsOptional();
+        configFile.fileMustExist();
+        addParameter(configFile);
     }
 
     /**
@@ -302,41 +413,34 @@ public class ParamManager {
         // [-o OutputFile (*.mzid)] (Default: [SpectrumFileName].mzid)
         addMzIdOutputFileParam();
 
-        ToleranceParameter pmTolParam = new ToleranceParameter("t", "PrecursorMassTolerance", "e.g. 2.5Da, 20ppm or 0.5Da,2.5Da, Default: 20ppm");
+        ToleranceParameter pmTolParam = new ToleranceParameter(ParamNameEnum.PRECURSOR_MASS_TOLERANCE.commandlineName, ParamNameEnum.PRECURSOR_MASS_TOLERANCE.name, ParamNameEnum.PRECURSOR_MASS_TOLERANCE.description);
         pmTolParam.defaultValue("20ppm");
-        pmTolParam.setAdditionalDescription("Use a comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (ObsMass < TheoMass) and 2.5Da to the right (ObsMass > TheoMass)");
+        pmTolParam.setAdditionalDescription(ParamNameEnum.PRECURSOR_MASS_TOLERANCE.additionalDescription);
         addParameter(pmTolParam);
 
-        IntRangeParameter isotopeRange = new IntRangeParameter("ti", "IsotopeErrorRange", "Range of allowed isotope peak errors, Default:0,1");
-        isotopeRange.setAdditionalDescription("Takes into account the error introduced by choosing a non-monoisotopic peak for fragmentation.\n" +
-                "\t   The combination of -t and -ti determines the precursor mass tolerance.\n" +
-                "\t   E.g. \"-t 20ppm -ti -1,2\" tests abs(ObservedPepMass - TheoreticalPepMass - n * 1.00335Da) < 20ppm for n = -1, 0, 1, 2.");
+        IntRangeParameter isotopeRange = new IntRangeParameter(ParamNameEnum.ISOTOPE_ERROR.commandlineName, ParamNameEnum.ISOTOPE_ERROR.name, ParamNameEnum.ISOTOPE_ERROR.description);
+        isotopeRange.setAdditionalDescription(ParamNameEnum.ISOTOPE_ERROR.additionalDescription);
         isotopeRange.setMaxInclusive();
         isotopeRange.defaultValue("0,1");
         addParameter(isotopeRange);
 
-        IntParameter numThreadParam = new IntParameter("thread", "NumThreads", "Number of concurrent threads to be executed, Default: Number of available cores");
+        IntParameter numThreadParam = new IntParameter(ParamNameEnum.NUM_THREADS.commandlineName, ParamNameEnum.NUM_THREADS.name, ParamNameEnum.NUM_THREADS.description);
         numThreadParam.defaultValue(Runtime.getRuntime().availableProcessors());
         numThreadParam.minValue(1);
         addParameter(numThreadParam);
 
-        IntParameter numTasksParam = new IntParameter("tasks", "NumTasks", "Override the number of tasks to use on the threads, Default: (internally calculated based on inputs)");
-        numTasksParam.setAdditionalDescription("More tasks than threads will reduce the memory requirements of the search, but will be slower (how much depends on the inputs).\n" +
-                "\t   1 <= tasks <= numThreads: will create one task per thread, which is the original behavior.\n" +
-                "\t   tasks = 0: use default calculation - minimum of: (threads*3) and (numSpectra/250).\n" +
-                "\t   tasks < 0: multiply number of threads by abs(tasks) to determine number of tasks (i.e., -2 means \"2 * numThreads\" tasks).\n" +
-                "\t   One task per thread will use the most memory, but will usually finish the fastest.\n" +
-                "\t   2-3 tasks per thread will use comparably less memory, but may cause the search to take 1.5 to 2 times as long.");
+        IntParameter numTasksParam = new IntParameter(ParamNameEnum.NUM_TASKS.commandlineName, ParamNameEnum.NUM_TASKS.name, ParamNameEnum.NUM_TASKS.description);
+        numTasksParam.setAdditionalDescription(ParamNameEnum.NUM_TASKS.additionalDescription);
         numTasksParam.defaultValue(0);
         numTasksParam.minValue(-10);
         addParameter(numTasksParam);
 
-        EnumParameter verboseOutputParam = new EnumParameter("verbose");
+        EnumParameter verboseOutputParam = new EnumParameter(ParamNameEnum.VERBOSE.commandlineName);
         verboseOutputParam.registerEntry("Report total progress only").setDefault();
         verboseOutputParam.registerEntry("Report total and per-thread progress/status");
         addParameter(verboseOutputParam);
 
-        EnumParameter tdaParam = new EnumParameter("tda");
+        EnumParameter tdaParam = new EnumParameter(ParamNameEnum.TDA_STRATEGY.commandlineName, ParamNameEnum.TDA_STRATEGY.name, ParamNameEnum.TDA_STRATEGY.description);
         tdaParam.registerEntry("Don't search decoy database").setDefault();
         tdaParam.registerEntry("Search decoy database");
         addParameter(tdaParam);
@@ -346,8 +450,8 @@ public class ParamManager {
         addEnzymeParam();
         addProtocolParam();
 
-        EnumParameter nttParam = new EnumParameter("ntt", null, "Number of Tolerable Termini");
-        nttParam.setAdditionalDescription("E.g. For trypsin, 0: non-tryptic, 1: semi-tryptic, 2: fully-tryptic peptides only.");
+        EnumParameter nttParam = new EnumParameter(ParamNameEnum.ENZYME_SPECIFICITY.commandlineName, null, ParamNameEnum.ENZYME_SPECIFICITY.description);
+        nttParam.setAdditionalDescription(ParamNameEnum.ENZYME_SPECIFICITY.additionalDescription);
         nttParam.registerEntry("");
         nttParam.registerEntry("");
         nttParam.registerEntry("").setDefault();
@@ -355,44 +459,46 @@ public class ParamManager {
 
         addModFileParam();
 
-        IntParameter minLenParam = new IntParameter("minLength", "MinPepLength", "Minimum peptide length to consider, Default: 6");
+        addConfigFileParam();
+
+        IntParameter minLenParam = new IntParameter(ParamNameEnum.MIN_PEPTIDE_LENGTH.commandlineName, ParamNameEnum.MIN_PEPTIDE_LENGTH.name, ParamNameEnum.MIN_PEPTIDE_LENGTH.description);
         minLenParam.minValue(1);
         minLenParam.defaultValue(6);
         addParameter(minLenParam);
 
-        IntParameter maxLenParam = new IntParameter("maxLength", "MaxPepLength", "Maximum peptide length to consider, Default: 40");
+        IntParameter maxLenParam = new IntParameter(ParamNameEnum.MAX_PEPTIDE_LENGTH.commandlineName, ParamNameEnum.MAX_PEPTIDE_LENGTH.name, ParamNameEnum.MAX_PEPTIDE_LENGTH.description);
         maxLenParam.minValue(1);
         maxLenParam.defaultValue(40);
         addParameter(maxLenParam);
 
-        IntParameter minCharge = new IntParameter("minCharge", "MinCharge", "Minimum precursor charge to consider if charges are not specified in the spectrum file, Default: 2");
+        IntParameter minCharge = new IntParameter(ParamNameEnum.MIN_CHARGE.commandlineName, ParamNameEnum.MIN_CHARGE.name, ParamNameEnum.MIN_CHARGE.description);
         minCharge.minValue(1);
         minCharge.defaultValue(2);
         addParameter(minCharge);
 
-        IntParameter maxCharge = new IntParameter("maxCharge", "MaxCharge", "Maximum precursor charge to consider if charges are not specified in the spectrum file, Default: 3");
+        IntParameter maxCharge = new IntParameter(ParamNameEnum.MAX_CHARGE.commandlineName, ParamNameEnum.MAX_CHARGE.name, ParamNameEnum.MAX_CHARGE.description);
         maxCharge.minValue(1);
         maxCharge.defaultValue(3);
         addParameter(maxCharge);
 
-        IntParameter numMatchesParam = new IntParameter("n", "NumMatchesPerSpec", "Number of matches per spectrum to be reported, Default: 1");
+        IntParameter numMatchesParam = new IntParameter(ParamNameEnum.NUM_MATCHES_SPEC.commandlineName, ParamNameEnum.NUM_MATCHES_SPEC.name, ParamNameEnum.NUM_MATCHES_SPEC.description);
         numMatchesParam.minValue(1);
         numMatchesParam.defaultValue(1);
         addParameter(numMatchesParam);
 
-        EnumParameter addFeatureParam = new EnumParameter("addFeatures");
+        EnumParameter addFeatureParam = new EnumParameter(ParamNameEnum.ADD_FEATURES.commandlineName, ParamNameEnum.ADD_FEATURES.name, ParamNameEnum.ADD_FEATURES.description);
         addFeatureParam.registerEntry("Output basic scores only").setDefault();
         addFeatureParam.registerEntry("Output additional features");
         addParameter(addFeatureParam);
 
-        DoubleParameter chargeCarrierMassParam = new DoubleParameter("ccm", "ChargeCarrierMass", "Mass of charge carrier, Default: mass of proton (1.00727649)");
+        DoubleParameter chargeCarrierMassParam = new DoubleParameter(ParamNameEnum.CHARGE_CARRIER_MASSES.commandlineName, ParamNameEnum.CHARGE_CARRIER_MASSES.name, ParamNameEnum.CHARGE_CARRIER_MASSES.description);
         chargeCarrierMassParam.minValue(0.1);
         chargeCarrierMassParam.setMaxInclusive();
         chargeCarrierMassParam.defaultValue(Composition.PROTON);
         addParameter(chargeCarrierMassParam);
 
         /* Maximum number of missed cleavages to allow on searched peptides */
-        IntParameter maxMissedCleavages = new IntParameter("maxMissedCleavages", "Count", "Exclude peptides with more than this number of missed cleavages from the search, Default: -1 (no limit)");
+        IntParameter maxMissedCleavages = new IntParameter(ParamNameEnum.MAX_MISSCLEAVAGES.commandlineName, ParamNameEnum.MAX_MISSCLEAVAGES.name, ParamNameEnum.MAX_MISSCLEAVAGES.description);
         maxMissedCleavages.minValue(-1);
         maxMissedCleavages.defaultValue(-1);
         addParameter(maxMissedCleavages);
@@ -401,7 +507,7 @@ public class ParamManager {
         addExample("Example (low-precision):  java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_human_3.79.fasta -inst 0 -t 0.5Da,2.5Da    -ntt 2 -tda 1 -o testMSGFPlus.mzid -mod Mods.txt");
 
         // Hidden parameters
-        FileParameter dbIndexDirParam = new FileParameter("dd", "DBIndexDir", "Path to the directory containing database index files");
+        FileParameter dbIndexDirParam = new FileParameter(ParamNameEnum.DD_DIRECTORY.commandlineName, ParamNameEnum.DD_DIRECTORY.name, ParamNameEnum.DD_DIRECTORY.description);
         dbIndexDirParam.fileMustExist();
         dbIndexDirParam.mustBeADirectory();
         dbIndexDirParam.setAsOptional();
@@ -415,7 +521,7 @@ public class ParamManager {
         unitParam.setHidden();
         addParameter(unitParam);
 
-        IntRangeParameter specIndexParam = new IntRangeParameter("index", "SpecIndex", "Range of spectrum index to be considered");
+        IntRangeParameter specIndexParam = new IntRangeParameter(ParamNameEnum.SPEC_INDEX.commandlineName, ParamNameEnum.SPEC_INDEX.name, ParamNameEnum.SPEC_INDEX.description);
         specIndexParam.minValue(1);
         specIndexParam.setMaxInclusive();
         specIndexParam.defaultValue("1," + (Integer.MAX_VALUE - 1));
@@ -439,12 +545,12 @@ public class ParamManager {
         edgeScoreParam.setHidden();
         addParameter(edgeScoreParam);
 
-        IntParameter minNumPeaksParam = new IntParameter("minNumPeaks", "MinNumPeaksPerSpectrum", "Minimum number of peaks per spectrum, Default: " + Constants.MIN_NUM_PEAKS_PER_SPECTRUM);
+        IntParameter minNumPeaksParam = new IntParameter(ParamNameEnum.MIN_NUM_PEAKS.commandlineName, ParamNameEnum.MIN_NUM_PEAKS.name, ParamNameEnum.MIN_NUM_PEAKS.description);
         minNumPeaksParam.defaultValue(Constants.MIN_NUM_PEAKS_PER_SPECTRUM);
         minNumPeaksParam.setHidden();
         addParameter(minNumPeaksParam);
 
-        IntParameter isoParam = new IntParameter("iso", "NumIsoforms", "Number of isoforms to consider per peptide, Default: 128" + Constants.NUM_VARIANTS_PER_PEPTIDE);
+        IntParameter isoParam = new IntParameter(ParamNameEnum.NUM_ISOFORMS.commandlineName, ParamNameEnum.NUM_ISOFORMS.name, ParamNameEnum.NUM_ISOFORMS.description);
         isoParam.defaultValue(Constants.NUM_VARIANTS_PER_PEPTIDE);
         isoParam.setHidden();
         addParameter(isoParam);
@@ -455,7 +561,7 @@ public class ParamManager {
         metCleavageParam.setHidden();
         addParameter(metCleavageParam);
 
-        IntParameter minDeNovoScoreParam = new IntParameter("minDeNovoScore", "MinDeNovoScore", "Minimum de Novo score, Default: " + Constants.MIN_DE_NOVO_SCORE);
+        IntParameter minDeNovoScoreParam = new IntParameter(ParamNameEnum.MIN_DENOVO_SCORE.commandlineName, ParamNameEnum.MIN_DENOVO_SCORE.name, ParamNameEnum.MIN_DENOVO_SCORE.description);
         minDeNovoScoreParam.minValue(Integer.MIN_VALUE);
         minDeNovoScoreParam.defaultValue(Constants.MIN_DE_NOVO_SCORE);
         minDeNovoScoreParam.setHidden();
@@ -505,12 +611,9 @@ public class ParamManager {
         // Protocol
         addProtocolParam();
 
-        IntParameter numThreadParam = new IntParameter("thread", "NumThreads", "Number of concurrent threads to be executed, Default: Number of available cores");
+        IntParameter numThreadParam = new IntParameter(ParamNameEnum.NUM_THREADS.commandlineName, ParamNameEnum.NUM_THREADS.name, ParamNameEnum.NUM_THREADS.description);
         numThreadParam.defaultValue(Runtime.getRuntime().availableProcessors() / 2);
-        numThreadParam.setAdditionalDescription("This is best set to the number of physical cores in a single NUMA node.\n" +
-                "\t   Generally a single NUMA node is 1 physical processor.\n" +
-                "\t   The default will try to use hyperthreading cores, which can increase the amount of time this process will take.\n" +
-                "\t   This is because the part of Scoring param generation that is multithreaded is also I/O intensive.");
+        numThreadParam.setAdditionalDescription(ParamNameEnum.NUM_THREADS.additionalDescription);
         numThreadParam.minValue(1);
         addParameter(numThreadParam);
 
@@ -607,7 +710,7 @@ public class ParamManager {
         numMatchesParam.defaultValue(1);
         addParameter(numMatchesParam);
 
-        EnumParameter uniformAAProb = new EnumParameter("uniformAAProb");
+        EnumParameter uniformAAProb = new EnumParameter(ParamNameEnum.UNIFORM_AA_PROBABILITY.commandlineName, ParamNameEnum.UNIFORM_AA_PROBABILITY.name);
         uniformAAProb.registerEntry("use amino acid probabilities computed from the input database").setDefault();
         uniformAAProb.registerEntry("use probability 0.05 for all amino acids");
         addParameter(uniformAAProb);
@@ -735,7 +838,8 @@ public class ParamManager {
         addPMTolParam();
         addOutputFileParam();
 
-        IntParameter numThreadParam = new IntParameter("thread", "NumThreads", "Number of concurrent threads to be executed, Default: Number of available cores");
+        IntParameter numThreadParam = new IntParameter(ParamNameEnum.NUM_THREADS.commandlineName, ParamNameEnum.NUM_THREADS.name, ParamNameEnum.NUM_THREADS.description);
+
         numThreadParam.defaultValue(Runtime.getRuntime().availableProcessors());
         numThreadParam.minValue(1);
         addParameter(numThreadParam);
@@ -798,6 +902,10 @@ public class ParamManager {
 
     public FileParameter getModFileParam() {
         return ((FileParameter) getParameter("mod"));
+    }
+
+    public FileParameter getConfigFileParam(){
+        return ((FileParameter) getParameter("conf"));
     }
 
     public int getIntValue(String key) {
