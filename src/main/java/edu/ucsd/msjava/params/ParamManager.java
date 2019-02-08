@@ -543,6 +543,7 @@ public class ParamManager {
 
     }
 
+    @Deprecated
     public void addMSGFDBParams() {
         addSpecFileParam();
         addDBFileParam();
