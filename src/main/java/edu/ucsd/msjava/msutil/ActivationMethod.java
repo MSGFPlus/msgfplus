@@ -6,6 +6,7 @@ import edu.ucsd.msjava.params.UserParam;
 import uk.ac.ebi.jmzidml.model.mzidml.CvParam;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -149,7 +150,7 @@ public class ActivationMethod implements ParamObject {
         add(UVPD);                // -m 5
 
         // Parse activation methods defined by a user
-        File actMethodFile = new File("params/activationMethods.txt");
+        File actMethodFile = Paths.get("params", "activationMethods.txt").toFile();
         if (actMethodFile.exists()) {
 //			System.out.println("Loading " + actMethodFile.getAbsolutePath());
             ArrayList<String> paramLines = UserParam.parseFromFile(actMethodFile.getPath(), 2);

@@ -4,6 +4,7 @@ import edu.ucsd.msjava.params.ParamObject;
 import edu.ucsd.msjava.params.UserParam;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -72,7 +73,7 @@ public class Protocol implements ParamObject {
         add(STANDARD);
 
         // Parse activation methods defined by a user
-        File protocolFile = new File("params/protocols.txt");
+        File protocolFile = Paths.get("params", "protocols.txt").toFile();
         if (protocolFile.exists()) {
             ArrayList<String> paramLines = UserParam.parseFromFile(protocolFile.getPath(), 2);
             for (String paramLine : paramLines) {
