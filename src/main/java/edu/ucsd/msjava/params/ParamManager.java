@@ -97,9 +97,12 @@ public class ParamManager {
             System.out.println(example);
 
         System.out.println();
-        System.out.println();
         System.out.println("For Thermo .raw files, obtain a centroided .mzML file using MSConvert, which is part of ProteoWizard (http://proteowizard.sourceforge.net/)");
         System.out.println("  MSConvert.exe DatasetName.raw --filter \"peakPicking true 1-\" --mzML --32");
+        System.out.println();
+        System.out.println("To add or override the enzyme definitions, create a file named enzymes.txt in a directory named params below the working directory.");
+        System.out.println("For example, create file C:\\Work\\params\\enzymes.txt when the working directory is C:\\Work");
+        System.out.println("Example enzymes.txt file: https://github.com/MSGFPlus/msgfplus/blob/master/docs/examples/enzymes.txt");
         System.out.println();
         System.out.println("Documentation: https://msgfplus.github.io/msgfplus/");
         System.out.println("Releases:      https://github.com/MSGFPlus/msgfplus/releases");
@@ -293,7 +296,7 @@ public class ParamManager {
         // -s SpectrumFile (*.mzML, *.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt)
         addSpecFileParam();
 
-        // -d DatabaseFile (*.fasta or *.fa)
+        // -d DatabaseFile (*.fasta or *.fa or *.faa)
         addDBFileParam();
 
         // decoy DecoyPrefix
