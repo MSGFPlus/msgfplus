@@ -159,10 +159,21 @@ public class Enzyme implements ParamObject {
 
     /**
      * Gets the neighboring amino acid efficiency
+     * Deprecated, use getNeighboringAACleavageEfficiency
      *
      * @return neighboring amino acid efficiency
      */
+    @Deprecated()
     public float getNeighboringAACleavageEffiency() {
+        return getNeighboringAACleavageEfficiency();
+    }
+
+    /**
+     * Gets the neighboring amino acid efficiency
+     *
+     * @return neighboring amino acid efficiency
+     */
+    public float getNeighboringAACleavageEfficiency() {
         return neighboringAACleavageEfficiency;
     }
 
@@ -383,6 +394,12 @@ public class Enzyme implements ParamObject {
     public static String getCustomEnzymeFilePath() { return customEnzymeFilePath; }
 
     /**
+     * Messages associated with enzymes loaded from the custom enzyme file
+     * @return
+     */
+    public static ArrayList<String> getCustomEnzymeMessages() { return customEnzymeMessages; }
+
+    /**
      * Get an Enzyme by enzyme name
      */
     public static Enzyme getEnzymeByName(String name) {
@@ -399,6 +416,7 @@ public class Enzyme implements ParamObject {
     /**
      * Obsolete method; does nothing
      */
+    @Deprecated
     public static Enzyme register(String name, String residues, boolean isNTerm, String description) {
         return null;
     }
@@ -407,9 +425,47 @@ public class Enzyme implements ParamObject {
     private static ArrayList<Enzyme> registeredEnzymeList;
 
     private static String customEnzymeFilePath;
+    private static ArrayList<String> customEnzymeMessages;
+
     private static void register(String name, Enzyme enzyme) {
-        if (enzymeTable.put(name, enzyme) == null)
+        register(name, enzyme, false);
+    }
+
+    private static void register(String name, Enzyme enzyme, boolean notifyNewEnzyme) {
+        if (enzymeTable.put(name, enzyme) == null) {
+            // New enzyme name; add it to the registered enzyme list
             registeredEnzymeList.add(enzyme);
+            if (notifyNewEnzyme) {
+                customEnzymeMessages.add("Added new enzyme " + enzyme.name + " with target residues " + new String(enzyme.getResidues()));
+            }
+        } else {
+            // Check for the user overriding the target residues or the description
+            int targetIndex = -1;
+
+            for (int enzymeIndex = 0; enzymeIndex < registeredEnzymeList.size(); enzymeIndex++) {
+                Enzyme existingEnzyme = registeredEnzymeList.get(enzymeIndex);
+
+                if (existingEnzyme.name.equals(enzyme.name)) {
+                    String existingResidues = new String(existingEnzyme.residues);
+                    String newResidues = new String(enzyme.residues);
+
+                    if (!existingResidues.equals(newResidues)) {
+                        customEnzymeMessages.add("Target residues for enzyme " + enzyme.name + " changed from " + existingResidues + " to " + newResidues);
+                        targetIndex = enzymeIndex;
+                        break;
+                    }
+
+                    if (!existingEnzyme.description.equalsIgnoreCase(enzyme.description)) {
+                        targetIndex = enzymeIndex;
+                        break;
+                    }
+                }
+            }
+
+            if (targetIndex >= 0) {
+                registeredEnzymeList.set(targetIndex, enzyme);
+            }
+        }
     }
 
     static {
@@ -466,6 +522,7 @@ public class Enzyme implements ParamObject {
         register(NoCleavage.name, NoCleavage);        // 9
 
         customEnzymeFilePath = "";
+        customEnzymeMessages  = new ArrayList<String>();
 
         // Add user-defined enzymes
         // look for file enzymes.txt in the params directory below the working directory
