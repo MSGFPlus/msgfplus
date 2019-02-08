@@ -15,8 +15,17 @@ public class IntParameter extends NumberParameter<Integer> {
             String range = (super.isMinInclusive ? "[" : "(") + minValue + "," + maxValue + (super.isMaxInclusive ? "]" : ")");
             if (this.value < minValue || this.value > maxValue
                     || !super.isMinInclusive && this.value.equals(minValue)
-                    || !super.isMaxInclusive && this.value.equals(maxValue))
-                return "must be in the range " + range;
+                    || !super.isMaxInclusive && this.value.equals(maxValue)) {
+
+                if (super.isMinInclusive && super.isMaxInclusive)
+                    return "must be in the range " + minValue + " to " + maxValue;
+                else if (super.isMinInclusive)
+                    return "must be in the range " + minValue + " to " + (maxValue - 1);
+                else if (!super.isMinInclusive && super.isMaxInclusive)
+                    return "must be in the range " + (minValue + 1) + " to " + maxValue;
+                else
+                    return "must be in the range " + range;
+            }
         } catch (NumberFormatException e) {
             return "must be an integer";
         }

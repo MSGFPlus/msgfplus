@@ -201,9 +201,12 @@ public class ParamManager {
             System.out.println(example);
 
         System.out.println();
-        System.out.println();
         System.out.println("For Thermo .raw files, obtain a centroided .mzML file using MSConvert, which is part of ProteoWizard (http://proteowizard.sourceforge.net/)");
         System.out.println("  MSConvert.exe DatasetName.raw --filter \"peakPicking true 1-\" --mzML --32");
+        System.out.println();
+        System.out.println("To add or override the enzyme definitions, create a file named enzymes.txt in a directory named params below the working directory.");
+        System.out.println("For example, create file C:\\Work\\params\\enzymes.txt when the working directory is C:\\Work");
+        System.out.println("Example enzymes.txt file: https://github.com/MSGFPlus/msgfplus/blob/master/docs/examples/enzymes.txt");
         System.out.println();
         System.out.println("Documentation: https://msgfplus.github.io/msgfplus/");
         System.out.println("Releases:      https://github.com/MSGFPlus/msgfplus/releases");
@@ -357,12 +360,12 @@ public class ParamManager {
         addEnzymeParam(Enzyme.TRYPSIN);
     }
 
-    public void addEnzymeParam(Enzyme defaulEnzyme) {
+    public void addEnzymeParam(Enzyme enzymeId) {
         ObjectEnumParameter<Enzyme> enzParam = new ObjectEnumParameter<Enzyme>(ParamNameEnum.ENZYME_ID.commandlineName, ParamNameEnum.ENZYME_ID.name);
         Enzyme[] allEnzymes = Enzyme.getAllRegisteredEnzymes();
         for (Enzyme e : allEnzymes) {
             enzParam.registerObject(e);
-            if (e == defaulEnzyme)
+            if (e == enzymeId)
                 enzParam.setDefault();
         }
         addParameter(enzParam);
@@ -404,7 +407,7 @@ public class ParamManager {
         // -s SpectrumFile (*.mzML, *.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt)
         addSpecFileParam();
 
-        // -d DatabaseFile (*.fasta or *.fa)
+        // -d DatabaseFile (*.fasta or *.fa or *.faa)
         addDBFileParam();
 
         // decoy DecoyPrefix
@@ -643,6 +646,7 @@ public class ParamManager {
 
     }
 
+    @Deprecated
     public void addMSGFDBParams() {
         addSpecFileParam();
         addDBFileParam();
@@ -764,11 +768,11 @@ public class ParamManager {
         edgeScoreParam.setHidden();
         addParameter(edgeScoreParam);
 
-//		EnumParameter precolatorParam = new EnumParameter("percolator");
+//		EnumParameter percolatorParam = new EnumParameter("percolator");
 //		edgeScoreParam.registerEntry("normal").setDefault();
 //		edgeScoreParam.registerEntry("for MS-GF+Percolator");
 //		edgeScoreParam.setHidden();
-//		addParameter(precolatorParam);		
+//		addParameter(percolatorParam);
     }
 
     public void addMSGFParams() {

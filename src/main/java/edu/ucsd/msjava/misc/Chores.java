@@ -32,7 +32,7 @@ public class Chores {
 //		System.out.println(Float.MIN_NORMAL);
 //		System.out.println(Double.MIN_NORMAL);
 //		System.out.println(Enzyme.LysN.getPeptideCleavageEfficiency());
-//		System.out.println(Enzyme.LysN.getNeighboringAACleavageEffiency());
+//		System.out.println(Enzyme.LysN.getNeighboringAACleavageEfficiency());
 //		AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
 //		aaSet.registerEnzyme(Enzyme.LysC);
 //		System.out.println(aaSet.getNeighboringAACleavageCredit());

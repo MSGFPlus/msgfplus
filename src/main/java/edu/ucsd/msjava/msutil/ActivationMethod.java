@@ -6,6 +6,7 @@ import edu.ucsd.msjava.params.UserParam;
 import uk.ac.ebi.jmzidml.model.mzidml.CvParam;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -149,12 +150,12 @@ public class ActivationMethod implements ParamObject {
         add(UVPD);                // -m 5
 
         // Parse activation methods defined by a user
-        File actMethodFile = new File("params/activationMethods.txt");
+        File actMethodFile = Paths.get("params", "activationMethods.txt").toFile();
         if (actMethodFile.exists()) {
 //			System.out.println("Loading " + actMethodFile.getAbsolutePath());
-            ArrayList<String> paramStrs = UserParam.parseFromFile(actMethodFile.getPath(), 2);
-            for (String paramStr : paramStrs) {
-                String[] token = paramStr.split(",");
+            ArrayList<String> paramLines = UserParam.parseFromFile(actMethodFile.getPath(), 2);
+            for (String paramLine : paramLines) {
+                String[] token = paramLine.split(",");
                 String shortName = token[0];
                 String fullName = token[1];
                 ActivationMethod newMethod = new ActivationMethod(shortName, fullName);

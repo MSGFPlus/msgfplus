@@ -9,24 +9,29 @@ import java.util.ArrayList;
 
 public class UserParam {
     public static ArrayList<String> parseFromFile(String fileName, int tokenLength) {
-        ArrayList<String> paramStrs = new ArrayList<String>();
-        BufferedLineReader in = null;
+        ArrayList<String> paramLines = new ArrayList<String>();
+        BufferedLineReader reader = null;
         try {
-            in = new BufferedLineReader(fileName);
+            reader = new BufferedLineReader(fileName);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         String s;
-        while ((s = in.readLine()) != null) {
-            if (s.startsWith("#") || s.length() == 0)
+        while ((s = reader.readLine()) != null) {
+            String trimmedLine = s.trim();
+            if (trimmedLine.startsWith("#") || trimmedLine.length() == 0) {
                 continue;
-            String[] token = s.split(",");
-            if (token.length != tokenLength)
+            }
+
+            String[] token = trimmedLine.split(",");
+            if (token.length < tokenLength) {
                 continue;
-            else
-                paramStrs.add(s);
+            }
+
+            paramLines.add(trimmedLine);
         }
-        return paramStrs;
+        return paramLines;
     }
 
 }

@@ -204,7 +204,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     /**
      * Get the amino acid mass of the residue.
      *
-     * @param residue the amino acid mass. Use upper case for standard aa (convention).
+     * @param residue the amino acid mass. Use uppercase for standard aa (convention).
      *                this method is case sensitive.
      * @return the amino acid object. null if no aa corresponding to the residue
      */
@@ -219,7 +219,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     /**
      * Get the amino acid mass of the residue.
      *
-     * @param residue the amino acid mass. Use upper case for standard aa (convention).
+     * @param residue the amino acid mass. Use uppercase for standard aa (convention).
      *                this method is case sensitive.
      * @return the amino acid object. null if no aa corresponding to the residue
      */
@@ -349,7 +349,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
     public void registerEnzyme(Enzyme enzyme) {
         if (enzyme == null || enzyme.getResidues() == null ||
-                enzyme.getPeptideCleavageEfficiency() == 0 || enzyme.getNeighboringAACleavageEffiency() == 0)
+                enzyme.getPeptideCleavageEfficiency() == 0 || enzyme.getNeighboringAACleavageEfficiency() == 0)
             return;
 
         probCleavageSites = 0;
@@ -368,7 +368,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         }
 
         float peptideCleavageEfficiency = enzyme.getPeptideCleavageEfficiency();
-        float neighboringAACleavageEfficiency = enzyme.getNeighboringAACleavageEffiency();
+        float neighboringAACleavageEfficiency = enzyme.getNeighboringAACleavageEfficiency();
 
         peptideCleavageCredit = (int) Math.round(Math.log(peptideCleavageEfficiency / probCleavageSites));
         peptideCleavagePenalty = (int) Math.round(Math.log((1 - peptideCleavageEfficiency) / (1 - probCleavageSites)));
@@ -1367,7 +1367,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 char residue = residueStr.charAt(0);
                 if (!Character.isUpperCase(residue)) {
                     System.err.println("Error: Invalid AASet file format at line " +
-                            lineNum + " in file " + aaFile.getName() + " (residue must be an upper case letter): " + dataLine);
+                            lineNum + " in file " + aaFile.getName() + " (residue must be an uppercase letter): " + dataLine);
                     System.exit(-1);
                 }
                 String name = token[1].trim();

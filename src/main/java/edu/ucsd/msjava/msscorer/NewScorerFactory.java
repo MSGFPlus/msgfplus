@@ -8,6 +8,7 @@ import edu.ucsd.msjava.msutil.Protocol;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Paths;
 import java.util.Hashtable;
 
 public class NewScorerFactory {
@@ -107,7 +108,7 @@ public class NewScorerFactory {
         if (scorer != null)
             return scorer;
 
-        File userParamFile = new File("params/" + condition + ".param");
+        File userParamFile = Paths.get("params", condition + ".param").toFile();
         if (userParamFile.exists()) {
             System.out.println("Loading user param file: " + userParamFile.getName());
             scorer = new NewRankScorer(userParamFile.getPath());
