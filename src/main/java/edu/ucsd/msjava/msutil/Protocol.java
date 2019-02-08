@@ -74,9 +74,9 @@ public class Protocol implements ParamObject {
         // Parse activation methods defined by a user
         File protocolFile = new File("params/protocols.txt");
         if (protocolFile.exists()) {
-            ArrayList<String> paramStrs = UserParam.parseFromFile(protocolFile.getPath(), 2);
-            for (String paramStr : paramStrs) {
-                String[] token = paramStr.split(",");
+            ArrayList<String> paramLines = UserParam.parseFromFile(protocolFile.getPath(), 2);
+            for (String paramLine : paramLines) {
+                String[] token = paramLine.split(",");
                 String shortName = token[0];
                 String description = token[1];
                 Protocol newProt = new Protocol(shortName, description);

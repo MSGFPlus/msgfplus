@@ -253,12 +253,12 @@ public class ParamManager {
         addEnzymeParam(Enzyme.TRYPSIN);
     }
 
-    public void addEnzymeParam(Enzyme defaulEnzyme) {
+    public void addEnzymeParam(Enzyme enzymeId) {
         ObjectEnumParameter<Enzyme> enzParam = new ObjectEnumParameter<Enzyme>("e", "EnzymeID");
         Enzyme[] allEnzymes = Enzyme.getAllRegisteredEnzymes();
         for (Enzyme e : allEnzymes) {
             enzParam.registerObject(e);
-            if (e == defaulEnzyme)
+            if (e == enzymeId)
                 enzParam.setDefault();
         }
         addParameter(enzParam);
@@ -661,11 +661,11 @@ public class ParamManager {
         edgeScoreParam.setHidden();
         addParameter(edgeScoreParam);
 
-//		EnumParameter precolatorParam = new EnumParameter("percolator");
+//		EnumParameter percolatorParam = new EnumParameter("percolator");
 //		edgeScoreParam.registerEntry("normal").setDefault();
 //		edgeScoreParam.registerEntry("for MS-GF+Percolator");
 //		edgeScoreParam.setHidden();
-//		addParameter(precolatorParam);		
+//		addParameter(percolatorParam);
     }
 
     public void addMSGFParams() {

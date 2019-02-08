@@ -152,9 +152,9 @@ public class ActivationMethod implements ParamObject {
         File actMethodFile = new File("params/activationMethods.txt");
         if (actMethodFile.exists()) {
 //			System.out.println("Loading " + actMethodFile.getAbsolutePath());
-            ArrayList<String> paramStrs = UserParam.parseFromFile(actMethodFile.getPath(), 2);
-            for (String paramStr : paramStrs) {
-                String[] token = paramStr.split(",");
+            ArrayList<String> paramLines = UserParam.parseFromFile(actMethodFile.getPath(), 2);
+            for (String paramLine : paramLines) {
+                String[] token = paramLine.split(",");
                 String shortName = token[0];
                 String fullName = token[1];
                 ActivationMethod newMethod = new ActivationMethod(shortName, fullName);

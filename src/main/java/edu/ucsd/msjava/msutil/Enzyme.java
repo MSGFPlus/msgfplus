@@ -25,7 +25,7 @@ import java.util.HashMap;
 public class Enzyme implements ParamObject {
 
     /**
-     * True if the enzyme cleaves n-terminus, false otherwise.
+     * True if the enzyme cleaves n-terminal of the residue, otherwise false
      */
     private boolean isNTerm;
 
@@ -89,7 +89,7 @@ public class Enzyme implements ParamObject {
             for (int i = 0; i < residues.length(); i++) {
                 char residue = residues.charAt(i);
                 if (!Character.isUpperCase(residue)) {
-                    System.err.println("Enzyme residues must be upper cases: " + residue);
+                    System.err.println("Enzyme residues must be uppercase: " + residue);
                     System.exit(-1);
                 }
                 this.residues[i] = residue;
@@ -103,7 +103,7 @@ public class Enzyme implements ParamObject {
     /**
      * Sets the neighboring amino acid efficiency as the probability that a neighboring amino acid follows the enzyme rule
      *
-     * @param neighboringAACleavageEfficiency neighboring amino acid effieicncy
+     * @param neighboringAACleavageEfficiency neighboring amino acid efficiency
      * @return this object
      */
     private void setNeighboringAAEfficiency(float neighboringAACleavageEfficiency) {
@@ -125,7 +125,7 @@ public class Enzyme implements ParamObject {
      * @param peptideCleavageEfficiency peptide cleagave efficiency
      * @return this object
      */
-    private void setPeptideCleavageEffiency(float peptideCleavageEfficiency) {
+    private void setPeptideCleavageEfficiency(float peptideCleavageEfficiency) {
         this.peptideCleavageEfficiency = peptideCleavageEfficiency;
     }
 
@@ -236,10 +236,10 @@ public class Enzyme implements ParamObject {
     }
 
     /**
-     * Returns the number of cleavaged terminii
+     * Returns the number of cleavable terminii
      *
      * @param annotation annotation (e.g. K.DLFGEK.I)
-     * @return the number of cleavaged terminii
+     * @return the number of cleavable terminii
      */
     public int getNumCleavedTermini(String annotation, AminoAcidSet aaSet) {
         int nCT = 0;
@@ -362,26 +362,26 @@ public class Enzyme implements ParamObject {
         UnspecificCleavage = new Enzyme("UnspecificCleavage", null, false, "unspecific cleavage", "MS:1001956");
         TRYPSIN = new Enzyme("Tryp", "KR", false, "Trypsin", "MS:1001251");
 //		TRYPSIN.setNeighboringAAEfficiency(0.9148273f);
-//		TRYPSIN.setPeptideCleavageEffiency(0.98173124f);
+//		TRYPSIN.setPeptideCleavageEfficiency(0.98173124f);
 
 //		TRYPSIN.setNeighboringAAEfficiency(0.9523f);
-//		TRYPSIN.setPeptideCleavageEffiency(0.9742f);
+//		TRYPSIN.setPeptideCleavageEfficiency(0.9742f);
 
         // Modified by Sangtae to boost the performance
         TRYPSIN.setNeighboringAAEfficiency(0.99999f);
-        TRYPSIN.setPeptideCleavageEffiency(0.99999f);
+        TRYPSIN.setPeptideCleavageEfficiency(0.99999f);
 
         CHYMOTRYPSIN = new Enzyme("Chymotrypsin", "FYWL", false, "Chymotrypsin", "MS:1001306");
 
         LysC = new Enzyme("LysC", "K", false, "Lys-C", "MS:1001309");
 //		LysC.setNeighboringAAEfficiency(0.79f);
-//		LysC.setPeptideCleavageEffiency(0.89f);
+//		LysC.setPeptideCleavageEfficiency(0.89f);
         LysC.setNeighboringAAEfficiency(0.999f);
-        LysC.setPeptideCleavageEffiency(0.999f);
+        LysC.setPeptideCleavageEfficiency(0.999f);
 
         LysN = new Enzyme("LysN", "K", true, "Lys-N", null);
         LysN.setNeighboringAAEfficiency(0.79f);
-        LysN.setPeptideCleavageEffiency(0.89f);
+        LysN.setPeptideCleavageEfficiency(0.89f);
 
         GluC = new Enzyme("GluC", "E", false, "glutamyl endopeptidase", "MS:1001917");
         ArgC = new Enzyme("ArgC", "R", false, "Arg-C", "MS:1001303");
