@@ -2,7 +2,10 @@ package msgfplus;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -28,6 +31,7 @@ import edu.ucsd.msjava.ui.ScoringParamGen;
 public class TestMSGFPlus {
     
     @Test
+    @Ignore
     public void testQCShew()
     {
         File workDir = new File("C:\\DMS_WorkDir1");
@@ -54,7 +58,50 @@ public class TestMSGFPlus {
         
         assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
     }
-    
+
+    @Test
+    public void testGluC_DE()
+    {
+        File workDir = new File("C:\\DMS_WorkDir1");
+
+        File specFile = Paths.get(workDir.getPath(), "Rat_inGel_11K_30Jan19_Pippin_REP-19-01-11.mzML").toFile();
+        File dbFile = Paths.get(workDir.getPath(),"ID_007516_6B162552.fasta").toFile();
+        File modFile = Paths.get(workDir.getPath(), "MSGFPlus_Mods.txt").toFile();
+
+        String versionString = MSGFPlus.VERSION.split("\\s+")[1];
+        versionString = versionString.substring(versionString.indexOf('(')+1, versionString.lastIndexOf(')'));
+        String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(),
+                "-mod", modFile.getPath(), "-t", "10ppm", "-tda", "1", "-m", "0", "-ti", "-1,2", "-ntt", "1", //"-thread", "2",
+                "-o", Paths.get(workDir.getPath(), "Test_" + versionString + ".mzid").toString(),
+                "-n", "1", "-minNumPeaks", "5", "-addFeatures", "1",
+                "-e", "5"
+        };
+
+        File enzymesFile = Paths.get(workDir.getPath(), "params", "enzymes.txt").toFile();
+        if (!enzymesFile.exists()) {
+             try {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(enzymesFile.getPath()));
+                 writer.write("# This file specifies additional enzymes considered for MS-GF+");
+                 writer.write("# Format: ShortName,CleaveAt,Terminus,Description");
+                 writer.write("");
+                 writer.write("GluC,DE,C,Glu-C");
+                 writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        paramManager.addMSGFPlusParams();
+
+        String msg = paramManager.parseParams(argv);
+        if(msg != null)
+            System.err.println("Error: " + msg);
+        assertTrue(msg == null);
+
+        assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
+    }
+
     @Test
     @Ignore
     public void testSingleSpec()
