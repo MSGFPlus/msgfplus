@@ -13,9 +13,9 @@ import edu.ucsd.msjava.params.ParamObject;
 import edu.ucsd.msjava.params.UserParam;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 
 /**
  * This class represents an enzyme.
@@ -43,7 +43,7 @@ public class Enzyme implements ParamObject {
      * Amino acid residues cleaved by the enzyme.
      */
     private char[] residues;
-        
+
     /**
      * Tracks whether a residue is cleavable
      * Residue symbols as chars are converted to their ASCII value when updating this array
@@ -98,6 +98,53 @@ public class Enzyme implements ParamObject {
         }
         this.isNTerm = isNTerm;
         this.psiCvAccession = psiCvAccession;
+    }
+
+    public static void loadCustomEnzymeFile(File enzymeFile) {
+
+        customEnzymeFilePath = enzymeFile.getAbsolutePath();
+
+        // Uncomment to debug
+        // System.out.println("Loading user-defined enzyme file: " + customEnzymeFilePath);
+
+        int tokenLength = 4;
+        ArrayList<String> paramLines = UserParam.parseFromFile(enzymeFile.getPath(), tokenLength);
+        for (String paramLine : paramLines) {
+            String[] token = paramLine.split(",", tokenLength);
+            String shortName = token[0];
+            String cleaveAt = token[1];
+            if (cleaveAt.equalsIgnoreCase("null"))
+                cleaveAt = null;
+            else {
+                for (int i = 0; i < cleaveAt.length(); i++) {
+                    if (!AminoAcid.isStdAminoAcid(cleaveAt.charAt(i))) {
+                        System.err.println("Invalid user-defined enzyme at " + enzymeFile.getAbsolutePath() + ": " + paramLine);
+                        System.err.println("Unrecognizable amino acid residue: " + cleaveAt.charAt(i));
+                        System.exit(-1);
+                    }
+                }
+            }
+            boolean isNTerm = false;    // C-Term: false, N-term: true
+            if (token[2].equals("C"))
+                isNTerm = false;
+            else if (token[2].equals("N"))
+                isNTerm = true;
+            else {
+                System.err.println("Invalid user-defined enzyme at " + enzymeFile.getAbsolutePath() + ": " + paramLine);
+                System.err.println(token[2] + " must be 'C' or 'N' for C-terminal or N-terminal");
+                System.exit(-1);
+            }
+
+            String description;
+            int commentCharIndex = token[3].indexOf('#');
+            if (commentCharIndex > 0)
+                description = token[3].substring(0, commentCharIndex).trim();
+            else
+                description = token[3].trim();
+
+            Enzyme userEnzyme = new Enzyme(shortName, cleaveAt, isNTerm, description, null);
+            register(shortName, userEnzyme, true);
+        }
     }
 
     /**
@@ -330,6 +377,12 @@ public class Enzyme implements ParamObject {
     public static final Enzyme NoCleavage;
 
     /**
+     * Custom enzyme file path
+     * @return
+     */
+    public static String getCustomEnzymeFilePath() { return customEnzymeFilePath; }
+
+    /**
      * Get an Enzyme by enzyme name
      */
     public static Enzyme getEnzymeByName(String name) {
@@ -353,6 +406,7 @@ public class Enzyme implements ParamObject {
     private static HashMap<String, Enzyme> enzymeTable;
     private static ArrayList<Enzyme> registeredEnzymeList;
 
+    private static String customEnzymeFilePath;
     private static void register(String name, Enzyme enzyme) {
         if (enzymeTable.put(name, enzyme) == null)
             registeredEnzymeList.add(enzyme);
@@ -411,41 +465,17 @@ public class Enzyme implements ParamObject {
         register(ALP.name, ALP);                      // 8
         register(NoCleavage.name, NoCleavage);        // 9
 
-        // Add user-defined enzymes
-        File enzymeFile = new File("params/enzymes.txt");
-        if (enzymeFile.exists()) {
-//			System.out.println("Loading " + enzymeFile.getAbsolutePath());
-            ArrayList<String> paramStrs = UserParam.parseFromFile(enzymeFile.getPath(), 4);
-            for (String paramStr : paramStrs) {
-                String[] token = paramStr.split(",");
-                String shortName = token[0];
-                String cleaveAt = token[1];
-                if (cleaveAt.equalsIgnoreCase("null"))
-                    cleaveAt = null;
-                else {
-                    for (int i = 0; i < cleaveAt.length(); i++) {
-                        if (!AminoAcid.isStdAminoAcid(cleaveAt.charAt(i))) {
-                            System.err.println("Invalid user-defined enzyme at " + enzymeFile.getAbsolutePath() + ": " + paramStr);
-                            System.err.println("Unrecognizable aa residue: " + cleaveAt.charAt(i));
-                            System.exit(-1);
-                        }
-                    }
-                }
-                boolean isNTerm = false;    // C-Term: false, N-term: true
-                if (token[2].equals("C"))
-                    isNTerm = false;
-                else if (token[2].equals("N"))
-                    isNTerm = true;
-                else {
-                    System.err.println("Invalid user-defined enzyme at " + enzymeFile.getAbsolutePath() + ": " + paramStr);
-                    System.err.println(token[2] + " must be 'C' or 'N'.");
-                    System.exit(-1);
-                }
-                String description = token[3];
+        customEnzymeFilePath = "";
 
-                Enzyme userEnzyme = new Enzyme(shortName, cleaveAt, isNTerm, description, null);
-                register(shortName, userEnzyme);
-            }
+        // Add user-defined enzymes
+        // look for file enzymes.txt in the params directory below the working directory
+        File enzymeFile = Paths.get("params", "enzymes.txt").toFile();
+
+        // Uncomment to debug
+        // System.out.println("Looking for user-defined enzyme file at " + enzymeFile.getAbsolutePath());
+
+        if (enzymeFile.exists()) {
+            loadCustomEnzymeFile(enzymeFile);
         }
     }
 }
