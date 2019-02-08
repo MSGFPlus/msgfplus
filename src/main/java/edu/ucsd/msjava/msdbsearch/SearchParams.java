@@ -34,8 +34,8 @@ public class SearchParams {
     private int endSpecIndex;
     private boolean useTDA;
     private boolean ignoreMetCleavage;
-    //	private boolean showFDR;
-//	private boolean showDecoy;
+    // private boolean showFDR;
+    // private boolean showDecoy;
     private int minPeptideLength;
     private int maxPeptideLength;
     private int maxNumVariatsPerPeptide;
@@ -366,6 +366,17 @@ public class SearchParams {
         buf.append("\tFragmentationMethod: " + this.activationMethod + "\n");
         buf.append("\tInstrument: " + (instType == null ? "null" : this.instType.getNameAndDescription()) + "\n");
         buf.append("\tEnzyme: " + (enzyme == null ? "null" : this.enzyme.getName()) + "\n");
+
+        String customEnzymeFile = Enzyme.getCustomEnzymeFilePath();
+        if (customEnzymeFile != null && !customEnzymeFile.isEmpty()) {
+            buf.append("\tEnzyme file: " + customEnzymeFile + "\n");
+        }
+
+        ArrayList<String> customEnzymeMessages = Enzyme.getCustomEnzymeMessages();
+        for (String message : customEnzymeMessages) {
+            buf.append("\tEnzyme info: " + message + "\n");
+        }
+
         buf.append("\tProtocol: " + (protocol == null ? "null" : this.protocol.getName()) + "\n");
         buf.append("\tNumTolerableTermini: " + this.numTolerableTermini + "\n");
         buf.append("\tMinPeptideLength: " + this.minPeptideLength + "\n");
