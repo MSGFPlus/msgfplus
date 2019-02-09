@@ -362,8 +362,11 @@ public class SearchParams {
         try {
             reader = new BufferedLineReader(paramFile.getPath());
         } catch (IOException e) {
+            System.err.println("Error opening parameter file " + paramFile.getPath());
             e.printStackTrace();
+            System.exit(-1);
         }
+
         int numMods = 2;
 
         // parse modifications
@@ -397,10 +400,11 @@ public class SearchParams {
                 }
                 if (ParamManager.ParamNameEnum.MAX_NUM_MODS.isLine(lineSetting)){
                     String value = lineSetting.split("=")[1].trim();
-                    try{
+                    try {
                         numMods = Integer.parseInt(value);
-                    }catch (NumberFormatException e){
-
+                    } catch (NumberFormatException e){
+                        System.err.println("Value after equals sign is not an integer: " + dataLine);
+                        System.exit(-1);
                     }
                 }
             }

@@ -720,8 +720,11 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         try {
             reader = new BufferedLineReader(modFile.getPath());
         } catch (IOException e) {
+            System.err.println("Error opening modification file " + modFile.getPath());
             e.printStackTrace();
+            System.exit(-1);
         }
+
         int numMods = 2;
 
         // parse modifications
