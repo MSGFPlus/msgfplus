@@ -382,30 +382,37 @@ public class SearchParams {
             String lineSetting = tokenArray[0].trim();
             if (lineSetting.length() == 0) {
                 continue;
-            } else if (ParamManager.ParamNameEnum.DYNAMIC_MODIFICATION.isLine(lineSetting) ||
-                       ParamManager.ParamNameEnum.STATIC_MODIFICATION.isLine(lineSetting) ||
-                       ParamManager.ParamNameEnum.CUSTOM_AA.isLine(lineSetting)) {
+            }
+
+            if (ParamManager.ParamNameEnum.DYNAMIC_MODIFICATION.isLine(lineSetting) ||
+                ParamManager.ParamNameEnum.STATIC_MODIFICATION.isLine(lineSetting) ||
+                ParamManager.ParamNameEnum.CUSTOM_AA.isLine(lineSetting)) {
+
                 String value = lineSetting.split("=")[1].trim();
-                mods.add(value);
-            } else {
-                for (ParamManager.ParamNameEnum param: ParamManager.ParamNameEnum.values()) {
-                    if (param.isLine(lineSetting)) {
-                        Parameter commandLineParam = paramManager.getParameter(param.getCommandlineName());
-                        if (commandLineParam != null && !commandLineParam.isValueAssigned()) {
-                            String value = lineSetting.split("=")[1].trim();
-                            commandLineParam.parse(value);
-                            commandLineParam.setValueAssigned();
-                        }
+                if (!value.equalsIgnoreCase("none")) {
+                    mods.add(value);
+                }
+                continue;
+            }
+
+            for (ParamManager.ParamNameEnum param: ParamManager.ParamNameEnum.values()) {
+                if (param.isLine(lineSetting)) {
+                    Parameter commandLineParam = paramManager.getParameter(param.getCommandlineName());
+                    if (commandLineParam != null && !commandLineParam.isValueAssigned()) {
+                        String value = lineSetting.split("=")[1].trim();
+                        commandLineParam.parse(value);
+                        commandLineParam.setValueAssigned();
                     }
                 }
-                if (ParamManager.ParamNameEnum.MAX_NUM_MODS.isLine(lineSetting)){
-                    String value = lineSetting.split("=")[1].trim();
-                    try {
-                        numMods = Integer.parseInt(value);
-                    } catch (NumberFormatException e){
-                        System.err.println("Value after equals sign is not an integer: " + dataLine);
-                        System.exit(-1);
-                    }
+            }
+
+            if (ParamManager.ParamNameEnum.MAX_NUM_MODS.isLine(lineSetting)){
+                String value = lineSetting.split("=")[1].trim();
+                try {
+                    numMods = Integer.parseInt(value);
+                } catch (NumberFormatException e){
+                    System.err.println("Value after equals sign is not an integer: " + dataLine);
+                    System.exit(-1);
                 }
             }
         }
