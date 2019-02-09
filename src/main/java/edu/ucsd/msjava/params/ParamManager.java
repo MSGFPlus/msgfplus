@@ -258,8 +258,7 @@ public class ParamManager {
     }
 
     public void addSpecFileParam() {
-        FileParameter specFileParam = new FileParameter(ParamNameEnum.SPECTRUM_FILE.commandlineName,
-                ParamNameEnum.SPECTRUM_FILE.name, ParamNameEnum.SPECTRUM_FILE.description);
+        FileParameter specFileParam = new FileParameter(ParamNameEnum.SPECTRUM_FILE);
         specFileParam.addFileFormat(SpecFileFormat.MZML);
         specFileParam.addFileFormat(SpecFileFormat.MZXML);
         specFileParam.addFileFormat(SpecFileFormat.MGF);
@@ -291,27 +290,27 @@ public class ParamManager {
     }
 
     public void addDecoyPrefixParam(String defaultDecoyPrefix) {
-        StringParameter decoyPrefixParam = new StringParameter(ParamNameEnum.DECOY_PREFIX.commandlineName, ParamNameEnum.DECOY_PREFIX.name, ParamNameEnum.DECOY_PREFIX.description);
+        StringParameter decoyPrefixParam = new StringParameter(ParamNameEnum.DECOY_PREFIX);
         // Note that defining a default value auto-sets isOptional to True
         decoyPrefixParam.defaultValue(defaultDecoyPrefix);
         addParameter(decoyPrefixParam);
     }
 
     public void addPMTolParam() {
-        ToleranceParameter pmTolParam = new ToleranceParameter(ParamNameEnum.PARENT_MASS_TOLERANCE.commandlineName, ParamNameEnum.PARENT_MASS_TOLERANCE.name, ParamNameEnum.PARENT_MASS_TOLERANCE.description);
+        ToleranceParameter pmTolParam = new ToleranceParameter(ParamNameEnum.PARENT_MASS_TOLERANCE);
         pmTolParam.setAdditionalDescription(ParamNameEnum.PARENT_MASS_TOLERANCE.additionalDescription);
         addParameter(pmTolParam);
     }
 
     public void addMzIdOutputFileParam() {
-        FileParameter outputParam = new FileParameter(ParamNameEnum.MZID_OUTPUT_FILE.commandlineName, ParamNameEnum.MZID_OUTPUT_FILE.name, ParamNameEnum.MZID_OUTPUT_FILE.description);
+        FileParameter outputParam = new FileParameter(ParamNameEnum.MZID_OUTPUT_FILE);
         outputParam.addFileFormat(new FileFormat(".mzid").setCaseSensitive());
         outputParam.setAsOptional();
         addParameter(outputParam);
     }
 
     public void addOutputFileParam() {
-        FileParameter outputParam = new FileParameter(ParamNameEnum.OUTPUT_FILE.commandlineName, ParamNameEnum.OUTPUT_FILE.name, ParamNameEnum.OUTPUT_FILE.description);
+        FileParameter outputParam = new FileParameter(ParamNameEnum.OUTPUT_FILE);
         outputParam.setAsOptional();
         outputParam.fileMustNotExist();
         addParameter(outputParam);
@@ -329,7 +328,7 @@ public class ParamManager {
      * @param doNotAddMergeMode
      */
     public void addFragMethodParam(ActivationMethod defaultMethod, boolean doNotAddMergeMode) {
-        ObjectEnumParameter<ActivationMethod> fragParam = new ObjectEnumParameter<ActivationMethod>(ParamNameEnum.FRAG_METHOD.commandlineName, ParamNameEnum.FRAG_METHOD.name);
+        ObjectEnumParameter<ActivationMethod> fragParam = new ObjectEnumParameter<ActivationMethod>(ParamNameEnum.FRAG_METHOD);
         ActivationMethod[] methods = ActivationMethod.getAllRegisteredActivationMethods();
         for (ActivationMethod m : methods) {
             if (doNotAddMergeMode && m == ActivationMethod.FUSION)
@@ -361,7 +360,7 @@ public class ParamManager {
     }
 
     public void addEnzymeParam(Enzyme enzymeId) {
-        ObjectEnumParameter<Enzyme> enzParam = new ObjectEnumParameter<Enzyme>(ParamNameEnum.ENZYME_ID.commandlineName, ParamNameEnum.ENZYME_ID.name);
+        ObjectEnumParameter<Enzyme> enzParam = new ObjectEnumParameter<Enzyme>(ParamNameEnum.ENZYME_ID);
         Enzyme[] allEnzymes = Enzyme.getAllRegisteredEnzymes();
         for (Enzyme e : allEnzymes) {
             enzParam.registerObject(e);
@@ -376,7 +375,7 @@ public class ParamManager {
     }
 
     public void addProtocolParam(Protocol defaultProtocol) {
-        ObjectEnumParameter<Protocol> protocolParam = new ObjectEnumParameter<Protocol>(ParamNameEnum.PROTOCOL_ID.commandlineName, ParamNameEnum.PROTOCOL_ID.name);
+        ObjectEnumParameter<Protocol> protocolParam = new ObjectEnumParameter<Protocol>(ParamNameEnum.PROTOCOL_ID);
         Protocol[] protocols = Protocol.getAllRegisteredProtocols();
         for (Protocol protocol : protocols) {
             protocolParam.registerObject(protocol);
@@ -453,7 +452,7 @@ public class ParamManager {
         addEnzymeParam();
         addProtocolParam();
 
-        EnumParameter nttParam = new EnumParameter(ParamNameEnum.ENZYME_SPECIFICITY.commandlineName, null, ParamNameEnum.ENZYME_SPECIFICITY.description);
+        EnumParameter nttParam = new EnumParameter(ParamNameEnum.ENZYME_SPECIFICITY);
         nttParam.setAdditionalDescription(ParamNameEnum.ENZYME_SPECIFICITY.additionalDescription);
         nttParam.registerEntry("");
         nttParam.registerEntry("");
@@ -714,7 +713,7 @@ public class ParamManager {
         numMatchesParam.defaultValue(1);
         addParameter(numMatchesParam);
 
-        EnumParameter uniformAAProb = new EnumParameter(ParamNameEnum.UNIFORM_AA_PROBABILITY.commandlineName, ParamNameEnum.UNIFORM_AA_PROBABILITY.name);
+        EnumParameter uniformAAProb = new EnumParameter(ParamNameEnum.UNIFORM_AA_PROBABILITY);
         uniformAAProb.registerEntry("use amino acid probabilities computed from the input database").setDefault();
         uniformAAProb.registerEntry("use probability 0.05 for all amino acids");
         addParameter(uniformAAProb);
@@ -842,7 +841,7 @@ public class ParamManager {
         addPMTolParam();
         addOutputFileParam();
 
-        IntParameter numThreadParam = new IntParameter(ParamNameEnum.NUM_THREADS.commandlineName, ParamNameEnum.NUM_THREADS.name, ParamNameEnum.NUM_THREADS.description);
+        IntParameter numThreadParam = new IntParameter(ParamNameEnum.NUM_THREADS);
 
         numThreadParam.defaultValue(Runtime.getRuntime().availableProcessors());
         numThreadParam.minValue(1);

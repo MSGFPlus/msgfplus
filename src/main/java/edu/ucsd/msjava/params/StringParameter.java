@@ -3,6 +3,10 @@ package edu.ucsd.msjava.params;
 public class StringParameter extends Parameter {
     String value = null;
 
+    public StringParameter(ParamManager.ParamNameEnum paramInfo) {
+        super(paramInfo.getCommandlineName(), paramInfo.getName(), paramInfo.getDescription());
+    }
+
     public StringParameter(String key, String name, String description) {
         super(key, name, description);
     }

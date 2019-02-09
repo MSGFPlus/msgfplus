@@ -6,6 +6,10 @@ public class ObjectEnumParameter<T extends ParamObject> extends EnumParameter {
 
     private ArrayList<T> objectList = new ArrayList<T>();
 
+    public ObjectEnumParameter(ParamManager.ParamNameEnum paramInfo) {
+        super(paramInfo.getCommandlineName(), paramInfo.getName());
+    }
+
     public ObjectEnumParameter(String key, String name) {
         super(key, name);
     }
