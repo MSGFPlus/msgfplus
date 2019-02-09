@@ -234,12 +234,12 @@ public class SearchParams {
             }
         }
 
-        // DB file
+        // FASTA file
         databaseFile = paramManager.getDBFileParam().getFile();
 
         decoyProteinPrefix = paramManager.getDecoyProteinPrefix();
 
-        // PM tolerance
+        // Parent mass tolerance
         ToleranceParameter tol = ((ToleranceParameter) paramManager.getParameter("t"));
         leftParentMassTolerance = tol.getLeftTolerance();
         rightParentMassTolerance = tol.getRightTolerance();
@@ -369,15 +369,16 @@ public class SearchParams {
 
         int numMods = 2;
 
-        // parse modifications
+        // parse the settings
         String dataLine;
         List<String> mods = new ArrayList<>();
 
         assert reader != null;
         while ((dataLine = reader.readLine()) != null) {
             String[] tokenArray = dataLine.split("#");
-            if (tokenArray.length == 0)
+            if (tokenArray.length == 0) {
                 continue;
+            }
 
             String lineSetting = tokenArray[0].trim();
             if (lineSetting.length() == 0) {

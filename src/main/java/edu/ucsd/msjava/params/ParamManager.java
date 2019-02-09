@@ -36,7 +36,7 @@ public class ParamManager {
         MZID_OUTPUT_FILE("o", "OutputFile (*.mzid)", "Default: [SpectrumFileName].mzid", null),
         OUTPUT_FILE("o", "OutputFile", "Default: stdout", null),
         FRAG_METHOD("m", "FragmentMethodID", null, null),
-        INTRUMENT_TYPE("inst", "InstrumentID", null, null),
+        INSTRUMENT_TYPE("inst", "InstrumentID", null, null),
         ENZYME_ID("e", "EnzymeID", null, null),
         PROTOCOL_ID("protocol", "ProtocolID", null, null),
         MOD_FILE("mod", "ModificationFileName", "Modification file, Default: standard amino acids with fixed C+57; only if -mod is not specified", null),
@@ -346,7 +346,7 @@ public class ParamManager {
     }
 
     public void addInstTypeParam(InstrumentType defaultInst) {
-        ObjectEnumParameter<InstrumentType> instParam = new ObjectEnumParameter<InstrumentType>(ParamNameEnum.INTRUMENT_TYPE.commandlineName, ParamNameEnum.INTRUMENT_TYPE.name);
+        ObjectEnumParameter<InstrumentType> instParam = new ObjectEnumParameter<InstrumentType>(ParamNameEnum.INSTRUMENT_TYPE);
         InstrumentType[] allInstTypes = InstrumentType.getAllRegisteredInstrumentTypes();
         for (InstrumentType inst : allInstTypes) {
             instParam.registerObject(inst);
