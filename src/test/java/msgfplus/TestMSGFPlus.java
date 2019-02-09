@@ -59,6 +59,64 @@ public class TestMSGFPlus {
     }
 
     @Test
+    public void testQCShewConfFile()
+    {
+        File workDir = new File("C:\\DMS_WorkDir1");
+
+        File specFile = Paths.get(workDir.getPath(), "QC_Shew_17_02_b_Bane_4Jan19_18-10-06.mzML").toFile();
+        File dbFile = Paths.get(workDir.getPath(),"ID_003456_9B916A8B.fasta").toFile();
+        File modFile = Paths.get(workDir.getPath(), "MSGFPlus_Mods.txt").toFile();
+
+        File confFile = Paths.get(workDir.getPath(), "MSGFPlus_PartTryp_MetOx_20ppmParTol.txt").toFile();
+        if (!confFile.exists()) {
+            try {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(confFile.getPath()));
+                writer.write("# For a fully annotated parameter file, see https://github.com/MSGFPlus/msgfplus/blob/master/docs/examples/MSGFPlus_Params.txt");
+                writer.write("ParentMassTolerance=20ppm");
+                writer.write("NumMods=3");
+                writer.write("StaticMod=None");
+                writer.write("DynamicMod=O1, M, opt, any, Oxidation            ");
+                writer.write("CustomAA=C3H5NO,        U, custom, U, Selenocysteine      ");
+                writer.write("FragmentationMethodID=0");
+                writer.write("InstrumentID=0");
+                writer.write("EnzymeID=1");
+                writer.write("IsotopeError=-1,2");
+                writer.write("NTT=1");
+                writer.write("TDA=1");
+                writer.write("showDecoy=1");
+                writer.write("NumThreads=All");
+                writer.write("MinPepLength=6");
+                writer.write("MaxPepLength=50");
+                writer.write("minCharge=2");
+                writer.write("maxCharge=5");
+                writer.write("NumMatchesPerSpec=1");
+                writer.write("uniformAAProb=auto");
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        String versionString = getNextVersion();
+
+        String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(),
+                "-o", Paths.get(workDir.getPath(), "Test_" + versionString + ".mzid").toString(),
+                "-conf", confFile.getPath()
+        };
+
+        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        paramManager.addMSGFPlusParams();
+
+        String msg = paramManager.parseParams(argv);
+        if(msg != null)
+            System.err.println("Error: " + msg);
+        assertTrue(msg == null);
+
+        assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
+    }
+
+    @Test
+    @Ignore
     public void testGluC_DE()
     {
         File workDir = new File("C:\\DMS_WorkDir1");
