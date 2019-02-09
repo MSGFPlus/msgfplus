@@ -30,6 +30,7 @@ import edu.ucsd.msjava.ui.MSGFPlus;
 public class TestIPA {
 
 	@Test
+	@Ignore
 	public void iPRG2013() throws URISyntaxException {
 		File specFile = new File(TestIPA.class.getClassLoader().getResource("iprg-2013/F13.mgf").toURI());
 		File dbFile = new File(TestIPA.class.getClassLoader().getResource("iprg-2013/Homo_sapiens_non-redundant.GRCh37.68.pep.all_FPKM-cRAP.fasta").toURI());

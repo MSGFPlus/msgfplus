@@ -2,12 +2,11 @@ package edu.ucsd.msjava.msdbsearch;
 
 import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msutil.*;
-import edu.ucsd.msjava.params.FileParameter;
-import edu.ucsd.msjava.params.IntRangeParameter;
-import edu.ucsd.msjava.params.ParamManager;
-import edu.ucsd.msjava.params.ToleranceParameter;
+import edu.ucsd.msjava.params.*;
+import edu.ucsd.msjava.parser.BufferedLineReader;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -192,6 +191,10 @@ public class SearchParams {
 
     public String parse(ParamManager paramManager) {
         // Charge carrier mass
+        AminoAcidSet configAASet = null;
+        if(paramManager.getConfigFileParam() != null){
+            configAASet = parseConfigParamFile(paramManager);
+        }
         chargeCarrierMass = paramManager.getDoubleValue("ccm");
         Composition.setChargeCarrierMass(chargeCarrierMass);
 
@@ -266,15 +269,19 @@ public class SearchParams {
 
         aaSet = null;
         File modFile = paramManager.getModFileParam().getFile();
-        if (modFile == null)
+        if (modFile == null && configAASet == null)
             aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
         else {
-            String modFileName = modFile.getName();
-            String ext = modFileName.substring(modFileName.lastIndexOf('.') + 1);
-            if (ext.equalsIgnoreCase("xml"))
-                aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile(modFile.getPath());
-            else
-                aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
+            if(modFile != null){
+                String modFileName = modFile.getName();
+                String ext = modFileName.substring(modFileName.lastIndexOf('.') + 1);
+                if (ext.equalsIgnoreCase("xml"))
+                    aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile(modFile.getPath());
+                else
+                    aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
+            }else
+                aaSet = configAASet;
+
             if (protocol == Protocol.AUTOMATIC) {
                 if (aaSet.containsITRAQ()) {
                     if (aaSet.containsPhosphorylation())
@@ -341,6 +348,57 @@ public class SearchParams {
         }
 
         return null;
+    }
+
+    private AminoAcidSet parseConfigParamFile(ParamManager paramManager) {
+
+        BufferedLineReader reader = null;
+
+        File paramFile = paramManager.getConfigFileParam().getFile();
+
+        try {
+            reader = new BufferedLineReader(paramFile.getPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        int numMods = 2;
+
+        // parse modifications
+        String dataLine;
+        List<String> mods = new ArrayList<>();
+
+        assert reader != null;
+        while ((dataLine = reader.readLine()) != null) {
+            String[] tokenArray = dataLine.split("#");
+            if (tokenArray.length == 0)
+                continue;
+
+            String lineSetting = tokenArray[0].trim();
+            if (lineSetting.length() == 0) {
+                continue;
+            } else if(ParamManager.ParamNameEnum.DYNAMIC_MODIFICATION.isLine(lineSetting.toLowerCase()) || ParamManager.ParamNameEnum.STATIC_MODIFICATION.isLine(lineSetting.toLowerCase()) || ParamManager.ParamNameEnum.CUSTOM_AA.isLine(lineSetting.toLowerCase())){
+                String value = lineSetting.split("=")[1].trim();
+                mods.add(value);
+            }else {
+                for(ParamManager.ParamNameEnum param: ParamManager.ParamNameEnum.values()){
+                    if (param.isLine(lineSetting.toLowerCase()) && (paramManager.getParameter(param.getCommandlineName()) != null && !paramManager.getParameter(param.getCommandlineName()).isValueAssigned())){
+                        String value = lineSetting.split("=")[1].trim();
+                        Parameter currentParam = paramManager.getParameter(param.getCommandlineName());
+                        currentParam.parse(value);
+                        currentParam.setValueAssigned();
+                    }
+                }
+                if (ParamManager.ParamNameEnum.MAX_NUM_MODS.isLine(lineSetting.toLowerCase())){
+                    String value = lineSetting.split("=")[1].trim();
+                    try{
+                        numMods = Integer.parseInt(value);
+                    }catch (NumberFormatException e){
+
+                    }
+                }
+            }
+        }
+        return AminoAcidSet.getAminoAcidSetFromList(paramFile.getName(), mods, numMods);
     }
 
     @Override

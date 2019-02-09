@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.net.URISyntaxException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import edu.ucsd.msjava.params.ParamManager;
@@ -12,7 +13,9 @@ import edu.ucsd.msjava.ui.MSGFPlus;
 
 public class TestPercolator {
 
+
     @Test
+    @Ignore
     public void testAddFeatures() throws URISyntaxException {
 
         File specFile = new File(TestPercolator.class.getClassLoader().getResource("iprg-2013/F13.mgf").toURI());

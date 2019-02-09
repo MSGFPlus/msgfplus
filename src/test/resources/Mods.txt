@@ -1,4 +1,4 @@
-# This file is used to specify modifications
+MSGFDB_Tryp_DynMetOx_TMTExclusive_K_Acetyl_Stat_CysAlk_TMT_6Plex_20ppmParTol.txt# This file is used to specify modifications
 # # for comments
 #
 # Max Number of Dynamic/Variable Modifications per peptide 
