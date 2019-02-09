@@ -20,7 +20,7 @@ public class ParamManager {
     private ArrayList<String> examples = new ArrayList<String>();
 
 
-    public enum ParamNameEnum{
+    public enum ParamNameEnum {
 
         SPECTRUM_FILE("s", "SpectrumFile", "*.mzML, *.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt",
                 "Spectra should be centroided (see below for MSConvert example). Profile spectra will be ignored."),
@@ -115,7 +115,7 @@ public class ParamManager {
         }
 
         /**
-         * Check is the parameter line contains the ParamValue
+         * Check whether the parameter line contains the ParamValue
          * @param line Param Line
          * @return is the line.
          */

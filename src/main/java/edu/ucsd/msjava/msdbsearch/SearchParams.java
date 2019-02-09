@@ -190,11 +190,12 @@ public class SearchParams {
     }
 
     public String parse(ParamManager paramManager) {
-        // Charge carrier mass
         AminoAcidSet configAASet = null;
-        if(paramManager.getConfigFileParam() != null){
+        if (paramManager.getConfigFileParam() != null) {
             configAASet = parseConfigParamFile(paramManager);
         }
+
+        // Charge carrier mass
         chargeCarrierMass = paramManager.getDoubleValue("ccm");
         Composition.setChargeCarrierMass(chargeCarrierMass);
 
@@ -272,15 +273,16 @@ public class SearchParams {
         if (modFile == null && configAASet == null)
             aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
         else {
-            if(modFile != null){
+            if (modFile != null) {
                 String modFileName = modFile.getName();
                 String ext = modFileName.substring(modFileName.lastIndexOf('.') + 1);
                 if (ext.equalsIgnoreCase("xml"))
                     aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile(modFile.getPath());
                 else
                     aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
-            }else
+            } else {
                 aaSet = configAASet;
+            }
 
             if (protocol == Protocol.AUTOMATIC) {
                 if (aaSet.containsITRAQ()) {

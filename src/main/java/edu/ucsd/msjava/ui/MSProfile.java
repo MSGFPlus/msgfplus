@@ -156,6 +156,7 @@ public class MSProfile {
     public static void printUsageAndExit(String message) {
         if (message != null)
             System.err.println(message);
+
         System.out.println("MSProfile 07/08/2011");
         System.out.println("usage: java -Xmx2000M -jar MSProfile.jar \n"
                 + "\t-i SpecFileName (*.mzXML)\n"

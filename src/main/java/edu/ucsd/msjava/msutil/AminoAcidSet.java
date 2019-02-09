@@ -1075,7 +1075,6 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         return aaSet;
     }
 
-
     public static AminoAcidSet getAminoAcidSetFromXMLFile(String modFilePath) {
 
         File modFile = new File(modFilePath);
