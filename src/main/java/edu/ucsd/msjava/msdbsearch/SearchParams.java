@@ -379,19 +379,23 @@ public class SearchParams {
             String lineSetting = tokenArray[0].trim();
             if (lineSetting.length() == 0) {
                 continue;
-            } else if(ParamManager.ParamNameEnum.DYNAMIC_MODIFICATION.isLine(lineSetting.toLowerCase()) || ParamManager.ParamNameEnum.STATIC_MODIFICATION.isLine(lineSetting.toLowerCase()) || ParamManager.ParamNameEnum.CUSTOM_AA.isLine(lineSetting.toLowerCase())){
+            } else if (ParamManager.ParamNameEnum.DYNAMIC_MODIFICATION.isLine(lineSetting) ||
+                       ParamManager.ParamNameEnum.STATIC_MODIFICATION.isLine(lineSetting) ||
+                       ParamManager.ParamNameEnum.CUSTOM_AA.isLine(lineSetting)) {
                 String value = lineSetting.split("=")[1].trim();
                 mods.add(value);
-            }else {
-                for(ParamManager.ParamNameEnum param: ParamManager.ParamNameEnum.values()){
-                    if (param.isLine(lineSetting.toLowerCase()) && (paramManager.getParameter(param.getCommandlineName()) != null && !paramManager.getParameter(param.getCommandlineName()).isValueAssigned())){
-                        String value = lineSetting.split("=")[1].trim();
-                        Parameter currentParam = paramManager.getParameter(param.getCommandlineName());
-                        currentParam.parse(value);
-                        currentParam.setValueAssigned();
+            } else {
+                for (ParamManager.ParamNameEnum param: ParamManager.ParamNameEnum.values()) {
+                    if (param.isLine(lineSetting)) {
+                        Parameter commandLineParam = paramManager.getParameter(param.getCommandlineName());
+                        if (commandLineParam != null && !commandLineParam.isValueAssigned()) {
+                            String value = lineSetting.split("=")[1].trim();
+                            commandLineParam.parse(value);
+                            commandLineParam.setValueAssigned();
+                        }
                     }
                 }
-                if (ParamManager.ParamNameEnum.MAX_NUM_MODS.isLine(lineSetting.toLowerCase())){
+                if (ParamManager.ParamNameEnum.MAX_NUM_MODS.isLine(lineSetting)){
                     String value = lineSetting.split("=")[1].trim();
                     try{
                         numMods = Integer.parseInt(value);

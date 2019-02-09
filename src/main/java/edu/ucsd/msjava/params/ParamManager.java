@@ -120,7 +120,7 @@ public class ParamManager {
          * @return is the line.
          */
         public boolean isLine(String line) {
-            return ((getName()!= null && line.contains(getName().toLowerCase())));
+            return ((getName() != null && line.toLowerCase().contains(getName().toLowerCase())));
         }
     }
 
