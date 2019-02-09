@@ -725,176 +725,24 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             System.exit(-1);
         }
 
-        int numMods = 2;
-
         // parse modifications
         ArrayList<Modification.Instance> mods = new ArrayList<>();
         ArrayList<AminoAcid> customAA = new ArrayList<>();
-        String customAAResidues = "";
         String dataLine;
+        String sourceFileName = modFile.getName();
         int lineNum = 0;
+        ModificationMetadata modMetadata = new ModificationMetadata(2);
+
         while ((dataLine = reader.readLine()) != null) {
             lineNum++;
-            String[] tokenArray = dataLine.split("#");
-            if (tokenArray.length == 0)
-                continue;
-
-            String modSetting = tokenArray[0].trim();
-            if (modSetting.length() == 0) {
-                continue;
-            } else if (modSetting.toLowerCase().startsWith("nummods=")) {
-                try {
-                    numMods = Integer.parseInt(modSetting.split("=")[1].trim());
-                } catch (NumberFormatException e) {
-                    System.err.println("Error: Invalid NumMods option at line " +
-                            lineNum + " in file " + modFile.getName() + ": " + modSetting);
-                    e.printStackTrace();
-                    System.exit(-1);
-                }
-            } else {
-                String[] modInfo = modSetting.split(",");
-                if (modInfo.length < 5) {
-                    System.out.println("Ignoring line in ");
-                    continue;
-                }
-
-                // Mass or Composition
-                double modMass = 0;
-                String compStr = modInfo[0].trim();
-
-                // First try to parse compStr as an empirical formula
-                // Supports C, H, N, O, S, P, Br, Cl, Fe, and Se
-
-                Double mass = Composition.getMass(compStr);
-                if (mass != null)
-                    modMass = mass;
-                else {
-                    try {
-                        modMass = Double.parseDouble(compStr);
-                    } catch (NumberFormatException e) {
-                        System.err.println("Error: Invalid Mass/Composition at line " +
-                                lineNum + " in file " + modFile.getName() + ": " + modSetting);
-                        e.printStackTrace();
-                        System.exit(-1);
-                    }
-                }
-
-                // Residues
-                String residueStr = modInfo[1].trim();
-                boolean isResidueStrLegitimate = true;
-                boolean matchesCustomAA = false;
-                if (!residueStr.equals("*")) {
-                    if (residueStr.length() > 0) {
-                        for (int i = 0; i < residueStr.length(); i++) {
-                            boolean matchesCustom = customAAResidues.indexOf(residueStr.charAt(i)) > -1;
-                            if (matchesCustom) {
-                                matchesCustomAA = true;
-                            }
-                            if (!matchesCustom
-                                    && !AminoAcid.isStdAminoAcid(residueStr.charAt(i))) {
-                                isResidueStrLegitimate = false;
-                                break;
-                            }
-                        }
-                    } else
-                        isResidueStrLegitimate = false;
-                }
-
-                // isFixedModification
-                boolean isFixedModification = false;
-                boolean isCustomAminoAcid = false;
-                boolean modTypeParseFailed = false;
-                if (modInfo[2].trim().equalsIgnoreCase("fix"))
-                    isFixedModification = true;
-                else if (modInfo[2].trim().equalsIgnoreCase("opt"))
-                    isFixedModification = false;
-                else if (modInfo[2].trim().equalsIgnoreCase("custom"))
-                    isCustomAminoAcid = true;
-                else
-                    modTypeParseFailed = true;
-
-                if ((!isResidueStrLegitimate && !isCustomAminoAcid) || (isCustomAminoAcid && matchesCustomAA)) {
-                    System.err.println("Error: Invalid Residue(s) at line " +
-                            lineNum + " in file " + modFile.getName() + ": " + modSetting);
-                    System.exit(-1);
-                }
-                if (isCustomAminoAcid && (residueStr.length() > 1 || !residueStr.toLowerCase().matches("[bjouxz]"))) {
-                    System.err.println("Error: Invalid Residue(s) at line " +
-                            lineNum + " in file " + modFile.getName() + ": " + modSetting);
-                    System.err.println("Custom Amino acids are only allowed using B, J, O, U, X, or Z as the custom symbol.");
-                    System.exit(-1);
-                }
-                if (isCustomAminoAcid && !compStr.matches("([CHNOS][0-9]{0,3})+")) {
-                    System.err.println("Error: Invalid composition/mass at line " +
-                            lineNum + " in file " + modFile.getName() + ": " + modSetting);
-                    System.err.println("Custom Amino acids must supply a composition string, and must not use elements other than C H N O S.");
-                    System.exit(-1);
-                }
-                if (modTypeParseFailed) {
-                    System.err.println("Error: Modification must be either fix, opt, or custom at line " +
-                            lineNum + " in file " + modFile.getName() + ": " + modSetting);
-                    System.exit(-1);
-                }
-
-                // Location
-                Modification.Location location = null;
-                String customResidueBase = "";
-                String locStr = modInfo[3].trim().split("\\s+")[0].trim();
-                if (locStr.equalsIgnoreCase("any"))
-                    location = Modification.Location.Anywhere;
-                else if (locStr.equalsIgnoreCase("N-Term") || locStr.equalsIgnoreCase("NTerm"))
-                    location = Modification.Location.N_Term;
-                else if (locStr.equalsIgnoreCase("C-Term") || locStr.equalsIgnoreCase("CTerm"))
-                    location = Modification.Location.C_Term;
-                else if (locStr.equalsIgnoreCase("Prot-N-Term") || locStr.equalsIgnoreCase("ProtNTerm"))
-                    location = Modification.Location.Protein_N_Term;
-                else if (locStr.equalsIgnoreCase("Prot-C-Term") || locStr.equalsIgnoreCase("ProtCTerm"))
-                    location = Modification.Location.Protein_C_Term;
-                else if (isCustomAminoAcid)
-                    customResidueBase = locStr;
-                else {
-                    System.err.println("Error: Invalid Location at line " +
-                            lineNum + " in file " + modFile.getName() + ": " + modSetting);
-                    System.exit(-1);
-                }
-
-                String name = modInfo[4].trim().split("\\s+")[0].trim();
-                if (!isCustomAminoAcid) {
-                    if (isModConflict(modFile.getName(), lineNum, modSetting, name, modMass)) {
-                        System.exit(-1);
-                    }
-
-                    Modification mod = Modification.register(name, modMass);
-
-                    for (int i = 0; i < residueStr.length(); i++) {
-                        char residue = residueStr.charAt(i);
-                        Modification.Instance modIns = new Modification.Instance(mod, residue, location);
-                        if (isFixedModification)
-                            modIns.fixedModification();
-
-                        if (!addModInstance(modFile.getName(), lineNum, modSetting, mods, modIns)) {
-                            System.exit(-1);
-                        }
-                    }
-                } else {
-                    char customAminoAcidSymbol = residueStr.charAt(0);
-
-                    AminoAcid aa = new AminoAcid(customAminoAcidSymbol, name, new Composition(compStr));
-                    if (customAAResidues.contains(Character.toString(customAminoAcidSymbol))) {
-                        System.err.println(
-                                "Error: Duplicate custom amino acid symbol; \n" +
-                                "the duplicate definition is on line " +
-                                lineNum + " in file " + modFile.getName() + ": " + modSetting);
-                        System.exit(-1);
-                    }
-                    customAAResidues += customAminoAcidSymbol;
-                    customAA.add(aa);
-                }
+            boolean success = parseConfigEntry(sourceFileName, lineNum, dataLine, mods, customAA, modMetadata);
+            if (!success) {
+                System.exit(-1);
             }
         }
 
         AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSet(mods, customAA);
-        aaSet.setMaxNumberOfVariableModificationsPerPeptide(numMods);
+        aaSet.setMaxNumberOfVariableModificationsPerPeptide(modMetadata.getNumMods());
 
         try {
             reader.close();
@@ -904,178 +752,197 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         return aaSet;
     }
 
-
-    public static AminoAcidSet getAminoAcidSetFromList(String modConfigFile, List<String> rawMods, int numMods) {
+    public static AminoAcidSet getAminoAcidSetFromList(String modConfigFilePath, List<String> rawMods, int numMods) {
         BufferedLineReader reader = null;
 
         // parse modifications
         ArrayList<Modification.Instance> mods = new ArrayList<>();
         ArrayList<AminoAcid> customAA = new ArrayList<>();
-        String customAAResidues = "";
         int lineNum = 0;
+        ModificationMetadata modMetadata = new ModificationMetadata(numMods);
+
         for(String dataLine: rawMods) {
             lineNum++;
-            String[] tokenArray = dataLine.split("#");
-            if (tokenArray.length == 0)
-                continue;
-
-            String modSetting = tokenArray[0].trim();
-            if (modSetting.length() == 0) {
-                continue;
-            } else if (modSetting.toLowerCase().startsWith("nummods=")) {
-                try {
-                    numMods = Integer.parseInt(modSetting.split("=")[1].trim());
-                } catch (NumberFormatException e) {
-                    System.err.println("Error: Invalid NumMods option at line " +
-                            lineNum + " in file " + modConfigFile + ": " + modSetting);
-                    e.printStackTrace();
-                    System.exit(-1);
-                }
-            } else {
-                String[] modInfo = modSetting.split(",");
-                if (modInfo.length < 5) {
-                    System.out.println("Ignoring line in ");
-                    continue;
-                }
-
-                // Mass or Composition
-                double modMass = 0;
-                String compStr = modInfo[0].trim();
-
-                // First try to parse compStr as an empirical formula
-                // Supports C, H, N, O, S, P, Br, Cl, Fe, and Se
-
-                Double mass = Composition.getMass(compStr);
-                if (mass != null)
-                    modMass = mass;
-                else {
-                    try {
-                        modMass = Double.parseDouble(compStr);
-                    } catch (NumberFormatException e) {
-                        System.err.println("Error: Invalid Mass/Composition at line " +
-                                lineNum + " in file " + modConfigFile + ": " + modSetting);
-                        e.printStackTrace();
-                        System.exit(-1);
-                    }
-                }
-
-                // Residues
-                String residueStr = modInfo[1].trim();
-                boolean isResidueStrLegitimate = true;
-                boolean matchesCustomAA = false;
-                if (!residueStr.equals("*")) {
-                    if (residueStr.length() > 0) {
-                        for (int i = 0; i < residueStr.length(); i++) {
-                            boolean matchesCustom = customAAResidues.indexOf(residueStr.charAt(i)) > -1;
-                            if (matchesCustom) {
-                                matchesCustomAA = true;
-                            }
-                            if (!matchesCustom
-                                    && !AminoAcid.isStdAminoAcid(residueStr.charAt(i))) {
-                                isResidueStrLegitimate = false;
-                                break;
-                            }
-                        }
-                    } else
-                        isResidueStrLegitimate = false;
-                }
-
-                // isFixedModification
-                boolean isFixedModification = false;
-                boolean isCustomAminoAcid = false;
-                boolean modTypeParseFailed = false;
-                if (modInfo[2].trim().equalsIgnoreCase("fix"))
-                    isFixedModification = true;
-                else if (modInfo[2].trim().equalsIgnoreCase("opt"))
-                    isFixedModification = false;
-                else if (modInfo[2].trim().equalsIgnoreCase("custom"))
-                    isCustomAminoAcid = true;
-                else
-                    modTypeParseFailed = true;
-
-                if ((!isResidueStrLegitimate && !isCustomAminoAcid) || (isCustomAminoAcid && matchesCustomAA)) {
-                    System.err.println("Error: Invalid Residue(s) at line " +
-                            lineNum + " in file " + modConfigFile + ": " + modSetting);
-                    System.exit(-1);
-                }
-                if (isCustomAminoAcid && (residueStr.length() > 1 || !residueStr.toLowerCase().matches("[bjouxz]"))) {
-                    System.err.println("Error: Invalid Residue(s) at line " +
-                            lineNum + " in file " + modConfigFile + ": " + modSetting);
-                    System.err.println("Custom Amino acids are only allowed using B, J, O, U, X, or Z as the custom symbol.");
-                    System.exit(-1);
-                }
-                if (isCustomAminoAcid && !compStr.matches("([CHNOS][0-9]{0,3})+")) {
-                    System.err.println("Error: Invalid composition/mass at line " +
-                            lineNum + " in file " + modConfigFile + ": " + modSetting);
-                    System.err.println("Custom Amino acids must supply a composition string, and must not use elements other than C H N O S.");
-                    System.exit(-1);
-                }
-                if (modTypeParseFailed) {
-                    System.err.println("Error: Modification must be either fix, opt, or custom at line " +
-                            lineNum + " in file " + modConfigFile + ": " + modSetting);
-                    System.exit(-1);
-                }
-
-                // Location
-                Modification.Location location = null;
-                String customResidueBase = "";
-                String locStr = modInfo[3].trim().split("\\s+")[0].trim();
-                if (locStr.equalsIgnoreCase("any"))
-                    location = Modification.Location.Anywhere;
-                else if (locStr.equalsIgnoreCase("N-Term") || locStr.equalsIgnoreCase("NTerm"))
-                    location = Modification.Location.N_Term;
-                else if (locStr.equalsIgnoreCase("C-Term") || locStr.equalsIgnoreCase("CTerm"))
-                    location = Modification.Location.C_Term;
-                else if (locStr.equalsIgnoreCase("Prot-N-Term") || locStr.equalsIgnoreCase("ProtNTerm"))
-                    location = Modification.Location.Protein_N_Term;
-                else if (locStr.equalsIgnoreCase("Prot-C-Term") || locStr.equalsIgnoreCase("ProtCTerm"))
-                    location = Modification.Location.Protein_C_Term;
-                else if (isCustomAminoAcid)
-                    customResidueBase = locStr;
-                else {
-                    System.err.println("Error: Invalid Location at line " +
-                            lineNum + " in file " + modConfigFile + ": " + modSetting);
-                    System.exit(-1);
-                }
-
-                String name = modInfo[4].trim().split("\\s+")[0].trim();
-                if (!isCustomAminoAcid) {
-                    if (isModConflict(modConfigFile, lineNum, modSetting, name, modMass)) {
-                        System.exit(-1);
-                    }
-
-                    Modification mod = Modification.register(name, modMass);
-
-                    for (int i = 0; i < residueStr.length(); i++) {
-                        char residue = residueStr.charAt(i);
-                        Modification.Instance modIns = new Modification.Instance(mod, residue, location);
-                        if (isFixedModification)
-                            modIns.fixedModification();
-
-                        if (!addModInstance(modConfigFile, lineNum, modSetting, mods, modIns)) {
-                            System.exit(-1);
-                        }
-                    }
-                } else {
-                    char customAminoAcidSymbol = residueStr.charAt(0);
-
-                    AminoAcid aa = new AminoAcid(customAminoAcidSymbol, name, new Composition(compStr));
-                    if (customAAResidues.contains(Character.toString(customAminoAcidSymbol))) {
-                        System.err.println(
-                                "Error: Duplicate custom amino acid symbol; \n" +
-                                        "the duplicate definition is on line " +
-                                        lineNum + " in file " + modConfigFile + ": " + modSetting);
-                        System.exit(-1);
-                    }
-                    customAAResidues += customAminoAcidSymbol;
-                    customAA.add(aa);
-                }
+            boolean success = parseConfigEntry(modConfigFilePath, lineNum, dataLine, mods, customAA, modMetadata);
+            if (!success) {
+                System.exit(-1);
             }
         }
 
         AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSet(mods, customAA);
-        aaSet.setMaxNumberOfVariableModificationsPerPeptide(numMods);
+        aaSet.setMaxNumberOfVariableModificationsPerPeptide(modMetadata.getNumMods());
         return aaSet;
+    }
+
+    private static boolean parseConfigEntry(
+            String sourceFilePath, int lineNum, String dataLine,
+            ArrayList<Modification.Instance> mods,
+            ArrayList<AminoAcid> customAA,
+            ModificationMetadata modMetadata) {
+
+        String[] tokenArray = dataLine.split("#");
+        if (tokenArray.length == 0)
+            return true;
+
+        String modSetting = tokenArray[0].trim();
+        if (modSetting.length() == 0) {
+            return true;
+        }
+
+        if (modSetting.toLowerCase().startsWith("nummods=")) {
+            try {
+                int numMods = Integer.parseInt(modSetting.split("=")[1].trim());
+                modMetadata.setNumMods(numMods);
+            } catch (NumberFormatException e) {
+                System.err.println("Error: Invalid NumMods option at line " +
+                        lineNum + " in file " + sourceFilePath + ": " + modSetting);
+                e.printStackTrace();
+                return false;
+            }
+        } else {
+            String[] modInfo = modSetting.split(",");
+            if (modInfo.length < 5) {
+                System.out.println("Ignoring line in ");
+                return true;
+            }
+
+            // Mass or Composition
+            double modMass = 0;
+            String compStr = modInfo[0].trim();
+
+            // First try to parse compStr as an empirical formula
+            // Supports C, H, N, O, S, P, Br, Cl, Fe, and Se
+
+            Double mass = Composition.getMass(compStr);
+            if (mass != null)
+                modMass = mass;
+            else {
+                try {
+                    modMass = Double.parseDouble(compStr);
+                } catch (NumberFormatException e) {
+                    System.err.println("Error: Invalid Mass/Composition at line " +
+                            lineNum + " in file " + sourceFilePath + ": " + modSetting);
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+
+            String customAAResidues = modMetadata.getCustomAAResidues();
+
+            // Residues
+            String residueStr = modInfo[1].trim();
+            boolean isResidueStrLegitimate = true;
+            boolean matchesCustomAA = false;
+            if (!residueStr.equals("*")) {
+                if (residueStr.length() > 0) {
+                    for (int i = 0; i < residueStr.length(); i++) {
+                        boolean matchesCustom = customAAResidues.indexOf(residueStr.charAt(i)) > -1;
+                        if (matchesCustom) {
+                            matchesCustomAA = true;
+                        }
+                        if (!matchesCustom && !AminoAcid.isStdAminoAcid(residueStr.charAt(i))) {
+                            isResidueStrLegitimate = false;
+                            break;
+                        }
+                    }
+                } else
+                    isResidueStrLegitimate = false;
+            }
+
+            // isFixedModification
+            boolean isFixedModification = false;
+            boolean isCustomAminoAcid = false;
+            boolean modTypeParseFailed = false;
+
+            if (modInfo[2].trim().equalsIgnoreCase("fix"))
+                isFixedModification = true;
+            else if (modInfo[2].trim().equalsIgnoreCase("opt"))
+                isFixedModification = false;
+            else if (modInfo[2].trim().equalsIgnoreCase("custom"))
+                isCustomAminoAcid = true;
+            else
+                modTypeParseFailed = true;
+
+            if ((!isResidueStrLegitimate && !isCustomAminoAcid) || (isCustomAminoAcid && matchesCustomAA)) {
+                System.err.println("Error: Invalid Residue(s) at line " +
+                        lineNum + " in file " + sourceFilePath + ": " + modSetting);
+                return false;
+            }
+            if (isCustomAminoAcid && (residueStr.length() > 1 || !residueStr.toLowerCase().matches("[bjouxz]"))) {
+                System.err.println("Error: Invalid Residue(s) at line " +
+                        lineNum + " in file " + sourceFilePath + ": " + modSetting);
+                System.err.println("Custom Amino acids are only allowed using B, J, O, U, X, or Z as the custom symbol.");
+                return false;
+            }
+            if (isCustomAminoAcid && !compStr.matches("([CHNOS][0-9]{0,3})+")) {
+                System.err.println("Error: Invalid composition/mass at line " +
+                        lineNum + " in file " + sourceFilePath + ": " + modSetting);
+                System.err.println("Custom Amino acids must supply a composition string, and must not use elements other than C H N O S.");
+                return false;
+            }
+            if (modTypeParseFailed) {
+                System.err.println("Error: Modification must be either fix, opt, or custom at line " +
+                        lineNum + " in file " + sourceFilePath + ": " + modSetting);
+                return false;
+            }
+
+            // Location
+            Modification.Location location = null;
+            String customResidueBase = "";
+            String locStr = modInfo[3].trim().split("\\s+")[0].trim();
+            if (locStr.equalsIgnoreCase("any"))
+                location = Modification.Location.Anywhere;
+            else if (locStr.equalsIgnoreCase("N-Term") || locStr.equalsIgnoreCase("NTerm"))
+                location = Modification.Location.N_Term;
+            else if (locStr.equalsIgnoreCase("C-Term") || locStr.equalsIgnoreCase("CTerm"))
+                location = Modification.Location.C_Term;
+            else if (locStr.equalsIgnoreCase("Prot-N-Term") || locStr.equalsIgnoreCase("ProtNTerm"))
+                location = Modification.Location.Protein_N_Term;
+            else if (locStr.equalsIgnoreCase("Prot-C-Term") || locStr.equalsIgnoreCase("ProtCTerm"))
+                location = Modification.Location.Protein_C_Term;
+            else if (isCustomAminoAcid)
+                customResidueBase = locStr;
+            else {
+                System.err.println("Error: Invalid Location at line " +
+                        lineNum + " in file " + sourceFilePath + ": " + modSetting);
+                return false;
+            }
+
+            String name = modInfo[4].trim().split("\\s+")[0].trim();
+            if (!isCustomAminoAcid) {
+                if (isModConflict(sourceFilePath, lineNum, modSetting, name, modMass)) {
+                    return false;
+                }
+
+                Modification mod = Modification.register(name, modMass);
+
+                for (int i = 0; i < residueStr.length(); i++) {
+                    char residue = residueStr.charAt(i);
+                    Modification.Instance modIns = new Modification.Instance(mod, residue, location);
+                    if (isFixedModification)
+                        modIns.fixedModification();
+
+                    if (!addModInstance(sourceFilePath, lineNum, modSetting, mods, modIns)) {
+                        return false;
+                    }
+                }
+            } else {
+                char customAminoAcidSymbol = residueStr.charAt(0);
+
+                AminoAcid aa = new AminoAcid(customAminoAcidSymbol, name, new Composition(compStr));
+                if (customAAResidues.contains(Character.toString(customAminoAcidSymbol))) {
+                    System.err.println(
+                            "Error: Duplicate custom amino acid symbol; \n" +
+                                    "the duplicate definition is on line " +
+                                    lineNum + " in file " + sourceFilePath + ": " + modSetting);
+                    return false;
+                }
+                modMetadata.addCustomAminoAcidSymbol(customAminoAcidSymbol);
+                customAA.add(aa);
+            }
+        }
+
+        return true;
     }
 
     public static AminoAcidSet getAminoAcidSetFromXMLFile(String modFilePath) {
@@ -1086,7 +953,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         try {
             reader = new BufferedLineReader(modFile.getPath());
         } catch (IOException e) {
+            System.err.println("Error opening modification file " + modFile.getPath());
             e.printStackTrace();
+            System.exit(-1);
         }
 
         int numMods = 2;
@@ -1664,5 +1533,32 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     public static void main(String argv[]) {
         AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(System.getProperty("user.home") + "/Research/Data/Debug/mods.txt");
         aaSet.printAASet();
+    }
+
+    private static class ModificationMetadata {
+        public ModificationMetadata(int numMods) {
+            this.numMods = numMods;
+            this.customAAResidues = "";
+        }
+
+        public void addCustomAminoAcidSymbol(char customAminoAcidSymbol) {
+            customAAResidues += customAminoAcidSymbol;
+        }
+
+        public void setNumMods(int newModCount) { numMods = newModCount; }
+
+        public void setCustomAAResidues(String residues) { customAAResidues = residues; }
+
+        public int getNumMods() {
+            return numMods;
+        }
+
+        public String getCustomAAResidues() {
+            return customAAResidues;
+        }
+
+        int numMods;
+        String customAAResidues;
+
     }
 }
