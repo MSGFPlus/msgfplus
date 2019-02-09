@@ -71,9 +71,9 @@ public class ParamManager {
         MIN_NUM_PEAKS("minNumPeaks", "MinNumPeaksPerSpectrum", "Minimum number of peaks per spectrum, Default: " + Constants.MIN_NUM_PEAKS_PER_SPECTRUM, null),
         NUM_ISOFORMS("iso", "NumIsoforms", "Number of isoforms to consider per peptide, Default: 128" + Constants.NUM_VARIANTS_PER_PEPTIDE, null),
 
-        MIN_DENOVO_SCORE("minDeNovoScore", "MinDeNovoScore", "Minimum de Novo score, Default: " + Constants.MIN_DE_NOVO_SCORE, null),
+        MIN_DE_NOVO_SCORE("minDeNovoScore", "MinDeNovoScore", "Minimum de Novo score, Default: " + Constants.MIN_DE_NOVO_SCORE, null),
         SPEC_INDEX("index", "SpecIndex", "Range of spectrum index to be considered", null),
-        MAX_MISSCLEAVAGES("maxMissedCleavages", "Count", "Exclude peptides with more than this number of missed cleavages from the search, Default: -1 (no limit)", null),
+        MAX_MISSED_CLEAVAGES("maxMissedCleavages", "Count", "Exclude peptides with more than this number of missed cleavages from the search, Default: -1 (no limit)", null),
         TDA_STRATEGY("tda", "TDA", "Target decoy strategy", null),
         ADD_FEATURES("addFeatures", "AddFeatures", "Add features in the output", null),
         DD_DIRECTORY("dd", "DBIndexDir", "Path to the directory containing database index files", null),
