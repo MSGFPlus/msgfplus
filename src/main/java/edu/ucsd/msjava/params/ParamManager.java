@@ -387,14 +387,14 @@ public class ParamManager {
     }
 
     public void addModFileParam() {
-        FileParameter modParam = new FileParameter(ParamNameEnum.MOD_FILE.commandlineName, ParamNameEnum.MOD_FILE.name, ParamNameEnum.MOD_FILE.description);
+        FileParameter modParam = new FileParameter(ParamNameEnum.MOD_FILE);
         modParam.setAsOptional();
         modParam.fileMustExist();
         addParameter(modParam);
     }
 
     public void addConfigFileParam(){
-        FileParameter configFile = new FileParameter(ParamNameEnum.CONFIGURATION_FILE.commandlineName, ParamNameEnum.CONFIGURATION_FILE.name, ParamNameEnum.CONFIGURATION_FILE.description);
+        FileParameter configFile = new FileParameter(ParamNameEnum.CONFIGURATION_FILE);
         configFile.setAsOptional();
         configFile.fileMustExist();
         addParameter(configFile);
@@ -416,23 +416,23 @@ public class ParamManager {
         // [-o OutputFile (*.mzid)] (Default: [SpectrumFileName].mzid)
         addMzIdOutputFileParam();
 
-        ToleranceParameter pmTolParam = new ToleranceParameter(ParamNameEnum.PRECURSOR_MASS_TOLERANCE.commandlineName, ParamNameEnum.PRECURSOR_MASS_TOLERANCE.name, ParamNameEnum.PRECURSOR_MASS_TOLERANCE.description);
+        ToleranceParameter pmTolParam = new ToleranceParameter(ParamNameEnum.PRECURSOR_MASS_TOLERANCE);
         pmTolParam.defaultValue("20ppm");
         pmTolParam.setAdditionalDescription(ParamNameEnum.PRECURSOR_MASS_TOLERANCE.additionalDescription);
         addParameter(pmTolParam);
 
-        IntRangeParameter isotopeRange = new IntRangeParameter(ParamNameEnum.ISOTOPE_ERROR.commandlineName, ParamNameEnum.ISOTOPE_ERROR.name, ParamNameEnum.ISOTOPE_ERROR.description);
+        IntRangeParameter isotopeRange = new IntRangeParameter(ParamNameEnum.ISOTOPE_ERROR);
         isotopeRange.setAdditionalDescription(ParamNameEnum.ISOTOPE_ERROR.additionalDescription);
         isotopeRange.setMaxInclusive();
         isotopeRange.defaultValue("0,1");
         addParameter(isotopeRange);
 
-        IntParameter numThreadParam = new IntParameter(ParamNameEnum.NUM_THREADS.commandlineName, ParamNameEnum.NUM_THREADS.name, ParamNameEnum.NUM_THREADS.description);
+        IntParameter numThreadParam = new IntParameter(ParamNameEnum.NUM_THREADS);
         numThreadParam.defaultValue(Runtime.getRuntime().availableProcessors());
         numThreadParam.minValue(1);
         addParameter(numThreadParam);
 
-        IntParameter numTasksParam = new IntParameter(ParamNameEnum.NUM_TASKS.commandlineName, ParamNameEnum.NUM_TASKS.name, ParamNameEnum.NUM_TASKS.description);
+        IntParameter numTasksParam = new IntParameter(ParamNameEnum.NUM_TASKS);
         numTasksParam.setAdditionalDescription(ParamNameEnum.NUM_TASKS.additionalDescription);
         numTasksParam.defaultValue(0);
         numTasksParam.minValue(-10);
@@ -443,7 +443,7 @@ public class ParamManager {
         verboseOutputParam.registerEntry("Report total and per-thread progress/status");
         addParameter(verboseOutputParam);
 
-        EnumParameter tdaParam = new EnumParameter(ParamNameEnum.TDA_STRATEGY.commandlineName, ParamNameEnum.TDA_STRATEGY.name, ParamNameEnum.TDA_STRATEGY.description);
+        EnumParameter tdaParam = new EnumParameter(ParamNameEnum.TDA_STRATEGY);
         tdaParam.registerEntry("Don't search decoy database").setDefault();
         tdaParam.registerEntry("Search decoy database");
         addParameter(tdaParam);
@@ -464,44 +464,44 @@ public class ParamManager {
 
         addConfigFileParam();
 
-        IntParameter minLenParam = new IntParameter(ParamNameEnum.MIN_PEPTIDE_LENGTH.commandlineName, ParamNameEnum.MIN_PEPTIDE_LENGTH.name, ParamNameEnum.MIN_PEPTIDE_LENGTH.description);
+        IntParameter minLenParam = new IntParameter(ParamNameEnum.MIN_PEPTIDE_LENGTH);
         minLenParam.minValue(1);
         minLenParam.defaultValue(6);
         addParameter(minLenParam);
 
-        IntParameter maxLenParam = new IntParameter(ParamNameEnum.MAX_PEPTIDE_LENGTH.commandlineName, ParamNameEnum.MAX_PEPTIDE_LENGTH.name, ParamNameEnum.MAX_PEPTIDE_LENGTH.description);
+        IntParameter maxLenParam = new IntParameter(ParamNameEnum.MAX_PEPTIDE_LENGTH);
         maxLenParam.minValue(1);
         maxLenParam.defaultValue(40);
         addParameter(maxLenParam);
 
-        IntParameter minCharge = new IntParameter(ParamNameEnum.MIN_CHARGE.commandlineName, ParamNameEnum.MIN_CHARGE.name, ParamNameEnum.MIN_CHARGE.description);
+        IntParameter minCharge = new IntParameter(ParamNameEnum.MIN_CHARGE);
         minCharge.minValue(1);
         minCharge.defaultValue(2);
         addParameter(minCharge);
 
-        IntParameter maxCharge = new IntParameter(ParamNameEnum.MAX_CHARGE.commandlineName, ParamNameEnum.MAX_CHARGE.name, ParamNameEnum.MAX_CHARGE.description);
+        IntParameter maxCharge = new IntParameter(ParamNameEnum.MAX_CHARGE);
         maxCharge.minValue(1);
         maxCharge.defaultValue(3);
         addParameter(maxCharge);
 
-        IntParameter numMatchesParam = new IntParameter(ParamNameEnum.NUM_MATCHES_SPEC.commandlineName, ParamNameEnum.NUM_MATCHES_SPEC.name, ParamNameEnum.NUM_MATCHES_SPEC.description);
+        IntParameter numMatchesParam = new IntParameter(ParamNameEnum.NUM_MATCHES_SPEC);
         numMatchesParam.minValue(1);
         numMatchesParam.defaultValue(1);
         addParameter(numMatchesParam);
 
-        EnumParameter addFeatureParam = new EnumParameter(ParamNameEnum.ADD_FEATURES.commandlineName, ParamNameEnum.ADD_FEATURES.name, ParamNameEnum.ADD_FEATURES.description);
+        EnumParameter addFeatureParam = new EnumParameter(ParamNameEnum.ADD_FEATURES);
         addFeatureParam.registerEntry("Output basic scores only").setDefault();
         addFeatureParam.registerEntry("Output additional features");
         addParameter(addFeatureParam);
 
-        DoubleParameter chargeCarrierMassParam = new DoubleParameter(ParamNameEnum.CHARGE_CARRIER_MASSES.commandlineName, ParamNameEnum.CHARGE_CARRIER_MASSES.name, ParamNameEnum.CHARGE_CARRIER_MASSES.description);
+        DoubleParameter chargeCarrierMassParam = new DoubleParameter(ParamNameEnum.CHARGE_CARRIER_MASSES);
         chargeCarrierMassParam.minValue(0.1);
         chargeCarrierMassParam.setMaxInclusive();
         chargeCarrierMassParam.defaultValue(Composition.PROTON);
         addParameter(chargeCarrierMassParam);
 
         /* Maximum number of missed cleavages to allow on searched peptides */
-        IntParameter maxMissedCleavages = new IntParameter(ParamNameEnum.MAX_MISSCLEAVAGES.commandlineName, ParamNameEnum.MAX_MISSCLEAVAGES.name, ParamNameEnum.MAX_MISSCLEAVAGES.description);
+        IntParameter maxMissedCleavages = new IntParameter(ParamNameEnum.MAX_MISSED_CLEAVAGES);
         maxMissedCleavages.minValue(-1);
         maxMissedCleavages.defaultValue(-1);
         addParameter(maxMissedCleavages);
@@ -510,7 +510,7 @@ public class ParamManager {
         addExample("Example (low-precision):  java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_human_3.79.fasta -inst 0 -t 0.5Da,2.5Da    -ntt 2 -tda 1 -o testMSGFPlus.mzid -mod Mods.txt");
 
         // Hidden parameters
-        FileParameter dbIndexDirParam = new FileParameter(ParamNameEnum.DD_DIRECTORY.commandlineName, ParamNameEnum.DD_DIRECTORY.name, ParamNameEnum.DD_DIRECTORY.description);
+        FileParameter dbIndexDirParam = new FileParameter(ParamNameEnum.DD_DIRECTORY);
         dbIndexDirParam.fileMustExist();
         dbIndexDirParam.mustBeADirectory();
         dbIndexDirParam.setAsOptional();
@@ -524,7 +524,7 @@ public class ParamManager {
         unitParam.setHidden();
         addParameter(unitParam);
 
-        IntRangeParameter specIndexParam = new IntRangeParameter(ParamNameEnum.SPEC_INDEX.commandlineName, ParamNameEnum.SPEC_INDEX.name, ParamNameEnum.SPEC_INDEX.description);
+        IntRangeParameter specIndexParam = new IntRangeParameter(ParamNameEnum.SPEC_INDEX);
         specIndexParam.minValue(1);
         specIndexParam.setMaxInclusive();
         specIndexParam.defaultValue("1," + (Integer.MAX_VALUE - 1));
@@ -548,12 +548,12 @@ public class ParamManager {
         edgeScoreParam.setHidden();
         addParameter(edgeScoreParam);
 
-        IntParameter minNumPeaksParam = new IntParameter(ParamNameEnum.MIN_NUM_PEAKS.commandlineName, ParamNameEnum.MIN_NUM_PEAKS.name, ParamNameEnum.MIN_NUM_PEAKS.description);
+        IntParameter minNumPeaksParam = new IntParameter(ParamNameEnum.MIN_NUM_PEAKS);
         minNumPeaksParam.defaultValue(Constants.MIN_NUM_PEAKS_PER_SPECTRUM);
         minNumPeaksParam.setHidden();
         addParameter(minNumPeaksParam);
 
-        IntParameter isoParam = new IntParameter(ParamNameEnum.NUM_ISOFORMS.commandlineName, ParamNameEnum.NUM_ISOFORMS.name, ParamNameEnum.NUM_ISOFORMS.description);
+        IntParameter isoParam = new IntParameter(ParamNameEnum.NUM_ISOFORMS);
         isoParam.defaultValue(Constants.NUM_VARIANTS_PER_PEPTIDE);
         isoParam.setHidden();
         addParameter(isoParam);
@@ -564,7 +564,7 @@ public class ParamManager {
         metCleavageParam.setHidden();
         addParameter(metCleavageParam);
 
-        IntParameter minDeNovoScoreParam = new IntParameter(ParamNameEnum.MIN_DENOVO_SCORE.commandlineName, ParamNameEnum.MIN_DENOVO_SCORE.name, ParamNameEnum.MIN_DENOVO_SCORE.description);
+        IntParameter minDeNovoScoreParam = new IntParameter(ParamNameEnum.MIN_DE_NOVO_SCORE);
         minDeNovoScoreParam.minValue(Integer.MIN_VALUE);
         minDeNovoScoreParam.defaultValue(Constants.MIN_DE_NOVO_SCORE);
         minDeNovoScoreParam.setHidden();
@@ -614,7 +614,7 @@ public class ParamManager {
         // Protocol
         addProtocolParam();
 
-        IntParameter numThreadParam = new IntParameter(ParamNameEnum.NUM_THREADS.commandlineName, ParamNameEnum.NUM_THREADS.name, ParamNameEnum.NUM_THREADS.description);
+        IntParameter numThreadParam = new IntParameter(ParamNameEnum.NUM_THREADS);
         numThreadParam.defaultValue(Runtime.getRuntime().availableProcessors() / 2);
         numThreadParam.setAdditionalDescription(ParamNameEnum.NUM_THREADS.additionalDescription);
         numThreadParam.minValue(1);

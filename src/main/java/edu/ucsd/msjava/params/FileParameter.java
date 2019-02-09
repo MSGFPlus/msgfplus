@@ -19,9 +19,14 @@ public class FileParameter extends Parameter {
     private File file;
     private FileFormat fileFormat;
 
+    public FileParameter(ParamManager.ParamNameEnum paramInfo) {
+        super(paramInfo.getCommandlineName(), paramInfo.getName(), paramInfo.getDescription());
+    }
+
     public FileParameter(String key, String name, String description) {
         super(key, name, description);
     }
+
 
     public FileParameter setAsOptional() {
         super.setOptional();

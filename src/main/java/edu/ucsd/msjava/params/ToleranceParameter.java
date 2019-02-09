@@ -8,9 +8,14 @@ public class ToleranceParameter extends Parameter {
     private Tolerance rightTolerance;
     private boolean allowAsymmetricValues = true;
 
+    public ToleranceParameter(ParamManager.ParamNameEnum paramInfo) {
+        super(paramInfo.getCommandlineName(), paramInfo.getName(), paramInfo.getDescription());
+    }
+
     public ToleranceParameter(String key, String name, String description) {
         super(key, name, description);
     }
+
 
     public ToleranceParameter defaultValue(String value) {
         super.setOptional();

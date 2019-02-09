@@ -2,6 +2,10 @@ package edu.ucsd.msjava.params;
 
 public class IntParameter extends NumberParameter<Integer> {
 
+    public IntParameter(ParamManager.ParamNameEnum paramInfo) {
+        super(paramInfo.getCommandlineName(), paramInfo.getName(), paramInfo.getDescription());
+    }
+
     public IntParameter(String key, String name, String description) {
         super(key, name, description);
         super.minValue = 0;
