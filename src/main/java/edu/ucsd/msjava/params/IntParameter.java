@@ -16,6 +16,23 @@ public class IntParameter extends NumberParameter<Integer> {
     public String parse(String value) {
         try {
             super.value = Integer.valueOf(value);
+            if (this.value == null) {
+                return "Value cannot be null";
+            }
+
+            if (minValue == null && maxValue == null) {
+                // Skip the range check
+                return null;
+            }
+
+            if (minValue == null) {
+                minValue = Integer.MIN_VALUE;
+            }
+
+            if (maxValue == null) {
+                maxValue = Integer.MAX_VALUE;
+            }
+
             String range = (super.isMinInclusive ? "[" : "(") + minValue + "," + maxValue + (super.isMaxInclusive ? "]" : ")");
             if (this.value < minValue || this.value > maxValue
                     || !super.isMinInclusive && this.value.equals(minValue)
