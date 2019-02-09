@@ -1,11 +1,10 @@
 #Parent mass tolerance 
 #  Examples: 2.5Da or 30ppm
 #  Use comma to set asymmetric values, for example "0.5Da,2.5Da" will set 0.5Da to the left (expMass<theoMass) and 2.5Da to the right (expMass>theoMass)
-#PMTolerance=20ppm
 ParentMassTolerance=20ppm
 
 #Max Number of Modifications per peptide 
-# If this value is large, the search will be slow
+#  If this value is large, the search will be slow
 NumMods=4
 
 #Modifications (see below for examples)
@@ -16,7 +15,7 @@ StaticMod=229.1629,     K,  fix, any,       TMT6plex
 DynamicMod=O1,          M,  opt, any,       Oxidation             # Oxidized methionine
 DynamicMod=-187.152366, K,  opt, any,       AcNoTMT               # Residue tagged by MSGF+ with static TMT6, but is actually acetylated and does not have TMT
 
-##Custom AA specification
+#Custom AA specification
 CustomAA=C3H5NO,        U, custom, U, Selenocysteine      # Custom amino acids can only have C, H, N, O, and S
 
 #Fragmentation Method
@@ -24,8 +23,7 @@ CustomAA=C3H5NO,        U, custom, U, Selenocysteine      # Custom amino acids c
 #  1 means CID
 #  2 means ETD
 #  3 means HCD
-#  4 means Merge spectra from the same precursor (e.g. CID/ETD pairs, CID/HCD/ETD triplets) 
-# (note that for Thermo instruments this is always set to 0 by the Analysis Manager since a _ScanType.txt file is created with this information on a per-scan basis)
+#  Disabled in MS-GF+: 4 means Merge spectra from the same precursor (e.g. CID/ETD pairs, CID/HCD/ETD triplets) 
 FragmentationMethodID=0
 
 #Instrument ID
@@ -50,7 +48,7 @@ EnzymeID=1
 #  e.g. "-t 20ppm -ti -1,2" tests abs(exp-calc-n*1.00335Da)<20ppm for n=-1, 0, 1, 2.
 IsotopeError=-1,2
 
-#Number of tryptic termini
+#Number of tolerable termini
 #  The number of peptide termini that must have been cleaved by the enzyme (default 1)
 #  For trypsin, 2 means fully tryptic only, 1 means partially tryptic, and 0 means no-enzyme search
 NTT=2
@@ -70,7 +68,7 @@ showDecoy=1
 NumThreads=All
 
 #Minimum peptide length to consider
-MinPepLength=9
+MinPepLength=6
 
 #Maximum peptide length to consider
 MaxPepLength=50
@@ -82,8 +80,8 @@ minCharge=2
 maxCharge=5
 
 #Number of matches per spectrum to be reported
-#If this value is greater than 1 then the FDR values computed by MS-GF+ will be skewed by high-scoring 2nd and 3rd hits
-NumMatchesPerSpec=2
+#If this value is greater than 1, the FDR values computed by MS-GF+ will be skewed by high-scoring 2nd and 3rd hits
+NumMatchesPerSpec=1
 
 #Amino Acid Frequencies
 #  If 0, compute amino acid frequencies from the input database and use them as amino acid probabilities
