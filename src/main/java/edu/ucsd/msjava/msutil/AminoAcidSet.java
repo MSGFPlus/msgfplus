@@ -990,24 +990,24 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 }
             } else if (dataLine.startsWith(cysKey)) {
                 String value = dataLine.substring(cysKey.length(), dataLine.lastIndexOf(closeKey));
-                if (value.equals("c57")) {
+                if (value.equalsIgnoreCase("c57")) {
                     char residue = 'C';
                     Modification mod = Modification.Carbamidomethyl;
                     Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere).fixedModification();
                     if (!addModInstance(modFile.getName(), lineNum, dataLine, mods, modIns)) {
                         System.exit(-1);
                     }
-                } else if (value.equals("c58")) {
+                } else if (value.equalsIgnoreCase("c58")) {
                     char residue = 'C';
                     Modification mod = Modification.Carboxymethyl;
                     Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere).fixedModification();
                     mods.add(modIns);
-                } else if (value.equals("c99")) {
+                } else if (value.equalsIgnoreCase("c99")) {
                     char residue = 'C';
                     Modification mod = Modification.NIPCAM;
                     Modification.Instance modIns = new Modification.Instance(mod, residue, Location.Anywhere).fixedModification();
                     mods.add(modIns);
-                } else if (value.equals("None")) {
+                } else if (value.equalsIgnoreCase("None")) {
                     // do nothing
                 } else {
                     System.err.println("Error: Invalid Cysteine protecting group at line " +
@@ -1056,31 +1056,31 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     System.exit(-1);
                 }
 
-                boolean isFixedModification = false;
+                // Location
                 Modification.Location location = null;
+                boolean isFixedModification = false;
+                String locStr = token[2];
 
-                // Type
-                String type = token[2];
-                if (type.equals("fix")) {
+                if (locStr.equalsIgnoreCase("fix")) {
                     isFixedModification = true;
                     location = Location.Anywhere;
-                } else if (type.equals("opt")) {
+                } else if (locStr.equalsIgnoreCase("opt")) {
                     isFixedModification = false;
                     location = Location.Anywhere;
-                } else if (type.equals("opt_nterm")) {
+                } else if (locStr.equalsIgnoreCase("opt_nterm")) {
                     isFixedModification = false;
                     location = Location.N_Term;
-                } else if (type.equals("fix_nterm")) {
+                } else if (locStr.equalsIgnoreCase("fix_nterm")) {
                     isFixedModification = true;
                     location = Location.N_Term;
-                } else if (type.equals("opt_cterm")) {
+                } else if (locStr.equalsIgnoreCase("opt_cterm")) {
                     isFixedModification = false;
                     location = Location.C_Term;
-                } else if (type.equals("fix_cterm")) {
+                } else if (locStr.equalsIgnoreCase("fix_cterm")) {
                     isFixedModification = true;
                     location = Location.C_Term;
                 } else {
-                    System.err.println("Error: Invalid Type(s) at line " +
+                    System.err.println("Error: Invalid custom_PTM location at line " +
                             lineNum + " in file " + modFile.getName() + ": " + dataLine);
                     System.exit(-1);
                 }
@@ -1436,13 +1436,13 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     }
 
     // returns a new residue for modified amino acid
-    private char getModifiedResidue(char unmodResidue) {
-        if (!Character.isUpperCase(unmodResidue)) {
-            System.err.println("Invalid unmodified residue: " + unmodResidue);
+    private char getModifiedResidue(char unmodifiedResidue) {
+        if (!Character.isUpperCase(unmodifiedResidue)) {
+            System.err.println("Invalid unmodified residue: " + unmodifiedResidue);
             System.exit(-1);
         }
-        // if lower case letter is available
-        char lowerCaseR = Character.toLowerCase(unmodResidue);
+        // if lowercase letter is available
+        char lowerCaseR = Character.toLowerCase(unmodifiedResidue);
         if (!modResidueSet.contains(lowerCaseR)) {
             modResidueSet.add(lowerCaseR);
             return lowerCaseR;
