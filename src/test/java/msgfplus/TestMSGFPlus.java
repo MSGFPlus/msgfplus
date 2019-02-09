@@ -40,8 +40,7 @@ public class TestMSGFPlus {
         File dbFile = Paths.get(workDir.getPath(),"ID_003456_9B916A8B.fasta").toFile();
         File modFile = Paths.get(workDir.getPath(), "MSGFPlus_Mods.txt").toFile();
         
-        String versionString = MSGFPlus.VERSION.split("\\s+")[1];
-        versionString = versionString.substring(versionString.indexOf('(')+1, versionString.lastIndexOf(')'));
+        String versionString = getNextVersion();
         String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
                 "-mod", modFile.getPath(), "-t", "10ppm", "-tda", "1", "-m", "0", "-ti", "0,1", "-ntt", "1", //"-thread", "2",
                 "-o", Paths.get(workDir.getPath(), "Test_" + versionString + ".mzid").toString(),
@@ -68,8 +67,7 @@ public class TestMSGFPlus {
         File dbFile = Paths.get(workDir.getPath(),"ID_007516_6B162552.fasta").toFile();
         File modFile = Paths.get(workDir.getPath(), "MSGFPlus_Mods.txt").toFile();
 
-        String versionString = MSGFPlus.VERSION.split("\\s+")[1];
-        versionString = versionString.substring(versionString.indexOf('(')+1, versionString.lastIndexOf(')'));
+        String versionString = getNextVersion();
         String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(),
                 "-mod", modFile.getPath(), "-t", "10ppm", "-tda", "1", "-m", "0", "-ti", "-1,2", "-ntt", "1", //"-thread", "2",
                 "-o", Paths.get(workDir.getPath(), "Test_" + versionString + ".mzid").toString(),
@@ -100,6 +98,11 @@ public class TestMSGFPlus {
         assertTrue(msg == null);
 
         assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
+    }
+
+    private String getNextVersion() {
+        String versionString = MSGFPlus.VERSION.split("\\s+")[1];
+        return versionString.substring(versionString.indexOf('(')+1, versionString.lastIndexOf(')'));
     }
 
     @Test
@@ -137,9 +140,7 @@ public class TestMSGFPlus {
         File modFile = Paths.get(workDir.getPath(), "Mods.txt").toFile();
         
 //        File outputFile = Paths.get(dir.getPath(), "Test"+"2013-07-26"+".txt").toFile();
-        String versionString = MSGFPlus.VERSION.split("\\s+")[1];
-        versionString = versionString.substring(versionString.indexOf('(')+1, versionString.lastIndexOf(')'));
-        String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
+        String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(),
                 "-mod", modFile.getPath(), "-t", "10ppm", "-tda", "1", "-m", "1", "-ti", "0,1", "-ntt", "1", "-thread", "2",
                 "-o", Paths.get(workDir.getPath(), "Test_Multithreading.mzid").toString(),
                 "-thread", "2"
