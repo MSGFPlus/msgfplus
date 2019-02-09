@@ -973,7 +973,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         String closeKey = "</parameter>";
 
         // parse modifications
-        ArrayList<Modification.Instance> mods = new ArrayList<Modification.Instance>();
+        ArrayList<Modification.Instance> mods = new ArrayList<>();
         String dataLine;
         int lineNum = 0;
         while ((dataLine = reader.readLine()) != null) {
@@ -1334,7 +1334,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
     public static AminoAcidSet getStandardAminoAcidSetWithFixedCarbamidomethylatedCys() {
         if (standardAASetWithCarbamidomethylatedCys == null) {
-            ArrayList<Modification.Instance> mods = new ArrayList<Modification.Instance>();
+            ArrayList<Modification.Instance> mods = new ArrayList<>();
             mods.add(new Modification.Instance(Modification.Carbamidomethyl, 'C').fixedModification());
             standardAASetWithCarbamidomethylatedCys = AminoAcidSet.getAminoAcidSet(mods);
         }
@@ -1343,7 +1343,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
     public static AminoAcidSet getStandardAminoAcidSetWithFixedCarboxymethylatedCys() {
         if (standardAASetWithCarboxyomethylatedCys == null) {
-            ArrayList<Modification.Instance> mods = new ArrayList<Modification.Instance>();
+            ArrayList<Modification.Instance> mods = new ArrayList<>();
             mods.add(new Modification.Instance(Modification.Carboxymethyl, 'C').fixedModification());
             standardAASetWithCarboxyomethylatedCys = AminoAcidSet.getAminoAcidSet(mods);
         }
