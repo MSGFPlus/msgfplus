@@ -37,7 +37,7 @@ public class SearchParams {
     // private boolean showDecoy;
     private int minPeptideLength;
     private int maxPeptideLength;
-    private int maxNumVariatsPerPeptide;
+    private int maxNumVariantsPerPeptide;
     private int minCharge;
     private int maxCharge;
     private int numThreads;
@@ -133,8 +133,8 @@ public class SearchParams {
         return maxPeptideLength;
     }
 
-    public int getMaxNumVariatsPerPeptide() {
-        return maxNumVariatsPerPeptide;
+    public int getMaxNumVariantsPerPeptide() {
+        return maxNumVariantsPerPeptide;
     }
 
     public int getMinCharge() {
@@ -311,7 +311,8 @@ public class SearchParams {
         minPeptideLength = paramManager.getIntValue("minLength");
         maxPeptideLength = paramManager.getIntValue("maxLength");
 
-        maxNumVariatsPerPeptide = paramManager.getIntValue("iso");
+        // Number of isoforms to consider per peptide, Default: 128
+        maxNumVariantsPerPeptide = paramManager.getIntValue("iso");
 
         if (minPeptideLength > maxPeptideLength) {
             return "MinPepLength must not be larger than MaxPepLength";

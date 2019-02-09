@@ -682,12 +682,12 @@ public class ParamManager {
 
         addModFileParam();
 
-//		FloatRangeParameter itrqParam = new FloatRangeParameter("itraq", "minMass,maxMass", "Remove MS/MS peaks in the mass range between minMass and maxMass (for iTRAQ analysis).");
-//		itrqParam.minValue(0f);
-//		itrqParam.setMaxInclusive();
-//		itrqParam.defaultValue("0,0");
-//		itrqParam.setHidden();
-//		addParameter(itrqParam);
+//		FloatRangeParameter itraqParam = new FloatRangeParameter("itraq", "minMass,maxMass", "Remove MS/MS peaks in the mass range between minMass and maxMass (for iTRAQ analysis).");
+//		itraqParam.minValue(0f);
+//		itraqParam.setMaxInclusive();
+//		itraqParam.defaultValue("0,0");
+//		itraqParam.setHidden();
+//		addParameter(itraqParam);
 
         IntParameter minLenParam = new IntParameter("minLength", "MinPepLength", "Minimum peptide length to consider, Default: 6");
         minLenParam.minValue(1);

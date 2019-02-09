@@ -44,7 +44,7 @@ public class ConcurrentMSGFPlus {
                     params.getNumMatchesPerSpec(),
                     params.getMinPeptideLength(),
                     params.getMaxPeptideLength(),
-                    params.getMaxNumVariatsPerPeptide(),
+                    params.getMaxNumVariantsPerPeptide(),
                     params.getMinDeNovoScore(),
                     params.ignoreMetCleavage(),
                     params.getMaxMissedCleavages()
