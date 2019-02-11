@@ -8,6 +8,7 @@ import edu.ucsd.msjava.parser.BufferedLineReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import static edu.ucsd.msjava.msutil.Composition.POTASSIUM_CHARGE_CARRIER_MASS;
@@ -368,13 +369,18 @@ public class SearchParams {
         }
 
         int numMods = 2;
-
-        // parse the settings
         String dataLine;
-        List<String> mods = new ArrayList<>();
+        int lineNum = 0;
+
+        // Keys in this table are line numbers; values are the text from the config file
+        Hashtable<Integer, String> modsByLine = new Hashtable<>();
+
+        // Parse the settings
 
         assert reader != null;
         while ((dataLine = reader.readLine()) != null) {
+            lineNum++;
+
             String[] tokenArray = dataLine.split("#");
             if (tokenArray.length == 0) {
                 continue;
@@ -391,7 +397,7 @@ public class SearchParams {
 
                 String value = lineSetting.split("=")[1].trim();
                 if (!value.equalsIgnoreCase("none")) {
-                    mods.add(value);
+                    modsByLine.put(lineNum, value);
                 }
                 continue;
             }
@@ -417,7 +423,7 @@ public class SearchParams {
                 }
             }
         }
-        return AminoAcidSet.getAminoAcidSetFromList(paramFile.getName(), mods, numMods);
+        return AminoAcidSet.getAminoAcidSetFromList(paramFile.getName(), modsByLine, numMods);
     }
 
     @Override

@@ -752,22 +752,27 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         return aaSet;
     }
 
-    public static AminoAcidSet getAminoAcidSetFromList(String modConfigFilePath, List<String> rawMods, int numMods) {
+    /**
+     * Associate modifications in rawMods with amino acids
+     * @param modConfigFilePath
+     * @param modsByLine Hashtable where keys are the line number in the MSGF+ parameter file and values are the text from the given line
+     * @param numMods
+     * @return
+     */
+    public static AminoAcidSet getAminoAcidSetFromList(String modConfigFilePath, Hashtable<Integer, String> modsByLine, int numMods) {
         BufferedLineReader reader = null;
 
         // parse modifications
         ArrayList<Modification.Instance> mods = new ArrayList<>();
         ArrayList<AminoAcid> customAA = new ArrayList<>();
-        int lineNum = 0;
         ModificationMetadata modMetadata = new ModificationMetadata(numMods);
 
-        for(String dataLine: rawMods) {
-            lineNum++;
+        modsByLine.forEach((lineNum, dataLine) -> {
             boolean success = parseConfigEntry(modConfigFilePath, lineNum, dataLine, mods, customAA, modMetadata);
             if (!success) {
                 System.exit(-1);
             }
-        }
+         });
 
         AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSet(mods, customAA);
         aaSet.setMaxNumberOfVariableModificationsPerPeptide(modMetadata.getNumMods());
