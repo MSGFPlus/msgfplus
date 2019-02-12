@@ -1,3 +1,17 @@
+#SpectrumFile 
+# *.mzML, *.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt
+# Spectra should be centroided (see below for MSConvert example). Profile spectra will be ignored.
+# Use of -s at the command line will override this filename
+SpectrumFile=InstrumentFile.mzML
+
+#FASTA file
+# "*.fasta or *.fa or *.faa
+# Use of -d at the command line will override this filename
+DatabaseFile=Proteins.fasta
+
+#Prefix for decoy proteins in the FASTA file
+DecoyPrefix=XXX
+
 #Parent mass tolerance 
 #  Examples: 2.5Da or 30ppm
 #  Use comma to set asymmetric values, for example "0.5Da,2.5Da" will set 0.5Da to the left (expMass<theoMass) and 2.5Da to the right (expMass>theoMass)
@@ -40,13 +54,18 @@ InstrumentID=0
 #  2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N, 8: alphaLP, 9: No Enzyme (for peptidomics)
 EnzymeID=1
 
+#Number of concurrent threads to be executed
+# Default: Number of available cores
+# 
+# NumThreads=4
+
 #Isotope error range
 #  Takes into account of the error introduced by choosing non-monoisotopic peak for fragmentation.
 #  Useful for accurate precursor ion masses
 #  Ignored if the parent mass tolerance is > 0.5Da or 500ppm
 #  The combination of -t and -ti determins the precursor mass tolerance.
 #  e.g. "-t 20ppm -ti -1,2" tests abs(exp-calc-n*1.00335Da)<20ppm for n=-1, 0, 1, 2.
-IsotopeError=-1,2
+IsotopeErrorRange=-1,2
 
 #Number of tolerable termini
 #  The number of peptide termini that must have been cleaved by the enzyme (default 1)
@@ -74,21 +93,32 @@ MinPepLength=6
 MaxPepLength=50
 
 #Minimum precursor charge to consider (if not specified in the spectrum)
-minCharge=2
+MinCharge=2
 
 #Maximum precursor charge to consider (if not specified in the spectrum)
-maxCharge=5
+MaxCharge=5
 
 #Number of matches per spectrum to be reported
-#If this value is greater than 1, the FDR values computed by MS-GF+ will be skewed by high-scoring 2nd and 3rd hits
+# If this value is greater than 1, the FDR values computed by MS-GF+ will be skewed by high-scoring 2nd and 3rd hits
 NumMatchesPerSpec=1
+
+#Mass of charge carrier
+# Default: mass of proton (1.00727649)
+#ChargeCarrierMass=1.00727649
+
+#Minimum number of peaks per spectrum, Default:
+# Default: 10
+#MinNumPeaksPerSpectrum=10
+
+#Number of isoforms to consider per peptide
+# Default: 128
+#NumIsoforms=128
 
 #Amino Acid Frequencies
 #  If 0, compute amino acid frequencies from the input database and use them as amino acid probabilities
 #  If 1, use uniform amino acid probability (preferable when the database size is small)
 #  If auto, then Analysis Manager will auto-set this to 0 if the .Fasta file is more than 20 KB in size
 uniformAAProb=auto
-
 
 #Amino Acid Modification Examples
 # Specify static modifications using one or more StaticMod= entries
