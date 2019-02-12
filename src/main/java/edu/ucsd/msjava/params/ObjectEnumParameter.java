@@ -8,6 +8,7 @@ public class ObjectEnumParameter<T extends ParamObject> extends EnumParameter {
 
     public ObjectEnumParameter(ParamManager.ParamNameEnum paramInfo) {
         super(paramInfo.getCommandlineName(), paramInfo.getName());
+        setAdditionalDescription(paramInfo.getAdditionalDescription());
     }
 
     public ObjectEnumParameter(String key, String name) {

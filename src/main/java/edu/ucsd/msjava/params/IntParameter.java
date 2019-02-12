@@ -4,6 +4,7 @@ public class IntParameter extends NumberParameter<Integer> {
 
     public IntParameter(ParamManager.ParamNameEnum paramInfo) {
         super(paramInfo.getCommandlineName(), paramInfo.getName(), paramInfo.getDescription());
+        setAdditionalDescription(paramInfo.getAdditionalDescription());
     }
 
     public IntParameter(String key, String name, String description) {

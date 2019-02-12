@@ -4,6 +4,7 @@ public class DoubleParameter extends NumberParameter<Double> {
 
     public DoubleParameter(ParamManager.ParamNameEnum paramInfo) {
         super(paramInfo.getCommandlineName(), paramInfo.getName(), paramInfo.getDescription());
+        setAdditionalDescription(paramInfo.getAdditionalDescription());
     }
 
     public DoubleParameter(String key, String name, String description) {

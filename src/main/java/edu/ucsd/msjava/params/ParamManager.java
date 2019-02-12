@@ -48,10 +48,10 @@ public class ParamManager {
                 "Use a comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (ObsMass < TheoMass) and 2.5Da to the right (ObsMass > TheoMass)"),
 
         FRAG_METHOD("m", "FragmentationMethodID", "Fragmentation Method",
-                "\t0 means as written in the spectrum or CID if no info (Default)\n" +
-                        "\t1 means CID\n" +
-                        "\t2 means ETD\n" +
-                        "\t3 means HCD"),
+                "   0 means as written in the spectrum or CID if no info (Default)\n" +
+                        "\t   1 means CID\n" +
+                        "\t   2 means ETD\n" +
+                        "\t   3 means HCD"),
 
         INSTRUMENT_TYPE("inst", "InstrumentID", null, null),
         ENZYME_ID("e", "EnzymeID", null, null),
@@ -202,8 +202,9 @@ public class ParamManager {
                     System.out.println("\t" + param);
                     if (param.getAdditionalDescription() != null)
                         System.out.println("\t   " + param.getAdditionalDescription());
-                } else
+                } else {
                     optParams.add(param);
+                }
             }
         }
 

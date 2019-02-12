@@ -10,12 +10,12 @@ public class ToleranceParameter extends Parameter {
 
     public ToleranceParameter(ParamManager.ParamNameEnum paramInfo) {
         super(paramInfo.getCommandlineName(), paramInfo.getName(), paramInfo.getDescription());
+        setAdditionalDescription(paramInfo.getAdditionalDescription());
     }
 
     public ToleranceParameter(String key, String name, String description) {
         super(key, name, description);
     }
-
 
     public ToleranceParameter defaultValue(String value) {
         super.setOptional();

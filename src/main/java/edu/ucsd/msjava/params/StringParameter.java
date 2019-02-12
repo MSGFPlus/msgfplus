@@ -5,6 +5,7 @@ public class StringParameter extends Parameter {
 
     public StringParameter(ParamManager.ParamNameEnum paramInfo) {
         super(paramInfo.getCommandlineName(), paramInfo.getName(), paramInfo.getDescription());
+        setAdditionalDescription(paramInfo.getAdditionalDescription());
     }
 
     public StringParameter(String key, String name, String description) {

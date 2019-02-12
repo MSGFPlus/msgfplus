@@ -19,6 +19,7 @@ public class EnumParameter extends IntParameter {
 
     public EnumParameter(ParamManager.ParamNameEnum paramInfo) {
         super(paramInfo.getCommandlineName(), paramInfo.getName(), paramInfo.getDescription());
+        setAdditionalDescription(paramInfo.getAdditionalDescription());
     }
 
     public EnumParameter(String key, String name, String description) {

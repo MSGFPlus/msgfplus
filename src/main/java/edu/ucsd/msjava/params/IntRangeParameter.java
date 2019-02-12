@@ -4,6 +4,7 @@ public class IntRangeParameter extends RangeParameter<Integer> {
 
     public IntRangeParameter(ParamManager.ParamNameEnum paramInfo) {
         super(paramInfo.getCommandlineName(), paramInfo.getName(), paramInfo.getDescription());
+        setAdditionalDescription(paramInfo.getAdditionalDescription());
     }
 
     public IntRangeParameter(String key, String name, String description) {
