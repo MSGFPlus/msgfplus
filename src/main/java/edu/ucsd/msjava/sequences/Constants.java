@@ -76,22 +76,22 @@ public class Constants {
     public static final char INVALID_CHAR = '?';
 
     /**
-     * Minumum number of peaks per spectrum.
+     * Minimum number of peaks per spectrum.
      */
     public static final int MIN_NUM_PEAKS_PER_SPECTRUM = 10;
 
     /**
-     * Minumum de novo score.
+     * Minimum de novo score.
      */
     public static final int MIN_DE_NOVO_SCORE = 0;
 
     /**
-     * Minumum number of peaks per spectrum.
+     * Minimum number of peaks per spectrum.
      */
     public static final int NUM_VARIANTS_PER_PEPTIDE = 128;
 
     /**
-     * Minumum number of peaks per spectrum for TOF spectra.
+     * Minimum number of peaks per spectrum for TOF spectra.
      */
     public static final int MIN_NUM_PEAKS_PER_SPECTRUM_TOF = 3;
 
