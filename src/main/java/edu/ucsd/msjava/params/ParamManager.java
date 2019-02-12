@@ -22,6 +22,10 @@ public class ParamManager {
 
     public enum ParamNameEnum {
 
+        CONFIGURATION_FILE("conf", "ConfigurationFileName",
+                "Configuration file path, Default: all parameters are provided by the command line interface",
+                "Example parameter file is at https://github.com/MSGFPlus/msgfplus/blob/master/docs/examples/MSGFPlus_Params.txt"),
+
         SPECTRUM_FILE("s", "SpectrumFile", "*.mzML, *.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt",
                 "Spectra should be centroided (see below for MSConvert example). Profile spectra will be ignored."),
 
@@ -30,11 +34,18 @@ public class ParamManager {
         DECOY_PREFIX("decoy", "DecoyPrefix",
                 "Prefix for decoy protein names; default is " + MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX, null),
 
-        PARENT_MASS_TOLERANCE("t", "ParentMassTolerance", "e.g. 2.5Da, 30ppm or 0.5Da,2.5Da",
-                "Use a comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (expMass<theoMass) and 2.5Da to the right (expMass>theoMass)"),
 
         MZID_OUTPUT_FILE("o", "OutputFile (*.mzid)", "Default: [SpectrumFileName].mzid", null),
         OUTPUT_FILE("o", "OutputFile", "Default: stdout", null),
+
+        // MSGF and MSGFDB
+        PARENT_MASS_TOLERANCE("t", "ParentMassTolerance", "e.g. 2.5Da, 30ppm or 0.5Da,2.5Da",
+                "Use a comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (ObsMass < TheoMass) and 2.5Da to the right (ObsMass > TheoMass)"),
+
+        // Used by MS-GF+
+        PRECURSOR_MASS_TOLERANCE("t", "PrecursorMassTolerance", "e.g. 2.5Da, 20ppm or 0.5Da,2.5Da, Default: 20ppm",
+                "Use a comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (ObsMass < TheoMass) and 2.5Da to the right (ObsMass > TheoMass)"),
+
         FRAG_METHOD("m", "FragmentationMethodID", "Fragmentation Method",
                 "\t0 means as written in the spectrum or CID if no info (Default)\n" +
                         "\t1 means CID\n" +
@@ -44,7 +55,6 @@ public class ParamManager {
         ENZYME_ID("e", "EnzymeID", null, null),
         PROTOCOL_ID("protocol", "ProtocolID", null, null),
         MOD_FILE("mod", "ModificationFileName", "Modification file, Default: standard amino acids with fixed C+57; only if -mod is not specified", null),
-        CONFIGURATION_FILE("conf", "ConfigurationFileName", "Configuration file, Default: all parameters are provided by the commandline interface", null),
 
         NUM_THREADS("thread", "NumThreads", "Number of concurrent threads to be executed, Default: Number of available cores", "This is best set to the number of physical cores in a single NUMA node.\n" +
                 "\t   Generally a single NUMA node is 1 physical processor.\n" +
@@ -57,8 +67,6 @@ public class ParamManager {
                 "\t   tasks < 0: multiply number of threads by abs(tasks) to determine number of tasks (i.e., -2 means \"2 * numThreads\" tasks).\n" +
                 "\t   One task per thread will use the most memory, but will usually finish the fastest.\n" +
                 "\t   2-3 tasks per thread will use comparably less memory, but may cause the search to take 1.5 to 2 times as long."),
-
-        PRECURSOR_MASS_TOLERANCE("t", "PrecursorMassTolerance", "e.g. 2.5Da, 20ppm or 0.5Da,2.5Da, Default: 20ppm", "Use a comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (ObsMass < TheoMass) and 2.5Da to the right (ObsMass > TheoMass)"),
 
         ISOTOPE_ERROR("ti", "IsotopeErrorRange", "Range of allowed isotope peak errors, Default:0,1", "Takes into account the error introduced by choosing a non-monoisotopic peak for fragmentation.\n" +
                 "\t   The combination of -t and -ti determines the precursor mass tolerance.\n" +
