@@ -91,7 +91,7 @@ public class ParamManager {
 
         MIN_DE_NOVO_SCORE("minDeNovoScore", "MinDeNovoScore", "Minimum de Novo score, Default: " + Constants.MIN_DE_NOVO_SCORE, null),
         SPEC_INDEX("index", "SpecIndex", "Range of spectrum index to be considered", null),
-        MAX_MISSED_CLEAVAGES("maxMissedCleavages", "Count", "Exclude peptides with more than this number of missed cleavages from the search, Default: -1 (no limit)", null),
+        MAX_MISSED_CLEAVAGES("maxMissedCleavages", "MaxMissedCleavages", "Exclude peptides with more than this number of missed cleavages from the search, Default: -1 (no limit)", null),
         TDA_STRATEGY("tda", "TDA", "Target decoy strategy", null),
         ADD_FEATURES("addFeatures", "AddFeatures", "Add features in the output", null),
         DD_DIRECTORY("dd", "DBIndexDir", "Path to the directory containing database index files", null),
