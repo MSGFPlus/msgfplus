@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-
+@Deprecated
 public class MSGFDBLib {
     public static final String VERSION = "7573";
     public static final String RELEASE_DATE = "04/04/2012";
