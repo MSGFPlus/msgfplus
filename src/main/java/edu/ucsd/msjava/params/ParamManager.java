@@ -19,7 +19,6 @@ public class ParamManager {
     private String command;
     private ArrayList<String> examples = new ArrayList<String>();
 
-
     public enum ParamNameEnum {
 
         CONFIGURATION_FILE("conf", "ConfigurationFileName",
@@ -34,8 +33,10 @@ public class ParamManager {
         DECOY_PREFIX("decoy", "DecoyPrefix",
                 "Prefix for decoy protein names; default is " + MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX, null),
 
-
+        // Used by MS-GF+
         MZID_OUTPUT_FILE("o", "OutputFile (*.mzid)", "Default: [SpectrumFileName].mzid", null),
+
+        // Used by MSGF and MSGFDB
         OUTPUT_FILE("o", "OutputFile", "Default: stdout", null),
 
         // MSGF and MSGFDB
@@ -51,28 +52,33 @@ public class ParamManager {
                         "\t1 means CID\n" +
                         "\t2 means ETD\n" +
                         "\t3 means HCD"),
+
         INSTRUMENT_TYPE("inst", "InstrumentID", null, null),
         ENZYME_ID("e", "EnzymeID", null, null),
         PROTOCOL_ID("protocol", "ProtocolID", null, null),
         MOD_FILE("mod", "ModificationFileName", "Modification file, Default: standard amino acids with fixed C+57; only if -mod is not specified", null),
 
-        NUM_THREADS("thread", "NumThreads", "Number of concurrent threads to be executed, Default: Number of available cores", "This is best set to the number of physical cores in a single NUMA node.\n" +
+        NUM_THREADS("thread", "NumThreads", "Number of concurrent threads to be executed, Default: Number of available cores",
+                "This is best set to the number of physical cores in a single NUMA node.\n" +
                 "\t   Generally a single NUMA node is 1 physical processor.\n" +
                 "\t   The default will try to use hyperthreading cores, which can increase the amount of time this process will take.\n" +
                 "\t   This is because the part of Scoring param generation that is multithreaded is also I/O intensive."),
 
-        NUM_TASKS("tasks", "NumTasks", "Override the number of tasks to use on the threads, Default: (internally calculated based on inputs)", "More tasks than threads will reduce the memory requirements of the search, but will be slower (how much depends on the inputs).\n" +
+        NUM_TASKS("tasks", "NumTasks", "Override the number of tasks to use on the threads, Default: (internally calculated based on inputs)",
+                "More tasks than threads will reduce the memory requirements of the search, but will be slower (how much depends on the inputs).\n" +
                 "\t   1 <= tasks <= numThreads: will create one task per thread, which is the original behavior.\n" +
                 "\t   tasks = 0: use default calculation - minimum of: (threads*3) and (numSpectra/250).\n" +
                 "\t   tasks < 0: multiply number of threads by abs(tasks) to determine number of tasks (i.e., -2 means \"2 * numThreads\" tasks).\n" +
                 "\t   One task per thread will use the most memory, but will usually finish the fastest.\n" +
                 "\t   2-3 tasks per thread will use comparably less memory, but may cause the search to take 1.5 to 2 times as long."),
 
-        ISOTOPE_ERROR("ti", "IsotopeErrorRange", "Range of allowed isotope peak errors, Default:0,1", "Takes into account the error introduced by choosing a non-monoisotopic peak for fragmentation.\n" +
+        ISOTOPE_ERROR("ti", "IsotopeErrorRange", "Range of allowed isotope peak errors, Default:0,1",
+                "Takes into account the error introduced by choosing a non-monoisotopic peak for fragmentation.\n" +
                 "\t   The combination of -t and -ti determines the precursor mass tolerance.\n" +
                 "\t   E.g. \"-t 20ppm -ti -1,2\" tests abs(ObservedPepMass - TheoreticalPepMass - n * 1.00335Da) < 20ppm for n = -1, 0, 1, 2."),
 
-        ENZYME_SPECIFICITY("ntt", "NTT", "Number of Tolerable Termini", "E.g. For trypsin, 0: non-tryptic, 1: semi-tryptic, 2: fully-tryptic peptides only."),
+        ENZYME_SPECIFICITY("ntt", "NTT", "Number of Tolerable Termini",
+                "E.g. For trypsin, 0: non-tryptic, 1: semi-tryptic, 2: fully-tryptic peptides only."),
 
         MIN_PEPTIDE_LENGTH("minLength", "MinPepLength", "Minimum peptide length to consider, Default: 6", null),
         MAX_PEPTIDE_LENGTH("maxLength", "MaxPepLength", "Maximum peptide length to consider, Default: 40", null),
@@ -314,6 +320,9 @@ public class ParamManager {
         addParameter(pmTolParam);
     }
 
+    /**
+     * -o for MS-GF+
+     */
     public void addMzIdOutputFileParam() {
         FileParameter outputParam = new FileParameter(ParamNameEnum.MZID_OUTPUT_FILE);
         outputParam.addFileFormat(new FileFormat(".mzid").setCaseSensitive());
@@ -321,6 +330,9 @@ public class ParamManager {
         addParameter(outputParam);
     }
 
+    /**
+     * -o for MSGF and MSGFDB
+     */
     public void addOutputFileParam() {
         FileParameter outputParam = new FileParameter(ParamNameEnum.OUTPUT_FILE);
         outputParam.setAsOptional();
