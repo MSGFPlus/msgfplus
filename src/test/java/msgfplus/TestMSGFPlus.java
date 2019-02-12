@@ -108,8 +108,11 @@ public class TestMSGFPlus {
         paramManager.addMSGFPlusParams();
 
         String msg = paramManager.parseParams(argv);
-        if(msg != null)
+        if(msg != null) {
             System.err.println("Error: " + msg);
+            paramManager.printUsageInfo();
+        }
+
         assertTrue(msg == null);
 
         assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
