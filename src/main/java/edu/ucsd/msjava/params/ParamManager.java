@@ -101,7 +101,6 @@ public class ParamManager {
         DYNAMIC_MODIFICATION("dynamicMod", "DynamicMod", "Dynamic/Variable modification", null),
         CUSTOM_AA("customAA", "CustomAA", "Custom amino acid", null),
 
-
         VERBOSE("verbose", null, null,null);
 
         private String name;
@@ -427,6 +426,10 @@ public class ParamManager {
      * Add parameters for MS-GF+
      */
     public void addMSGFPlusParams() {
+
+        // -conf ConfigurationFileName
+        addConfigFileParam();
+
         // -s SpectrumFile (*.mzML, *.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt)
         addSpecFileParam();
 
@@ -484,8 +487,6 @@ public class ParamManager {
         addParameter(nttParam);
 
         addModFileParam();
-
-        addConfigFileParam();
 
         IntParameter minLenParam = new IntParameter(ParamNameEnum.MIN_PEPTIDE_LENGTH);
         minLenParam.minValue(1);
@@ -863,6 +864,7 @@ public class ParamManager {
         addParameter(libFileParam);
 
         addPMTolParam();
+
         addOutputFileParam();
 
         IntParameter numThreadParam = new IntParameter(ParamNameEnum.NUM_THREADS);
