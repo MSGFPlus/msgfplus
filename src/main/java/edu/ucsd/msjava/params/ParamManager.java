@@ -35,7 +35,11 @@ public class ParamManager {
 
         MZID_OUTPUT_FILE("o", "OutputFile (*.mzid)", "Default: [SpectrumFileName].mzid", null),
         OUTPUT_FILE("o", "OutputFile", "Default: stdout", null),
-        FRAG_METHOD("m", "FragmentMethodID", null, null),
+        FRAG_METHOD("m", "FragmentationMethodID", "Fragmentation Method",
+                "\t0 means as written in the spectrum or CID if no info (Default)\n" +
+                        "\t1 means CID\n" +
+                        "\t2 means ETD\n" +
+                        "\t3 means HCD"),
         INSTRUMENT_TYPE("inst", "InstrumentID", null, null),
         ENZYME_ID("e", "EnzymeID", null, null),
         PROTOCOL_ID("protocol", "ProtocolID", null, null),
