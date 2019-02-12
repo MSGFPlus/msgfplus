@@ -71,26 +71,26 @@ public class TestMSGFPlus {
         if (!confFile.exists()) {
             try {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(confFile.getPath()));
-                writer.write("# For a fully annotated parameter file, see https://github.com/MSGFPlus/msgfplus/blob/master/docs/examples/MSGFPlus_Params.txt");
-                writer.write("ParentMassTolerance=20ppm");
-                writer.write("NumMods=3");
-                writer.write("StaticMod=None");
-                writer.write("DynamicMod=O1, M, opt, any, Oxidation            ");
-                writer.write("CustomAA=C3H5NO,        U, custom, U, Selenocysteine      ");
-                writer.write("FragmentationMethodID=0");
-                writer.write("InstrumentID=0");
-                writer.write("EnzymeID=1");
-                writer.write("IsotopeError=-1,2");
-                writer.write("NTT=1");
-                writer.write("TDA=1");
-                writer.write("showDecoy=1");
-                writer.write("NumThreads=All");
-                writer.write("MinPepLength=6");
-                writer.write("MaxPepLength=50");
-                writer.write("minCharge=2");
-                writer.write("maxCharge=5");
-                writer.write("NumMatchesPerSpec=1");
-                writer.write("uniformAAProb=auto");
+                writer.write("# For a fully annotated parameter file, see https://github.com/MSGFPlus/msgfplus/blob/master/docs/examples/MSGFPlus_Params.txt\n");
+                writer.write("ParentMassTolerance=20ppm\n");
+                writer.write("NumMods=3\n");
+                writer.write("StaticMod=None\n");
+                writer.write("DynamicMod=O1, M, opt, any, Oxidation\n");
+                writer.write("CustomAA=C3H5NO, U, custom, U, Selenocysteine\n");
+                writer.write("FragmentationMethodID=0\n");
+                writer.write("InstrumentID=0\n");
+                writer.write("EnzymeID=1\n");
+                writer.write("IsotopeError=-1,2\n");
+                writer.write("NTT=1\n");
+                writer.write("TDA=1\n");
+                writer.write("showDecoy=1\n");
+                writer.write("NumThreads=All\n");
+                writer.write("MinPepLength=6\n");
+                writer.write("MaxPepLength=50\n");
+                writer.write("minCharge=2\n");
+                writer.write("maxCharge=5\n");
+                writer.write("NumMatchesPerSpec=1\n");
+                writer.write("uniformAAProb=auto\n");
                 writer.close();
             } catch (IOException e) {
                 e.printStackTrace();
