@@ -142,7 +142,7 @@ public class ParamManager {
         @Deprecated
         UNIFORM_AA_PROBABILITY("uniformAAProb", "UniformAAProb", null, null),
 
-        MAX_NUM_MODS("numMods", "NumMods", "Maximum number of modifications", null),
+        MAX_NUM_MODS("numMods", "NumMods", "Maximum number of dynamic (variable) modifications per peptide; Default: 3", null),
 
         STATIC_MODIFICATION("staticMod", "StaticMod", "Static/Fixed modification", null),
 
