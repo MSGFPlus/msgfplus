@@ -951,7 +951,7 @@ public class ParamManager {
         addEnzymeParam();
         addProtocolParam();
 
-        EnumParameter c13Param = new EnumParameter("c13");
+        EnumParameter c13Param = new EnumParameter(ParamNameEnum.C13);
         c13Param.registerEntry("Consider only peptides matching precursor mass");
         c13Param.registerEntry("Consider peptides having one 13C").setDefault();
         c13Param.registerEntry("Consider peptides having up to two 13C");
@@ -966,48 +966,144 @@ public class ParamManager {
     }
 
     public FileParameter getSpecFileParam() {
-        return ((FileParameter) getParameter("s"));
+        return ((FileParameter) getParameter(ParamNameEnum.SPECTRUM_FILE.key));
     }
 
     public FileParameter getDBFileParam() {
-        return ((FileParameter) getParameter("d"));
+        return ((FileParameter) getParameter(ParamNameEnum.DB_FILE.key));
     }
 
     public String getDecoyProteinPrefix() {
-        StringParameter decoyProteinPrefixParam = (StringParameter) getParameter("decoy");
+        StringParameter decoyProteinPrefixParam = (StringParameter)getParameter(ParamNameEnum.DECOY_PREFIX.key);
         return (decoyProteinPrefixParam.value);
     }
 
-    public ToleranceParameter getPMTolParam() {
-        return ((ToleranceParameter) getParameter("t"));
+    public double getChargeCarrierMass() {
+        return getDoubleValue(ParamNameEnum.CHARGE_CARRIER_MASSES.key);
+    }
+
+    // Used by MS-GF+
+    public ToleranceParameter getParentMassToleranceParam() {
+        return ((ToleranceParameter) getParameter(ParamNameEnum.PRECURSOR_MASS_TOLERANCE.key));
+    }
+
+    public int getToleranceUnit() {
+        return getIntValue(ParamNameEnum.PRECURSOR_MASS_TOLERANCE_UNITS.key);
+    }
+
+    public IntRangeParameter getIsotopeRangeParameter() {
+        return (IntRangeParameter) getParameter(ParamNameEnum.ISOTOPE_ERROR.key);
     }
 
     public FileParameter getOutputFileParam() {
-        return ((FileParameter) getParameter("o"));
+        return ((FileParameter) getParameter(ParamNameEnum.OUTPUT_FILE.key));
     }
 
     public ActivationMethod getActivationMethod() {
-        return (ActivationMethod) ((ObjectEnumParameter<?>) getParameter("m")).getObject();
+        return (ActivationMethod) ((ObjectEnumParameter<?>) getParameter(ParamNameEnum.FRAG_METHOD.key)).getObject();
     }
 
     public InstrumentType getInstType() {
-        return (InstrumentType) ((ObjectEnumParameter<?>) getParameter("inst")).getObject();
+        return (InstrumentType) ((ObjectEnumParameter<?>) getParameter(ParamNameEnum.INSTRUMENT_TYPE.key)).getObject();
     }
 
     public Enzyme getEnzyme() {
-        return (Enzyme) ((ObjectEnumParameter<?>) getParameter("e")).getObject();
+        return (Enzyme) ((ObjectEnumParameter<?>) getParameter(ParamNameEnum.ENZYME_ID.key)).getObject();
+    }
+
+    public int getNumTolerableTermini() {
+        return getIntValue(ParamNameEnum.ENZYME_SPECIFICITY.key);
+    }
+
+    public int getNumMatchesPerSpectrum() {
+        return getIntValue(ParamNameEnum.NUM_MATCHES_SPEC.key);
+    }
+
+    public IntRangeParameter getSpecIndexParameter() {
+        return ((IntRangeParameter) getParameter(ParamNameEnum.SPEC_INDEX.key));
+    }
+
+    public int getTDA() {
+        return getIntValue(ParamNameEnum.TDA_STRATEGY.key);
+    }
+
+    public int getIgnoreMetCleavage() {
+        return getIntValue(ParamNameEnum.IGNORE_MET_CLEAVAGE.key);
+    }
+
+    // Used by MS-GF+
+    public int getOutputAdditionalFeatures() {
+        return getIntValue(ParamNameEnum.ADD_FEATURES.key);
+    }
+
+    public int getMinPeptideLength() {
+        return getIntValue(ParamNameEnum.MIN_PEPTIDE_LENGTH.key);
+    }
+
+    public int getMaxPeptideLength() {
+        return getIntValue(ParamNameEnum.MAX_PEPTIDE_LENGTH.key);
+    }
+
+    public int getMaxNumVariantsPerPeptide() {
+        return getIntValue(ParamNameEnum.NUM_ISOFORMS.key);
+    }
+
+    public int getMinCharge() {
+        return getIntValue(ParamNameEnum.MIN_CHARGE.key);
+    }
+
+    public int getMaxCharge() {
+        return getIntValue(ParamNameEnum.MAX_CHARGE.key);
+    }
+
+    public int getNumThreads() {
+        return getIntValue(ParamNameEnum.NUM_THREADS.key);
+    }
+
+    public int getNumTasks() {
+        return getIntValue(ParamNameEnum.NUM_TASKS.key);
+    }
+
+    public int getVerboseFlag() {
+        return getIntValue(ParamNameEnum.VERBOSE.key);
+    }
+
+    // Used by MS-GF+
+    public int getEdgeScoreFlag() {
+        return getIntValue(ParamNameEnum.EDGE_SCORE.key);
+    }
+
+    // Used by MS-GF+
+    public File getDatabaseIndexDir() {
+        return getFile("dd");
+    }
+
+    // Used by MS-GF+
+    public int getMinNumPeaksPerSpectrum() {
+        return getIntValue(ParamNameEnum.MIN_NUM_PEAKS.key);
+    }
+
+    // Used by MS-GF+
+    public int getMinDeNovoScore() {
+        return getIntValue(ParamNameEnum.MIN_DE_NOVO_SCORE.key);
+    }
+
+    // Used by MS-GF+
+    public int getMaxMissedCleavages() {
+        return getIntValue(ParamNameEnum.MAX_MISSED_CLEAVAGES.key);
     }
 
     public Protocol getProtocol() {
-        return (Protocol) ((ObjectEnumParameter<?>) getParameter("protocol")).getObject();
+        return (Protocol) ((ObjectEnumParameter<?>) getParameter(ParamNameEnum.PROTOCOL_ID.key)).getObject();
     }
 
     public FileParameter getModFileParam() {
-        return ((FileParameter) getParameter("mod"));
+        return ((FileParameter) getParameter(ParamNameEnum.MOD_FILE.key));
     }
 
-    public FileParameter getConfigFileParam(){
-        return ((FileParameter) getParameter("conf"));
+    // Used by MS-GF+
+    public FileParameter getConfigFileParam() {
+        return ((FileParameter) getParameter(ParamNameEnum.CONFIGURATION_FILE.key));
     }
 
     public int getIntValue(String key) {

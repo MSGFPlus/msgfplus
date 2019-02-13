@@ -100,11 +100,11 @@ public class MSGFDB {
         File databaseFile = paramManager.getDBFileParam().getFile();
 
         // PM tolerance
-        ToleranceParameter tol = ((ToleranceParameter) paramManager.getParameter("t"));
+        ToleranceParameter tol = ((ToleranceParameter) paramManager.getParameter(ParamManager.ParamNameEnum.PRECURSOR_MASS_TOLERANCE.getKey()));
         Tolerance leftParentMassTolerance = tol.getLeftTolerance();
         Tolerance rightParentMassTolerance = tol.getRightTolerance();
 
-        int toleranceUnit = paramManager.getIntValue("u");
+        int toleranceUnit = paramManager.getIntValue((ParamManager.ParamNameEnum.PRECURSOR_MASS_TOLERANCE_UNITS.getKey()));
         if (toleranceUnit != 2) {
             boolean isTolerancePPM;
             isTolerancePPM = toleranceUnit != 0;
@@ -112,12 +112,12 @@ public class MSGFDB {
             rightParentMassTolerance = new Tolerance(rightParentMassTolerance.getValue(), isTolerancePPM);
         }
 
-        int numAllowedC13 = paramManager.getIntValue("c13");
+        int numAllowedC13 = paramManager.getIntValue(ParamManager.ParamNameEnum.C13.getKey());
         if (rightParentMassTolerance.getToleranceAsDa(1000, 2) >= 0.5f)
             numAllowedC13 = 0;
 
         Enzyme enzyme = paramManager.getEnzyme();
-        int numAllowedNonEnzymaticTermini = paramManager.getIntValue("nnet");
+        int numAllowedNonEnzymaticTermini = paramManager.getIntValue(ParamManager.ParamNameEnum.NNET.getKey());
         ActivationMethod activationMethod = paramManager.getActivationMethod();
         InstrumentType instType = paramManager.getInstType();
         if (activationMethod == ActivationMethod.HCD)
@@ -141,34 +141,35 @@ public class MSGFDB {
             }
         }
 
-        int numMatchesPerSpec = paramManager.getIntValue("n");
+        int numMatchesPerSpec = paramManager.getNumMatchesPerSpectrum();
 
-        int startSpecIndex = ((IntRangeParameter) paramManager.getParameter("index")).getMin();
-        int endSpecIndex = ((IntRangeParameter) paramManager.getParameter("index")).getMax();
+        IntRangeParameter specIndexParam = paramManager.getSpecIndexParameter();
+        int startSpecIndex = specIndexParam.getMin();
+        int endSpecIndex = specIndexParam.getMax();
 
-        boolean useTDA = paramManager.getIntValue("tda") == 1;
+        boolean useTDA = paramManager.getIntValue(ParamManager.ParamNameEnum.TDA_STRATEGY.getKey()) == 1;
         boolean showFDR = paramManager.getIntValue("showFDR") == 1;
         boolean showDecoy = paramManager.getIntValue("showDecoy") == 1;
 
-        int minPeptideLength = paramManager.getIntValue("minLength");
-        int maxPeptideLength = paramManager.getIntValue("maxLength");
+        int minPeptideLength = paramManager.getIntValue(ParamManager.ParamNameEnum.MIN_PEPTIDE_LENGTH.getKey());
+        int maxPeptideLength = paramManager.getIntValue(ParamManager.ParamNameEnum.MAX_PEPTIDE_LENGTH.getKey());
         if (minPeptideLength > maxPeptideLength) {
             return "MinPepLength must not be larger than MaxPepLength";
         }
 
-        int minCharge = paramManager.getIntValue("minCharge");
-        int maxCharge = paramManager.getIntValue("maxCharge");
+        int minCharge = paramManager.getIntValue(ParamManager.ParamNameEnum.MIN_CHARGE.getKey());
+        int maxCharge = paramManager.getIntValue(ParamManager.ParamNameEnum.MAX_CHARGE.getKey());
         if (minCharge > maxCharge) {
             return "MinCharge must not be larger than MaxCharge";
         }
 
-        int numThreads = paramManager.getIntValue("thread");
-        boolean useUniformAAProb = paramManager.getIntValue("uniformAAProb") == 1;
+        int numThreads = paramManager.getIntValue(ParamManager.ParamNameEnum.NUM_THREADS.getKey());
+        boolean useUniformAAProb = paramManager.getIntValue(ParamManager.ParamNameEnum.UNIFORM_AA_PROBABILITY.getKey()) == 1;
         boolean replicateMergedResults = paramManager.getIntValue("replicate") == 1;
-        boolean doNotDseEdgeScore = paramManager.getIntValue("edgeScore") == 1;
+        boolean doNotDseEdgeScore = paramManager.getIntValue(ParamManager.ParamNameEnum.EDGE_SCORE.getKey()) == 1;
 
         System.out.println("Loading database files...");
-        File dbIndexDir = paramManager.getFile("dd");
+        File dbIndexDir = paramManager.getFile(ParamManager.ParamNameEnum.DD_DIRECTORY.getKey());
         if (dbIndexDir != null) {
 
             File newDBFile = new File(Paths.get(dbIndexDir.getAbsolutePath(), databaseFile.getName()).toString());

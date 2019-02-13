@@ -226,7 +226,7 @@ public class SearchParams {
         }
 
         // Charge carrier mass
-        chargeCarrierMass = paramManager.getDoubleValue("ccm");
+        chargeCarrierMass = paramManager.getChargeCarrierMass();
         Composition.setChargeCarrierMass(chargeCarrierMass);
 
         // Spectrum file
@@ -270,11 +270,11 @@ public class SearchParams {
         decoyProteinPrefix = paramManager.getDecoyProteinPrefix();
 
         // Parent mass tolerance
-        ToleranceParameter tol = ((ToleranceParameter) paramManager.getParameter("t"));
+        ToleranceParameter tol = paramManager.getParentMassToleranceParam();
         leftParentMassTolerance = tol.getLeftTolerance();
         rightParentMassTolerance = tol.getRightTolerance();
 
-        int toleranceUnit = paramManager.getIntValue("u");
+        int toleranceUnit = paramManager.getToleranceUnit();
         if (toleranceUnit != 2) {
             boolean isTolerancePPM;
             isTolerancePPM = toleranceUnit != 0;
@@ -282,7 +282,7 @@ public class SearchParams {
             rightParentMassTolerance = new Tolerance(rightParentMassTolerance.getValue(), isTolerancePPM);
         }
 
-        IntRangeParameter isotopeParam = (IntRangeParameter) paramManager.getParameter("ti");
+        IntRangeParameter isotopeParam = paramManager.getIsotopeRangeParameter();
         this.minIsotopeError = isotopeParam.getMin();
         this.maxIsotopeError = isotopeParam.getMax();
 
@@ -290,7 +290,7 @@ public class SearchParams {
             minIsotopeError = maxIsotopeError = 0;
 
         enzyme = paramManager.getEnzyme();
-        numTolerableTermini = paramManager.getIntValue("ntt");
+        numTolerableTermini = paramManager.getNumTolerableTermini();
         activationMethod = paramManager.getActivationMethod();
         instType = paramManager.getInstType();
         if (activationMethod == ActivationMethod.HCD && instType != InstrumentType.HIGH_RESOLUTION_LTQ && instType != InstrumentType.QEXACTIVE)
@@ -331,49 +331,47 @@ public class SearchParams {
             }
         }
 
-        numMatchesPerSpec = paramManager.getIntValue("n");
+        numMatchesPerSpec = paramManager.getNumMatchesPerSpectrum();
 
-        startSpecIndex = ((IntRangeParameter) paramManager.getParameter("index")).getMin();
-        endSpecIndex = ((IntRangeParameter) paramManager.getParameter("index")).getMax();
+        IntRangeParameter specIndexParam = paramManager.getSpecIndexParameter();
+        startSpecIndex = specIndexParam.getMin();
+        endSpecIndex = specIndexParam.getMax();
 
-        useTDA = paramManager.getIntValue("tda") == 1;
-        ignoreMetCleavage = paramManager.getIntValue("ignoreMetCleavage") == 1;
-        outputAdditionalFeatures = paramManager.getIntValue("addFeatures") == 1;
+        useTDA = paramManager.getTDA() == 1;
+        ignoreMetCleavage = paramManager.getIgnoreMetCleavage() == 1;
+        outputAdditionalFeatures = paramManager.getOutputAdditionalFeatures() == 1;
 
-        minPeptideLength = paramManager.getIntValue("minLength");
-        maxPeptideLength = paramManager.getIntValue("maxLength");
+        minPeptideLength = paramManager.getMinPeptideLength();
+        maxPeptideLength = paramManager.getMaxPeptideLength();
 
         // Number of isoforms to consider per peptide, Default: 128
-        maxNumVariantsPerPeptide = paramManager.getIntValue("iso");
+        maxNumVariantsPerPeptide = paramManager.getMaxNumVariantsPerPeptide();
 
         if (minPeptideLength > maxPeptideLength) {
             return "MinPepLength must not be larger than MaxPepLength";
         }
 
-        minCharge = paramManager.getIntValue("minCharge");
-        maxCharge = paramManager.getIntValue("maxCharge");
+        minCharge = paramManager.getMinCharge();
+        maxCharge = paramManager.getMaxCharge();
         if (minCharge > maxCharge) {
             return "MinCharge must not be larger than MaxCharge";
         }
 
-        numThreads = paramManager.getIntValue("thread");
-        numTasks = paramManager.getIntValue("tasks");
-        verbose = paramManager.getIntValue("verbose") == 1;
-        doNotUseEdgeScore = paramManager.getIntValue("edgeScore") == 1;
+        numThreads = paramManager.getNumThreads();
+        numTasks = paramManager.getNumTasks();
+        verbose = paramManager.getVerboseFlag() == 1;
+        doNotUseEdgeScore = paramManager.getEdgeScoreFlag() == 1;
 
-        dbIndexDir = paramManager.getFile("dd");
+        dbIndexDir = paramManager.getDatabaseIndexDir();
 
-        minNumPeaksPerSpectrum = paramManager.getIntValue("minNumPeaks");
+        minNumPeaksPerSpectrum = paramManager.getMinNumPeaksPerSpectrum();
 
-        minDeNovoScore = paramManager.getIntValue("minDeNovoScore");
+        minDeNovoScore = paramManager.getMinDeNovoScore();
 
-        /* Make sure max missed cleavages is valid value and that it is not
+        /* Make sure max missed cleavages is a valid value and that it is not
          * being mixed with an unspecific or no-cleave enzyme
-         *
-         * String comparison to name is fragile here. It would be better if
-         * there was a stable identifier to use for the comparision.
          */
-        maxMissedCleavages = paramManager.getIntValue("maxMissedCleavages");
+        maxMissedCleavages = paramManager.getMaxMissedCleavages();
         if (maxMissedCleavages > -1 && enzyme.getName().equals("UnspecificCleavage")) {
             return "Cannot specify a MaxMissedCleavages when using unspecific cleavage enzyme";
         } else if (maxMissedCleavages > -1 && enzyme.getName().equals("NoCleavage")) {
