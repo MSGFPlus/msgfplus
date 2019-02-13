@@ -5,7 +5,11 @@ import edu.ucsd.msjava.msgf.IntMassFactory.IntMass;
 import edu.ucsd.msjava.msgf.MassListComparator;
 import edu.ucsd.msjava.msgf.Tolerance;
 import edu.ucsd.msjava.msutil.Modification.Location;
+import edu.ucsd.msjava.params.ParamManager;
+import edu.ucsd.msjava.ui.MSGFPlus;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 
 import edu.ucsd.msjava.msdbsearch.SuffixArrayForMSGFDB;
 import edu.ucsd.msjava.msutil.Composition;
+import edu.ucsd.msjava.params.ParamManager;
 import edu.ucsd.msjava.ui.MSGFPlus;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -32,10 +33,12 @@ public class TestSA {
     
     @Test
     public void getNumCandidatePeptides() throws URISyntaxException {
+        ParamManager paramManager = getParamManager();
         File dbFile = new File(TestSA.class.getClassLoader().getResource("human-uniprot-contaminants.fasta").toURI());
         SuffixArraySequence sequence = new SuffixArraySequence(dbFile.getPath());
         SuffixArray sa = new SuffixArray(sequence);
-        AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(new File(TestSA.class.getClassLoader().getResource("Mods.txt").toURI()).getAbsolutePath());
+        String modFilePath = new File(TestSA.class.getClassLoader().getResource("Mods.txt").toURI()).getAbsolutePath();
+        AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFilePath, paramManager);
         System.out.println("NumPeptides: " + sa.getNumCandidatePeptides(aaSet, 2364.981689453125f, new Tolerance(10, true)));
     }
 
@@ -81,5 +84,9 @@ public class TestSA {
         int length10 = sa2.getNumDistinctPeptides(10);
         System.out.println("NumUnique10: " + length10);
     }
-    
+
+    private ParamManager getParamManager() {
+        return new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+    }
+
 }

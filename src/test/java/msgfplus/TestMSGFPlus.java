@@ -47,7 +47,7 @@ public class TestMSGFPlus {
                 "-decoy", "REV_"
                 }; 
 
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         
         String msg = paramManager.parseParams(argv);
@@ -104,7 +104,7 @@ public class TestMSGFPlus {
                 "-conf", confFile.getPath()
         };
 
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
 
         String msg = paramManager.parseParams(argv);
@@ -150,7 +150,7 @@ public class TestMSGFPlus {
             }
         }
 
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
 
         String msg = paramManager.parseParams(argv);
@@ -181,7 +181,7 @@ public class TestMSGFPlus {
 //                , "-maxLength", "250"
                 }; 
 
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         
         String msg = paramManager.parseParams(argv);
@@ -207,7 +207,7 @@ public class TestMSGFPlus {
                 "-thread", "2"
                 }; 
 
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         
         String msg = paramManager.parseParams(argv);
@@ -242,7 +242,7 @@ public class TestMSGFPlus {
 //                , "-maxLength", "250"
                 }; 
 
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         
         String msg = paramManager.parseParams(argv);
@@ -266,7 +266,7 @@ public class TestMSGFPlus {
 //                , "-maxLength", "250"
                 }; 
 
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         
         String msg = paramManager.parseParams(argv);
@@ -288,9 +288,9 @@ public class TestMSGFPlus {
 //                , "-maxLength", "250"
                 }; 
 
-//        AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
+//        AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath(), paramManager);
 //        aaSet.printAASet();
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         
         String msg = paramManager.parseParams(argv);
@@ -313,9 +313,9 @@ public class TestMSGFPlus {
 //                , "-maxLength", "250"
                 }; 
 
-//        AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
+//        AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath(), paramManager);
 //        aaSet.printAASet();
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         
         String msg = paramManager.parseParams(argv);
@@ -351,7 +351,7 @@ public class TestMSGFPlus {
         File dbFile = new File("C:\\cygwin\\home\\kims336\\Research\\Data\\Test\\test.fasta");
 
         String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-ti", "0,0", "-tda", "0", "-ntt", "2"};
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         paramManager.parseParams(argv);
         MSGFPlus.runMSGFPlus(paramManager);
@@ -385,7 +385,7 @@ public class TestMSGFPlus {
                 "-minNumPeaks", "5",
                 "-addFeatures", "1"};
 
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         paramManager.parseParams(argv);
 
@@ -405,7 +405,7 @@ public class TestMSGFPlus {
         File dbFile = new File(System.getProperty("user.home")+"/Research/Data/Eric/database.fasta");
 
         String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-ti", "0,0", "-tda", "0", "-ntt", "2", "-m", "2"};
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         paramManager.parseParams(argv);
         MSGFPlus.runMSGFPlus(paramManager);
@@ -413,8 +413,9 @@ public class TestMSGFPlus {
     
     @Test
     public void testModFileReading() throws URISyntaxException {
+        ParamManager paramManager = new ParamManager("MS-GF+ Test", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "n/a");
         File modFile = new File(TestMSGFPlus.class.getClassLoader().getResource("Mods.txt").toURI());
-        AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
+        AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath(), paramManager);
         aaSet.printAASet();
     }
     
@@ -489,7 +490,7 @@ public class TestMSGFPlus {
 
         String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "1.5Da,2.5Da", "-ti", "-1,1", "-tda", "0", "-ntt", "1", "-n", "3", "-mod", modFile.getPath()};
         
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         paramManager.parseParams(argv);
         MSGFPlus.runMSGFPlus(paramManager);
@@ -506,7 +507,7 @@ public class TestMSGFPlus {
 
         String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "1.5Da,2.5Da", "-n", "1", "-ntt", "2"};
         
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         paramManager.parseParams(argv);
         MSGFPlus.runMSGFPlus(paramManager);
@@ -523,7 +524,7 @@ public class TestMSGFPlus {
 
         String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "1.5Da,2.5Da", "-n", "2", "-ntt", "1", "-mod", modFile.getPath(), "-ti", "0,1"};
         
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         paramManager.parseParams(argv);
         MSGFPlus.runMSGFPlus(paramManager);
@@ -540,7 +541,7 @@ public class TestMSGFPlus {
 
         String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "1.5Da,2.5Da", "-n", "2", "-ntt", "1", "-mod", modFile.getPath(), "-ti", "0,1", "-e", "0"};
         
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         paramManager.parseParams(argv);
         MSGFPlus.runMSGFPlus(paramManager);
@@ -561,7 +562,7 @@ public class TestMSGFPlus {
 //        String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "2.5Da,2.5Da", "-n", "1", "-ntt", "2", "-mod", modFile.getPath(), "-ti", "1"};
         String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), "-t", "10ppm", "-n", "1", "-ntt", "2", "-mod", modFile.getPath(), "-ti", "1"};
         
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         paramManager.parseParams(argv);
         MSGFPlus.runMSGFPlus(paramManager);
@@ -600,7 +601,7 @@ public class TestMSGFPlus {
 
         String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "10ppm", "-ntt", "1", "-ti", "0,0", "-m", "3", "-inst", "3"};
         
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         paramManager.parseParams(argv);
         MSGFPlus.runMSGFPlus(paramManager);
@@ -617,7 +618,7 @@ public class TestMSGFPlus {
 
         String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "10ppm", "-ntt", "1", "-ti", "0,0", "-m", "3", "-inst", "3", "-mod", modFile.getPath()};
         
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         paramManager.parseParams(argv);
         MSGFPlus.runMSGFPlus(paramManager);
@@ -634,7 +635,7 @@ public class TestMSGFPlus {
 
         String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "20ppm", "-ntt", "2", "-ti", "0,1", "-m", "3", "-inst", "1", "-mod", modFile.getPath()};
         
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         paramManager.parseParams(argv);
         MSGFPlus.runMSGFPlus(paramManager);
@@ -651,7 +652,7 @@ public class TestMSGFPlus {
 
         String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "10ppm", "-ntt", "1", "-ti", "0,0", "-m", "3", "-inst", "3", "-mod", modFile.getPath()};
         
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         paramManager.parseParams(argv);
         MSGFPlus.runMSGFPlus(paramManager);
@@ -671,7 +672,7 @@ public class TestMSGFPlus {
         
         String[] argv = {"-s", specPath.getPath(), "-d", dbFile.getPath(), "-t", "0.1Da", "-m", "1", "-inst", "1", "-e", "10"};
         
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         paramManager.parseParams(argv);
         MSGFPlus.runMSGFPlus(paramManager);
@@ -693,7 +694,7 @@ public class TestMSGFPlus {
 //        File modFile = Paths.get(workDir.getPath(), "testITRAQMods.txt").toFile();
 //        String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), "-addFeatures", "1", "-mod", modFile.getPath(), "-m", "3"};
         
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         
         String msg = paramManager.parseParams(argv);
@@ -715,7 +716,7 @@ public class TestMSGFPlus {
                 "-mod", modFile.getPath(), "-t", "10ppm", "-m", "3", //}; 
                 "-addFeatures", "1"};
 
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         
         String msg = paramManager.parseParams(argv);
@@ -738,7 +739,7 @@ public class TestMSGFPlus {
                 "-mod", modFile.getPath(), "-t", "10ppm", "-tda", "1", "-m", "3",
                 "-maxLength", "250"}; 
 
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         
         String msg = paramManager.parseParams(argv);
@@ -779,7 +780,7 @@ public class TestMSGFPlus {
 //                    , "-maxLength", "250"
                 }; 
 
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         
         String msg = paramManager.parseParams(argv);
@@ -827,7 +828,7 @@ public class TestMSGFPlus {
                 "-t", "20ppm"
                 }; 
 
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         
         String msg = paramManager.parseParams(argv);
@@ -848,7 +849,7 @@ public class TestMSGFPlus {
                 "-m", "3", "-ntt", "1", "-inst", "1", "-n", "1", "-addFeatures", "1"
                 }; 
 
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         
         String msg = paramManager.parseParams(argv);
@@ -871,8 +872,9 @@ public class TestMSGFPlus {
     
     @Test
     public void testDoubleMods() throws URISyntaxException {
+        ParamManager paramManager = getParamManager();
         File mod = new File(TestMSGFPlus.class.getClassLoader().getResource("Mods.txt").toURI());
-        AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(mod.getPath());
+        AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(mod.getPath(), paramManager);
         aaSet.printAASet();
     }
     
@@ -905,7 +907,7 @@ public class TestMSGFPlus {
                 "-n", "5", "-o", Paths.get(workDir.getPath(), "AllAll.mzid").toString()
                 }; 
 
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         
         String msg = paramManager.parseParams(argv);
@@ -927,7 +929,7 @@ public class TestMSGFPlus {
                 "-mod", modFile.getPath(), "-ntt", "1"
                 }; 
 
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         
         String msg = paramManager.parseParams(argv);
@@ -950,7 +952,7 @@ public class TestMSGFPlus {
                 ,"-o", outputFile.getPath()
                 };
         
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         paramManager.parseParams(argv);
         MSGFPlus.runMSGFPlus(paramManager);
@@ -959,8 +961,9 @@ public class TestMSGFPlus {
     
     @Test
     public void testAspN() throws URISyntaxException {
+        ParamManager paramManager = getParamManager();
         File modFile = new File(TestMSGFPlus.class.getClassLoader().getResource("Mods.txt").toURI());
-        AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
+        AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath(), paramManager);
         Peptide peptide = aaSet.getPeptide("DmASRCWRWWGWSAWPRTRLPPAGSTPSFCHHFSTQEK");
         System.out.println(peptide.toString());
     }
@@ -979,7 +982,7 @@ public class TestMSGFPlus {
 //                , "-maxLength", "250"
                 }; 
 
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         
         String msg = paramManager.parseParams(argv);
@@ -1008,7 +1011,7 @@ public class TestMSGFPlus {
 //                , "-maxLength", "250"
                 }; 
 
-        ParamManager paramManager = new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+        ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         
         String msg = paramManager.parseParams(argv);
@@ -1019,6 +1022,10 @@ public class TestMSGFPlus {
         assertTrue(msg == null);
         
         assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
-    }    
-    
+    }
+
+    private ParamManager getParamManager() {
+        return new ParamManager("MS-GF+", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "java -Xmx3500M -jar MSGFPlus.jar");
+    }
+
 }
