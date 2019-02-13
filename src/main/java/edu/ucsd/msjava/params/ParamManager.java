@@ -43,9 +43,6 @@ public class ParamManager {
         // Used by MSGF and MS-GFDB
         OUTPUT_FILE("o", "OutputFile", "Default: stdout", null),
 
-        // MS-GF+, MSGF, and MS-GFDB
-        PARENT_MASS_TOLERANCE("t", "ParentMassTolerance", "e.g. 2.5Da, 30ppm or 0.5Da,2.5Da",
-                "Use a comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (ObsMass < TheoMass) and 2.5Da to the right (ObsMass > TheoMass)"),
         //  MS-GF+, MSGF, and MS-GFDB
         PRECURSOR_MASS_TOLERANCE("t", "PrecursorMassTolerance", "e.g. 2.5Da, 20ppm or 0.5Da,2.5Da; Default: 20ppm",
                 "Use a comma to define asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (ObsMass < TheoMass) and 2.5Da to the right (ObsMass > TheoMass)"),
