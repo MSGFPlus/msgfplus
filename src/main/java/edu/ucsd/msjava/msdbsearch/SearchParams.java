@@ -34,8 +34,6 @@ public class SearchParams {
     private int endSpecIndex;
     private boolean useTDA;
     private boolean ignoreMetCleavage;
-    // private boolean showFDR;
-    // private boolean showDecoy;
     private int minPeptideLength;
     private int maxPeptideLength;
     private int maxNumVariantsPerPeptide;
@@ -44,7 +42,6 @@ public class SearchParams {
     private int numThreads;
     private int numTasks;
     private boolean verbose;
-    private boolean replicateMergedResults;
     private boolean doNotUseEdgeScore;
     private File dbIndexDir;
     private boolean outputAdditionalFeatures;
@@ -180,10 +177,6 @@ public class SearchParams {
 
     public boolean getVerbose() {
         return verbose;
-    }
-
-    public boolean replicateMergedResults() {
-        return replicateMergedResults;
     }
 
     // Used by MS-GF+
