@@ -12,19 +12,8 @@ public class EnumParameter extends IntParameter {
         super.minValue(0);
     }
 
-    public EnumParameter(String key, String name) {
-        super(key, name, null);
-        super.minValue(0);
-    }
-
     public EnumParameter(ParamManager.ParamNameEnum paramInfo) {
-        super(paramInfo.getCommandlineName(), paramInfo.getName(), paramInfo.getDescription());
-        setAdditionalDescription(paramInfo.getAdditionalDescription());
-    }
-
-    public EnumParameter(String key, String name, String description) {
-        super(key, name, description);
-        super.minValue(0);
+        super(paramInfo);
     }
 
     public EnumParameter setMinIndex(int minIndex) {
