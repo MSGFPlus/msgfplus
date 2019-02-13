@@ -65,37 +65,8 @@ public class TestMSGFPlus {
 
         File specFile = Paths.get(workDir.getPath(), "QC_Shew_17_02_b_Bane_4Jan19_18-10-06.mzML").toFile();
         File dbFile = Paths.get(workDir.getPath(),"ID_003456_9B916A8B.fasta").toFile();
-        File modFile = Paths.get(workDir.getPath(), "MSGFPlus_Mods.txt").toFile();
 
-        File confFile = Paths.get(workDir.getPath(), "MSGFPlus_PartTryp_MetOx_20ppmParTol.txt").toFile();
-        if (!confFile.exists()) {
-            try {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(confFile.getPath()));
-                writer.write("# For a fully annotated parameter file, see https://github.com/MSGFPlus/msgfplus/blob/master/docs/examples/MSGFPlus_Params.txt\n");
-                writer.write("ParentMassTolerance=20ppm\n");
-                writer.write("NumMods=3\n");
-                writer.write("StaticMod=None\n");
-                writer.write("DynamicMod=O1, M, opt, any, Oxidation\n");
-                writer.write("CustomAA=C3H5NO, U, custom, U, Selenocysteine\n");
-                writer.write("FragmentationMethodID=0\n");
-                writer.write("InstrumentID=0\n");
-                writer.write("EnzymeID=1\n");
-                writer.write("IsotopeError=-1,2\n");
-                writer.write("NTT=1\n");
-                writer.write("TDA=1\n");
-                writer.write("showDecoy=1\n");
-                writer.write("NumThreads=All\n");
-                writer.write("MinPepLength=6\n");
-                writer.write("MaxPepLength=50\n");
-                writer.write("minCharge=2\n");
-                writer.write("maxCharge=5\n");
-                writer.write("NumMatchesPerSpec=1\n");
-                writer.write("uniformAAProb=auto\n");
-                writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        File confFile = getExampleConfigFile(workDir);
 
         String versionString = getNextVersion();
 
@@ -159,6 +130,38 @@ public class TestMSGFPlus {
         assertTrue(msg == null);
 
         assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
+    }
+
+    private File getExampleConfigFile(File workDir) {
+        File confFile = Paths.get(workDir.getPath(), "MSGFPlus_PartTryp_MetOx_20ppmParTol.txt").toFile();
+        if (!confFile.exists()) {
+            try {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(confFile.getPath()));
+                writer.write("# For a fully annotated parameter file, see https://github.com/MSGFPlus/msgfplus/blob/master/docs/examples/MSGFPlus_Params.txt\n");
+                writer.write("PrecursorMassTolerance=20ppm\n");
+                writer.write("NumMods=3\n");
+                writer.write("StaticMod=None\n");
+                writer.write("DynamicMod=O1, M, opt, any, Oxidation\n");
+                writer.write("CustomAA=C3H5NO, U, custom, U, Selenocysteine\n");
+                writer.write("FragmentationMethodID=0\n");
+                writer.write("InstrumentID=0\n");
+                writer.write("EnzymeID=1\n");
+                writer.write("IsotopeError=-1,2\n");
+                writer.write("NTT=1\n");
+                writer.write("TDA=1\n");
+                writer.write("NumThreads=All\n");
+                writer.write("MinPepLength=6\n");
+                writer.write("MaxPepLength=50\n");
+                writer.write("MinCharge=2\n");
+                writer.write("MaxCharge=5\n");
+                writer.write("NumMatchesPerSpec=1\n");
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return confFile;
     }
 
     private String getNextVersion() {
