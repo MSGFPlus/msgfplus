@@ -1,9 +1,9 @@
 # This file is used to specify modifications
-# # for comments
+# Use # for comments, either at the start of a line or in the middle of line
 #
-# Max Number of Dynamic/Variable Modifications per peptide 
-# If this value is large, the search takes long.
-NumMods=2
+# Max Number of Dynamic (Variable) Modifications per peptide
+# If this value is large, the search will be slow
+NumMods=3
 
 # To input a modification, use the following command:
 # Mass or CompositionStr, Residues, ModType, Position, Name (all the five fields are required).

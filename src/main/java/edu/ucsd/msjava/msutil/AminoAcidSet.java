@@ -965,7 +965,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             System.exit(-1);
         }
 
-        int numMods = 2;
+        int numMods = 3;
 
         // Define keywords
         String numModsKey = "<parameter name=\"ptm.mods\">";
