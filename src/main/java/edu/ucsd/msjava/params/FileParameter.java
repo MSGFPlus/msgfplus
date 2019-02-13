@@ -14,13 +14,13 @@ public class FileParameter extends Parameter {
     private boolean mustBeADirectory = false;
     private boolean mustBeAFile = false;
 
-    private ArrayList<FileFormat> fileFormats = new ArrayList<FileFormat>();    // available file format; if empty, all files are allowed.
+    private ArrayList<FileFormat> fileFormats = new ArrayList<>();    // available file format; if empty, all files are allowed.
 
     private File file;
     private FileFormat fileFormat;
 
     public FileParameter(ParamManager.ParamNameEnum paramInfo) {
-        super(paramInfo.getCommandlineName(), paramInfo.getName(), paramInfo.getDescription());
+        super(paramInfo.getKey(), paramInfo.getName(), paramInfo.getDescription());
         setAdditionalDescription(paramInfo.getAdditionalDescription());
     }
 

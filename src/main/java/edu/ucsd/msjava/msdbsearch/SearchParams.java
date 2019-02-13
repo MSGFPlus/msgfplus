@@ -434,7 +434,7 @@ public class SearchParams {
 
             for (ParamManager.ParamNameEnum param: ParamManager.ParamNameEnum.values()) {
                 if (param.isLine(lineSetting)) {
-                    Parameter commandLineParam = paramManager.getParameter(param.getCommandlineName());
+                    Parameter commandLineParam = paramManager.getParameter(param.getKey());
                     if (commandLineParam != null && !commandLineParam.isValueAssigned()) {
                         String value = lineSetting.split("=")[1].trim();
                         commandLineParam.parse(value);

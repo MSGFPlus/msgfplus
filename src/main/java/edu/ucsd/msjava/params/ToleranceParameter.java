@@ -9,7 +9,7 @@ public class ToleranceParameter extends Parameter {
     private boolean allowAsymmetricValues = true;
 
     public ToleranceParameter(ParamManager.ParamNameEnum paramInfo) {
-        super(paramInfo.getCommandlineName(), paramInfo.getName(), paramInfo.getDescription());
+        super(paramInfo.getKey(), paramInfo.getName(), paramInfo.getDescription());
         setAdditionalDescription(paramInfo.getAdditionalDescription());
     }
 

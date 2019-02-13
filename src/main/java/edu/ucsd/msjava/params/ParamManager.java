@@ -111,30 +111,46 @@ public class ParamManager {
 
         VERBOSE("verbose", null, null,null);
 
+        private String key;
         private String name;
-        private String commandlineName;
         private String description;
         private String additionalDescription;
 
-        ParamNameEnum(String commandlineName, String name, String description, String additionalDescription){
+        ParamNameEnum(String key, String name, String description, String additionalDescription) {
+            this.key = key;
             this.name = name;
-            this.commandlineName = commandlineName;
             this.description = description;
             this.additionalDescription = additionalDescription;
         }
 
+        /**
+         * Parameter key; defines the command line argument for this parameter
+         * @return
+         */
+        public String getKey() {
+            return key;
+        }
+
+        /**
+         * Parameter name when used in a configuration file
+         * @return
+         */
         public String getName() {
             return name;
         }
 
-        public String getCommandlineName() {
-            return commandlineName;
-        }
-
+        /**
+         * Parameter description
+         * @return
+         */
         public String getDescription() {
             return description;
         }
 
+        /**
+         * Additional description
+         * @return
+         */
         public String getAdditionalDescription() {
             return additionalDescription;
         }

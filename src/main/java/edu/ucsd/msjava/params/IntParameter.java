@@ -3,7 +3,7 @@ package edu.ucsd.msjava.params;
 public class IntParameter extends NumberParameter<Integer> {
 
     public IntParameter(ParamManager.ParamNameEnum paramInfo) {
-        super(paramInfo.getCommandlineName(), paramInfo.getName(), paramInfo.getDescription());
+        super(paramInfo.getKey(), paramInfo.getName(), paramInfo.getDescription());
         setAdditionalDescription(paramInfo.getAdditionalDescription());
     }
 

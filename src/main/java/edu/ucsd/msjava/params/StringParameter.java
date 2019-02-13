@@ -4,7 +4,7 @@ public class StringParameter extends Parameter {
     String value = null;
 
     public StringParameter(ParamManager.ParamNameEnum paramInfo) {
-        super(paramInfo.getCommandlineName(), paramInfo.getName(), paramInfo.getDescription());
+        super(paramInfo.getKey(), paramInfo.getName(), paramInfo.getDescription());
         setAdditionalDescription(paramInfo.getAdditionalDescription());
     }
 
