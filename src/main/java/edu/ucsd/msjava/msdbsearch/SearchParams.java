@@ -215,7 +215,9 @@ public class SearchParams {
     // Used by MS-GF+
     public String parse(ParamManager paramManager) {
         AminoAcidSet configAASet = null;
-        if (paramManager.getConfigFileParam() != null) {
+        FileParameter configFileParam = paramManager.getConfigFileParam();
+
+        if (configFileParam != null && configFileParam.getFile() != null) {
             configAASet = parseConfigParamFile(paramManager);
         }
 
