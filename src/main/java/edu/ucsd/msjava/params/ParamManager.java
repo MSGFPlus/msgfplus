@@ -342,7 +342,6 @@ public class ParamManager {
         return null;
     }
 
-    // Used by MS-GF+
     public void addSpecFileParam() {
         FileParameter specFileParam = new FileParameter(ParamNameEnum.SPECTRUM_FILE);
         specFileParam.addFileFormat(SpecFileFormat.MZML);
@@ -357,7 +356,6 @@ public class ParamManager {
         addParameter(specFileParam);
     }
 
-    // Used by MS-GF+
     private void addDBFileParam() {
         addDBFileParam(ParamNameEnum.DB_FILE, false);
     }
@@ -383,7 +381,6 @@ public class ParamManager {
         addParameter(dbFileParam);
     }
 
-    // Used by MS-GF+
     private void addDecoyPrefixParam() {
         addDecoyPrefixParam(MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX);
     }
@@ -395,7 +392,6 @@ public class ParamManager {
         addParameter(decoyPrefixParam);
     }
 
-    // Used by MS-GF+, MSGF, and MS-GFDB
     private void addPrecursorMassToleranceParam() {
         ToleranceParameter pmTolParam = new ToleranceParameter(ParamNameEnum.PRECURSOR_MASS_TOLERANCE);
         pmTolParam.defaultValue("20ppm");
@@ -462,7 +458,7 @@ public class ParamManager {
     }
 
     private void addEnzymeParam(Enzyme enzymeId) {
-        ObjectEnumParameter<Enzyme> enzParam = new ObjectEnumParameter<Enzyme>(ParamNameEnum.ENZYME_ID);
+        ObjectEnumParameter<Enzyme> enzParam = new ObjectEnumParameter<>(ParamNameEnum.ENZYME_ID);
         Enzyme[] allEnzymes = Enzyme.getAllRegisteredEnzymes();
         for (Enzyme e : allEnzymes) {
             enzParam.registerObject(e);
@@ -472,7 +468,6 @@ public class ParamManager {
         addParameter(enzParam);
     }
 
-    // Used by MS-GF+
     private void addProtocolParam() {
         addProtocolParam(Protocol.AUTOMATIC);
     }
@@ -488,7 +483,6 @@ public class ParamManager {
         addParameter(protocolParam);
     }
 
-    // Used by MS-GF+
     private void addEnzymeSpecificityParam() {
         EnumParameter nttParam = new EnumParameter(ParamNameEnum.ENZYME_SPECIFICITY);
         nttParam.registerEntry("");
@@ -497,7 +491,6 @@ public class ParamManager {
         addParameter(nttParam);
     }
 
-    // Used by MS-GF+
     private void addModFileParam() {
         FileParameter modParam = new FileParameter(ParamNameEnum.MOD_FILE);
         modParam.setAsOptional();
@@ -505,7 +498,6 @@ public class ParamManager {
         addParameter(modParam);
     }
 
-    // Used by MS-GF+
     private void addConfigFileParam() {
         FileParameter configFile = new FileParameter(ParamNameEnum.CONFIGURATION_FILE);
         configFile.setAsOptional();
@@ -589,7 +581,6 @@ public class ParamManager {
         addFeatureParam.registerEntry("Output basic scores only").setDefault();
         addFeatureParam.registerEntry("Output additional features");
         addParameter(addFeatureParam);
-
     }
 
     private void addChargeCarrierMassParam() {
@@ -600,9 +591,6 @@ public class ParamManager {
         addParameter(chargeCarrierMassParam);
     }
 
-    /**
-     * Maximum number of missed cleavages to allow on searched peptides
-     */
     private void addMaxMissedCleavagesParam() {
         IntParameter maxMissedCleavages = new IntParameter(ParamNameEnum.MAX_MISSED_CLEAVAGES);
         maxMissedCleavages.minValue(-1);
@@ -641,7 +629,6 @@ public class ParamManager {
             specIndexParam.setHidden();
         }
         addParameter(specIndexParam);
-
     }
 
     private void addEdgeScoreParam(boolean isHidden) {
