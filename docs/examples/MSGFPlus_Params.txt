@@ -54,11 +54,6 @@ InstrumentID=0
 #  2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N, 8: alphaLP, 9: No Enzyme (for peptidomics)
 EnzymeID=1
 
-#Number of concurrent threads to be executed
-#  Default: Number of available cores
-# 
-# NumThreads=4
-
 #Isotope error range
 #  Takes into account of the error introduced by choosing non-monoisotopic peak for fragmentation.
 #  Useful for accurate precursor ion masses
@@ -77,13 +72,9 @@ NTT=2
 #  1 means search decoy database to compute FDR (source FASTA file must be forward-only proteins)
 TDA=1
 
-#Include decoy peptides (only applicable when TDA=1)
-#  0 means to not include decoy (reverse) peptides
-#  1 means to include decoy PSMs after all target (forward) PSMs
-showDecoy=1
-
-#Number of Threads (by default, uses all available cores)
-#In DMS, a settings file entry for MSGFDBThreads will override this value
+#Number of concurrent threads to be executed
+#  Default: Number of available cores
+#  To use three threads use NumThreads=3
 NumThreads=All
 
 #Minimum peptide length to consider
