@@ -51,6 +51,12 @@ public class ParamManager {
         PRECURSOR_MASS_TOLERANCE("t", "PrecursorMassTolerance", "e.g. 2.5Da, 20ppm or 0.5Da,2.5Da, Default: 20ppm",
                 "Use a comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (ObsMass < TheoMass) and 2.5Da to the right (ObsMass > TheoMass)"),
 
+        PRECURSOR_MASS_TOLERANCE_UNITS("u", "PrecursorMassToleranceUnits", "Units for the precursor mass tolerance; only useful if you do not include units in the PrecursorMassTolerance specification",
+                "   0 means Ds\n" +
+                        "\t   1 means ppm\n" +
+                        "\t   2 means use units specified by the PrecursorMassTolerance (Default) \n"),
+
+        // aka Activation method
         FRAG_METHOD("m", "FragmentationMethodID", "Fragmentation Method",
                 "   0 means as written in the spectrum or CID if no info (Default)\n" +
                         "\t   1 means CID\n" +
@@ -58,8 +64,11 @@ public class ParamManager {
                         "\t   3 means HCD"),
 
         INSTRUMENT_TYPE("inst", "InstrumentID", null, null),
+
         ENZYME_ID("e", "EnzymeID", null, null),
+
         PROTOCOL_ID("protocol", "ProtocolID", null, null),
+
         MOD_FILE("mod", "ModificationFileName", "Modification file, Default: standard amino acids with fixed C+57; only if -mod is not specified", null),
 
         NUM_THREADS("thread", "NumThreads", "Number of concurrent threads to be executed, Default: Number of available cores",
@@ -85,21 +94,53 @@ public class ParamManager {
         ENZYME_SPECIFICITY("ntt", "NTT", "Number of Tolerable Termini",
                 "E.g. For trypsin, 0: non-tryptic, 1: semi-tryptic, 2: fully-tryptic peptides only."),
 
+        // Used by MS-GFDB
+        C13("c13", null, "Precursor isotope peak error",
+                "   0 means consider only peptides matching precursor mass\n" +
+                        "\t   1 means Consider peptides having one 13C (Default)\n" +
+                        "\t   2 means Consider peptides having up to two 13C"),
+
+        // Used by MS-GFDB
+        NNET("nnet", null, "Number of allowed non-enzymatic termini", null),
+
         MIN_PEPTIDE_LENGTH("minLength", "MinPepLength", "Minimum peptide length to consider, Default: 6", null),
         MAX_PEPTIDE_LENGTH("maxLength", "MaxPepLength", "Maximum peptide length to consider, Default: 40", null),
+
         MIN_CHARGE("minCharge", "MinCharge", "Minimum precursor charge to consider if charges are not specified in the spectrum file, Default: 2", null),
         MAX_CHARGE("maxCharge", "MaxCharge", "Maximum precursor charge to consider if charges are not specified in the spectrum file, Default: 3", null),
+
         NUM_MATCHES_SPEC("n", "NumMatchesPerSpec", "Number of matches per spectrum to be reported, Default: 1", null),
         CHARGE_CARRIER_MASSES("ccm", "ChargeCarrierMass", "Mass of charge carrier, Default: mass of proton (1.00727649)", null),
+
         MIN_NUM_PEAKS("minNumPeaks", "MinNumPeaksPerSpectrum", "Minimum number of peaks per spectrum, Default: " + Constants.MIN_NUM_PEAKS_PER_SPECTRUM, null),
+
         NUM_ISOFORMS("iso", "NumIsoforms", "Number of isoforms to consider per peptide, Default: 128" + Constants.NUM_VARIANTS_PER_PEPTIDE, null),
 
+        IGNORE_MET_CLEAVAGE("ignoreMetCleavage", "IgnoreMetCleavage", "When 1, ignore N-terminal methionine cleavage",
+                "   0 means Consider protein N-term Met cleavage (Default)\n" +
+                "\t   1 means Ignore protein N-term Met cleavage"),
+
         MIN_DE_NOVO_SCORE("minDeNovoScore", "MinDeNovoScore", "Minimum de Novo score, Default: " + Constants.MIN_DE_NOVO_SCORE, null),
-        SPEC_INDEX("index", "SpecIndex", "Range of spectrum index to be considered", null),
+
+        SPEC_INDEX("index", "SpecIndex", "Range of spectrum indices to be considered",
+                "For example, to analyze the first 1000 spectra use -index 1,1000"),
+
         MAX_MISSED_CLEAVAGES("maxMissedCleavages", "MaxMissedCleavages", "Exclude peptides with more than this number of missed cleavages from the search, Default: -1 (no limit)", null),
-        TDA_STRATEGY("tda", "TDA", "Target decoy strategy", null),
-        ADD_FEATURES("addFeatures", "AddFeatures", "Add features in the output", null),
+
+        TDA_STRATEGY("tda", "TDA", "Target decoy strategy",
+                "   0 means Don't search decoy database (Default)\n" +
+                "\t   1 means search the decoy database (forward + reverse proteins)"),
+
+        ADD_FEATURES("addFeatures", "AddFeatures", "Add features in the output",
+                "   0 means Output basic scores only (Default)\n" +
+                        "\t   1 means Output additional features"),
+
         DD_DIRECTORY("dd", "DBIndexDir", "Path to the directory containing database index files", null),
+
+        EDGE_SCORE("edgeScore", "EdgeScore", "Toggle edge scoring",
+                "   0 means Use Edge Scoring (default)\n" +
+                "\t   1 means Do not use edge scoring"),
+
         // Only used by MS-GFDB
         @Deprecated
         UNIFORM_AA_PROBABILITY("uniformAAProb", "UniformAAProb", null, null),
@@ -107,9 +148,12 @@ public class ParamManager {
         MAX_NUM_MODS("numMods", "NumMods", "Maximum number of modifications", null),
         STATIC_MODIFICATION("staticMod", "StaticMod", "Static/Fixed modification", null),
         DYNAMIC_MODIFICATION("dynamicMod", "DynamicMod", "Dynamic/Variable modification", null),
+
         CUSTOM_AA("customAA", "CustomAA", "Custom amino acid", null),
 
-        VERBOSE("verbose", null, null,null);
+        VERBOSE("verbose", null, "Console output message verbosity",
+                "   0 means Report total progress only\n" +
+                        "\t   1 means Report total and per-thread progress/status");
 
         private String key;
         private String name;
@@ -341,11 +385,10 @@ public class ParamManager {
         addParameter(decoyPrefixParam);
     }
 
-    public void addPMTolParam() {
-        ToleranceParameter pmTolParam = new ToleranceParameter(ParamNameEnum.PARENT_MASS_TOLERANCE);
-        pmTolParam.setAdditionalDescription(ParamNameEnum.PARENT_MASS_TOLERANCE.additionalDescription);
     // Used by MS-GF+, MSGF, and MS-GFDB
     private void addPrecursorMassToleranceParam() {
+        ToleranceParameter pmTolParam = new ToleranceParameter(ParamNameEnum.PRECURSOR_MASS_TOLERANCE);
+        pmTolParam.defaultValue("20ppm");
         addParameter(pmTolParam);
     }
 
