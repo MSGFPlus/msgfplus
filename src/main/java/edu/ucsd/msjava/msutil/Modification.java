@@ -217,7 +217,7 @@ public class Modification {
         }
 
         public String toString() {
-            return mod.getName() + " " + residue + " " + location + " " + (isFixedModification ? "Fixed" : "Variable");
+            return mod.getName() + " " + residue + " " + location + " " + (isFixedModification ? "Fixed (static)" : "Variable (dynamic)");
         }
 
         @Override

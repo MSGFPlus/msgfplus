@@ -25,7 +25,7 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
     static final int MAX_LENGTH = 30;
 
     // fields
-    private boolean isModified; // Indicates the peptid has a modified aminoacid
+    private boolean isModified; // Indicates the peptide has a modified amino acid
 
     static final boolean FAIL_WHEN_PEPTIDE_IS_MODIFIED = false; // Fail loudly
 
@@ -151,7 +151,7 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
      */
     public Peptide(ArrayList<AminoAcid> aaArray) {
         for (AminoAcid aa : aaArray) {
-            assert (aa != null) : "Null aminoacid";
+            assert (aa != null) : "Null amino acid";
             this.add(aa);
         }
     }
@@ -165,7 +165,7 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
      */
     public Peptide(List<AminoAcid> aaArray) {
         for (AminoAcid aa : aaArray) {
-            assert (aa != null) : "Null aminoacid";
+            assert (aa != null) : "Null amino acid";
             this.add(aa);
         }
     }
@@ -410,7 +410,6 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
     /**
      * Convert this peptide into a sequence of compositions. Each amino acid maps to a corresponding composition.
      *
-     * @param pep
      * @return sequence of compositions.
      */
     public Sequence<Composition> toCompositionSequence() {
@@ -423,7 +422,6 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
     /**
      * Convert this peptide into a sequence of compositions in the reversed order. Each amino acid maps to a corresponding composition.
      *
-     * @param pep
      * @return sequence of compositions.
      */
     public Sequence<Composition> toReverseCompositionSequence() {
@@ -436,7 +434,7 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
     /**
      * Convert this peptide into a sequence of integer masses.
      *
-     * @param pep
+     * @param factory
      * @return sequence of integer masses.
      */
     public Sequence<IntMass> toPrefixIntMassSequence(IntMassFactory factory) {
@@ -464,7 +462,7 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
     /**
      * Convert this peptide into a sequence of integer masses in the reversed order.
      *
-     * @param pep
+     * @param factory
      * @return sequence of integer masses in the reversed order.
      */
     public Sequence<IntMass> toSuffixIntMassSequence(IntMassFactory factory) {
@@ -487,7 +485,6 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
      * Computes the number of symmetric b/y pairs
      *
      * @param tolerance tolerance
-     * @param isPPM     true if tolerance is in PPM, false otherwise
      * @return the number of symmetric b/y pairs
      */
     public int getNumSymmetricPeaks(Tolerance tolerance) {

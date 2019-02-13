@@ -194,7 +194,7 @@ public class TestCandidatePeptideGrid {
         AminoAcidSet aminoAcidSet = AminoAcidSet.getAminoAcidSetFromModFile(modFilePath, paramManager);
         CandidatePeptideGrid candidatePepGrid = new CandidatePeptideGrid(aminoAcidSet, Enzyme.TRYPSIN, 3, 8, 1);
 
-        /* Use till ti returns false */
+        /* Use until it returns false */
         candidatePepGrid.addNTermResidue('K');
         candidatePepGrid.addResidue(2, 'R');
         candidatePepGrid.addResidue(3, 'A');
@@ -220,7 +220,7 @@ public class TestCandidatePeptideGrid {
         String modFilePath = getTestCandidatePeptideGridPath();
         AminoAcidSet aminoAcidSet = AminoAcidSet.getAminoAcidSetFromModFile(modFilePath, paramManager);
 
-        /* Passing -1 for max missed cleavages specifies 'unlimitted' */
+        /* Passing -1 for max missed cleavages specifies 'unlimited' */
         CandidatePeptideGrid candidatePepGrid = new CandidatePeptideGrid(aminoAcidSet, Enzyme.TRYPSIN, 3, 8, -1);
 
         candidatePepGrid.addNTermResidue('A');

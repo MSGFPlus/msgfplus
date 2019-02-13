@@ -25,7 +25,7 @@ public class Annotation {
         return prevAA == null;
     }
 
-    public boolean isProteiNCTerm() {
+    public boolean isProteinCTerm() {
         return nextAA == null;
     }
 

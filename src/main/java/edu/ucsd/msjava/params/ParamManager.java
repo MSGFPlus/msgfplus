@@ -128,7 +128,7 @@ public class ParamManager {
                 "0 means Don't search decoy database (Default)\n" +
                 "\t   1 means search the decoy database (forward + reverse proteins)"),
 
-        ADD_FEATURES("addFeatures", "AddFeatures", "Add features in the output",
+        ADD_FEATURES("addFeatures", "AddFeatures", "Include additional features in the output",
                 "0 means Output basic scores only (Default)\n" +
                         "\t   1 means Output additional features"),
 
@@ -1002,7 +1002,6 @@ public class ParamManager {
         return getDoubleValue(ParamNameEnum.CHARGE_CARRIER_MASSES.key);
     }
 
-    // Used by MS-GF+
     public ToleranceParameter getParentMassToleranceParam() {
         return ((ToleranceParameter) getParameter(ParamNameEnum.PRECURSOR_MASS_TOLERANCE.key));
     }
@@ -1051,7 +1050,6 @@ public class ParamManager {
         return getIntValue(ParamNameEnum.IGNORE_MET_CLEAVAGE.key);
     }
 
-    // Used by MS-GF+
     public int getOutputAdditionalFeatures() {
         return getIntValue(ParamNameEnum.ADD_FEATURES.key);
     }
@@ -1088,7 +1086,6 @@ public class ParamManager {
         return getIntValue(ParamNameEnum.VERBOSE.key);
     }
 
-    // Used by MS-GF+
     public int getEdgeScoreFlag() {
         return getIntValue(ParamNameEnum.EDGE_SCORE.key);
     }
@@ -1098,17 +1095,14 @@ public class ParamManager {
         return getFile("dd");
     }
 
-    // Used by MS-GF+
     public int getMinNumPeaksPerSpectrum() {
         return getIntValue(ParamNameEnum.MIN_NUM_PEAKS.key);
     }
 
-    // Used by MS-GF+
     public int getMinDeNovoScore() {
         return getIntValue(ParamNameEnum.MIN_DE_NOVO_SCORE.key);
     }
 
-    // Used by MS-GF+
     public int getMaxMissedCleavages() {
         return getIntValue(ParamNameEnum.MAX_MISSED_CLEAVAGES.key);
     }

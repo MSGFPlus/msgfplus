@@ -37,7 +37,7 @@ public class TestCandidatePeptideGridConsideringMetCleavage {
          * one grid for generating peptides with methionine and one for ones
          * with methionine cleaved */
         candidatePepGrid.addProtNTermResidue('M');
-        assertEquals("Methioinine should cause two grids to be instantiated with initial size 2", 2, candidatePepGrid.size());
+        assertEquals("Methionine should cause two grids to be instantiated with initial size 2", 2, candidatePepGrid.size());
 
         candidatePepGrid.addResidue(2, 'A');
         assertEquals("No modifications, so size should stay 2", 2, candidatePepGrid.size());
@@ -166,10 +166,10 @@ public class TestCandidatePeptideGridConsideringMetCleavage {
         assertEquals("grid should return false trying to add 'A' to '[M]KR' because peptides [M]KRA exceed max 2 missed cleavages (both grids reject the addition)", false, result);
 
         result = candidatePepGrid.gridIsOverMaxMissedCleavages(0);
-        assertEquals("grid including methionine should return true for overMax after adding 'A' to 'MKR' because peptide MKRA exceeds max 2 missed clavages", true, result);
+        assertEquals("grid including methionine should return true for overMax after adding 'A' to 'MKR' because peptide MKRA exceeds max 2 missed cleavages", true, result);
 
         result = candidatePepGrid.gridIsOverMaxMissedCleavages(1);
-        assertEquals("grid excluding methionine should return true for overMax after adding 'A' to 'KR' because peptide KRA exceeds max 2 missed clavages", true, result);
+        assertEquals("grid excluding methionine should return true for overMax after adding 'A' to 'KR' because peptide KRA exceeds max 2 missed cleavages", true, result);
     }
 
     /* Test missed cleavage detection and reporting for the grids including and
@@ -201,7 +201,7 @@ public class TestCandidatePeptideGridConsideringMetCleavage {
         /* Test the success of adding another 'D', and internal divergence of
          * over-max for methionine and non-methionine grids */
         boolean result = candidatePepGrid.addResidue(3, 'D');
-        assertEquals("Adding D to should return true because it is under max missed clavages for 'DD' but not for 'MDD' (methionine grid rejected addition, the methionine cleaving grid accepted it)", true, result);
+        assertEquals("Adding D to should return true because it is under max missed cleavages for 'DD' but not for 'MDD' (methionine grid rejected addition, the methionine cleaving grid accepted it)", true, result);
         assertEquals("Adding amino acid D to 'MD' when cleaving with AspN should report 2 missed cleavages for MDD", 2, candidatePepGrid.getPeptideNumMissedCleavages(0));
         assertEquals("Adding amino acid D to 'D' when cleaving with AspN should report 1 missed cleavage for DD", 1, candidatePepGrid.getPeptideNumMissedCleavages(1));
 
@@ -288,12 +288,12 @@ public class TestCandidatePeptideGridConsideringMetCleavage {
 
         candidatePepGrid.addProtNTermResidue('M');
 
-        /* Use till it returns false */
+        /* Use until it returns false */
         candidatePepGrid.addResidue(2, 'K');
         candidatePepGrid.addResidue(3, 'R');
         candidatePepGrid.addResidue(4, 'A');
 
-        /* Reuse, at begining to give 0 missed cleavages */
+        /* Reuse, at beginning to give 0 missed cleavages */
         candidatePepGrid.addResidue(2, 'R');
         assertEquals("methionine grid should return 0 missed cleavages on reuse", 0, candidatePepGrid.getPeptideNumMissedCleavages(0));
         assertEquals("grid should return 0 missed cleavages on reuse", 0, candidatePepGrid.getPeptideNumMissedCleavages(1));
@@ -304,7 +304,7 @@ public class TestCandidatePeptideGridConsideringMetCleavage {
         assertEquals("grid should return 1 missed cleavages on reuse", 1, candidatePepGrid.getPeptideNumMissedCleavages(1));
     }
 
-    /* Specifying -1 for max missed clavages specifies 'unlimited' which can
+    /* Specifying -1 for max missed cleavages specifies 'unlimited' which can
      * be used as default behavior for backward compatibility */
     @Test
     public void testCandidatePeptideGridConsideringMetCleavage_Missed_Cleavages_No_Limit() {
@@ -330,7 +330,7 @@ public class TestCandidatePeptideGridConsideringMetCleavage {
         assertEquals("grid should always return that it is under the max number of allowed missed cleavages", false, result);
     }
 
-    /* Specifying -1 for max missed clavages specifies 'unlimited' which can
+    /* Specifying -1 for max missed cleavages specifies 'unlimited' which can
      * be used as default behavior for backward compatibility */
     @Test
     public void testCandidatePeptideGridConsideringMetCleavage_No_Missed_Cleavages_Allowed() {
