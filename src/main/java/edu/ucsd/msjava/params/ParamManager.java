@@ -110,6 +110,7 @@ public class ParamManager {
         MAX_CHARGE("maxCharge", "MaxCharge", "Maximum precursor charge to consider if charges are not specified in the spectrum file, Default: 3", null),
 
         NUM_MATCHES_SPEC("n", "NumMatchesPerSpec", "Number of matches per spectrum to be reported, Default: 1", null),
+
         CHARGE_CARRIER_MASSES("ccm", "ChargeCarrierMass", "Mass of charge carrier, Default: mass of proton (1.00727649)", null),
 
         MIN_NUM_PEAKS("minNumPeaks", "MinNumPeaksPerSpectrum", "Minimum number of peaks per spectrum, Default: " + Constants.MIN_NUM_PEAKS_PER_SPECTRUM, null),
@@ -146,7 +147,9 @@ public class ParamManager {
         UNIFORM_AA_PROBABILITY("uniformAAProb", "UniformAAProb", null, null),
 
         MAX_NUM_MODS("numMods", "NumMods", "Maximum number of modifications", null),
+
         STATIC_MODIFICATION("staticMod", "StaticMod", "Static/Fixed modification", null),
+
         DYNAMIC_MODIFICATION("dynamicMod", "DynamicMod", "Dynamic/Variable modification", null),
 
         CUSTOM_AA("customAA", "CustomAA", "Custom amino acid", null),
@@ -358,12 +361,23 @@ public class ParamManager {
         addParameter(specFileParam);
     }
 
-    public void addDBFileParam() {
-        addDBFileParam(ParamNameEnum.DB_FILE.commandlineName, ParamNameEnum.DB_FILE.description, false);
     // Used by MS-GF+
+    private void addDBFileParam() {
+        addDBFileParam(ParamNameEnum.DB_FILE, false);
     }
 
-    public void addDBFileParam(String key, String description, boolean isOptional) {
+    private void addDBFileParam(ParamNameEnum paramInfo, boolean isOptional) {
+        FileParameter dbFileParam = new FileParameter(paramInfo);
+        if (isOptional) {
+            dbFileParam.setAsOptional();
+        }
+        dbFileParam.addFileFormat(DBFileFormat.FASTA);
+        dbFileParam.fileMustExist();
+        dbFileParam.mustBeAFile();
+        addParameter(dbFileParam);
+    }
+
+    private void addDBFileParam(String key, String description, boolean isOptional) {
         FileParameter dbFileParam = new FileParameter(key, ParamNameEnum.DB_FILE.name, description);
         if (isOptional)
             dbFileParam.setAsOptional();
@@ -410,10 +424,6 @@ public class ParamManager {
         outputParam.setAsOptional();
         outputParam.fileMustNotExist();
         addParameter(outputParam);
-    }
-
-    public void addFragMethodParam() {
-        addFragMethodParam(ActivationMethod.ASWRITTEN, false);
     }
 
     /**
@@ -482,18 +492,208 @@ public class ParamManager {
         addParameter(protocolParam);
     }
 
-    public void addModFileParam() {
+    // Used by MS-GF+
+    private void addEnzymeSpecificityParam() {
+        EnumParameter nttParam = new EnumParameter(ParamNameEnum.ENZYME_SPECIFICITY);
+        nttParam.registerEntry("");
+        nttParam.registerEntry("");
+        nttParam.registerEntry("").setDefault();
+        addParameter(nttParam);
+    }
+
+    // Used by MS-GF+
+    private void addModFileParam() {
         FileParameter modParam = new FileParameter(ParamNameEnum.MOD_FILE);
         modParam.setAsOptional();
         modParam.fileMustExist();
         addParameter(modParam);
     }
 
-    public void addConfigFileParam(){
+    // Used by MS-GF+
+    private void addConfigFileParam() {
         FileParameter configFile = new FileParameter(ParamNameEnum.CONFIGURATION_FILE);
         configFile.setAsOptional();
         configFile.fileMustExist();
         addParameter(configFile);
+    }
+
+    private void addIsotopeRangeParam() {
+        IntRangeParameter isotopeRange = new IntRangeParameter(ParamNameEnum.ISOTOPE_ERROR);
+        isotopeRange.setMaxInclusive();
+        isotopeRange.defaultValue("0,1");
+        addParameter(isotopeRange);
+    }
+
+    private IntParameter addNumThreadsParam() {
+        IntParameter numThreadParam = new IntParameter(ParamNameEnum.NUM_THREADS);
+        numThreadParam.defaultValue(Runtime.getRuntime().availableProcessors());
+        numThreadParam.minValue(1);
+        addParameter(numThreadParam);
+        return numThreadParam;
+    }
+
+    private void addVerboseModeParam() {
+        EnumParameter verboseOutputParam = new EnumParameter(ParamNameEnum.VERBOSE);
+        verboseOutputParam.registerEntry("Report total progress only").setDefault();
+        verboseOutputParam.registerEntry("Report total and per-thread progress/status");
+        addParameter(verboseOutputParam);
+    }
+
+    private void addNumTasksParam() {
+        IntParameter numTasksParam = new IntParameter(ParamNameEnum.NUM_TASKS);
+        numTasksParam.defaultValue(0);
+        numTasksParam.minValue(-10);
+        addParameter(numTasksParam);
+    }
+
+    private void addTdaParam() {
+        EnumParameter tdaParam = new EnumParameter(ParamNameEnum.TDA_STRATEGY);
+        tdaParam.registerEntry("Don't search decoy database").setDefault();
+        tdaParam.registerEntry("Search decoy database");
+        addParameter(tdaParam);
+    }
+
+    private void addMinPeptideLengthParam() {
+        IntParameter minLenParam = new IntParameter(ParamNameEnum.MIN_PEPTIDE_LENGTH);
+        minLenParam.minValue(1);
+        minLenParam.defaultValue(6);
+        addParameter(minLenParam);
+    }
+
+    private void addMaxPeptideLengthParam() {
+        IntParameter maxLenParam = new IntParameter(ParamNameEnum.MAX_PEPTIDE_LENGTH);
+        maxLenParam.minValue(1);
+        maxLenParam.defaultValue(40);
+        addParameter(maxLenParam);
+    }
+
+    private void addMinChargeParam() {
+        IntParameter minCharge = new IntParameter(ParamNameEnum.MIN_CHARGE);
+        minCharge.minValue(1);
+        minCharge.defaultValue(2);
+        addParameter(minCharge);
+    }
+
+    private void addMaxChargeParam() {
+        IntParameter maxCharge = new IntParameter(ParamNameEnum.MAX_CHARGE);
+        maxCharge.minValue(1);
+        maxCharge.defaultValue(3);
+        addParameter(maxCharge);
+    }
+
+    private void addNumMatchesPerSpecParam() {
+        IntParameter numMatchesParam = new IntParameter(ParamNameEnum.NUM_MATCHES_SPEC);
+        numMatchesParam.minValue(1);
+        numMatchesParam.defaultValue(1);
+        addParameter(numMatchesParam);
+    }
+
+    private void addAddFeaturesParam() {
+        EnumParameter addFeatureParam = new EnumParameter(ParamNameEnum.ADD_FEATURES);
+        addFeatureParam.registerEntry("Output basic scores only").setDefault();
+        addFeatureParam.registerEntry("Output additional features");
+        addParameter(addFeatureParam);
+
+    }
+
+    private void addChargeCarrierMassParam() {
+        DoubleParameter chargeCarrierMassParam = new DoubleParameter(ParamNameEnum.CHARGE_CARRIER_MASSES);
+        chargeCarrierMassParam.minValue(0.1);
+        chargeCarrierMassParam.setMaxInclusive();
+        chargeCarrierMassParam.defaultValue(Composition.PROTON);
+        addParameter(chargeCarrierMassParam);
+    }
+
+    /**
+     * Maximum number of missed cleavages to allow on searched peptides
+     */
+    private void addMaxMissedCleavagesParam() {
+        IntParameter maxMissedCleavages = new IntParameter(ParamNameEnum.MAX_MISSED_CLEAVAGES);
+        maxMissedCleavages.minValue(-1);
+        maxMissedCleavages.defaultValue(-1);
+        addParameter(maxMissedCleavages);
+    }
+
+    private void addDbIndexDirParam(boolean isHidden) {
+        FileParameter dbIndexDirParam = new FileParameter(ParamNameEnum.DD_DIRECTORY);
+        dbIndexDirParam.fileMustExist();
+        dbIndexDirParam.mustBeADirectory();
+        dbIndexDirParam.setAsOptional();
+        if (isHidden) {
+            dbIndexDirParam.setHidden();
+        }
+        addParameter(dbIndexDirParam);
+    }
+
+    private void addPrecursorMassToleranceUnitsParam(boolean isHidden) {
+        EnumParameter unitParam = new EnumParameter(ParamNameEnum.PRECURSOR_MASS_TOLERANCE_UNITS);
+        unitParam.registerEntry("Da");
+        unitParam.registerEntry("ppm");
+        unitParam.registerEntry("Don't care").setDefault();
+        if (isHidden) {
+            unitParam.setHidden();
+        }
+        addParameter(unitParam);
+    }
+
+    private void addSpecIndexRangeParam(boolean isHidden) {
+        IntRangeParameter specIndexParam = new IntRangeParameter(ParamNameEnum.SPEC_INDEX);
+        specIndexParam.minValue(1);
+        specIndexParam.setMaxInclusive();
+        specIndexParam.defaultValue("1," + (Integer.MAX_VALUE - 1));
+        if (isHidden) {
+            specIndexParam.setHidden();
+        }
+        addParameter(specIndexParam);
+
+    }
+
+    private void addEdgeScoreParam(boolean isHidden) {
+        EnumParameter edgeScoreParam = new EnumParameter(ParamNameEnum.EDGE_SCORE.key);
+        edgeScoreParam.registerEntry("Use edge scoring").setDefault();
+        edgeScoreParam.registerEntry("Do not use edge scoring");
+        if (isHidden) {
+            edgeScoreParam.setHidden();
+        }
+        addParameter(edgeScoreParam);
+    }
+
+    private void addMinNumPeaksParam(boolean isHidden) {
+        IntParameter minNumPeaksParam = new IntParameter(ParamNameEnum.MIN_NUM_PEAKS);
+        minNumPeaksParam.defaultValue(Constants.MIN_NUM_PEAKS_PER_SPECTRUM);
+        if (isHidden) {
+            minNumPeaksParam.setHidden();
+        }
+        addParameter(minNumPeaksParam);
+    }
+
+    private void addNumIsoformsParam(boolean isHidden) {
+        IntParameter isoParam = new IntParameter(ParamNameEnum.NUM_ISOFORMS);
+        isoParam.defaultValue(Constants.NUM_VARIANTS_PER_PEPTIDE);
+        if (isHidden) {
+            isoParam.setHidden();
+        }
+        addParameter(isoParam);
+    }
+
+    private void addMetCleavageParamParam(boolean isHidden) {
+        EnumParameter metCleavageParam = new EnumParameter(ParamNameEnum.IGNORE_MET_CLEAVAGE);
+        metCleavageParam.registerEntry("Consider protein N-term Met cleavage").setDefault();
+        metCleavageParam.registerEntry("Ignore protein N-term Met cleavage");
+        if (isHidden) {
+            metCleavageParam.setHidden();
+        }
+        addParameter(metCleavageParam);
+    }
+
+    private void addMinDeNovoScoreParam(boolean isHidden) {
+        IntParameter minDeNovoScoreParam = new IntParameter(ParamNameEnum.MIN_DE_NOVO_SCORE);
+        minDeNovoScoreParam.minValue(Integer.MIN_VALUE);
+        minDeNovoScoreParam.defaultValue(Constants.MIN_DE_NOVO_SCORE);
+        if (isHidden) {
+            minDeNovoScoreParam.setHidden();
+        }
+        addParameter(minDeNovoScoreParam);
     }
 
     /**
@@ -509,169 +709,56 @@ public class ParamManager {
 
         // -d DatabaseFile (*.fasta or *.fa or *.faa)
         addDBFileParam();
-
-        // decoy DecoyPrefix
         addDecoyPrefixParam();
 
         // [-o OutputFile (*.mzid)] (Default: [SpectrumFileName].mzid)
         addMzIdOutputFileParam();
 
-        ToleranceParameter pmTolParam = new ToleranceParameter(ParamNameEnum.PRECURSOR_MASS_TOLERANCE);
-        pmTolParam.defaultValue("20ppm");
-        pmTolParam.setAdditionalDescription(ParamNameEnum.PRECURSOR_MASS_TOLERANCE.additionalDescription);
-        addParameter(pmTolParam);
+        addPrecursorMassToleranceParam();
+        addPrecursorMassToleranceUnitsParam(true);
 
-        IntRangeParameter isotopeRange = new IntRangeParameter(ParamNameEnum.ISOTOPE_ERROR);
-        isotopeRange.setAdditionalDescription(ParamNameEnum.ISOTOPE_ERROR.additionalDescription);
-        isotopeRange.setMaxInclusive();
-        isotopeRange.defaultValue("0,1");
-        addParameter(isotopeRange);
+        addIsotopeRangeParam();
 
-        IntParameter numThreadParam = new IntParameter(ParamNameEnum.NUM_THREADS);
-        numThreadParam.defaultValue(Runtime.getRuntime().availableProcessors());
-        numThreadParam.minValue(1);
-        addParameter(numThreadParam);
+        addNumThreadsParam();
+        addNumTasksParam();
+        addVerboseModeParam();
 
-        IntParameter numTasksParam = new IntParameter(ParamNameEnum.NUM_TASKS);
-        numTasksParam.setAdditionalDescription(ParamNameEnum.NUM_TASKS.additionalDescription);
-        numTasksParam.defaultValue(0);
-        numTasksParam.minValue(-10);
-        addParameter(numTasksParam);
-
-        EnumParameter verboseOutputParam = new EnumParameter(ParamNameEnum.VERBOSE.commandlineName);
-        verboseOutputParam.registerEntry("Report total progress only").setDefault();
-        verboseOutputParam.registerEntry("Report total and per-thread progress/status");
-        addParameter(verboseOutputParam);
-
-        EnumParameter tdaParam = new EnumParameter(ParamNameEnum.TDA_STRATEGY);
-        tdaParam.registerEntry("Don't search decoy database").setDefault();
-        tdaParam.registerEntry("Search decoy database");
-        addParameter(tdaParam);
+        addTdaParam();
 
         addFragMethodParam(ActivationMethod.ASWRITTEN, true);
         addInstTypeParam();
         addEnzymeParam();
         addProtocolParam();
-
-        EnumParameter nttParam = new EnumParameter(ParamNameEnum.ENZYME_SPECIFICITY);
-        nttParam.setAdditionalDescription(ParamNameEnum.ENZYME_SPECIFICITY.additionalDescription);
-        nttParam.registerEntry("");
-        nttParam.registerEntry("");
-        nttParam.registerEntry("").setDefault();
-        addParameter(nttParam);
+        addEnzymeSpecificityParam();
 
         addModFileParam();
 
-        IntParameter minLenParam = new IntParameter(ParamNameEnum.MIN_PEPTIDE_LENGTH);
-        minLenParam.minValue(1);
-        minLenParam.defaultValue(6);
-        addParameter(minLenParam);
+        addMinPeptideLengthParam();
+        addMaxPeptideLengthParam();
+        addMinChargeParam();
+        addMaxChargeParam();
 
-        IntParameter maxLenParam = new IntParameter(ParamNameEnum.MAX_PEPTIDE_LENGTH);
-        maxLenParam.minValue(1);
-        maxLenParam.defaultValue(40);
-        addParameter(maxLenParam);
-
-        IntParameter minCharge = new IntParameter(ParamNameEnum.MIN_CHARGE);
-        minCharge.minValue(1);
-        minCharge.defaultValue(2);
-        addParameter(minCharge);
-
-        IntParameter maxCharge = new IntParameter(ParamNameEnum.MAX_CHARGE);
-        maxCharge.minValue(1);
-        maxCharge.defaultValue(3);
-        addParameter(maxCharge);
-
-        IntParameter numMatchesParam = new IntParameter(ParamNameEnum.NUM_MATCHES_SPEC);
-        numMatchesParam.minValue(1);
-        numMatchesParam.defaultValue(1);
-        addParameter(numMatchesParam);
-
-        EnumParameter addFeatureParam = new EnumParameter(ParamNameEnum.ADD_FEATURES);
-        addFeatureParam.registerEntry("Output basic scores only").setDefault();
-        addFeatureParam.registerEntry("Output additional features");
-        addParameter(addFeatureParam);
-
-        DoubleParameter chargeCarrierMassParam = new DoubleParameter(ParamNameEnum.CHARGE_CARRIER_MASSES);
-        chargeCarrierMassParam.minValue(0.1);
-        chargeCarrierMassParam.setMaxInclusive();
-        chargeCarrierMassParam.defaultValue(Composition.PROTON);
-        addParameter(chargeCarrierMassParam);
-
-        /* Maximum number of missed cleavages to allow on searched peptides */
-        IntParameter maxMissedCleavages = new IntParameter(ParamNameEnum.MAX_MISSED_CLEAVAGES);
-        maxMissedCleavages.minValue(-1);
-        maxMissedCleavages.defaultValue(-1);
-        addParameter(maxMissedCleavages);
+        addNumMatchesPerSpecParam();
+        addAddFeaturesParam();
+        addChargeCarrierMassParam();
+        addMaxMissedCleavagesParam();
 
         addExample("Example (high-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_human_3.79.fasta -inst 1 -t 20ppm -ti -1,2 -ntt 2 -tda 1 -o testMSGFPlus.mzid -mod Mods.txt");
         addExample("Example (low-precision):  java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_human_3.79.fasta -inst 0 -t 0.5Da,2.5Da    -ntt 2 -tda 1 -o testMSGFPlus.mzid -mod Mods.txt");
 
         // Hidden parameters
-        FileParameter dbIndexDirParam = new FileParameter(ParamNameEnum.DD_DIRECTORY);
-        dbIndexDirParam.fileMustExist();
-        dbIndexDirParam.mustBeADirectory();
-        dbIndexDirParam.setAsOptional();
-        dbIndexDirParam.setHidden();
-        addParameter(dbIndexDirParam);
+        addDbIndexDirParam(true);
+        addSpecIndexRangeParam(true);
+        addEdgeScoreParam(true);
+        addMinNumPeaksParam(true);
+        addNumIsoformsParam(true);
+        addMetCleavageParamParam(true);
+        addMinDeNovoScoreParam(true);
 
-        EnumParameter unitParam = new EnumParameter("u");
-        unitParam.registerEntry("Da");
-        unitParam.registerEntry("ppm");
-        unitParam.registerEntry("Don't care").setDefault();
-        unitParam.setHidden();
-        addParameter(unitParam);
-
-        IntRangeParameter specIndexParam = new IntRangeParameter(ParamNameEnum.SPEC_INDEX);
-        specIndexParam.minValue(1);
-        specIndexParam.setMaxInclusive();
-        specIndexParam.defaultValue("1," + (Integer.MAX_VALUE - 1));
-        specIndexParam.setHidden();
-        addParameter(specIndexParam);
-
-//		EnumParameter showFDRParam = new EnumParameter("showQValue");
-//		showFDRParam.registerEntry("do not show Q-values");
-//		showFDRParam.registerEntry("show Q-values").setDefault();
-//		showFDRParam.setHidden();
-//		addParameter(showFDRParam);
-
-//		EnumParameter showDecoyParam = new EnumParameter("showDecoy");
-//		showDecoyParam.registerEntry("do not show decoy PSMs").setDefault();
-//		showDecoyParam.registerEntry("show decoy PSMs");
-//		addParameter(showDecoyParam);
-
-        EnumParameter edgeScoreParam = new EnumParameter("edgeScore");
-        edgeScoreParam.registerEntry("Use edge scoring").setDefault();
-        edgeScoreParam.registerEntry("Do not use edge scoring");
-        edgeScoreParam.setHidden();
-        addParameter(edgeScoreParam);
-
-        IntParameter minNumPeaksParam = new IntParameter(ParamNameEnum.MIN_NUM_PEAKS);
-        minNumPeaksParam.defaultValue(Constants.MIN_NUM_PEAKS_PER_SPECTRUM);
-        minNumPeaksParam.setHidden();
-        addParameter(minNumPeaksParam);
-
-        IntParameter isoParam = new IntParameter(ParamNameEnum.NUM_ISOFORMS);
-        isoParam.defaultValue(Constants.NUM_VARIANTS_PER_PEPTIDE);
-        isoParam.setHidden();
-        addParameter(isoParam);
-
-        EnumParameter metCleavageParam = new EnumParameter("ignoreMetCleavage");
-        metCleavageParam.registerEntry("Consider protein N-term Met cleavage").setDefault();
-        metCleavageParam.registerEntry("Ignore protein N-term Met cleavage");
-        metCleavageParam.setHidden();
-        addParameter(metCleavageParam);
-
-        IntParameter minDeNovoScoreParam = new IntParameter(ParamNameEnum.MIN_DE_NOVO_SCORE);
-        minDeNovoScoreParam.minValue(Integer.MIN_VALUE);
-        minDeNovoScoreParam.defaultValue(Constants.MIN_DE_NOVO_SCORE);
-        minDeNovoScoreParam.setHidden();
-        addParameter(minDeNovoScoreParam);
-
-    }
+    } // MSGFPlusParams
 
     /**
-     * Used by MS-GF+
+     * Used by class edu.ucsd.msjava.ui.ScoringParamGen
      */
     public void addScoringParamGenParams() {
         FileListParameter resFileParam = new FileListParameter("i", "ResultPath", "MSGFDBResultFile (*.mzid) or MSGFDBResultDir");
@@ -688,7 +775,7 @@ public class ParamManager {
         addParameter(specDirParam);
 
         // ActivationMethod
-        ObjectEnumParameter<ActivationMethod> fragParam = new ObjectEnumParameter<ActivationMethod>("m", "FragmentMethodID");
+        ObjectEnumParameter<ActivationMethod> fragParam = new ObjectEnumParameter<>(ParamNameEnum.FRAG_METHOD);
         ActivationMethod[] methods = ActivationMethod.getAllRegisteredActivationMethods();
         for (int i = 1; i < methods.length; i++) {
             ActivationMethod m = methods[i];
@@ -701,30 +788,18 @@ public class ParamManager {
         addInstTypeParam(null);
 
         // Enzyme
-        ObjectEnumParameter<Enzyme> enzParam = new ObjectEnumParameter<Enzyme>("e", "EnzymeID");
-        Enzyme[] allEnzymes = Enzyme.getAllRegisteredEnzymes();
-        for (int i = 1; i < allEnzymes.length; i++) {
-            Enzyme e = allEnzymes[i];
-            enzParam.registerObject(e);
-        }
-        addParameter(enzParam);
+        addEnzymeParam();
 
         // Protocol
         addProtocolParam();
 
-        IntParameter numThreadParam = new IntParameter(ParamNameEnum.NUM_THREADS);
+        IntParameter numThreadParam = addNumThreadsParam();
         numThreadParam.defaultValue(Runtime.getRuntime().availableProcessors() / 2);
-        numThreadParam.setAdditionalDescription(ParamNameEnum.NUM_THREADS.additionalDescription);
-        numThreadParam.minValue(1);
-        addParameter(numThreadParam);
 
         EnumParameter dropErrors = new EnumParameter("dropErrors");
+        dropErrors.setAdditionalDescription("If 0, stop processing if an error occurs; if 1, discard results from datasets with errors.");
         dropErrors.registerEntry("Fail on first dataset with errors").setDefault();
         dropErrors.registerEntry("Drop results from datasets with errors");
-        numThreadParam.setAdditionalDescription("If 0, the first dataset encountered.\n" +
-                "\t   Generally a single NUMA node is 1 physical processor.\n" +
-                "\t   The default will try to use hyperthreading cores, which can increase the amount of time this process will take.\n" +
-                "\t   This is because the part of Scoring param generation that is multithreaded is also I/O intensive.");
         addParameter(dropErrors);
 
         addExample("Example (high-precision): java -Xmx4G -cp MSGFPlus.jar edu.ucsd.msjava.ui.ScoringParamGen -i resultsFolder -d spectraFolder -m 2 -e 1 -protocol 5 -thread 4 -dropErrors 1");
@@ -734,7 +809,6 @@ public class ParamManager {
         mgfParam.registerEntry("Create annotated mgf");
         mgfParam.setHidden();
         addParameter(mgfParam);
-
 
 //		paramManager.addModFileParam();
 //		StringParameter nlParam = new StringParameter("nl", "NeutralLosses", "Comma separated neutral losses to consider. Specify compositions or masses");
@@ -748,31 +822,28 @@ public class ParamManager {
     public void addMSGFDBParams() {
         addSpecFileParam();
         addDBFileParam();
-        addPMTolParam();
+
+        addPrecursorMassToleranceParam();
+        addPrecursorMassToleranceUnitsParam(true);
+
         addOutputFileParam();
 
-        IntParameter numThreadParam = new IntParameter("thread", "NumThreads", "Number of concurrent threads to be executed, Default: Number of available cores");
-        numThreadParam.defaultValue(Runtime.getRuntime().availableProcessors());
-        numThreadParam.minValue(1);
-        addParameter(numThreadParam);
+        addNumThreadsParam();
 
-        EnumParameter tdaParam = new EnumParameter("tda");
-        tdaParam.registerEntry("Don't search decoy database").setDefault();
-        tdaParam.registerEntry("Search decoy database to compute FDR");
-        addParameter(tdaParam);
+        addTdaParam();
 
-        addFragMethodParam();
+        addFragMethodParam(ActivationMethod.ASWRITTEN, false);
         addInstTypeParam();
         addEnzymeParam();
         addProtocolParam();
 
-        EnumParameter c13Param = new EnumParameter("c13");
+        EnumParameter c13Param = new EnumParameter(ParamNameEnum.C13);
         c13Param.registerEntry("Consider only peptides matching precursor mass");
         c13Param.registerEntry("Consider peptides having one 13C").setDefault();
         c13Param.registerEntry("Consider peptides having up to two 13C");
         addParameter(c13Param);
 
-        EnumParameter nnetParam = new EnumParameter("nnet", null, "Number of allowed non-enzymatic termini");
+        EnumParameter nnetParam = new EnumParameter(ParamNameEnum.NNET);
         nnetParam.registerEntry("");
         nnetParam.registerEntry("").setDefault();
         nnetParam.registerEntry("");
@@ -787,91 +858,52 @@ public class ParamManager {
 //		itraqParam.setHidden();
 //		addParameter(itraqParam);
 
-        IntParameter minLenParam = new IntParameter("minLength", "MinPepLength", "Minimum peptide length to consider, Default: 6");
-        minLenParam.minValue(1);
-        minLenParam.defaultValue(6);
-        addParameter(minLenParam);
+        addMinPeptideLengthParam();
+        addMaxPeptideLengthParam();
+        addMinChargeParam();
+        addMaxChargeParam();
 
-        IntParameter maxLenParam = new IntParameter("maxLength", "MaxPepLength", "Maximum peptide length to consider, Default: 40");
-        maxLenParam.minValue(1);
-        maxLenParam.defaultValue(40);
-        addParameter(maxLenParam);
-
-        IntParameter minCharge = new IntParameter("minCharge", "MinCharge", "Minimum precursor charge to consider if charges are not specified in the spectrum file, Default: 2");
-        minCharge.minValue(1);
-        minCharge.defaultValue(2);
-        addParameter(minCharge);
-
-        IntParameter maxCharge = new IntParameter("maxCharge", "MaxCharge", "Maximum precursor charge to consider if charges are not specified in the spectrum file, Default: 3");
-        maxCharge.minValue(1);
-        maxCharge.defaultValue(3);
-        addParameter(maxCharge);
-
-        IntParameter numMatchesParam = new IntParameter("n", "NumMatchesPerSpec", "Number of matches per spectrum to be reported, Default: 1");
-        numMatchesParam.minValue(1);
-        numMatchesParam.defaultValue(1);
-        addParameter(numMatchesParam);
+        addNumMatchesPerSpecParam();
 
         EnumParameter uniformAAProb = new EnumParameter(ParamNameEnum.UNIFORM_AA_PROBABILITY);
-        uniformAAProb.registerEntry("use amino acid probabilities computed from the input database").setDefault();
-        uniformAAProb.registerEntry("use probability 0.05 for all amino acids");
+        uniformAAProb.registerEntry("Use amino acid probabilities computed from the input database").setDefault();
+        uniformAAProb.registerEntry("Use probability 0.05 for all amino acids");
         addParameter(uniformAAProb);
 
         addExample("Example (high-precision): java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 30ppm -c13 1 -nnet 0 -tda 1 -o testMSGFDB.tsv");
         addExample("Example (low-precision): java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 0.5Da,2.5Da -nnet 0 -tda 1 -o testMSGFDB.tsv");
 
         // Hidden parameters
-        FileParameter dbIndexDirParam = new FileParameter("dd", "DBIndexDir", "Path to the directory containing database index files");
-        dbIndexDirParam.fileMustExist();
-        dbIndexDirParam.mustBeADirectory();
-        dbIndexDirParam.setAsOptional();
-        dbIndexDirParam.setHidden();
-        addParameter(dbIndexDirParam);
-
-        EnumParameter unitParam = new EnumParameter("u");
-        unitParam.registerEntry("Da");
-        unitParam.registerEntry("ppm");
-        unitParam.registerEntry("Don't care").setDefault();
-        unitParam.setHidden();
-        addParameter(unitParam);
-
-        IntRangeParameter specIndexParam = new IntRangeParameter("index", "SpecIndex", "Range of spectrum index to be considered");
-        specIndexParam.minValue(1);
-        specIndexParam.setMaxInclusive();
-        specIndexParam.defaultValue("1," + (Integer.MAX_VALUE - 1));
-        specIndexParam.setHidden();
-        addParameter(specIndexParam);
+        addDbIndexDirParam(true);
+        addSpecIndexRangeParam(true);
 
         EnumParameter showFDRParam = new EnumParameter("showFDR");
-        showFDRParam.registerEntry("do not show FDRs");
-        showFDRParam.registerEntry("show FDRs").setDefault();
+        showFDRParam.registerEntry("Do not show FDRs");
+        showFDRParam.registerEntry("Show FDRs").setDefault();
         showFDRParam.setHidden();
         addParameter(showFDRParam);
 
         EnumParameter showDecoyParam = new EnumParameter("showDecoy");
-        showDecoyParam.registerEntry("do not show decoy PSMs").setDefault();
-        showDecoyParam.registerEntry("show decoy PSMs");
+        showDecoyParam.registerEntry("Do not show decoy PSMs").setDefault();
+        showDecoyParam.registerEntry("Show decoy PSMs");
         showDecoyParam.setHidden();
         addParameter(showDecoyParam);
 
         EnumParameter replicateMergedResParam = new EnumParameter("replicate");
-        replicateMergedResParam.registerEntry("show merged spectra").setDefault();
-        replicateMergedResParam.registerEntry("show individual spectra");
+        replicateMergedResParam.registerEntry("Show merged spectra").setDefault();
+        replicateMergedResParam.registerEntry("Show individual spectra");
         replicateMergedResParam.setHidden();
         addParameter(replicateMergedResParam);
 
-        EnumParameter edgeScoreParam = new EnumParameter("edgeScore");
-        edgeScoreParam.registerEntry("use edge scoring").setDefault();
-        edgeScoreParam.registerEntry("do not use edge scoring");
-        edgeScoreParam.setHidden();
-        addParameter(edgeScoreParam);
+        addEdgeScoreParam(true);
 
 //		EnumParameter percolatorParam = new EnumParameter("percolator");
 //		edgeScoreParam.registerEntry("normal").setDefault();
 //		edgeScoreParam.registerEntry("for MS-GF+Percolator");
 //		edgeScoreParam.setHidden();
 //		addParameter(percolatorParam);
-    }
+
+    } // MSGFDBParams
 
     public void addMSGFParams() {
         // SpectrumFile
@@ -937,17 +969,13 @@ public class ParamManager {
         libFileParam.mustBeAFile();
         addParameter(libFileParam);
 
-        addPMTolParam();
+        addPrecursorMassToleranceParam();
 
         addOutputFileParam();
 
-        IntParameter numThreadParam = new IntParameter(ParamNameEnum.NUM_THREADS);
+        addNumThreadsParam();
 
-        numThreadParam.defaultValue(Runtime.getRuntime().availableProcessors());
-        numThreadParam.minValue(1);
-        addParameter(numThreadParam);
-
-        addFragMethodParam();
+        addFragMethodParam(ActivationMethod.ASWRITTEN, false);
         addInstTypeParam();
         addEnzymeParam();
         addProtocolParam();
@@ -1162,6 +1190,8 @@ public class ParamManager {
         return null;
     }
 
+    // This class is not typically instantiated
+    @Deprecated
     public static void main(String argv[]) {
         ParamManager paramManager = new ParamManager("MSGF", MSGF.VERSION, MSGF.RELEASE_DATE, "java -Xmx2000M -jar MSGFDB.jar");
         paramManager.addMSGFDBParams();
