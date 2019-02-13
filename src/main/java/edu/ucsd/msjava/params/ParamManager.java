@@ -200,12 +200,12 @@ public class ParamManager {
         }
 
         /**
-         * Check whether the parameter line contains the ParamValue
+         * Check whether the parameter line starts with the ParamValue
          * @param line Param Line
          * @return is the line.
          */
         public boolean isLine(String line) {
-            return ((getName() != null && line.toLowerCase().contains(getName().toLowerCase())));
+            return ((getName() != null && line.trim().toLowerCase().startsWith(getName().toLowerCase())));
         }
     }
 
