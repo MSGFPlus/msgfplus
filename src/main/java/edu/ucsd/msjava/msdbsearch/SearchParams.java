@@ -496,20 +496,36 @@ public class SearchParams {
 
         buf.append("\tProtocol: " + (protocol == null ? "null" : this.protocol.getName()) + "\n");
         buf.append("\tNumTolerableTermini: " + this.numTolerableTermini + "\n");
-        buf.append("\tMinPeptideLength: " + this.minPeptideLength + "\n");
-        buf.append("\tMaxPeptideLength: " + this.maxPeptideLength + "\n");
+        buf.append("\tMinPepLength: " + this.minPeptideLength + "\n");
+        buf.append("\tMaxPepLength: " + this.maxPeptideLength + "\n");
+        buf.append("\tMinCharge: " + this.minCharge + "\n");
+        buf.append("\tMaxCharge: " + this.maxCharge + "\n");
         buf.append("\tNumMatchesPerSpec: " + this.numMatchesPerSpec + "\n");
         buf.append("\tMaxMissedCleavages: " + this.maxMissedCleavages + "\n");
+        buf.append("\tMaxNumModsPerPeptide: " + this.maxNumMods + "\n");
         buf.append("\tChargeCarrierMass: " + this.chargeCarrierMass);
 
         if (Math.abs(this.chargeCarrierMass - PROTON) < 0.005) {
-            buf.append(" (proton)");
+            buf.append(" (proton)\n");
         } else if (Math.abs(this.chargeCarrierMass - POTASSIUM_CHARGE_CARRIER_MASS) < 0.005) {
-            buf.append(" (potassium)");
+            buf.append(" (potassium)\n");
         } else if (Math.abs(this.chargeCarrierMass - SODIUM_CHARGE_CARRIER_MASS) < 0.005) {
-            buf.append(" (sodium)");
+            buf.append(" (sodium)\n");
         } else {
-            buf.append(" (custom)");
+            buf.append(" (custom)\n");
+        }
+
+        buf.append("\tMinNumPeaksPerSpectrum: " + this.minNumPeaksPerSpectrum + "\n");
+        buf.append("\tNumIsoforms: " + this.maxNumVariantsPerPeptide + "\n");
+
+        ArrayList<String> modificationsInUse = aaSet.getModificationsInUse();
+
+        if (modificationsInUse.size() == 0) {
+            buf.append("No static or dynamic post translational modifications are defined.\n");
+        } else {
+            buf.append("Post translational modifications in use:\n");
+            for (String modInfo : modificationsInUse )
+                buf.append("\t" + modInfo + "\n");
         }
 
         return buf.toString();
