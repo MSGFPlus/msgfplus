@@ -34,7 +34,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     private static Hashtable<String, Double> defaultModUsage = new Hashtable<>();
 
     static {
-        locMap = new HashMap<Location, Location[]>();
+        locMap = new HashMap<>();
         locMap.put(Location.Anywhere, new Location[]{Location.Anywhere, Location.N_Term, Location.C_Term, Location.Protein_N_Term, Location.Protein_C_Term});
         locMap.put(Location.N_Term, new Location[]{Location.N_Term, Location.Protein_N_Term});
         locMap.put(Location.C_Term, new Location[]{Location.C_Term, Location.Protein_C_Term});
@@ -58,7 +58,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     private boolean containsITRAQ;    // true if this contains iTRAQ
     private boolean containsTMT;    // true if this contains iTRAQ
 
-    private HashSet<Character> modResidueSet = new HashSet<Character>();    // set of symbols used for residues
+    private HashSet<Character> modResidueSet = new HashSet<>();    // set of symbols used for residues
     private char nextResidue;
 
     // for enzyme
@@ -70,6 +70,11 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     private float probCleavageSites = 0;
 
     AminoAcid lightestAA, heaviestAA;
+
+    /**
+     * This tracks user-friendly descriptions of the modifications in use
+     */
+    private ArrayList<String> modificationsInUse = new ArrayList<>();
 
     private AminoAcidSet() // prevents instantiation
     {
@@ -104,6 +109,10 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
     public ArrayList<AminoAcid> getProtCTermAAList() {
         return aaListMap.get(Location.Protein_N_Term);
+    }
+
+    public ArrayList<String> getModificationsInUse() {
+        return modificationsInUse;
     }
 
     /**
@@ -460,13 +469,21 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     private void applyModifications(ArrayList<Modification.Instance> mods) {
         this.modifications = mods;
 
-        // partition modification instances into different types
-        HashMap<Modification.Location, ArrayList<Modification.Instance>> fixedMods = new HashMap<Modification.Location, ArrayList<Modification.Instance>>();
-        HashMap<Modification.Location, ArrayList<Modification.Instance>> variableMods = new HashMap<Modification.Location, ArrayList<Modification.Instance>>();
-        for (Location location : Modification.Location.values()) {
-            fixedMods.put(location, new ArrayList<Modification.Instance>());
-            variableMods.put(location, new ArrayList<Modification.Instance>());
+        modificationsInUse.clear();
+
+        if (mods.size() == 0) {
+            return;
         }
+
+        // partition modification instances into different types
+        HashMap<Modification.Location, ArrayList<Modification.Instance>> fixedMods = new HashMap<>();
+        HashMap<Modification.Location, ArrayList<Modification.Instance>> variableMods = new HashMap<>();
+
+        for (Location location : Modification.Location.values()) {
+            fixedMods.put(location, new ArrayList<>());
+            variableMods.put(location, new ArrayList<>());
+        }
+
         for (Modification.Instance mod : mods) {
             if (mod.isFixedModification())
                 fixedMods.get(mod.getLocation()).add(mod);
@@ -505,6 +522,34 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 this.containsITRAQ = true;
             if (mod.getModification().getName().toLowerCase().startsWith("tmt"))
                 this.containsTMT = true;
+
+            String modType = mod.isFixedModification() ? "Fixed (static)" : "Variable (dynamic)";
+            String modLocation;
+
+            switch (mod.getLocation()) {
+                case Anywhere:
+                    modLocation = "";
+                    break;
+                case N_Term:
+                    modLocation = "at the peptide N-terminus";
+                    break;
+                case C_Term:
+                    modLocation = "at the peptide C-terminus";
+                    break;
+                case Protein_N_Term:
+                    modLocation = "at the protein N-terminus";
+                    break;
+                case Protein_C_Term:
+                    modLocation = "at the protein C-terminus";
+                    break;
+                default:
+                    modLocation = "at ???";
+                    break;
+            }
+
+            String modInfo = modType + ": " + mod.getModification().getName() + " on " + mod.getResidue() + modLocation;
+
+            modificationsInUse.add(modInfo);
         }
     }
 
@@ -935,8 +980,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 for (int i = 0; i < residueStr.length(); i++) {
                     char residue = residueStr.charAt(i);
                     Modification.Instance modIns = new Modification.Instance(mod, residue, location);
-                    if (isFixedModification)
+                    if (isFixedModification) {
                         modIns.fixedModification();
+                    }
 
                     if (!addModInstance(sourceFilePath, lineNum, modSetting, mods, modIns)) {
                         return false;
