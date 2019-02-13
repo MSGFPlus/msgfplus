@@ -14,6 +14,7 @@ public class EnumParameter extends IntParameter {
 
     public EnumParameter(ParamManager.ParamNameEnum paramInfo) {
         super(paramInfo);
+        super.minValue(0);
     }
 
     public EnumParameter setMinIndex(int minIndex) {
@@ -27,13 +28,20 @@ public class EnumParameter extends IntParameter {
     }
 
     public EnumParameter setDefault() {
-        this.defaultValue = super.minValue + descriptions.size() - 1;
+        this.defaultValue = getMinValue() + descriptions.size() - 1;
         super.defaultValue(defaultValue);
         return this;
     }
 
     protected int getCurIndex() {
-        return super.minValue + descriptions.size();
+        return getMinValue() + descriptions.size();
+    }
+
+    protected int getMinValue() {
+        if (super.minValue == null)
+            return 0;
+        else
+            return super.minValue;
     }
 
     @Override
@@ -41,8 +49,8 @@ public class EnumParameter extends IntParameter {
         if (super.getName() != null)
             return super.getName();
         StringBuffer buf = new StringBuffer();
-        for (int i = super.minValue; i < super.minValue + descriptions.size(); i++) {
-            if (i > super.minValue)
+        for (int i = super.minValue; i < getMinValue() + descriptions.size(); i++) {
+            if (i > getMinValue())
                 buf.append("/");
             buf.append(i);
         }
@@ -57,10 +65,10 @@ public class EnumParameter extends IntParameter {
             buf.append("Default: " + this.defaultValue);
             return buf.toString();
         }
-        for (int i = super.minValue; i < super.minValue + descriptions.size(); i++) {
-            if (i > super.minValue)
+        for (int i = super.minValue; i < getMinValue() + descriptions.size(); i++) {
+            if (i > getMinValue())
                 buf.append(", ");
-            buf.append(i + ": " + descriptions.get(i - super.minValue));
+            buf.append(i + ": " + descriptions.get(i - getMinValue()));
             if (i == defaultValue)
                 buf.append(" (Default)");
         }
@@ -69,7 +77,7 @@ public class EnumParameter extends IntParameter {
 
     @Override
     public String parse(String value) {
-        super.maxValue(super.minValue + descriptions.size());
+        super.maxValue(getMinValue() + descriptions.size());
         return super.parse(value);
     }
 }
