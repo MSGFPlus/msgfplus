@@ -56,32 +56,40 @@ public class SearchParams {
     public SearchParams() {
     }
 
+    // Used by MS-GF+
     public List<DBSearchIOFiles> getDBSearchIOList() {
         return dbSearchIOList;
     }
 
+    // Used by MS-GF+
     public File getDatabaseFile() {
         return databaseFile;
     }
 
-    public String getDecoyProteinPrefix() {return decoyProteinPrefix; }
+    // Used by MS-GF+
+    public String getDecoyProteinPrefix() { return decoyProteinPrefix; }
 
+    // Used by MS-GF+
     public Tolerance getLeftParentMassTolerance() {
         return leftParentMassTolerance;
     }
 
+    // Used by MS-GF+
     public Tolerance getRightParentMassTolerance() {
         return rightParentMassTolerance;
     }
 
+    // Used by MS-GF+
     public int getMinIsotopeError() {
         return minIsotopeError;
     }
 
+    // Used by MS-GF+
     public int getMaxIsotopeError() {
         return maxIsotopeError;
     }
 
+    // Used by MS-GF+
     public Enzyme getEnzyme() {
         return enzyme;
     }
@@ -90,62 +98,77 @@ public class SearchParams {
         return numTolerableTermini;
     }
 
+    // Used by MS-GF+
     public ActivationMethod getActivationMethod() {
         return activationMethod;
     }
 
+    // Used by MS-GF+
     public InstrumentType getInstType() {
         return instType;
     }
 
+    // Used by MS-GF+
     public Protocol getProtocol() {
         return protocol;
     }
 
+    // Used by MS-GF+
     public AminoAcidSet getAASet() {
         return aaSet;
     }
 
+    // Used by MS-GF+
     public int getNumMatchesPerSpec() {
         return numMatchesPerSpec;
     }
 
+    // Used by MS-GF+
     public int getStartSpecIndex() {
         return startSpecIndex;
     }
 
+    // Used by MS-GF+
     public int getEndSpecIndex() {
         return endSpecIndex;
     }
 
+    // Used by MS-GF+
     public boolean useTDA() {
         return useTDA;
     }
 
+    // Used by MS-GF+
     public boolean ignoreMetCleavage() {
         return ignoreMetCleavage;
     }
 
+    // Used by MS-GF+
     public int getMinPeptideLength() {
         return minPeptideLength;
     }
 
+    // Used by MS-GF+
     public int getMaxPeptideLength() {
         return maxPeptideLength;
     }
 
+    // Used by MS-GF+
     public int getMaxNumVariantsPerPeptide() {
         return maxNumVariantsPerPeptide;
     }
 
+    // Used by MS-GF+
     public int getMinCharge() {
         return minCharge;
     }
 
+    // Used by MS-GF+
     public int getMaxCharge() {
         return maxCharge;
     }
 
+    // Used by MS-GF+
     public int getNumThreads() {
         return numThreads;
     }
@@ -162,10 +185,12 @@ public class SearchParams {
         return replicateMergedResults;
     }
 
+    // Used by MS-GF+
     public boolean doNotUseEdgeScore() {
         return doNotUseEdgeScore;
     }
 
+    // Used by MS-GF+
     public File getDBIndexDir() {
         return dbIndexDir;
     }
@@ -174,10 +199,12 @@ public class SearchParams {
         return outputAdditionalFeatures;
     }
 
+    // Used by MS-GF+
     public int getMinNumPeaksPerSpectrum() {
         return minNumPeaksPerSpectrum;
     }
 
+    // Used by MS-GF+
     public int getMinDeNovoScore() {
         return minDeNovoScore;
     }
@@ -186,10 +213,12 @@ public class SearchParams {
         return chargeCarrierMass;
     }
 
+    // Used by MS-GF+
     public int getMaxMissedCleavages() {
         return maxMissedCleavages;
     }
 
+    // Used by MS-GF+
     public String parse(ParamManager paramManager) {
         AminoAcidSet configAASet = null;
         if (paramManager.getConfigFileParam() != null) {
@@ -204,7 +233,7 @@ public class SearchParams {
         FileParameter specParam = paramManager.getSpecFileParam();
         File specPath = specParam.getFile();
 
-        dbSearchIOList = new ArrayList<DBSearchIOFiles>();
+        dbSearchIOList = new ArrayList<>();
 
         if (!specPath.isDirectory()) {
             // Spectrum format
@@ -218,11 +247,11 @@ public class SearchParams {
 //					return outputFile.getPath() + " already exists!";
             }
 
-            dbSearchIOList = new ArrayList<DBSearchIOFiles>();
+            dbSearchIOList = new ArrayList<>();
             dbSearchIOList.add(new DBSearchIOFiles(specPath, specFormat, outputFile));
         } else    // spectrum directory
         {
-            dbSearchIOList = new ArrayList<DBSearchIOFiles>();
+            dbSearchIOList = new ArrayList<>();
             for (File f : specPath.listFiles()) {
                 SpecFileFormat specFormat = SpecFileFormat.getSpecFileFormat(f.getName());
                 if (specParam.isSupported(specFormat)) {
@@ -354,6 +383,7 @@ public class SearchParams {
         return null;
     }
 
+    // Used by MS-GF+
     private AminoAcidSet parseConfigParamFile(ParamManager paramManager) {
 
         BufferedLineReader reader = null;

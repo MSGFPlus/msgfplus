@@ -10,14 +10,18 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-
 public class ParamManager {
+
+    /**
+     * Keys in this HashMap are the parameter key (typically the command line names), values are the parameter definition
+     */
     private CaseInsensitiveLinkedHashMapParam params;
+
     private String toolName;
     private String version;
     private String date;
     private String command;
-    private ArrayList<String> examples = new ArrayList<String>();
+    private ArrayList<String> examples = new ArrayList<>();
 
     public enum ParamNameEnum {
 
@@ -36,10 +40,10 @@ public class ParamManager {
         // Used by MS-GF+
         MZID_OUTPUT_FILE("o", "OutputFile (*.mzid)", "Default: [SpectrumFileName].mzid", null),
 
-        // Used by MSGF and MSGFDB
+        // Used by MSGF and MS-GFDB
         OUTPUT_FILE("o", "OutputFile", "Default: stdout", null),
 
-        // MSGF and MSGFDB
+        // MS-GF+, MSGF, and MS-GFDB
         PARENT_MASS_TOLERANCE("t", "ParentMassTolerance", "e.g. 2.5Da, 30ppm or 0.5Da,2.5Da",
                 "Use a comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (ObsMass < TheoMass) and 2.5Da to the right (ObsMass > TheoMass)"),
 
@@ -72,6 +76,7 @@ public class ParamManager {
                 "\t   One task per thread will use the most memory, but will usually finish the fastest.\n" +
                 "\t   2-3 tasks per thread will use comparably less memory, but may cause the search to take 1.5 to 2 times as long."),
 
+        // Used by MS-GF+
         ISOTOPE_ERROR("ti", "IsotopeErrorRange", "Range of allowed isotope peak errors, Default:0,1",
                 "Takes into account the error introduced by choosing a non-monoisotopic peak for fragmentation.\n" +
                 "\t   The combination of -t and -ti determines the precursor mass tolerance.\n" +
@@ -95,7 +100,10 @@ public class ParamManager {
         TDA_STRATEGY("tda", "TDA", "Target decoy strategy", null),
         ADD_FEATURES("addFeatures", "AddFeatures", "Add features in the output", null),
         DD_DIRECTORY("dd", "DBIndexDir", "Path to the directory containing database index files", null),
+        // Only used by MS-GFDB
+        @Deprecated
         UNIFORM_AA_PROBABILITY("uniformAAProb", "UniformAAProb", null, null),
+
         MAX_NUM_MODS("numMods", "NumMods", "Maximum number of modifications", null),
         STATIC_MODIFICATION("staticMod", "StaticMod", "Static/Fixed modification", null),
         DYNAMIC_MODIFICATION("dynamicMod", "DynamicMod", "Dynamic/Variable modification", null),
@@ -167,7 +175,7 @@ public class ParamManager {
     }
 
     /**
-     * Validates the parameters
+     * Validates that required parameters are defined
      * @return Error message if an error, otherwise null
      */
     public String isValid() {
@@ -192,7 +200,7 @@ public class ParamManager {
         System.out.println();
         System.out.println("Usage: " + this.command);
 
-        ArrayList<Parameter> optParams = new ArrayList<Parameter>();
+        ArrayList<Parameter> optParams = new ArrayList<>();
         Iterator<Entry<String, Parameter>> itr = params.entrySet().iterator();
         while (itr.hasNext()) {
             Entry<String, Parameter> entry = itr.next();
@@ -275,7 +283,8 @@ public class ParamManager {
         return null;
     }
 
-    public void addSpecFileParam() {
+    // Used by MS-GF+
+    private void addSpecFileParam() {
         FileParameter specFileParam = new FileParameter(ParamNameEnum.SPECTRUM_FILE);
         specFileParam.addFileFormat(SpecFileFormat.MZML);
         specFileParam.addFileFormat(SpecFileFormat.MZXML);
@@ -291,6 +300,7 @@ public class ParamManager {
 
     public void addDBFileParam() {
         addDBFileParam(ParamNameEnum.DB_FILE.commandlineName, ParamNameEnum.DB_FILE.description, false);
+    // Used by MS-GF+
     }
 
     public void addDBFileParam(String key, String description, boolean isOptional) {
@@ -304,6 +314,7 @@ public class ParamManager {
     }
 
     public void addDecoyPrefixParam() {
+    // Used by MS-GF+
         addDecoyPrefixParam(MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX);
     }
 
@@ -317,6 +328,8 @@ public class ParamManager {
     public void addPMTolParam() {
         ToleranceParameter pmTolParam = new ToleranceParameter(ParamNameEnum.PARENT_MASS_TOLERANCE);
         pmTolParam.setAdditionalDescription(ParamNameEnum.PARENT_MASS_TOLERANCE.additionalDescription);
+    // Used by MS-GF+, MSGF, and MS-GFDB
+    private void addPrecursorMassToleranceParam() {
         addParameter(pmTolParam);
     }
 
@@ -331,7 +344,7 @@ public class ParamManager {
     }
 
     /**
-     * -o for MSGF and MSGFDB
+     * -o for MSGF and MS-GFDB
      */
     public void addOutputFileParam() {
         FileParameter outputParam = new FileParameter(ParamNameEnum.OUTPUT_FILE);
@@ -345,7 +358,7 @@ public class ParamManager {
     }
 
     /**
-     * Used by both MS-GFDB and MS-GF+
+     * Used by both MS-GF+ and MS-GFDB
      * MS-GF+ passes True for doNotAddMergeMode, thus ignoring ActivationMethod.FUSION
      *
      * @param defaultMethod

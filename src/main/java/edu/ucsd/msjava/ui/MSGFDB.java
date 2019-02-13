@@ -127,9 +127,9 @@ public class MSGFDB {
 
         AminoAcidSet aaSet = null;
         File modFile = paramManager.getModFileParam().getFile();
-        if (modFile == null)
+        if (modFile == null) {
             aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
-        else {
+        } else {
             String modFileName = modFile.getName();
             String ext = modFileName.substring(modFileName.lastIndexOf('.') + 1);
             if (ext.equalsIgnoreCase("xml"))

@@ -71,44 +71,48 @@ public class MSGFPlus {
     public static String runMSGFPlus(ParamManager paramManager) {
         SearchParams params = new SearchParams();
         String errorMessage = params.parse(paramManager);
-        if (errorMessage != null)
+
+        if (errorMessage != null) {
             return errorMessage;
-        else {
-            List<DBSearchIOFiles> ioList = params.getDBSearchIOList();
-            boolean multiFiles = false;
-            if (ioList.size() >= 2) {
-                System.out.println("Processing " + ioList.size() + " spectra");
-                for (DBSearchIOFiles ioFiles : ioList)
-                    System.out.println("\t" + ioFiles.getSpecFile().getName());
-                multiFiles = true;
-            }
+        }
 
-
-            int ioIndex = -1;
+        List<DBSearchIOFiles> ioList = params.getDBSearchIOList();
+        boolean multiFiles = false;
+        if (ioList.size() >= 2) {
+            System.out.println("Processing " + ioList.size() + " spectra");
             for (DBSearchIOFiles ioFiles : ioList) {
-                ++ioIndex;
-                File specFile = ioFiles.getSpecFile();
-                SpecFileFormat specFormat = ioFiles.getSpecFileFormat();
-                File outputFile = ioFiles.getOutputFile();
+                System.out.println("\t" + ioFiles.getSpecFile().getName());
+            }
+            multiFiles = true;
+        }
 
-                if (multiFiles) {
-                    if (!outputFile.exists()) {
-                        System.out.println("\nProcessing " + specFile.getPath());
-                        System.out.println("Writing results to " + outputFile.getPath());
-                        String errMsg = runMSGFPlus(ioIndex, specFormat, outputFile, params);
-                        if (errMsg != null)
-                            return errMsg;
-                    } else {
-                        System.out.println("\nIgnoring " + specFile.getPath());
-                        System.out.println("Output file " + outputFile.getPath() + " exists.");
+        int ioIndex = -1;
+        for (DBSearchIOFiles ioFiles : ioList) {
+            ++ioIndex;
+            File specFile = ioFiles.getSpecFile();
+            SpecFileFormat specFormat = ioFiles.getSpecFileFormat();
+            File outputFile = ioFiles.getOutputFile();
+
+            if (multiFiles) {
+                if (!outputFile.exists()) {
+                    System.out.println("\nProcessing " + specFile.getPath());
+                    System.out.println("Writing results to " + outputFile.getPath());
+                    String errMsg = runMSGFPlus(ioIndex, specFormat, outputFile, params);
+                    if (errMsg != null) {
+                        return errMsg;
                     }
                 } else {
-                    String errMsg = runMSGFPlus(ioIndex, specFormat, outputFile, params);
-                    if (errMsg != null)
-                        return errMsg;
+                    System.out.println("\nIgnoring " + specFile.getPath());
+                    System.out.println("Output file " + outputFile.getPath() + " exists.");
+                }
+            } else {
+                String errMsg = runMSGFPlus(ioIndex, specFormat, outputFile, params);
+                if (errMsg != null) {
+                    return errMsg;
                 }
             }
         }
+
         return null;
     }
 

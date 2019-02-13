@@ -86,7 +86,7 @@ public class Constants {
     public static final int MIN_DE_NOVO_SCORE = 0;
 
     /**
-     * Minimum number of peaks per spectrum.
+     * Number of isoforms to consider per peptide.
      */
     public static final int NUM_VARIANTS_PER_PEPTIDE = 128;
 
