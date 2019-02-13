@@ -25,8 +25,8 @@ public class ParamManager {
 
     public enum ParamNameEnum {
 
-        CONFIGURATION_FILE("conf", "ConfigurationFileName",
-                "Configuration file path, Default: all parameters are provided by the command line interface",
+        CONFIGURATION_FILE("conf", "ConfigurationFile",
+                "Configuration file path; options specified at the command line will override settings in the config file",
                 "Example parameter file is at https://github.com/MSGFPlus/msgfplus/blob/master/docs/examples/MSGFPlus_Params.txt"),
 
         SPECTRUM_FILE("s", "SpectrumFile", "*.mzML, *.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt",
@@ -35,7 +35,7 @@ public class ParamManager {
         DB_FILE("d", "DatabaseFile", "*.fasta or *.fa or *.faa", null),
 
         DECOY_PREFIX("decoy", "DecoyPrefix",
-                "Prefix for decoy protein names; default is " + MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX, null),
+                "Prefix for decoy protein names; Default: " + MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX, null),
 
         // Used by MS-GF+
         MZID_OUTPUT_FILE("o", "OutputFile (*.mzid)", "Default: [SpectrumFileName].mzid", null),
@@ -46,19 +46,18 @@ public class ParamManager {
         // MS-GF+, MSGF, and MS-GFDB
         PARENT_MASS_TOLERANCE("t", "ParentMassTolerance", "e.g. 2.5Da, 30ppm or 0.5Da,2.5Da",
                 "Use a comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (ObsMass < TheoMass) and 2.5Da to the right (ObsMass > TheoMass)"),
-
-        // Used by MS-GF+
-        PRECURSOR_MASS_TOLERANCE("t", "PrecursorMassTolerance", "e.g. 2.5Da, 20ppm or 0.5Da,2.5Da, Default: 20ppm",
-                "Use a comma to set asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (ObsMass < TheoMass) and 2.5Da to the right (ObsMass > TheoMass)"),
+        //  MS-GF+, MSGF, and MS-GFDB
+        PRECURSOR_MASS_TOLERANCE("t", "PrecursorMassTolerance", "e.g. 2.5Da, 20ppm or 0.5Da,2.5Da; Default: 20ppm",
+                "Use a comma to define asymmetric values. E.g. \"-t 0.5Da,2.5Da\" will set 0.5Da to the left (ObsMass < TheoMass) and 2.5Da to the right (ObsMass > TheoMass)"),
 
         PRECURSOR_MASS_TOLERANCE_UNITS("u", "PrecursorMassToleranceUnits", "Units for the precursor mass tolerance; only useful if you do not include units in the PrecursorMassTolerance specification",
-                "   0 means Ds\n" +
+                "0 means Ds\n" +
                         "\t   1 means ppm\n" +
-                        "\t   2 means use units specified by the PrecursorMassTolerance (Default) \n"),
+                        "\t   2 means use units specified by the PrecursorMassTolerance (Default)"),
 
         // aka Activation method
         FRAG_METHOD("m", "FragmentationMethodID", "Fragmentation Method",
-                "   0 means as written in the spectrum or CID if no info (Default)\n" +
+                "0 means as written in the spectrum or CID if no info (Default)\n" +
                         "\t   1 means CID\n" +
                         "\t   2 means ETD\n" +
                         "\t   3 means HCD"),
@@ -69,15 +68,15 @@ public class ParamManager {
 
         PROTOCOL_ID("protocol", "ProtocolID", null, null),
 
-        MOD_FILE("mod", "ModificationFileName", "Modification file, Default: standard amino acids with fixed C+57; only if -mod is not specified", null),
+        MOD_FILE("mod", "ModificationFileName", "Modification file; Default: standard amino acids with fixed C+57; only if -mod is not specified", null),
 
-        NUM_THREADS("thread", "NumThreads", "Number of concurrent threads to be executed, Default: Number of available cores",
+        NUM_THREADS("thread", "NumThreads", "Number of concurrent threads to be executed; Default: Number of available cores",
                 "This is best set to the number of physical cores in a single NUMA node.\n" +
                 "\t   Generally a single NUMA node is 1 physical processor.\n" +
                 "\t   The default will try to use hyperthreading cores, which can increase the amount of time this process will take.\n" +
                 "\t   This is because the part of Scoring param generation that is multithreaded is also I/O intensive."),
 
-        NUM_TASKS("tasks", "NumTasks", "Override the number of tasks to use on the threads, Default: (internally calculated based on inputs)",
+        NUM_TASKS("tasks", "NumTasks", "Override the number of tasks to use on the threads; Default: (internally calculated based on inputs)",
                 "More tasks than threads will reduce the memory requirements of the search, but will be slower (how much depends on the inputs).\n" +
                 "\t   1 <= tasks <= numThreads: will create one task per thread, which is the original behavior.\n" +
                 "\t   tasks = 0: use default calculation - minimum of: (threads*3) and (numSpectra/250).\n" +
@@ -86,7 +85,7 @@ public class ParamManager {
                 "\t   2-3 tasks per thread will use comparably less memory, but may cause the search to take 1.5 to 2 times as long."),
 
         // Used by MS-GF+
-        ISOTOPE_ERROR("ti", "IsotopeErrorRange", "Range of allowed isotope peak errors, Default:0,1",
+        ISOTOPE_ERROR("ti", "IsotopeErrorRange", "Range of allowed isotope peak errors; Default: 0,1",
                 "Takes into account the error introduced by choosing a non-monoisotopic peak for fragmentation.\n" +
                 "\t   The combination of -t and -ti determines the precursor mass tolerance.\n" +
                 "\t   E.g. \"-t 20ppm -ti -1,2\" tests abs(ObservedPepMass - TheoreticalPepMass - n * 1.00335Da) < 20ppm for n = -1, 0, 1, 2."),
@@ -96,50 +95,50 @@ public class ParamManager {
 
         // Used by MS-GFDB
         C13("c13", null, "Precursor isotope peak error",
-                "   0 means consider only peptides matching precursor mass\n" +
+                "0 means consider only peptides matching precursor mass\n" +
                         "\t   1 means Consider peptides having one 13C (Default)\n" +
                         "\t   2 means Consider peptides having up to two 13C"),
 
         // Used by MS-GFDB
         NNET("nnet", null, "Number of allowed non-enzymatic termini", null),
 
-        MIN_PEPTIDE_LENGTH("minLength", "MinPepLength", "Minimum peptide length to consider, Default: 6", null),
-        MAX_PEPTIDE_LENGTH("maxLength", "MaxPepLength", "Maximum peptide length to consider, Default: 40", null),
+        MIN_PEPTIDE_LENGTH("minLength", "MinPepLength", "Minimum peptide length to consider; Default: 6", null),
+        MAX_PEPTIDE_LENGTH("maxLength", "MaxPepLength", "Maximum peptide length to consider; Default: 40", null),
 
-        MIN_CHARGE("minCharge", "MinCharge", "Minimum precursor charge to consider if charges are not specified in the spectrum file, Default: 2", null),
-        MAX_CHARGE("maxCharge", "MaxCharge", "Maximum precursor charge to consider if charges are not specified in the spectrum file, Default: 3", null),
+        MIN_CHARGE("minCharge", "MinCharge", "Minimum precursor charge to consider if charges are not specified in the spectrum file; Default: 2", null),
+        MAX_CHARGE("maxCharge", "MaxCharge", "Maximum precursor charge to consider if charges are not specified in the spectrum file; Default: 3", null),
 
-        NUM_MATCHES_SPEC("n", "NumMatchesPerSpec", "Number of matches per spectrum to be reported, Default: 1", null),
+        NUM_MATCHES_SPEC("n", "NumMatchesPerSpec", "Number of matches per spectrum to be reported; Default: 1", null),
 
-        CHARGE_CARRIER_MASSES("ccm", "ChargeCarrierMass", "Mass of charge carrier, Default: mass of proton (1.00727649)", null),
+        CHARGE_CARRIER_MASSES("ccm", "ChargeCarrierMass", "Mass of charge carrier; Default: mass of proton (1.00727649)", null),
 
-        MIN_NUM_PEAKS("minNumPeaks", "MinNumPeaksPerSpectrum", "Minimum number of peaks per spectrum, Default: " + Constants.MIN_NUM_PEAKS_PER_SPECTRUM, null),
+        MIN_NUM_PEAKS("minNumPeaks", "MinNumPeaksPerSpectrum", "Minimum number of peaks per spectrum; Default: " + Constants.MIN_NUM_PEAKS_PER_SPECTRUM, null),
 
-        NUM_ISOFORMS("iso", "NumIsoforms", "Number of isoforms to consider per peptide, Default: 128" + Constants.NUM_VARIANTS_PER_PEPTIDE, null),
+        NUM_ISOFORMS("iso", "NumIsoforms", "Number of isoforms to consider per peptide; Default: 128" + Constants.NUM_VARIANTS_PER_PEPTIDE, null),
 
         IGNORE_MET_CLEAVAGE("ignoreMetCleavage", "IgnoreMetCleavage", "When 1, ignore N-terminal methionine cleavage",
-                "   0 means Consider protein N-term Met cleavage (Default)\n" +
+                "0 means Consider protein N-term Met cleavage (Default)\n" +
                 "\t   1 means Ignore protein N-term Met cleavage"),
 
-        MIN_DE_NOVO_SCORE("minDeNovoScore", "MinDeNovoScore", "Minimum de Novo score, Default: " + Constants.MIN_DE_NOVO_SCORE, null),
+        MIN_DE_NOVO_SCORE("minDeNovoScore", "MinDeNovoScore", "Minimum de Novo score; Default: " + Constants.MIN_DE_NOVO_SCORE, null),
 
         SPEC_INDEX("index", "SpecIndex", "Range of spectrum indices to be considered",
                 "For example, to analyze the first 1000 spectra use -index 1,1000"),
 
-        MAX_MISSED_CLEAVAGES("maxMissedCleavages", "MaxMissedCleavages", "Exclude peptides with more than this number of missed cleavages from the search, Default: -1 (no limit)", null),
+        MAX_MISSED_CLEAVAGES("maxMissedCleavages", "MaxMissedCleavages", "Exclude peptides with more than this number of missed cleavages from the search; Default: -1 (no limit)", null),
 
         TDA_STRATEGY("tda", "TDA", "Target decoy strategy",
-                "   0 means Don't search decoy database (Default)\n" +
+                "0 means Don't search decoy database (Default)\n" +
                 "\t   1 means search the decoy database (forward + reverse proteins)"),
 
         ADD_FEATURES("addFeatures", "AddFeatures", "Add features in the output",
-                "   0 means Output basic scores only (Default)\n" +
+                "0 means Output basic scores only (Default)\n" +
                         "\t   1 means Output additional features"),
 
         DD_DIRECTORY("dd", "DBIndexDir", "Path to the directory containing database index files", null),
 
         EDGE_SCORE("edgeScore", "EdgeScore", "Toggle edge scoring",
-                "   0 means Use Edge Scoring (default)\n" +
+                "0 means Use Edge Scoring (Default)\n" +
                 "\t   1 means Do not use edge scoring"),
 
         // Only used by MS-GFDB
@@ -155,7 +154,7 @@ public class ParamManager {
         CUSTOM_AA("customAA", "CustomAA", "Custom amino acid", null),
 
         VERBOSE("verbose", null, "Console output message verbosity",
-                "   0 means Report total progress only\n" +
+                "0 means Report total progress only\n" +
                         "\t   1 means Report total and per-thread progress/status");
 
         private String key;
@@ -871,7 +870,7 @@ public class ParamManager {
         addParameter(uniformAAProb);
 
         addExample("Example (high-precision): java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 30ppm -c13 1 -nnet 0 -tda 1 -o testMSGFDB.tsv");
-        addExample("Example (low-precision): java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 0.5Da,2.5Da -nnet 0 -tda 1 -o testMSGFDB.tsv");
+        addExample("Example (low-precision):  java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 0.5Da,2.5Da  -nnet 0 -tda 1 -o testMSGFDB.tsv");
 
         // Hidden parameters
         addDbIndexDirParam(true);

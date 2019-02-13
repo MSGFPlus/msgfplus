@@ -30,26 +30,26 @@
 
 <span class="code-keyword">-d DatabaseFile</span> (*.fasta or *.fa or *.faa)
 
-<span class="code-keyword">[-conf ConfigurationFileName]</span> (Configuration file path, Default: all parameters are provided by the command line interface)
+<span class="code-keyword">[-conf ConfigurationFile]</span> (Configuration file path; options specified at the command line will override settings in the config file)
    Example parameter file is at https://github.com/MSGFPlus/msgfplus/blob/master/docs/examples/MSGFPlus_Params.txt
 
-<span class="code-keyword">[-decoy DecoyPrefix]</span> (Prefix for decoy protein names; <span class="code-object">default is XXX</span>)
+<span class="code-keyword">[-decoy DecoyPrefix]</span> (Prefix for decoy protein names; <span class="code-object">Default: XXX</span>)
 
 <span class="code-keyword">[-o OutputFile (*.mzid)]</span> (<span class="code-object">Default: [SpectrumFileName].mzid</span>)
 
-<span class="code-keyword">[-t PrecursorMassTolerance]</span> (e.g. 2.5Da, 20ppm or 0.5Da,2.5Da, <span class="code-object">Default: 20ppm</span>)
-   Use a comma to set asymmetric values. 
+<span class="code-keyword">[-t PrecursorMassTolerance]</span> (e.g. 2.5Da, 20ppm or 0.5Da,2.5Da; <span class="code-object">Default: 20ppm</span>)
+   Use a comma to define asymmetric values. 
    E.g. <span class="code-quote">"-t 0.5Da,2.5Da"</span> will set 0.5Da to the left (ObservedPepMass &lt; TheoreticalPepMass) 
                               and 2.5Da to the right (ObservedPepMass &gt; TheoreticalPepMass)
 
-<span class="code-keyword">[-ti IsotopeErrorRange]</span> (Range of allowed isotope peak errors, <span class="code-object">Default:0,1</span>)
+<span class="code-keyword">[-ti IsotopeErrorRange]</span> (Range of allowed isotope peak errors; <span class="code-object">Default: 0,1</span>)
    Takes into account the error introduced by choosing a non-monoisotopic peak for fragmentation.
    The combination of -t and -ti determines the precursor mass tolerance.
    E.g. <span class="code-quote">"-t 20ppm -ti -1,2"</span> tests abs(ObservedPepMass - TheoreticalPepMass - n * 1.00335Da) &lt; 20ppm for n = -1, 0, 1, 2.
 
-<span class="code-keyword">[-thread NumThreads]</span> (Number of concurrent threads to be executed, <span class="code-object">Default: Number of available cores</span>)
+<span class="code-keyword">[-thread NumThreads]</span> (Number of concurrent threads to be executed; <span class="code-object">Default: Number of available cores</span>)
 
-<span class="code-keyword">[-tasks NumTasks]</span> (Override the number of tasks to use on the threads, <span class="code-object">Default: (internally calculated based on inputs)</span>)
+<span class="code-keyword">[-tasks NumTasks]</span> (Override the number of tasks to use on the threads; <span class="code-object">Default: (internally calculated based on inputs)</span>)
    More tasks than threads will reduce the memory requirements of the search, but will be slower (how much depends on the inputs).
    1 &lt;= tasks &lt;= numThreads: will create one task per thread, which is the original behavior.
    tasks = 0: use default calculation - minimum of: (threads*3) and (numSpectra/250).
@@ -69,26 +69,26 @@
 
 <span class="code-keyword">[-protocol ProtocolID]</span> (<span class="code-object">0: Automatic (Default)</span>, 1: Phosphorylation, 2: iTRAQ, 3: iTRAQPhospho, 4: TMT, 5: Standard)
 
-<span class="code-keyword">[-ntt 0/1/2]</span> (Number of Tolerable Termini, <span class="code-object">Default: 2</span>)
+<span class="code-keyword">[-ntt 0/1/2]</span> (Number of Tolerable Termini; <span class="code-object">Default: 2</span>)
    E.g. For trypsin, 0: non-tryptic, 1: semi-tryptic, 2: fully-tryptic peptides only.
 
-<span class="code-keyword">[-mod ModificationFileName]</span> (Modification file, <span class="code-object">Default: standard amino acids with fixed C+57; only if -mod is not specified</span>)
+<span class="code-keyword">[-mod ModificationFileName]</span> (Modification file; <span class="code-object">Default: standard amino acids with fixed C+57; only if -mod is not specified</span>)
 
-<span class="code-keyword">[-minLength MinPepLength]</span> (Minimum peptide length to consider, <span class="code-object">Default: 6</span>)
+<span class="code-keyword">[-minLength MinPepLength]</span> (Minimum peptide length to consider; <span class="code-object">Default: 6</span>)
 
-<span class="code-keyword">[-maxLength MaxPepLength]</span> (Maximum peptide length to consider, <span class="code-object">Default: 40</span>)
+<span class="code-keyword">[-maxLength MaxPepLength]</span> (Maximum peptide length to consider; <span class="code-object">Default: 40</span>)
 
-<span class="code-keyword">[-minCharge MinCharge]</span> (Minimum precursor charge to consider if charges are not specified in the spectrum file, <span class="code-object">Default: 2</span>)
+<span class="code-keyword">[-minCharge MinCharge]</span> (Minimum precursor charge to consider if charges are not specified in the spectrum file; <span class="code-object">Default: 2</span>)
 
-<span class="code-keyword">[-maxCharge MaxCharge]</span> (Maximum precursor charge to consider if charges are not specified in the spectrum file, <span class="code-object">Default: 3</span>)
+<span class="code-keyword">[-maxCharge MaxCharge]</span> (Maximum precursor charge to consider if charges are not specified in the spectrum file; <span class="code-object">Default: 3</span>)
 
-<span class="code-keyword">[-n NumMatchesPerSpec]</span> (Number of matches per spectrum to be reported, <span class="code-object">Default: 1</span>)
+<span class="code-keyword">[-n NumMatchesPerSpec]</span> (Number of matches per spectrum to be reported; <span class="code-object">Default: 1</span>)
 
 <span class="code-keyword">[-addFeatures 0/1]</span> (<span class="code-object">0: Output basic scores only (Default)</span>, 1: Output additional features)
 
-<span class="code-keyword">[-ccm ChargeCarrierMass]</span> (Mass of charge carrier, <span class="code-object">Default: mass of proton (1.00727649)</span>)
+<span class="code-keyword">[-ccm ChargeCarrierMass]</span> (Mass of charge carrier; <span class="code-object">Default: mass of proton (1.00727649)</span>)
 
-<span class="code-keyword">[-maxMissedCleavages Count]</span> (Exclude peptides with more than this number of missed cleavages from the search, <span class="code-object">Default: -1 (no limit)</span>)
+<span class="code-keyword">[-maxMissedCleavages Count]</span> (Exclude peptides with more than this number of missed cleavages from the search; <span class="code-object">Default: -1 (no limit)</span>)
       </pre>
     </div>
 
