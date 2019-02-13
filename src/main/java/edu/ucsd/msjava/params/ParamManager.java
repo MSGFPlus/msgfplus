@@ -513,11 +513,11 @@ public class ParamManager {
     }
 
     private IntParameter addNumThreadsParam() {
-        IntParameter numThreadParam = new IntParameter(ParamNameEnum.NUM_THREADS);
-        numThreadParam.defaultValue(Runtime.getRuntime().availableProcessors());
-        numThreadParam.minValue(1);
-        addParameter(numThreadParam);
-        return numThreadParam;
+        IntParameter numThreadsParam = new IntParameter(ParamNameEnum.NUM_THREADS);
+        numThreadsParam.defaultValue(Runtime.getRuntime().availableProcessors());
+        numThreadsParam.minValue(1);
+        addParameter(numThreadsParam);
+        return numThreadsParam;
     }
 
     private void addVerboseModeParam() {
@@ -784,8 +784,8 @@ public class ParamManager {
         // Protocol
         addProtocolParam();
 
-        IntParameter numThreadParam = addNumThreadsParam();
-        numThreadParam.defaultValue(Runtime.getRuntime().availableProcessors() / 2);
+        IntParameter numThreadsParam = addNumThreadsParam();
+        numThreadsParam.defaultValue(Runtime.getRuntime().availableProcessors() / 2);
 
         EnumParameter dropErrors = new EnumParameter("dropErrors");
         dropErrors.setAdditionalDescription("If 0, stop processing if an error occurs; if 1, discard results from datasets with errors.");
