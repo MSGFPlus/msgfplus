@@ -226,7 +226,7 @@ public class ParamManager {
         return true;
     }
 
-    public void addExample(String example) {
+    private void addExample(String example) {
         this.examples.add(example);
     }
 
@@ -344,7 +344,7 @@ public class ParamManager {
     }
 
     // Used by MS-GF+
-    private void addSpecFileParam() {
+    public void addSpecFileParam() {
         FileParameter specFileParam = new FileParameter(ParamNameEnum.SPECTRUM_FILE);
         specFileParam.addFileFormat(SpecFileFormat.MZML);
         specFileParam.addFileFormat(SpecFileFormat.MZXML);
@@ -373,12 +373,12 @@ public class ParamManager {
         addParameter(dbFileParam);
     }
 
-    public void addDecoyPrefixParam() {
     // Used by MS-GF+
+    private void addDecoyPrefixParam() {
         addDecoyPrefixParam(MSGFPlus.DEFAULT_DECOY_PROTEIN_PREFIX);
     }
 
-    public void addDecoyPrefixParam(String defaultDecoyPrefix) {
+    private void addDecoyPrefixParam(String defaultDecoyPrefix) {
         StringParameter decoyPrefixParam = new StringParameter(ParamNameEnum.DECOY_PREFIX);
         // Note that defining a default value auto-sets isOptional to True
         decoyPrefixParam.defaultValue(defaultDecoyPrefix);
@@ -395,7 +395,7 @@ public class ParamManager {
     /**
      * -o for MS-GF+
      */
-    public void addMzIdOutputFileParam() {
+    private void addMzIdOutputFileParam() {
         FileParameter outputParam = new FileParameter(ParamNameEnum.MZID_OUTPUT_FILE);
         outputParam.addFileFormat(new FileFormat(".mzid").setCaseSensitive());
         outputParam.setAsOptional();
@@ -405,7 +405,7 @@ public class ParamManager {
     /**
      * -o for MSGF and MS-GFDB
      */
-    public void addOutputFileParam() {
+    private void addOutputFileParam() {
         FileParameter outputParam = new FileParameter(ParamNameEnum.OUTPUT_FILE);
         outputParam.setAsOptional();
         outputParam.fileMustNotExist();
@@ -423,8 +423,8 @@ public class ParamManager {
      * @param defaultMethod
      * @param doNotAddMergeMode
      */
-    public void addFragMethodParam(ActivationMethod defaultMethod, boolean doNotAddMergeMode) {
-        ObjectEnumParameter<ActivationMethod> fragParam = new ObjectEnumParameter<ActivationMethod>(ParamNameEnum.FRAG_METHOD);
+    private void addFragMethodParam(ActivationMethod defaultMethod, boolean doNotAddMergeMode) {
+        ObjectEnumParameter<ActivationMethod> fragParam = new ObjectEnumParameter<>(ParamNameEnum.FRAG_METHOD);
         ActivationMethod[] methods = ActivationMethod.getAllRegisteredActivationMethods();
         for (ActivationMethod m : methods) {
             if (doNotAddMergeMode && m == ActivationMethod.FUSION)
@@ -436,11 +436,11 @@ public class ParamManager {
         addParameter(fragParam);
     }
 
-    public void addInstTypeParam() {
+    private void addInstTypeParam() {
         addInstTypeParam(InstrumentType.LOW_RESOLUTION_LTQ);
     }
 
-    public void addInstTypeParam(InstrumentType defaultInst) {
+    private void addInstTypeParam(InstrumentType defaultInst) {
         ObjectEnumParameter<InstrumentType> instParam = new ObjectEnumParameter<InstrumentType>(ParamNameEnum.INSTRUMENT_TYPE);
         InstrumentType[] allInstTypes = InstrumentType.getAllRegisteredInstrumentTypes();
         for (InstrumentType inst : allInstTypes) {
@@ -451,11 +451,11 @@ public class ParamManager {
         addParameter(instParam);
     }
 
-    public void addEnzymeParam() {
+    private void addEnzymeParam() {
         addEnzymeParam(Enzyme.TRYPSIN);
     }
 
-    public void addEnzymeParam(Enzyme enzymeId) {
+    private void addEnzymeParam(Enzyme enzymeId) {
         ObjectEnumParameter<Enzyme> enzParam = new ObjectEnumParameter<Enzyme>(ParamNameEnum.ENZYME_ID);
         Enzyme[] allEnzymes = Enzyme.getAllRegisteredEnzymes();
         for (Enzyme e : allEnzymes) {
@@ -466,11 +466,12 @@ public class ParamManager {
         addParameter(enzParam);
     }
 
-    public void addProtocolParam() {
+    // Used by MS-GF+
+    private void addProtocolParam() {
         addProtocolParam(Protocol.AUTOMATIC);
     }
 
-    public void addProtocolParam(Protocol defaultProtocol) {
+    private void addProtocolParam(Protocol defaultProtocol) {
         ObjectEnumParameter<Protocol> protocolParam = new ObjectEnumParameter<Protocol>(ParamNameEnum.PROTOCOL_ID);
         Protocol[] protocols = Protocol.getAllRegisteredProtocols();
         for (Protocol protocol : protocols) {
