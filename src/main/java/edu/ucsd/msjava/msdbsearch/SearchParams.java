@@ -432,8 +432,22 @@ public class SearchParams {
                     Parameter commandLineParam = paramManager.getParameter(param.getKey());
                     if (commandLineParam != null && !commandLineParam.isValueAssigned()) {
                         String value = lineSetting.split("=")[1].trim();
-                        commandLineParam.parse(value);
-                        commandLineParam.setValueAssigned();
+                        String parseError = commandLineParam.parse(value);
+                        if (parseError == null || parseError.isEmpty()) {
+                            commandLineParam.setValueAssigned();
+                            continue;
+                        }
+
+                        if (commandLineParam.getKey().equals(ParamManager.ParamNameEnum.NUM_THREADS.getKey()) &&
+                                value.equalsIgnoreCase("all")) {
+                            // Config file has: NumThreads=All
+                            // This is acceptable
+                            continue;
+                        }
+
+                        System.err.println("Error parsing '" + lineSetting + "' in config file " +
+                                paramFile.getAbsolutePath() + ": " + parseError);
+                        System.exit(-1);
                     }
                 }
             }
@@ -457,10 +471,11 @@ public class SearchParams {
 //		buf.append("Database File: " + this.databaseFile.getAbsolutePath() + "\n");
 
         buf.append("\tPrecursorMassTolerance: ");
-        if (leftParentMassTolerance.equals(rightParentMassTolerance))
+        if (leftParentMassTolerance.equals(rightParentMassTolerance)) {
             buf.append(leftParentMassTolerance);
-        else
+        } else {
             buf.append("[" + leftParentMassTolerance + "," + rightParentMassTolerance + "]");
+        }
         buf.append("\n");
 
         buf.append("\tIsotopeError: " + this.minIsotopeError + "," + this.maxIsotopeError + "\n");
