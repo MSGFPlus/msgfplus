@@ -31,7 +31,6 @@ import edu.ucsd.msjava.ui.ScoringParamGen;
 public class TestMSGFPlus {
     
     @Test
-    @Ignore
     public void testQCShew()
     {
         File workDir = new File("C:\\DMS_WorkDir1");
@@ -39,26 +38,30 @@ public class TestMSGFPlus {
         File specFile = Paths.get(workDir.getPath(), "QC_Shew_17_02_b_Bane_4Jan19_18-10-06.mzML").toFile();
         File dbFile = Paths.get(workDir.getPath(),"ID_003456_9B916A8B.fasta").toFile();
         File modFile = Paths.get(workDir.getPath(), "MSGFPlus_Mods.txt").toFile();
-        
+
         String versionString = getNextVersion();
         String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(), 
                 "-mod", modFile.getPath(), "-t", "10ppm", "-tda", "1", "-m", "0", "-ti", "0,1", "-ntt", "1", //"-thread", "2",
                 "-o", Paths.get(workDir.getPath(), "Test_" + versionString + ".mzid").toString(),
-                "-decoy", "REV_"
-                }; 
+                "-decoy", "XXX_"
+                };
 
         ParamManager paramManager = getParamManager();
         paramManager.addMSGFPlusParams();
         
         String msg = paramManager.parseParams(argv);
-        if(msg != null)
+        if(msg != null) {
             System.err.println("Error: " + msg);
+            paramManager.printUsageInfo();
+        }
+
         assertTrue(msg == null);
         
         assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
     }
 
     @Test
+    @Ignore
     public void testQCShewConfFile()
     {
         File workDir = new File("C:\\DMS_WorkDir1");
