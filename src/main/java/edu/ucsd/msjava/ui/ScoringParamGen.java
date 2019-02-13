@@ -66,7 +66,7 @@ public class ScoringParamGen {
 //			if(ext.equalsIgnoreCase("xml"))
 //				aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile(modFile.getPath());
 //			else
-//				aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
+//				aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath(), paramManager);
 //		}
 
 

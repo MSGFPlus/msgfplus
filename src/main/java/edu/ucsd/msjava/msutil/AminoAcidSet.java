@@ -1,10 +1,14 @@
 package edu.ucsd.msjava.msutil;
 
 import edu.ucsd.msjava.msutil.Modification.Location;
+import edu.ucsd.msjava.params.ParamManager;
 import edu.ucsd.msjava.parser.BufferedLineReader;
+import edu.ucsd.msjava.ui.MSGFPlus;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -712,7 +716,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     private static AminoAcidSet standardAASetWithCarboxyomethylatedCys = null;
     private static AminoAcidSet standardAASetWithCarbamidomethylatedCysWithTerm = null;
 
-    public static AminoAcidSet getAminoAcidSetFromModFile(String modFilePath) {
+    public static AminoAcidSet getAminoAcidSetFromModFile(String modFilePath, ParamManager paramManager) {
         BufferedLineReader reader = null;
 
         File modFile = new File(modFilePath);
@@ -731,7 +735,8 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         String dataLine;
         String sourceFileName = modFile.getName();
         int lineNum = 0;
-        ModificationMetadata modMetadata = new ModificationMetadata(2);
+        int numMods = paramManager.getMaxNumModsPerPeptide();
+        ModificationMetadata modMetadata = new ModificationMetadata(numMods);
 
         while ((dataLine = reader.readLine()) != null) {
             lineNum++;
@@ -742,7 +747,11 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         }
 
         AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSet(mods, customAA);
-        aaSet.setMaxNumberOfVariableModificationsPerPeptide(modMetadata.getNumMods());
+
+        if (numMods != modMetadata.getNumMods()) {
+            aaSet.setMaxNumberOfVariableModificationsPerPeptide(modMetadata.getNumMods());
+            paramManager.setMaxNumMods(modMetadata.getNumMods());
+        }
 
         try {
             reader.close();
@@ -756,7 +765,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
      * Associate modifications in rawMods with amino acids
      * @param modConfigFilePath
      * @param modsByLine Hashtable where keys are the line number in the MSGF+ parameter file and values are the text from the given line
-     * @param numMods
+     * @param numMods Max Number of Dynamic (Variable) Modifications per peptide
      * @return
      */
     public static AminoAcidSet getAminoAcidSetFromList(String modConfigFilePath, Hashtable<Integer, String> modsByLine, int numMods) {
@@ -1538,7 +1547,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     }
 
     public static void main(String argv[]) {
-        AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(System.getProperty("user.home") + "/Research/Data/Debug/mods.txt");
+        ParamManager paramManager = new ParamManager("MS-GF+ AminoAcidSet", MSGFPlus.VERSION, MSGFPlus.RELEASE_DATE, "n/a");
+        Path modFilePath = Paths.get(System.getProperty("user.home") + "Research", "Data", "Debug", "mods.txt");
+        AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFilePath.toString(), paramManager);
         aaSet.printAASet();
     }
 

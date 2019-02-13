@@ -30,7 +30,7 @@ public class MSGFTest {
         Spectrum spec = specAccessor.getSpectrumBySpecIndex(scanNum);
 
         Enzyme enzyme = Enzyme.TRYPSIN;
-//		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile("/home/sangtaekim/Developments/MS_Java_Dev/bin/Mods.txt");
+//		AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSetFromModFile("/home/sangtaekim/Developments/MS_Java_Dev/bin/Mods.txt", paramManager);
         AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
         DBScanner.setAminoAcidProbabilities("/home/sangtaekim/Research/Data/CommonContaminants/IPI_human_3.79_withContam.fasta", aaSet);
         aaSet.registerEnzyme(enzyme);

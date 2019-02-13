@@ -52,6 +52,7 @@ public class SearchParams {
     private int minDeNovoScore;
     private double chargeCarrierMass;
     private int maxMissedCleavages;
+    private int maxNumMods;
 
     public SearchParams() {
     }
@@ -309,7 +310,7 @@ public class SearchParams {
                 if (ext.equalsIgnoreCase("xml"))
                     aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile(modFile.getPath());
                 else
-                    aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath());
+                    aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getPath(), paramManager);
             } else {
                 aaSet = configAASet;
             }
@@ -378,6 +379,8 @@ public class SearchParams {
             return "Cannot specify a MaxMissedCleavages when using no cleavage enzyme";
         }
 
+        maxNumMods = paramManager.getMaxNumModsPerPeptide();
+
         return null;
     }
 
@@ -396,7 +399,6 @@ public class SearchParams {
             System.exit(-1);
         }
 
-        int numMods = 2;
         String dataLine;
         int lineNum = 0;
 
@@ -441,16 +443,10 @@ public class SearchParams {
                 }
             }
 
-            if (ParamManager.ParamNameEnum.MAX_NUM_MODS.isLine(lineSetting)){
-                String value = lineSetting.split("=")[1].trim();
-                try {
-                    numMods = Integer.parseInt(value);
-                } catch (NumberFormatException e){
-                    System.err.println("Value after equals sign is not an integer: " + dataLine);
-                    System.exit(-1);
-                }
-            }
         }
+
+        int numMods = paramManager.getMaxNumModsPerPeptide();
+
         return AminoAcidSet.getAminoAcidSetFromList(paramFile.getName(), modsByLine, numMods);
     }
 

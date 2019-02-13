@@ -135,7 +135,7 @@ public class MSGFDB {
             if (ext.equalsIgnoreCase("xml"))
                 aaSet = AminoAcidSet.getAminoAcidSetFromXMLFile(modFile.getAbsolutePath());
             else
-                aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getAbsolutePath());
+                aaSet = AminoAcidSet.getAminoAcidSetFromModFile(modFile.getAbsolutePath(), paramManager);
             if (aaSet.containsPhosphorylation()) {
                 protocol = Protocol.PHOSPHORYLATION;
             }

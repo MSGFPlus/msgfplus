@@ -598,6 +598,13 @@ public class ParamManager {
         addParameter(maxMissedCleavages);
     }
 
+    private void addMaxNumModsParam() {
+        IntParameter maxNumMods = new IntParameter(ParamNameEnum.MAX_NUM_MODS);
+        maxNumMods.minValue(0);
+        maxNumMods.defaultValue(3);
+        addParameter(maxNumMods);
+    }
+
     private void addDbIndexDirParam(boolean isHidden) {
         FileParameter dbIndexDirParam = new FileParameter(ParamNameEnum.DD_DIRECTORY);
         dbIndexDirParam.fileMustExist();
@@ -725,6 +732,7 @@ public class ParamManager {
         addAddFeaturesParam();
         addChargeCarrierMassParam();
         addMaxMissedCleavagesParam();
+        addMaxNumModsParam();
 
         addExample("Example (high-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_human_3.79.fasta -inst 1 -t 20ppm -ti -1,2 -ntt 2 -tda 1 -o testMSGFPlus.mzid -mod Mods.txt");
         addExample("Example (low-precision):  java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_human_3.79.fasta -inst 0 -t 0.5Da,2.5Da    -ntt 2 -tda 1 -o testMSGFPlus.mzid -mod Mods.txt");
@@ -1105,6 +1113,14 @@ public class ParamManager {
         return getIntValue(ParamNameEnum.MAX_MISSED_CLEAVAGES.key);
     }
 
+    public int getMaxNumModsPerPeptide() {
+        Parameter param = this.getParameter(ParamNameEnum.MAX_NUM_MODS.key);
+        if (param == null) {
+            this.addMaxNumModsParam();
+        }
+        return getIntValue(ParamNameEnum.MAX_NUM_MODS.key);
+    }
+
     public Protocol getProtocol() {
         return (Protocol) ((ObjectEnumParameter<?>) getParameter(ParamNameEnum.PROTOCOL_ID.key)).getObject();
     }
@@ -1171,6 +1187,11 @@ public class ParamManager {
             System.exit(-1);
         }
         return null;
+    }
+
+    public void setMaxNumMods(int numMods) {
+        Parameter numModsParam = getParameter(ParamManager.ParamNameEnum.MAX_NUM_MODS.getKey());
+        numModsParam.parse(String.valueOf(numMods));
     }
 
     // This class is not typically instantiated
