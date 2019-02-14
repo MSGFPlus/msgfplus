@@ -214,6 +214,33 @@ public class ParamManager {
 
             String paramName = lineParts[0].trim();
 
+            // Auto-update some names to change from abbreviations / alternate names to the standard name
+            if (paramName.equalsIgnoreCase("IsotopeError")) {
+                paramName = "IsotopeErrorRange";
+            } else if (paramName.equalsIgnoreCase("TargetDecoyAnalysis")) {
+                paramName = "TDA";
+            } else if (paramName.equalsIgnoreCase("FragmentationMethod")) {
+                paramName = "FragmentationMethodID";
+            } else if (paramName.equalsIgnoreCase("Instrument")) {
+                paramName = "InstrumentID";
+            } else if (paramName.equalsIgnoreCase("Enzyme")) {
+                paramName = "EnzymeID";
+            } else if (paramName.equalsIgnoreCase("Protocol")) {
+                paramName = "ProtocolID";
+            } else if (paramName.equalsIgnoreCase("NumTolerableTermini")) {
+                paramName = "NTT";
+            } else if (paramName.equalsIgnoreCase("MinNumPeaks")) {
+                paramName = "MinNumPeaksPerSpectrum";
+            } else if (paramName.equalsIgnoreCase("MaxNumMods") || paramName.equalsIgnoreCase("MaxNumModsPerPeptide")) {
+                paramName = "NumMods";
+            } else if (paramName.equalsIgnoreCase("minLength") || paramName.equalsIgnoreCase("MinPeptideLength")) {
+                paramName = "MinPepLength";
+            } else if (paramName.equalsIgnoreCase("maxLength") || paramName.equalsIgnoreCase("MaxPeptideLength")) {
+                paramName = "MaxPepLength";
+            } else if (paramName.equalsIgnoreCase("PMTolerance") || paramName.equalsIgnoreCase("ParentMassTolerance")) {
+                paramName = "PrecursorMassTolerance";
+            }
+
             return paramName;
         }
     }
