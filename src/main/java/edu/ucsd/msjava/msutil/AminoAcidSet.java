@@ -531,19 +531,19 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     modLocation = "";
                     break;
                 case N_Term:
-                    modLocation = "at the peptide N-terminus";
+                    modLocation = " at the peptide N-terminus";
                     break;
                 case C_Term:
-                    modLocation = "at the peptide C-terminus";
+                    modLocation = " at the peptide C-terminus";
                     break;
                 case Protein_N_Term:
-                    modLocation = "at the protein N-terminus";
+                    modLocation = " at the protein N-terminus";
                     break;
                 case Protein_C_Term:
-                    modLocation = "at the protein C-terminus";
+                    modLocation = " at the protein C-terminus";
                     break;
                 default:
-                    modLocation = "at ???";
+                    modLocation = " at ???";
                     break;
             }
 
