@@ -427,7 +427,7 @@ public class TestMSGFPlus {
     
     @Test
     @Ignore
-    public void testProfieSpectraDetector()
+    public void testProfileSpectraDetector()
     {
 //        File specFile = new File("C:\\cygwin\\home\\kims336\\Data\\Centroiding\\QC_Shew_13_02_pt5_2_pH7p5_23Apr13_Frodo_12-12-04.mgf");
         File specFile = new File("C:\\cygwin\\home\\kims336\\Data\\Centroiding\\H20120525_JQ_CPTAC2_Compref4_protfxn01.mgf");
