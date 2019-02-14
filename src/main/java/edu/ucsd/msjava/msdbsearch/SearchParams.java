@@ -377,6 +377,14 @@ public class SearchParams {
         }
 
         maxNumMods = paramManager.getMaxNumModsPerPeptide();
+        int maxNumModsCompare = aaSet.getMaxNumberOfVariableModificationsPerPeptide();
+
+        if (maxNumMods != maxNumModsCompare) {
+            System.err.println("Error, code bug: " +
+                    "MaxNumModsPerPeptide tracked by the ParamManager does not match the value tracked by the AminoAcidSet: " +
+                    maxNumMods + " vs. " + maxNumModsCompare);
+            System.exit(-1);
+        }
 
         return null;
     }
@@ -473,13 +481,12 @@ public class SearchParams {
 
         }
 
-        int numMods = paramManager.getMaxNumModsPerPeptide();
         if (invalidParameterCount > 0) {
             System.out.println("Valid parameters are described in the example parameter file at " +
                     "https://github.com/MSGFPlus/msgfplus/blob/master/docs/examples/MSGFPlus_Params.txt");
         }
 
-        return AminoAcidSet.getAminoAcidSetFromList(paramFile.getName(), modsByLine, numMods);
+        return AminoAcidSet.getAminoAcidSetFromList(paramFile.getName(), modsByLine, paramManager);
     }
 
     @Override

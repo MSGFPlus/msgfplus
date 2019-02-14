@@ -761,9 +761,14 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     private static AminoAcidSet standardAASetWithCarboxyomethylatedCys = null;
     private static AminoAcidSet standardAASetWithCarbamidomethylatedCysWithTerm = null;
 
+    /**
+     * Load modification definitions from a text file and associate with amino acids
+     * @param modFilePath Path to the mods.txt file
+     * @param paramManager Parameter manager
+     * @return
+     */
     public static AminoAcidSet getAminoAcidSetFromModFile(String modFilePath, ParamManager paramManager) {
         BufferedLineReader reader = null;
-
         File modFile = new File(modFilePath);
 
         try {
@@ -774,7 +779,6 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             System.exit(-1);
         }
 
-        // parse modifications
         ArrayList<Modification.Instance> mods = new ArrayList<>();
         ArrayList<AminoAcid> customAA = new ArrayList<>();
         String dataLine;
@@ -791,12 +795,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             }
         }
 
-        AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSet(mods, customAA);
-
-        if (numMods != modMetadata.getNumMods()) {
-            aaSet.setMaxNumberOfVariableModificationsPerPeptide(modMetadata.getNumMods());
-            paramManager.setMaxNumMods(modMetadata.getNumMods());
-        }
+        AminoAcidSet aaSet = getAminoAcidSetAndUpdateParams(mods, customAA, modMetadata, paramManager);
 
         try {
             reader.close();
@@ -807,16 +806,13 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     }
 
     /**
-     * Associate modifications in rawMods with amino acids
+     * Associate modification definitions read from a MSGF+ parameter file with amino acids
      * @param modConfigFilePath
      * @param modsByLine Hashtable where keys are the line number in the MSGF+ parameter file and values are the text from the given line
-     * @param numMods Max Number of Dynamic (Variable) Modifications per peptide
-     * @return
+     * @param paramManager Parameter manager
+     * @return AminoAcidSet
      */
-    public static AminoAcidSet getAminoAcidSetFromList(String modConfigFilePath, Hashtable<Integer, String> modsByLine, int numMods) {
-        BufferedLineReader reader = null;
-
-        // parse modifications
+    public static AminoAcidSet getAminoAcidSetFromList(String modConfigFilePath, Hashtable<Integer, String> modsByLine, ParamManager paramManager) {
         ArrayList<Modification.Instance> mods = new ArrayList<>();
         ArrayList<AminoAcid> customAA = new ArrayList<>();
         int maxNumMods = paramManager.getMaxNumModsPerPeptide();
@@ -827,10 +823,35 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             if (!success) {
                 System.exit(-1);
             }
-         });
+        });
+
+        AminoAcidSet aaSet = getAminoAcidSetAndUpdateParams(mods, customAA, modMetadata, paramManager);
+
+        return aaSet;
+    }
+
+    /**
+     * @param mods Modification definitions
+     * @param customAA Custom amino acids
+     * @param modMetadata Modification metadata, which may have an updated maxNumModsPerPeptide value read from a mods.txt file
+     * @param paramManager Parameter manager
+     * @return AminoAcidSet
+     */
+    private static AminoAcidSet getAminoAcidSetAndUpdateParams(
+            ArrayList<Modification.Instance> mods,
+            ArrayList<AminoAcid> customAA,
+            ModificationMetadata modMetadata,
+            ParamManager paramManager) {
 
         AminoAcidSet aaSet = AminoAcidSet.getAminoAcidSet(mods, customAA);
-        aaSet.setMaxNumberOfVariableModificationsPerPeptide(modMetadata.getNumMods());
+
+        int maxNumMods = modMetadata.getMaxNumModsPerPeptide();
+        if (maxNumMods != paramManager.getMaxNumModsPerPeptide()) {
+            paramManager.setMaxNumMods(maxNumMods);
+        }
+
+        aaSet.setMaxNumberOfVariableModificationsPerPeptide(maxNumMods);
+
         return aaSet;
     }
 
