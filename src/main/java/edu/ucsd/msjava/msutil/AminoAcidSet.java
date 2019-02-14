@@ -780,8 +780,8 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         String dataLine;
         String sourceFileName = modFile.getName();
         int lineNum = 0;
-        int numMods = paramManager.getMaxNumModsPerPeptide();
-        ModificationMetadata modMetadata = new ModificationMetadata(numMods);
+        int maxNumMods = paramManager.getMaxNumModsPerPeptide();
+        ModificationMetadata modMetadata = new ModificationMetadata(maxNumMods);
 
         while ((dataLine = reader.readLine()) != null) {
             lineNum++;
@@ -819,7 +819,8 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         // parse modifications
         ArrayList<Modification.Instance> mods = new ArrayList<>();
         ArrayList<AminoAcid> customAA = new ArrayList<>();
-        ModificationMetadata modMetadata = new ModificationMetadata(numMods);
+        int maxNumMods = paramManager.getMaxNumModsPerPeptide();
+        ModificationMetadata modMetadata = new ModificationMetadata(maxNumMods);
 
         modsByLine.forEach((lineNum, dataLine) -> {
             boolean success = parseConfigEntry(modConfigFilePath, lineNum, dataLine, mods, customAA, modMetadata);
@@ -851,7 +852,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         if (modSetting.toLowerCase().startsWith("nummods=")) {
             try {
                 int numMods = Integer.parseInt(modSetting.split("=")[1].trim());
-                modMetadata.setNumMods(numMods);
+                modMetadata.setMaxNumModsPerPeptide(numMods);
             } catch (NumberFormatException e) {
                 System.err.println("Error: Invalid NumMods option at line " + lineNum +
                         " in file " + sourceFilePath + ": " + modSetting);
@@ -1600,8 +1601,8 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     }
 
     private static class ModificationMetadata {
-        public ModificationMetadata(int numMods) {
-            this.numMods = numMods;
+        public ModificationMetadata(int maxNumModsPerPeptide) {
+            this.maxNumModsPerPeptide = maxNumModsPerPeptide;
             this.customAAResidues = "";
         }
 
@@ -1609,19 +1610,19 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             customAAResidues += customAminoAcidSymbol;
         }
 
-        public void setNumMods(int newModCount) { numMods = newModCount; }
+        public void setMaxNumModsPerPeptide(int newModCount) { maxNumModsPerPeptide = newModCount; }
 
-        public void setCustomAAResidues(String residues) { customAAResidues = residues; }
+        // Unused: public void setCustomAAResidues(String residues) { customAAResidues = residues; }
 
-        public int getNumMods() {
-            return numMods;
+        public int getMaxNumModsPerPeptide() {
+            return maxNumModsPerPeptide;
         }
 
         public String getCustomAAResidues() {
             return customAAResidues;
         }
 
-        int numMods;
+        int maxNumModsPerPeptide;
         String customAAResidues;
 
     }
