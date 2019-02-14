@@ -1,0 +1,11 @@
+# This file is used to specify modifications for MS-GF+
+
+# Max Number of Modifications per peptide
+# If this value is large, the search will be slow
+NumMods=3
+
+# Static mods
+# None
+
+# Dynamic mods
+O1,M,opt,any,Oxidation     # Oxidized methionine

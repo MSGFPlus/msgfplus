@@ -1,0 +1,1 @@
+"C:\Program Files\Java\jre8\bin\java.exe" -Xmx4000M -cp C:\MSGFPlus\MSGFPlus.jar edu.ucsd.msjava.msdbsearch.BuildSA -d C:\SequenceDB\MyDatabase.fasta -tda 2

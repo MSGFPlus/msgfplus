@@ -1,0 +1,34 @@
+The reference page with all of the options is:
+https://msgfplus.github.io/msgfplus/MSGFPlus.html
+
+The command line to use to analyze a .mzML file is something like this:
+  "C:\Program Files\Java\jre8\bin\java.exe" -Xmx4000M -jar C:\MSGFPlus\MSGFPlus.jar -s C:\Work\DatasetName.mzML -o C:\Work\DatasetName_msgfplus.mzid -d C:\SequenceDB\MyDatabase.fasta  -t 10ppm -m 0 -inst 1 -e 1 -ti -1,2 -ntt 1 -tda 1 -minLength 6 -maxLength 50 -n 1 -thread 7 -mod MSGFPlus_Mods.txt
+
+Note that if you are running 64-bit Windows, you should have 64-bit Java installed, 
+which will allow the program to use more memory.  You will need to customize the 
+–Xmx parameter based on the amount of free memory you have on the computer (4000M means 4 GB).
+
+You can also adjust the number of threads used by the software with the 
+–thread parameter.  Example mods files are MSGFPlus_Mods.txt and MSGFPlus_Mods2.txt
+
+MSGF+ saves the search results to a .mzid file; this is an XML file that conforms to 
+the MzIdentML standard.  You can convert that file to a tab-delimited text format 
+using either of these commands:
+
+  MzidToTsvConverter.exe C:\Work\DatasetName_msgfplus.mzid -mzid:C:\Work\DatasetName_msgfplus.mzid -tsv:C:\Work\DatasetName_msgfplus.tsv -unroll -showDecoy
+
+  "C:\Program Files\Java\jre8\bin\java.exe" -Xmx2000M -cp C:\MSGFPlus\MSGFPlus.jar edu.ucsd.msjava.ui.MzIDToTsv -i C:\Work\DatasetName_msgfplus.mzid -o C:\Work\DatasetName_msgfplus.tsv -showQValue 1 -showDecoy 1 -unroll 1
+
+Optionally use the PeptideHitResultsProcessor console application to 
+post-process the .tsv file.  This program creates a series of 
+tab-delimited text files that include the identified peptides, 
+a unique list of peptide sequences, and protein information, 
+including the residue start/stop locations of the peptides 
+within their parent protein sequences.
+
+Available at https://github.com/PNNL-Comp-Mass-Spec/PHRP/releases
+
+Example command line call:
+
+  PeptideHitResultsProcRunner.exe /i:MSGFPlus_Example\QC_Shew_13_05b_HCD_500ng_24Mar14_Tiger_14-03-04_msgfplus.tsv /m:MSGFPlus_Example\MSGFDB_PartTryp_MetOx_20ppmParTol_ModDefs.txt /n:MSGFPlus_Example\MSGFDB_PartTryp_MetOx_20ppmParTol.txt /t:MSGFPlus_Example\Mass_Correction_Tags.txt /L /ProteinMods /F:MSGFPlus_Example\Shewanella_oneidensis_MR1_2010-04-22_Tryp_Pig_Bov_decoy.fasta
+
