@@ -122,14 +122,14 @@ public class MSGFPlus {
         // Check the outputFile is valid for writing
         File parent = outputFile.getParentFile();
         if (parent != null && !parent.exists()) {
-            return "Cannot create " + outputFile.getPath() + "!";
+            return "Cannot create " + outputFile.getPath() + ", the output directory does not exist!";
         }
 
         // DB file
         File databaseFile = params.getDatabaseFile();
 
         if (databaseFile == null) {
-            return "Database file is not defined; use -d";
+            return "Database file is not defined; use -d at the command line or DatabaseFile in a config file";
         }
 
         // Precursor mass tolerance
