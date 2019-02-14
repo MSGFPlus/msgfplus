@@ -475,7 +475,7 @@ public class Peptide extends Sequence<AminoAcid> implements Comparable<Peptide> 
     /**
      * Sums up the masses of the amino acids plus the mass of a water molecule.
      *
-     * @return the mass in Daltons of the mono isotopic masses plus water.
+     * @return the mass in Daltons of the monoisotopic masses plus water.
      */
     public float getParentMass() {
         return getMass() + (float) Composition.H2O;

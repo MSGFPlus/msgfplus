@@ -140,7 +140,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
     }
 
     /**
-     * Gets the absolute parent mass of this spectrum.
+     * Gets the monoisotopic (de-charged) precursor mass of this spectrum.
      *
      * @return the mass in Daltons.
      */
