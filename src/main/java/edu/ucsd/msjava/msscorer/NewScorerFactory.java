@@ -86,6 +86,7 @@ public class NewScorerFactory {
      * @return
      * @deprecated Use get(ActivationMethod method, InstrumentType instType, Enzyme enzyme) instead
      */
+    @Deprecated
     public static NewRankScorer get(ActivationMethod method, Enzyme enzyme) {
         if (method != ActivationMethod.HCD)
             return get(method, InstrumentType.LOW_RESOLUTION_LTQ, enzyme, Protocol.STANDARD);

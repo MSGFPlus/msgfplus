@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
 
+@Deprecated
 public class MSDictionary {
     public static void main(String argv[]) {
         if (argv.length != 2 && argv.length != 4) {
@@ -51,7 +52,7 @@ public class MSDictionary {
         System.exit(-1);
     }
 
-    // default parameters
+    @Deprecated
     public static void runMSDictionary(String paramFile, String outputFileName) {
         ParamParser.Parameters params = ParamParser.parseFromFile(paramFile);
 

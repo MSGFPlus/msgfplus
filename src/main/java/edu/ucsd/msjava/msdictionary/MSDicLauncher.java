@@ -58,6 +58,7 @@ public class MSDicLauncher extends ToolLauncher {
         return this;
     }
 
+    @Deprecated
     public void runMSDictionary() {
         int numSpecs = 0;
         int numProcessed = 0;

@@ -1,6 +1,5 @@
 package edu.ucsd.msjava.msutil;
 
-
 import edu.ucsd.msjava.msgf.Tolerance;
 
 import java.io.BufferedOutputStream;
@@ -133,6 +132,11 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
      */
     public int getEndScanNum() {
         return endScanNum;
+    }
+
+    @Deprecated
+    public float getParentMass() {
+        return getPrecursorMass();
     }
 
     /**
@@ -628,7 +632,6 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
         this.precursor.setMz((parentMass + precursor.getCharge() * (float) Composition.ChargeCarrierMass()) / precursor.getCharge());
     }
 
-
     /**
      * Correct parent mass according to input peptide.
      */
@@ -734,8 +737,8 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
     /**
      * Sets intensities of the charge two parent ion and its water loss to 0
      *
-     * @deprecated
      */
+    @Deprecated
     public void filterPrecursorPeaks(Tolerance tolerance) {
         filterPrecursorPeaks(tolerance, 0, 0);
     }
@@ -932,10 +935,10 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	/*
      * Returns the most intense peak that is within tolerance of the target mass.
 	 * The current implementation takes linear time.
-	 * @deprecated
 	 * @param mass                       target mass.
 	 * @param toleranceDa                tolerance in Daltons.
 	 * @return a Peak object if there is match or null otherwise.
+  @Deprecated
   public Peak getPeakByMass(float mass, float toleranceDa)
   {
     ArrayList<Peak> matchList = getPeakListByMassDa(mass, toleranceDa);
@@ -947,10 +950,10 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 	 */
 
 	/*
-     * @deprecated
 	 * @param mass
 	 * @param tolerancePPM
 	 * @return
+  @Deprecated
   public Peak getPeakByMass(float mass, int tolerancePPM)
   {
     ArrayList<Peak> matchList = getPeakListByMassDa(mass, tolerancePPM);

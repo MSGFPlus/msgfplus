@@ -23,6 +23,7 @@ public class MSGFTest {
         dicTest();
     }
 
+    @Deprecated
     public static void dicTest() throws Exception {
         File specFile = new File("/home/sangtaekim/Research/Data/Zubarev/SACTest/SACTest.mgf");
         SpectrumAccessorBySpecIndex specAccessor = new SpectraMap(specFile.getPath(), new MgfSpectrumParser());
@@ -98,7 +99,7 @@ public class MSGFTest {
             return retStr;
     }
 
-
+    @Deprecated
     public static void msgfTest() throws Exception {
         File specFile = new File(System.getProperty("user.home") + "/Research/Data/ISBControl/Mix_7/ORBITRAP/mgf/ISB02_mAB_ChymoTryp_Tryp.mgf");
         SpectrumAccessorBySpecIndex specAccessor = new SpectraMap(specFile.getPath(), new MgfSpectrumParser());
