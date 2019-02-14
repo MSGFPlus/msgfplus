@@ -49,7 +49,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     private HashMap<Location, HashMap<Integer, AminoAcid[]>> nominalMass2aa;    // nominalMass -> array of amino acids
 
     private AminoAcid[] allAminoAcidArr;
-    private int maxNumberOfVariableModificationsPerPeptide = 2;
+    private int maxNumberOfVariableModificationsPerPeptide = 3;
 
     private boolean containsModification;    // true if this contains any variable or terminal (fixed or variable) modification
     private boolean containsNTermModification;    // true if this contains any (fixed or variable) modification specific to N-terminus
