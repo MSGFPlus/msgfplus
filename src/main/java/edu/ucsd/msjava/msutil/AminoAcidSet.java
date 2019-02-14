@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -523,7 +524,12 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             if (mod.getModification().getName().toLowerCase().startsWith("tmt"))
                 this.containsTMT = true;
 
-            String modType = mod.isFixedModification() ? "Fixed (static)" : "Variable (dynamic)";
+            String modType;
+            if (mod.isFixedModification())
+                modType = "Fixed (static):     ";
+            else
+                modType = "Variable (dynamic): ";
+
             String modLocation;
 
             switch (mod.getLocation()) {
@@ -547,7 +553,16 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     break;
             }
 
-            String modInfo = modType + ": " + mod.getModification().getName() + " on " + mod.getResidue() + modLocation;
+            DecimalFormat massFormatter = new DecimalFormat("#.0###");
+            Double modMass = mod.getModification().getAccurateMass();
+
+            String formattedModMass;
+            if (modMass > 0)
+                formattedModMass = "+" + massFormatter.format(modMass);
+            else
+                formattedModMass = massFormatter.format(modMass);
+
+            String modInfo = modType + mod.getModification().getName() + " on " + mod.getResidue() + modLocation + " (" + formattedModMass + ")";
 
             modificationsInUse.add(modInfo);
         }
