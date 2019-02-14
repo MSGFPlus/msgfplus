@@ -404,10 +404,13 @@ public class SearchParams {
 
         // Parse the settings
 
+        int invalidParameterCount = 0;
+
         assert reader != null;
         while ((dataLine = reader.readLine()) != null) {
             lineNum++;
 
+            // Check for a comment in the line (starts with a #)
             String[] tokenArray = dataLine.split("#");
             if (tokenArray.length == 0) {
                 continue;
@@ -434,10 +437,12 @@ public class SearchParams {
                 continue;
             }
 
+            boolean validParameter = false;
             for (ParamManager.ParamNameEnum param: ParamManager.ParamNameEnum.values()) {
                 if (param.isThisParam(paramName)) {
                     Parameter commandLineParam = paramManager.getParameter(param.getKey());
                     if (commandLineParam != null) {
+                        validParameter = true;
                         if (!commandLineParam.isValueAssigned()) {
                             String value = lineSetting.split("=")[1].trim();
                             String parseError = commandLineParam.parse(value);
@@ -461,9 +466,18 @@ public class SearchParams {
                 }
             }
 
+            if (!validParameter) {
+                System.out.println("Warning, unrecognized parameter '" + lineSetting + "' in config file " + paramFile.getName());
+                invalidParameterCount++;
+            }
+
         }
 
         int numMods = paramManager.getMaxNumModsPerPeptide();
+        if (invalidParameterCount > 0) {
+            System.out.println("Valid parameters are described in the example parameter file at " +
+                    "https://github.com/MSGFPlus/msgfplus/blob/master/docs/examples/MSGFPlus_Params.txt");
+        }
 
         return AminoAcidSet.getAminoAcidSetFromList(paramFile.getName(), modsByLine, numMods);
     }
