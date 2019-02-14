@@ -199,12 +199,22 @@ public class ParamManager {
         }
 
         /**
-         * Check whether the parameter line starts with the ParamValue
-         * @param line Param Line
-         * @return is the line.
+         * Check whether the parameter line matches this parameter's name
+         * @param paramName Parameter name from the config file
+         * @return True if it matches the parameter name of this class (more specifically, of a class that inherits from this class)
          */
-        public boolean isLine(String line) {
-            return ((getName() != null && line.trim().toLowerCase().startsWith(getName().toLowerCase())));
+        public boolean isThisParam(String paramName) {
+            return ((getName() != null && paramName.equalsIgnoreCase(getName())));
+        }
+
+        public static String getParamNameFromLine(String lineSetting) {
+            String[] lineParts = lineSetting.split("=");
+            if (lineParts.length < 2)
+                return "";
+
+            String paramName = lineParts[0].trim();
+
+            return paramName;
         }
     }
 

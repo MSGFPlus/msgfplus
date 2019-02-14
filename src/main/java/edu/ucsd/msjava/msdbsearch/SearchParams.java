@@ -418,9 +418,14 @@ public class SearchParams {
                 continue;
             }
 
-            if (ParamManager.ParamNameEnum.DYNAMIC_MODIFICATION.isLine(lineSetting) ||
-                ParamManager.ParamNameEnum.STATIC_MODIFICATION.isLine(lineSetting) ||
-                ParamManager.ParamNameEnum.CUSTOM_AA.isLine(lineSetting)) {
+            String paramName = ParamManager.ParamNameEnum.getParamNameFromLine(lineSetting);
+            if (paramName.isEmpty()) {
+                continue;
+            }
+
+            if (ParamManager.ParamNameEnum.DYNAMIC_MODIFICATION.isThisParam(paramName) ||
+                ParamManager.ParamNameEnum.STATIC_MODIFICATION.isThisParam(paramName) ||
+                ParamManager.ParamNameEnum.CUSTOM_AA.isThisParam(paramName)) {
 
                 String value = lineSetting.split("=")[1].trim();
                 if (!value.equalsIgnoreCase("none")) {
@@ -430,26 +435,28 @@ public class SearchParams {
             }
 
             for (ParamManager.ParamNameEnum param: ParamManager.ParamNameEnum.values()) {
-                if (param.isLine(lineSetting)) {
+                if (param.isThisParam(paramName)) {
                     Parameter commandLineParam = paramManager.getParameter(param.getKey());
-                    if (commandLineParam != null && !commandLineParam.isValueAssigned()) {
-                        String value = lineSetting.split("=")[1].trim();
-                        String parseError = commandLineParam.parse(value);
-                        if (parseError == null || parseError.isEmpty()) {
-                            commandLineParam.setValueAssigned();
-                            continue;
-                        }
+                    if (commandLineParam != null) {
+                        if (!commandLineParam.isValueAssigned()) {
+                            String value = lineSetting.split("=")[1].trim();
+                            String parseError = commandLineParam.parse(value);
+                            if (parseError == null || parseError.isEmpty()) {
+                                commandLineParam.setValueAssigned();
+                                continue;
+                            }
 
-                        if (commandLineParam.getKey().equals(ParamManager.ParamNameEnum.NUM_THREADS.getKey()) &&
-                                value.equalsIgnoreCase("all")) {
-                            // Config file has: NumThreads=All
-                            // This is acceptable
-                            continue;
-                        }
+                            if (commandLineParam.getKey().equals(ParamManager.ParamNameEnum.NUM_THREADS.getKey()) &&
+                                    value.equalsIgnoreCase("all")) {
+                                // Config file has: NumThreads=All
+                                // This is acceptable
+                                continue;
+                            }
 
-                        System.err.println("Error parsing '" + lineSetting + "' in config file " +
-                                paramFile.getAbsolutePath() + ": " + parseError);
-                        System.exit(-1);
+                            System.err.println("Error parsing '" + lineSetting + "' in config file " +
+                                    paramFile.getAbsolutePath() + ": " + parseError);
+                            System.exit(-1);
+                        }
                     }
                 }
             }
