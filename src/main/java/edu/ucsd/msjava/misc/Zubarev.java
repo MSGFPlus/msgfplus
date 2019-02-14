@@ -200,7 +200,7 @@ public class Zubarev {
                 }
             }
 
-            System.out.println(spec.size() + " " + numPeaks + " " + spec.getParentMass());
+            System.out.println(spec.size() + " " + numPeaks + " " + spec.getPrecursorMass());
             float peakRatio = numPeaks / (float) booleanSpec.length;
             System.out.print(numReal[0] / (float) numPairs + "," + (1 - peakRatio) * (1 - peakRatio));
             System.out.print("\t" + numReal[1] / (float) numPairs + "," + (1 - peakRatio) * peakRatio);
@@ -315,7 +315,7 @@ public class Zubarev {
 //			if(spec.getCharge() !=3)
 //				continue;
             Peptide peptide = spec.getAnnotation();
-            if (Math.abs(spec.getParentMass() - (float) Composition.H2O - peptide.getMass()) > 0.5f)
+            if (Math.abs(spec.getPrecursorMass() - (float) Composition.H2O - peptide.getMass()) > 0.5f)
                 continue;
 
             numSpecs++;
@@ -360,9 +360,9 @@ public class Zubarev {
                 }
 
                 if (byPresence == 1)    // no y and yes b
-                    y[i + 1] = spec.getParentMass() + (float) Composition.H2 - b[peptide.size() - (i + 1)];
+                    y[i + 1] = spec.getPrecursorMass() + (float) Composition.H2 - b[peptide.size() - (i + 1)];
 //				else if(byPresence == 2)	// yes y and no b
-//					b[peptide.size()-(i+1)] = spec.getParentMass() + (float)Composition.H2 - y[i+1];
+//					b[peptide.size()-(i+1)] = spec.getPrecursorMass() + (float)Composition.H2 - y[i+1];
 
                 if (byPresence == 3)
                     numBY++;
@@ -375,9 +375,9 @@ public class Zubarev {
             }
 
             intSRM += Math.round(peptide.get(0).getMass() * Constants.INTEGER_MASS_SCALER);
-            assert (intSRM == intPeptideMass) : peptide + ": " + intSRM + " != " + intPeptideMass + " " + (spec.getParentMass() - (float) Composition.H2O);
-            b[peptide.size()] = spec.getParentMass() - (float) Composition.H2O + (float) Composition.ChargeCarrierMass();
-            y[peptide.size()] = spec.getParentMass() + (float) Composition.ChargeCarrierMass();
+            assert (intSRM == intPeptideMass) : peptide + ": " + intSRM + " != " + intPeptideMass + " " + (spec.getPrecursorMass() - (float) Composition.H2O);
+            b[peptide.size()] = spec.getPrecursorMass() - (float) Composition.H2O + (float) Composition.ChargeCarrierMass();
+            y[peptide.size()] = spec.getPrecursorMass() + (float) Composition.ChargeCarrierMass();
 
             boolean useY = true;
             float[] mainIon;
@@ -886,7 +886,7 @@ public class Zubarev {
                 numNT++;
 
             float theoPepMass = pep.getMass();
-            float specPepMass = spec.getParentMass() - (float) Composition.H2O;
+            float specPepMass = spec.getPrecursorMass() - (float) Composition.H2O;
             int diff = Math.round(specPepMass - theoPepMass);
             if (diff == 1) {
                 specPepMass -= (float) Composition.ISOTOPE;
@@ -904,7 +904,7 @@ public class Zubarev {
             double prm = 0;
             double srm = 0;
             int srmIndex = 0;
-            int pmIndex = factory.getMassIndex(spec.getParentMass() - (float) Composition.H2O);
+            int pmIndex = factory.getMassIndex(spec.getPrecursorMass() - (float) Composition.H2O);
 
             for (int i = pep.size() - 1; i >= 0; i--) {
                 srm += pep.get(i).getAccurateMass();
@@ -1014,9 +1014,9 @@ public class Zubarev {
 //			int charge = Integer.parseInt(token[1]);
 //			Spectrum spec = specMap.getSpectrumByScanNum(scanNum);
 //			spec.setCharge(charge);
-//			if(Math.abs(spec.getParentMass() - pep.getParentMass()) > 1.5*charge)
+//			if(Math.abs(spec.getPrecursorMass() - pep.getParentMass()) > 1.5*charge)
 //			{
-//				System.out.println(s+"\t"+"Parent mass mismatch: " + spec.getParentMass() + " != " + pep.getParentMass());
+//				System.out.println(s+"\t"+"Parent mass mismatch: " + spec.getPrecursorMass() + " != " + pep.getParentMass());
 //				continue;
 //			}
 //			
@@ -1125,6 +1125,7 @@ public class Zubarev {
         }
     }
 
+    @Deprecated
     public static void testTagging() throws Exception {
         int dataset = 0;    // 0: HCD, 1: CID, 2: ETD
         long time = System.currentTimeMillis();
@@ -1197,12 +1198,12 @@ public class Zubarev {
                 continue;
 //			scorer.filterPrecursorPeaks(spec);
             Peptide peptide = spec.getAnnotation();
-//			if(Math.abs(peptide.getParentMass()-spec.getParentMass()) <= 0.2f)
+//			if(Math.abs(peptide.getParentMass()-spec.getPrecursorMass()) <= 0.2f)
 //				continue;
 
 //			scorer.filterPrecursorPeaks(spec);
 
-            float expPepMass = spec.getParentMass() - (float) Composition.H2O;// - (float)Composition.ISOTOPE;
+            float expPepMass = spec.getPrecursorMass() - (float) Composition.H2O;// - (float)Composition.ISOTOPE;
             int nomExpPepMass = NominalMass.toNominalMass(expPepMass);
             float[] srm = new float[nomExpPepMass + 1];
             srm[0] = 0;
@@ -1214,7 +1215,7 @@ public class Zubarev {
             ArrayList<NominalMass> nodeList = new ArrayList<NominalMass>();
             for (int i = 0; i <= nomExpPepMass; i++)
                 nodeList.add(new NominalMass(i));
-            AminoAcidGraph graph = new AminoAcidGraph(factory, spec.getParentMass(), scoredSpec);
+            AminoAcidGraph graph = new AminoAcidGraph(factory, spec.getPrecursorMass(), scoredSpec);
 //			AminoAcidGraph graph = new AminoAcidGraph(factory, nomExpPepMass);
 //			graph.computeNodeScores(scoredSpec);
 

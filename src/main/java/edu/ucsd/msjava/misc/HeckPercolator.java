@@ -82,9 +82,9 @@ public class HeckPercolator {
                         Peptide pep = new Peptide(peptide);
                         spec.setAnnotation(pep);
                         assert (spec != null);
-                        assert (Math.abs(spec.getParentMass() - pep.getParentMass()) < 5f) : s + " " + spec.getParentMass() + " " + pep.getParentMass();
-//						if(Math.abs(spec.getParentMass() - pep.getParentMass()) > 0.1f)
-//							System.out.println(s + " " + spec.getParentMass() + " " + pep.getParentMass());
+                        assert (Math.abs(spec.getPrecursorMass() - pep.getParentMass()) < 5f) : s + " " + spec.getPrecursorMass() + " " + pep.getParentMass();
+//						if(Math.abs(spec.getPrecursorMass() - pep.getParentMass()) > 0.1f)
+//							System.out.println(s + " " + spec.getPrecursorMass() + " " + pep.getParentMass());
                         pepSpecMap.put(peptide + ":" + chargeIndex, spec);
                         pepScoreMap.put(peptide + ":" + chargeIndex, score);
                     }

@@ -24,7 +24,7 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
         this.scorer = scorer;
 
         this.charge = spec.getCharge();
-        this.parentMass = spec.getParentMass();
+        this.parentMass = spec.getPrecursorMass();
         this.mme = scorer.mme;
         this.precursor = spec.getPrecursorPeak().clone();
         this.activationMethodArr = new ActivationMethod[1];
@@ -51,7 +51,7 @@ public class NewScoredSpectrum<T extends Matter> implements ScoredSpectrum<T> {
             spec = spec.getDeconvolutedSpectrum(scorer.deconvolutionErrorTolerance());
 
         // for edge scoring
-        partition = scorer.getPartition(spec.getCharge(), spec.getParentMass(), scorer.getNumSegments() - 1);
+        partition = scorer.getPartition(spec.getCharge(), spec.getPrecursorMass(), scorer.getNumSegments() - 1);
         mainIon = scorer.getMainIonType(partition);
 
         float approxNumBins = spec.getPeptideMass() / (scorer.getMME().getValue() * 2);

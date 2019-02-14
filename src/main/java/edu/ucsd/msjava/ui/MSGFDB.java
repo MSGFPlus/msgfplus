@@ -99,21 +99,21 @@ public class MSGFDB {
         // DB file
         File databaseFile = paramManager.getDBFileParam().getFile();
 
-        // PM tolerance
+        // Precursor mass tolerance
         ToleranceParameter tol = ((ToleranceParameter) paramManager.getParameter(ParamManager.ParamNameEnum.PRECURSOR_MASS_TOLERANCE.getKey()));
-        Tolerance leftParentMassTolerance = tol.getLeftTolerance();
-        Tolerance rightParentMassTolerance = tol.getRightTolerance();
+        Tolerance leftPrecursorMassTolerance = tol.getLeftTolerance();
+        Tolerance rightPrecursorMassTolerance = tol.getRightTolerance();
 
         int toleranceUnit = paramManager.getIntValue((ParamManager.ParamNameEnum.PRECURSOR_MASS_TOLERANCE_UNITS.getKey()));
         if (toleranceUnit != 2) {
             boolean isTolerancePPM;
             isTolerancePPM = toleranceUnit != 0;
-            leftParentMassTolerance = new Tolerance(leftParentMassTolerance.getValue(), isTolerancePPM);
-            rightParentMassTolerance = new Tolerance(rightParentMassTolerance.getValue(), isTolerancePPM);
+            leftPrecursorMassTolerance = new Tolerance(leftPrecursorMassTolerance.getValue(), isTolerancePPM);
+            rightPrecursorMassTolerance = new Tolerance(rightPrecursorMassTolerance.getValue(), isTolerancePPM);
         }
 
         int numAllowedC13 = paramManager.getIntValue(ParamManager.ParamNameEnum.C13.getKey());
-        if (rightParentMassTolerance.getToleranceAsDa(1000, 2) >= 0.5f)
+        if (rightPrecursorMassTolerance.getToleranceAsDa(1000, 2) >= 0.5f)
             numAllowedC13 = 0;
 
         Enzyme enzyme = paramManager.getEnzyme();
@@ -274,8 +274,8 @@ public class MSGFDB {
                 ScoredSpectraMap specScanner = new ScoredSpectraMap(
                         specAcc,
                         Collections.synchronizedList(specKeyList.subList(startIndex[i], endIndex[i])),
-                        leftParentMassTolerance,
-                        rightParentMassTolerance,
+                        leftPrecursorMassTolerance,
+                        rightPrecursorMassTolerance,
                         numAllowedC13,
                         specDataType,
                         false
@@ -317,7 +317,7 @@ public class MSGFDB {
                 "#SpecFile\tSpecIndex\tScan#\t"
                         + "FragMethod\t"
                         + "Precursor\tPMError("
-                        + (rightParentMassTolerance.isTolerancePPM() ? "ppm" : "Da")
+                        + (rightPrecursorMassTolerance.isTolerancePPM() ? "ppm" : "Da")
                         + ")\tCharge\tPeptide\tProtein\tDeNovoScore\tMSGFScore\tSpecProb\tP-value";
 
         MSGFDBResultGenerator gen = new MSGFDBResultGenerator(header, resultList);

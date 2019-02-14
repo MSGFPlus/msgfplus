@@ -251,7 +251,7 @@ public class MSProfile {
             if (fragMethod != null && !spec.getActivationMethod().getName().equalsIgnoreCase(fragMethod))
                 continue;
 
-            int nominalPepMass = Math.round((spec.getParentMass() - (float) Composition.H2O) * Constants.INTEGER_MASS_SCALER);
+            int nominalPepMass = Math.round((spec.getPrecursorMass() - (float) Composition.H2O) * Constants.INTEGER_MASS_SCALER);
 
             int scanNum = spec.getScanNum();
             float precursorMz = spec.getPrecursorPeak().getMz();
@@ -295,7 +295,7 @@ public class MSProfile {
             }
 
             // Computation / Print
-            AminoAcidGraph graph = new AminoAcidGraph(nominalMassFactory, spec.getParentMass(), scoredSpec);
+            AminoAcidGraph graph = new AminoAcidGraph(nominalMassFactory, spec.getPrecursorMass(), scoredSpec);
             GeneratingFunction<NominalMass> gf = new GeneratingFunction<NominalMass>(graph).enzyme(enzyme);
             gf.computeGeneratingFunction();
 
@@ -320,7 +320,7 @@ public class MSProfile {
 //			{
 //				String seq = optimalScoringPeptides.get(i);
 //				Peptide p = new Peptide(seq);
-//				float err = Math.abs(p.getParentMass()-spec.getParentMass());
+//				float err = Math.abs(p.getPrecursorMass() - spec.getPrecursorMass());
 //				if(enzyme == null || !enzyme.isCleaved(p))
 //					err += 10f;
 //				if(err < minError)

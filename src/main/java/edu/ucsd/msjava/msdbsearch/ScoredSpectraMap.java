@@ -14,8 +14,8 @@ import java.util.*;
 public class ScoredSpectraMap {
     private final SpectraAccessor specAcc;
     private final List<SpecKey> specKeyList;
-    private final Tolerance leftParentMassTolerance;
-    private final Tolerance rightParentMassTolerance;
+    private final Tolerance leftPrecursorMassTolerance;
+    private final Tolerance rightPrecursorMassTolerance;
     private final int minIsotopeError;
     private final int maxIsotopeError;
     private final SpecDataType specDataType;
@@ -35,8 +35,8 @@ public class ScoredSpectraMap {
     public ScoredSpectraMap(
             SpectraAccessor specAcc,
             List<SpecKey> specKeyList,
-            Tolerance leftParentMassTolerance,
-            Tolerance rightParentMassTolerance,
+            Tolerance leftPrecursorMassTolerance,
+            Tolerance rightPrecursorMassTolerance,
             int minIsotopeError,
             int maxIsotopeError,
             SpecDataType specDataType,
@@ -45,8 +45,8 @@ public class ScoredSpectraMap {
     ) {
         this.specAcc = specAcc;
         this.specKeyList = specKeyList;
-        this.leftParentMassTolerance = leftParentMassTolerance;
-        this.rightParentMassTolerance = rightParentMassTolerance;
+        this.leftPrecursorMassTolerance = leftPrecursorMassTolerance;
+        this.rightPrecursorMassTolerance = rightPrecursorMassTolerance;
         this.minIsotopeError = minIsotopeError;
         this.maxIsotopeError = maxIsotopeError;
         this.specDataType = specDataType;
@@ -67,26 +67,26 @@ public class ScoredSpectraMap {
     public ScoredSpectraMap(
             SpectraAccessor specAcc,
             List<SpecKey> specKeyList,
-            Tolerance leftParentMassTolerance,
-            Tolerance rightParentMassTolerance,
+            Tolerance leftPrecursorMassTolerance,
+            Tolerance rightPrecursorMassTolerance,
             int maxNum13C,
             SpecDataType specDataType,
             boolean storeRankScorer,
             boolean supportSpectrumSpecificErrorTolerance
     ) {
-        this(specAcc, specKeyList, leftParentMassTolerance, rightParentMassTolerance, 0, maxNum13C, specDataType, storeRankScorer, supportSpectrumSpecificErrorTolerance);
+        this(specAcc, specKeyList, leftPrecursorMassTolerance, rightPrecursorMassTolerance, 0, maxNum13C, specDataType, storeRankScorer, supportSpectrumSpecificErrorTolerance);
     }
 
     public ScoredSpectraMap(
             SpectraAccessor specAcc,
             List<SpecKey> specKeyList,
-            Tolerance leftParentMassTolerance,
-            Tolerance rightParentMassTolerance,
+            Tolerance leftPrecursorMassTolerance,
+            Tolerance rightPrecursorMassTolerance,
             int maxNum13C,
             SpecDataType specDataType,
             boolean storeRankScorer
     ) {
-        this(specAcc, specKeyList, leftParentMassTolerance, rightParentMassTolerance, 0, maxNum13C, specDataType, storeRankScorer, false);
+        this(specAcc, specKeyList, leftPrecursorMassTolerance, rightPrecursorMassTolerance, 0, maxNum13C, specDataType, storeRankScorer, false);
     }
 
     public ScoredSpectraMap turnOffEdgeScoring() {
@@ -110,12 +110,22 @@ public class ScoredSpectraMap {
         return specDataType;
     }
 
+    @Deprecated
     public Tolerance getLeftParentMassTolerance() {
-        return leftParentMassTolerance;
+        return getLeftPrecursorMassTolerance();
     }
 
+    @Deprecated
     public Tolerance getRightParentMassTolerance() {
-        return rightParentMassTolerance;
+        return getRightPrecursorMassTolerance();
+    }
+
+    public Tolerance getLeftPrecursorMassTolerance() {
+        return leftPrecursorMassTolerance;
+    }
+
+    public Tolerance getRightPrecursorMassTolerance() {
+        return rightPrecursorMassTolerance;
     }
 
     //	public int getNumAllowedC13()								{ return numAllowedC13; }
@@ -231,8 +241,8 @@ public class ScoredSpectraMap {
             // System.out.println("GetScoredSpectrum for " + specKey.toString());
             NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
 
-            float peptideMass = spec.getParentMass() - (float) Composition.H2O;
-            float tolDaLeft = leftParentMassTolerance.getToleranceAsDa(peptideMass);
+            float peptideMass = spec.getPrecursorMass() - (float) Composition.H2O;
+            float tolDaLeft = leftPrecursorMassTolerance.getToleranceAsDa(peptideMass);
             int maxNominalPeptideMass = NominalMass.toNominalMass(peptideMass) + Math.round(tolDaLeft - 0.4999f) - this.minIsotopeError;
 
             if (maxNominalPeptideMass > 0) {
@@ -250,7 +260,7 @@ public class ScoredSpectraMap {
                 if (countIgnored <= 4) {
                     System.out.println("... ignoring spectrum at index " +
                             String.format("%1$5s", specKey.getSpecIndex()) +
-                            " with invalid precursor ion of " + spec.getParentMass() + " m/z");
+                            " with invalid precursor ion of " + spec.getPrecursorMass() + " Da");
                 }
             }
 
@@ -301,7 +311,7 @@ public class ScoredSpectraMap {
                 continue;
             ScoredSpectrumSum<NominalMass> scoredSpec = new ScoredSpectrumSum<NominalMass>(scoredSpecList);
             float peptideMass = scoredSpec.getPrecursorPeak().getMass() - (float) Composition.H2O;
-            float tolDaLeft = leftParentMassTolerance.getToleranceAsDa(peptideMass);
+            float tolDaLeft = leftPrecursorMassTolerance.getToleranceAsDa(peptideMass);
             int maxNominalPeptideMass = NominalMass.toNominalMass(peptideMass) + Math.round(tolDaLeft - 0.4999f) + 1;
             if (supportEdgeScore)
 //				specKeyScorerMap.put(specKey, new DBScanScorerSum(scoredSpecList, maxNominalPeptideMass));

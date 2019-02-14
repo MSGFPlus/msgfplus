@@ -458,14 +458,14 @@ public class DBScanner {
 //						System.out.println("PepStr: " + candidatePepGrid.getPeptideSeq(j) + " GridSize:" + candidatePepGrid.size());
 //						///
                         int nominalPeptideMass = candidatePepGrid.getNominalPeptideMass(j);
-                        float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(theoPeptideMass);
-                        float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(theoPeptideMass);
+                        float tolDaLeft = specScanner.getLeftPrecursorMassTolerance().getToleranceAsDa(theoPeptideMass);
+                        float tolDaRight = specScanner.getRightPrecursorMassTolerance().getToleranceAsDa(theoPeptideMass);
 
                         double leftThr = (double) (theoPeptideMass - tolDaLeft);
                         double rightThr = (double) (theoPeptideMass + tolDaRight);
 
-//						float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
-//						float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
+//						float tolDaLeft = specScanner.getLeftPrecursorMassTolerance().getToleranceAsDa(peptideMass);
+//						float tolDaRight = specScanner.getRightPrecursorMassTolerance().getToleranceAsDa(peptideMass);
 //						int maxPeptideMassIndex, minPeptideMassIndex;
 //						
 //						maxPeptideMassIndex = maxNominalPeptideMass + Math.round(tolDaLeft-0.4999f);
@@ -602,8 +602,8 @@ public class DBScanner {
 //			System.out.println("***Debug " + threadName + ": " + scoredSpec.getPrecursorPeak().getMz() + "," + scoredSpec.getPrecursorPeak().getCharge());
             ///
 
-            float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
-            float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
+            float tolDaLeft = specScanner.getLeftPrecursorMassTolerance().getToleranceAsDa(peptideMass);
+            float tolDaRight = specScanner.getRightPrecursorMassTolerance().getToleranceAsDa(peptideMass);
             int maxPeptideMassIndex, minPeptideMassIndex;
 
             maxPeptideMassIndex = maxNominalPeptideMass + Math.round(tolDaLeft - 0.4999f);
@@ -815,7 +815,7 @@ public class DBScanner {
                     }
                 }
 //				if(pmError > )
-                if (specScanner.getRightParentMassTolerance().isTolerancePPM())
+                if (specScanner.getRightPrecursorMassTolerance().isTolerancePPM())
                     pmError = pmError / theoMass * 1e6f;
 
                 String protein = sa.getAnnotation(index + 1);

@@ -12,7 +12,7 @@ public class ProcessedSpectrum {
     }
 
     public Spectrum getSpectrum() {
-//		boolean[] expPeak = new boolean[NominalMass.toNominalMass(expSpec.getParentMass())];
+//		boolean[] expPeak = new boolean[NominalMass.toNominalMass(expSpec.getPrecursorMass())];
 //		for(Peak p : libSpec)
 //		{
 //			int nominalMass = NominalMass.toNominalMass(p.getMz());

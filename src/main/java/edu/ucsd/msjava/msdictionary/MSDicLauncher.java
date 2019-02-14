@@ -89,7 +89,7 @@ public class MSDicLauncher extends ToolLauncher {
             if (charge == 0)
                 spec.setCharge(2);
 
-            if (spec.getParentMass() > maxParentMass || spec.getParentMass() < minParentMass)
+            if (spec.getPrecursorMass() > maxParentMass || spec.getPrecursorMass() < minParentMass)
                 continue;
 
             GeneratingFunction<?> gf = null;
@@ -97,7 +97,7 @@ public class MSDicLauncher extends ToolLauncher {
 
             if (dataStructure == 0) {
                 ScoredSpectrum<NominalMass> scoredSpec = NewScorerFactory.get(ActivationMethod.CID, Enzyme.TRYPSIN).getScoredSpectrum(spec);
-                AminoAcidGraph graph = new AminoAcidGraph(factory, spec.getParentMass(), scoredSpec);
+                AminoAcidGraph graph = new AminoAcidGraph(factory, spec.getPrecursorMass(), scoredSpec);
 
                 gf = new GeneratingFunction<NominalMass>(graph);
                 gfWellCleaved = new GeneratingFunction<NominalMass>(graph).enzyme(Enzyme.TRYPSIN);

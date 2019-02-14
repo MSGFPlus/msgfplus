@@ -264,7 +264,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
                     precursorList = new ArrayList<Float>();
                     parentMassMap.put(charge, precursorList);
                 }
-                precursorList.add(spec.getParentMass());
+                precursorList.add(spec.getPrecursorMass());
             }
         }
 
@@ -335,7 +335,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
                     continue;
                 numSpecs++;
                 spec = filter.apply(spec);
-                float precursorNeutralMass = spec.getParentMass();
+                float precursorNeutralMass = spec.getPrecursorMass();
                 for (int c = charge; c >= 2; c--) {
                     float precursorMz = (precursorNeutralMass + c * (float) Composition.ChargeCarrierMass()) / c;
                     ArrayList<Peak> peakList = spec.getPeakListByMassRange(
@@ -386,7 +386,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
         specContainer = newSpecContainer;
     }
 
-    private Pair<Float, Float> getParentMassRange(Partition partition) {
+    private Pair<Float, Float> getPrecursorMassRange(Partition partition) {
         float minParentMass = partition.getParentMass();
         float maxParentMass = Float.MAX_VALUE;
         Partition higherPartition = partitionSet.higher(partition);
@@ -409,7 +409,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
         for (Partition partition : partitionSet) {
             int charge = partition.getCharge();
             // parent mass range check
-            Pair<Float, Float> parentMassRange = getParentMassRange(partition);
+            Pair<Float, Float> parentMassRange = getPrecursorMassRange(partition);
 
             SpectraContainer curPartContainer = new SpectraContainer();
             for (Spectrum spec : specContainer) {
@@ -418,7 +418,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
                 if (spec.getCharge() != charge)
                     continue;
 
-                float curParentMass = spec.getParentMass();
+                float curParentMass = spec.getPrecursorMass();
                 if (curParentMass < parentMassRange.getFirst() || curParentMass >= parentMassRange.getSecond())
                     continue;
 
@@ -483,7 +483,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
             if (ionTypes == null || ionTypes.length == 0)
                 continue;
 
-            Pair<Float, Float> parentMassRange = getParentMassRange(partition);
+            Pair<Float, Float> parentMassRange = getPrecursorMassRange(partition);
             int seg = partition.getSegNum();
 
             int numSpec = 0;
@@ -508,7 +508,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
                     continue;
                 if (spec.getCharge() != charge)
                     continue;
-                float curParentMass = spec.getParentMass();
+                float curParentMass = spec.getPrecursorMass();
                 if (curParentMass < parentMassRange.getFirst() || curParentMass >= parentMassRange.getSecond())
                     continue;
 
@@ -638,7 +638,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
         ionExistenceTable = new Hashtable<Partition, Float[]>();
         for (Partition partition : partitionSet) {
             int charge = partition.getCharge();
-            Pair<Float, Float> parentMassRange = getParentMassRange(partition);
+            Pair<Float, Float> parentMassRange = getPrecursorMassRange(partition);
             int seg = partition.getSegNum();
             if (seg != super.getNumSegments() - 1)
                 continue;
@@ -652,7 +652,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
                 if (spec.getCharge() != charge)
                     continue;
 
-                float curParentMass = spec.getParentMass();
+                float curParentMass = spec.getPrecursorMass();
                 if (curParentMass < parentMassRange.getFirst() || curParentMass >= parentMassRange.getSecond())
                     continue;
 
@@ -756,7 +756,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
 
         for (Partition partition : partitionSet) {
             int charge = partition.getCharge();
-            Pair<Float, Float> parentMassRange = getParentMassRange(partition);
+            Pair<Float, Float> parentMassRange = getPrecursorMassRange(partition);
             int seg = partition.getSegNum();
             if (seg != super.getNumSegments() - 1)
                 continue;
@@ -769,7 +769,7 @@ public class ScoringParameterGeneratorWithErrors extends NewRankScorer {
                 if (spec.getCharge() != charge)
                     continue;
 
-                float curParentMass = spec.getParentMass();
+                float curParentMass = spec.getPrecursorMass();
                 if (curParentMass < parentMassRange.getFirst() || curParentMass >= parentMassRange.getSecond())
                     continue;
 

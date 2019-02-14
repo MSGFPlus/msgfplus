@@ -69,7 +69,7 @@ public class MergeSpectra {
                 while (sIt.hasNext()) {
 
                     Spectrum s = sIt.next();
-                    if (s.getParentMass() < 10) continue;
+                    if (s.getPrecursorMass() < 10) continue;
 
                     fout.printf(":%d.%d.0\n", totalCount, totalCount);
                     fout.println(s.toDta());

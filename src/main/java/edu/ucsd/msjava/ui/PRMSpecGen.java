@@ -242,7 +242,7 @@ public class PRMSpecGen {
 
             scorer.doNotUseError();
             NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
-            int maxNominalMass = NominalMass.toNominalMass(spec.getParentMass());
+            int maxNominalMass = NominalMass.toNominalMass(spec.getPrecursorMass());
 
             // PRM spectrum
             out.println("BEGIN IONS");

@@ -545,7 +545,7 @@ public class HeckRevision {
                     float mzXMLPrecursorMz = mzXMLSpec.getPrecursorPeak().getMz();
 
                     float difference = precursorMz - mzXMLPrecursorMz;
-                    float diffPPM = difference / spec.getParentMass() * 1e6f;
+                    float diffPPM = difference / spec.getPrecursorMass() * 1e6f;
                     if (diffPPM > 5) {
                         largeDiff++;
                         System.out.println(difference + " " + diffPPM);
@@ -600,7 +600,7 @@ public class HeckRevision {
 //			}
 //			Spectrum spec = map.getSpectrumByScanNum(scanNum);
 //			assert(spec != null);
-//			float parentMass = spec.getParentMass();
+//			float parentMass = spec.getPrecursorMass();
 
             String pep = token[3];
             pep = pep.substring(pep.indexOf('.') + 1, pep.lastIndexOf('.'));

@@ -174,7 +174,7 @@ public class MiscScripts {
             if (spec.getCharge() != charge && spec.getCharge() != 0)
                 continue;
             spec.getPrecursorPeak().setCharge(2);
-            float parentMass = spec.getParentMass();
+            float parentMass = spec.getPrecursorMass();
             if (parentMass < minMass || parentMass > maxMass)
                 continue;
             numSpecs++;
@@ -184,7 +184,6 @@ public class MiscScripts {
         System.out.println("NumSpecs: " + numSpecs);
         System.out.println("NumPeptides: " + pepSet.size());
     }
-
 
     public static void processShortAgilentPeptides() throws Exception {
         System.out.print("Length\tMSGFThreshold\tDeltaThreshold\t#Positive\t#TargetMatch\tRatioTargetMatch");

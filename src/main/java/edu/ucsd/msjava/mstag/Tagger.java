@@ -80,14 +80,14 @@ public class Tagger {
         Reshape wf = new RankFilter(380);
         Spectrum s = wf.apply(sc.get(0));
 
-        System.out.println("Parent mass " + s.getParentMass());
+        System.out.println("Parent mass " + s.getPrecursorMass());
 
         // log the intensities of the peaks
         for (Peak p : s) {
             p.setIntensity((float) Math.log(p.getIntensity()));
         }
 
-        System.out.println("Peak count before fitlering " + s.size());
+        System.out.println("Peak count before filtering " + s.size());
         ArrayList<Tag> results = makeTags(s, ppmTolerance, cutOffFraction);
         System.out.println(results.size());
 
@@ -162,7 +162,7 @@ public class Tagger {
             if (c.score >= cutOff) {
                 Stack<Peak> peaks = new Stack<Peak>();
                 peaks.push(c.peak);
-                retrieve(c, new Stack<AminoAcid>(), peaks, c.peak.getIntensity(), cutOff, s.getParentMass() - c.peak.getMass(), results);
+                retrieve(c, new Stack<AminoAcid>(), peaks, c.peak.getIntensity(), cutOff, s.getPrecursorMass() - c.peak.getMass(), results);
             }
         }
 

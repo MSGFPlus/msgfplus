@@ -42,7 +42,7 @@ public class MSGFTest {
 //		ScoredSpectrum<NominalMass> scoredSpec = new msscorer.DBScanScorer(scoredSpec1, annotation.getPeptide().getNominalMass());
         NominalMassFactory factory = new NominalMassFactory(aaSet, enzyme, 50);
         Tolerance pmTolerance = Tolerance.ZERO_TOLERANCE;
-        GenericDeNovoGraph<NominalMass> graph = new GenericDeNovoGraph<NominalMass>(factory, spec.getParentMass(), pmTolerance, enzyme, scoredSpec1);
+        GenericDeNovoGraph<NominalMass> graph = new GenericDeNovoGraph<NominalMass>(factory, spec.getPrecursorMass(), pmTolerance, enzyme, scoredSpec1);
         GeneratingFunction<NominalMass> gf = new GeneratingFunction<NominalMass>(graph).enzyme(enzyme).doNotCalcNumber();
         gf.computeGeneratingFunction();
         int score = gf.getScore(annotation);
@@ -130,7 +130,7 @@ public class MSGFTest {
 
             NewScoredSpectrum<IntMass> scoredSpec = scorer.getScoredSpectrum(spec);
             GenericDeNovoGraph<IntMass> graph;
-            graph = new GenericDeNovoGraph<IntMass>(factory, spec.getParentMass(), pmTolerance, enzyme, scoredSpec);
+            graph = new GenericDeNovoGraph<IntMass>(factory, spec.getPrecursorMass(), pmTolerance, enzyme, scoredSpec);
             GeneratingFunction<IntMass> gf = new GeneratingFunction<IntMass>(graph).enzyme(enzyme);
             gf.computeGeneratingFunction();
             double specProb = gf.getSpectralProbability(psm.getAnnotation());
@@ -157,7 +157,7 @@ public class MSGFTest {
                         prob *= 1 - aaSet.getProbCleavageSites();
                 }
                 sumProb += prob;
-                System.out.println(annotationStr + "\t" + prob + "\t" + sumProb + "\t" + gf.getScore(annotation) + "\t" + (pep.getMass() - spec.getParentMass() + (float) Composition.H2O));
+                System.out.println(annotationStr + "\t" + prob + "\t" + sumProb + "\t" + gf.getScore(annotation) + "\t" + (pep.getMass() - spec.getPrecursorMass() + (float) Composition.H2O));
             }
 
             System.out.println("SpecProb\t" + specProb + "\t" + sumProb);

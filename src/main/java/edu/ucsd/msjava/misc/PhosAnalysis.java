@@ -154,7 +154,7 @@ public class PhosAnalysis {
                         if (pepString.contains("s") || pepString.contains("t")) {
                             Spectrum spec = map.getSpectrumBySpecIndex(psm.getScanNum());
                             spec.setCharge(psm.getCharge());
-                            float expPM = spec.getParentMass();
+                            float expPM = spec.getPrecursorMass();
                             float theoPM = pep.getParentMass();
                             float massDiff = expPM - theoPM;
                             if (Math.abs(massDiff) > 5f) {

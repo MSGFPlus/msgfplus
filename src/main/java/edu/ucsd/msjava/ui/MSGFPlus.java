@@ -132,9 +132,9 @@ public class MSGFPlus {
             return "Database file is not defined; use -d";
         }
 
-        // PM tolerance
-        Tolerance leftParentMassTolerance = params.getLeftParentMassTolerance();
-        Tolerance rightParentMassTolerance = params.getRightParentMassTolerance();
+        // Precursor mass tolerance
+        Tolerance leftPrecursorMassTolerance = params.getLeftPrecursorMassTolerance();
+        Tolerance rightPrecursorMassTolerance = params.getRightPrecursorMassTolerance();
 
         int minIsotopeError = params.getMinIsotopeError();    // inclusive
         int maxIsotopeError = params.getMaxIsotopeError();    // inclusive
@@ -329,11 +329,11 @@ public class MSGFPlus {
 
         try {
             for (int i = 0; i < numTasks; i++) {
-                ScoredSpectraMap specScanner = new ScoredSpectraMap(
+                ScoredSpectraMap specScanner = new ScoredSpectraMap (
                         specAcc,
                         Collections.synchronizedList(specKeyList.subList(startIndex[i], endIndex[i])),
-                        leftParentMassTolerance,
-                        rightParentMassTolerance,
+                        leftPrecursorMassTolerance,
+                        rightPrecursorMassTolerance,
                         minIsotopeError,
                         maxIsotopeError,
                         specDataType,

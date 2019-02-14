@@ -74,7 +74,7 @@ public class IonProbability {
                         prm += pep.get(i).getMass();
                         float mz = ion.getMz((float) prm);
                         if (numAllSegments > 1) {
-                            int segNum = (int) (mz / spec.getParentMass() * numAllSegments);
+                            int segNum = (int) (mz / spec.getPrecursorMass() * numAllSegments);
                             if (segNum >= numAllSegments)
                                 segNum = numAllSegments - 1;
                             if (segNum != targetSegment)
@@ -92,7 +92,7 @@ public class IonProbability {
                         srm += pep.get(pep.size() - 1 - i).getMass();
                         float mz = ion.getMz((float) srm);
                         if (numAllSegments > 1) {
-                            int segNum = (int) (mz / spec.getParentMass() * numAllSegments);
+                            int segNum = (int) (mz / spec.getPrecursorMass() * numAllSegments);
                             if (segNum >= numAllSegments)
                                 segNum = numAllSegments - 1;
                             if (segNum != targetSegment)

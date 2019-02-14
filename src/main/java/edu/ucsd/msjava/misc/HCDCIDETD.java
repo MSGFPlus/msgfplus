@@ -245,7 +245,7 @@ public class HCDCIDETD {
             Spectrum spec = map.getSpectrumBySpecIndex(scanNum);
             int charge = Integer.parseInt(token[4]);
             spec.setCharge(charge);
-            float expMass = spec.getParentMass();
+            float expMass = spec.getPrecursorMass();
             String annotation = token[11];
             Peptide pep = aaSet.getPeptide(annotation.substring(annotation.indexOf('.') + 1, annotation.lastIndexOf('.')));
 
@@ -295,7 +295,7 @@ public class HCDCIDETD {
             Spectrum spec = map.getSpectrumBySpecIndex(scanNum);
             int charge = Integer.parseInt(token[4]);
             spec.setCharge(charge);
-            float expMass = spec.getParentMass();
+            float expMass = spec.getPrecursorMass();
             String annotation = token[11];
             Peptide pep = aaSet.getPeptide(annotation.substring(annotation.indexOf('.') + 1, annotation.lastIndexOf('.')));
 

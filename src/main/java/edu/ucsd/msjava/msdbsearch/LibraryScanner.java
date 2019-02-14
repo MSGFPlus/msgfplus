@@ -187,8 +187,8 @@ public class LibraryScanner {
 
                 float peptideMass = (float) prm[pepLength];
                 int nominalPeptideMass = nominalPRM[pepLength];
-                float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
-                float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
+                float tolDaLeft = specScanner.getLeftPrecursorMassTolerance().getToleranceAsDa(peptideMass);
+                float tolDaRight = specScanner.getRightPrecursorMassTolerance().getToleranceAsDa(peptideMass);
 
                 double leftThr = (double) (peptideMass - tolDaRight);
                 double rightThr = (double) (peptideMass + tolDaLeft);
@@ -331,8 +331,8 @@ public class LibraryScanner {
 
             float peptideMass = (float) prm[pepLength];
             int nominalPeptideMass = nominalPRM[pepLength];
-            float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
-            float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
+            float tolDaLeft = specScanner.getLeftPrecursorMassTolerance().getToleranceAsDa(peptideMass);
+            float tolDaRight = specScanner.getRightPrecursorMassTolerance().getToleranceAsDa(peptideMass);
 
             double leftThr = (double) (peptideMass - tolDaRight);
             double rightThr = (double) (peptideMass + tolDaLeft);
@@ -403,8 +403,8 @@ public class LibraryScanner {
             int minNominalPeptideMass = nominalPeptideMass + specScanner.getMinIsotopeError();
             int maxNominalPeptideMass = nominalPeptideMass + specScanner.getMaxIsotopeError();
 
-            float tolDaLeft = specScanner.getLeftParentMassTolerance().getToleranceAsDa(peptideMass);
-            float tolDaRight = specScanner.getRightParentMassTolerance().getToleranceAsDa(peptideMass);
+            float tolDaLeft = specScanner.getLeftPrecursorMassTolerance().getToleranceAsDa(peptideMass);
+            float tolDaRight = specScanner.getRightPrecursorMassTolerance().getToleranceAsDa(peptideMass);
             int maxPeptideMassIndex, minPeptideMassIndex;
 
             maxPeptideMassIndex = minNominalPeptideMass + Math.round(tolDaLeft - 0.4999f);
@@ -513,7 +513,7 @@ public class LibraryScanner {
                         deltaNominalMass = delta;
                     }
                 }
-                if (specScanner.getRightParentMassTolerance().isTolerancePPM())
+                if (specScanner.getRightPrecursorMassTolerance().isTolerancePPM())
                     pmError = pmError / theoMass * 1e6f;
 
                 String protein = match.getProtein();    // current no protein id is assigned

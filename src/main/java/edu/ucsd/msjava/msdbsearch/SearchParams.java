@@ -19,8 +19,8 @@ public class SearchParams {
     private List<DBSearchIOFiles> dbSearchIOList;
     private File databaseFile;
     private String decoyProteinPrefix;
-    private Tolerance leftParentMassTolerance;
-    private Tolerance rightParentMassTolerance;
+    private Tolerance leftPrecursorMassTolerance;
+    private Tolerance rightPrecursorMassTolerance;
     private int minIsotopeError;
     private int maxIsotopeError;
     private Enzyme enzyme;
@@ -68,13 +68,13 @@ public class SearchParams {
     public String getDecoyProteinPrefix() { return decoyProteinPrefix; }
 
     // Used by MS-GF+
-    public Tolerance getLeftParentMassTolerance() {
-        return leftParentMassTolerance;
+    public Tolerance getLeftPrecursorMassTolerance() {
+        return leftPrecursorMassTolerance;
     }
 
     // Used by MS-GF+
-    public Tolerance getRightParentMassTolerance() {
-        return rightParentMassTolerance;
+    public Tolerance getRightPrecursorMassTolerance() {
+        return rightPrecursorMassTolerance;
     }
 
     // Used by MS-GF+
@@ -265,25 +265,27 @@ public class SearchParams {
 
         decoyProteinPrefix = paramManager.getDecoyProteinPrefix();
 
-        // Parent mass tolerance
-        ToleranceParameter tol = paramManager.getParentMassToleranceParam();
-        leftParentMassTolerance = tol.getLeftTolerance();
-        rightParentMassTolerance = tol.getRightTolerance();
+        // Precursor mass tolerance
+        ToleranceParameter tol = paramManager.getPrecursorMassToleranceParam();
+        leftPrecursorMassTolerance = tol.getLeftTolerance();
+        rightPrecursorMassTolerance = tol.getRightTolerance();
 
         int toleranceUnit = paramManager.getToleranceUnit();
         if (toleranceUnit != 2) {
             boolean isTolerancePPM;
             isTolerancePPM = toleranceUnit != 0;
-            leftParentMassTolerance = new Tolerance(leftParentMassTolerance.getValue(), isTolerancePPM);
-            rightParentMassTolerance = new Tolerance(rightParentMassTolerance.getValue(), isTolerancePPM);
+            leftPrecursorMassTolerance = new Tolerance(leftPrecursorMassTolerance.getValue(), isTolerancePPM);
+            rightPrecursorMassTolerance = new Tolerance(rightPrecursorMassTolerance.getValue(), isTolerancePPM);
         }
 
         IntRangeParameter isotopeParam = paramManager.getIsotopeRangeParameter();
         this.minIsotopeError = isotopeParam.getMin();
         this.maxIsotopeError = isotopeParam.getMax();
 
-        if (rightParentMassTolerance.getToleranceAsDa(1000, 2) >= 0.5f || leftParentMassTolerance.getToleranceAsDa(1000, 2) >= 0.5f)
+        if (rightPrecursorMassTolerance.getToleranceAsDa(1000, 2) >= 0.5f ||
+            leftPrecursorMassTolerance.getToleranceAsDa(1000, 2)  >= 0.5f) {
             minIsotopeError = maxIsotopeError = 0;
+        }
 
         enzyme = paramManager.getEnzyme();
         numTolerableTermini = paramManager.getNumTolerableTermini();
@@ -471,10 +473,10 @@ public class SearchParams {
 //		buf.append("Database File: " + this.databaseFile.getAbsolutePath() + "\n");
 
         buf.append("\tPrecursorMassTolerance: ");
-        if (leftParentMassTolerance.equals(rightParentMassTolerance)) {
-            buf.append(leftParentMassTolerance);
+        if (leftPrecursorMassTolerance.equals(rightPrecursorMassTolerance)) {
+            buf.append(leftPrecursorMassTolerance);
         } else {
-            buf.append("[" + leftParentMassTolerance + "," + rightParentMassTolerance + "]");
+            buf.append("[" + leftPrecursorMassTolerance + "," + rightPrecursorMassTolerance + "]");
         }
         buf.append("\n");
 

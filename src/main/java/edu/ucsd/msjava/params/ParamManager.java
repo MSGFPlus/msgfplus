@@ -1002,7 +1002,7 @@ public class ParamManager {
         return getDoubleValue(ParamNameEnum.CHARGE_CARRIER_MASSES.key);
     }
 
-    public ToleranceParameter getParentMassToleranceParam() {
+    public ToleranceParameter getPrecursorMassToleranceParam() {
         return ((ToleranceParameter) getParameter(ParamNameEnum.PRECURSOR_MASS_TOLERANCE.key));
     }
 

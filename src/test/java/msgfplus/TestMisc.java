@@ -144,7 +144,7 @@ public class TestMisc {
         
         scorer.doNotUseError();
         NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
-        int maxNominalMass = NominalMass.toNominalMass(spec.getParentMass());
+        int maxNominalMass = NominalMass.toNominalMass(spec.getPrecursorMass());
         
         // PRM spectrum
         System.out.println("BEGIN IONS");
@@ -213,7 +213,7 @@ public class TestMisc {
             String title = spec.getTitle();
             int nominalMass;
             if(titleToNominalMass.containsKey(title)) nominalMass = titleToNominalMass.get(title);
-            else nominalMass = NominalMass.toNominalMass(spec.getParentMass()) - 18;
+            else nominalMass = NominalMass.toNominalMass(spec.getPrecursorMass()) - 18;
             
             NewScoredSpectrum<NominalMass> scoredSpec = scorer.getScoredSpectrum(spec);
             

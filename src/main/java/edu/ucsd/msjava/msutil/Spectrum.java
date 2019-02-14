@@ -140,7 +140,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
      *
      * @return the mass in Daltons.
      */
-    public float getParentMass() {
+    public float getPrecursorMass() {
         return precursor.getMass();
     }
 
@@ -745,7 +745,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
      */
     public void filterPrecursorPeaks(Tolerance tolerance, int reducedCharge, float offset) {
         int c = this.getCharge() - reducedCharge;
-        float mass = (this.getParentMass() + c * (float) Composition.ChargeCarrierMass()) / c + offset;
+        float mass = (this.getPrecursorMass() + c * (float) Composition.ChargeCarrierMass()) / c + offset;
         for (Peak p : getPeakListByMass(mass, tolerance))
             p.setIntensity(0);
     }
@@ -759,7 +759,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
         }
 
         // Remove all peaks with masses >= M+H - 38
-        int nominalPM = Math.round((getParentMass() - (float) Composition.H2O) * Constants.INTEGER_MASS_SCALER);
+        int nominalPM = Math.round((getPrecursorMass() - (float) Composition.H2O) * Constants.INTEGER_MASS_SCALER);
         for (int i = this.size() - 1; i >= 0; i--) {
             float m = get(i).getMass();
             int nominalMass = Math.round(m * Constants.INTEGER_MASS_SCALER);
@@ -775,9 +775,9 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
      * The order of the a spectrum is determined by their parent masses.
      */
     public int compareTo(Spectrum s) {
-        if (getParentMass() > s.getParentMass())
+        if (getPrecursorMass() > s.getPrecursorMass())
             return 1;
-        else if (getParentMass() < s.getParentMass())
+        else if (getPrecursorMass() < s.getPrecursorMass())
             return -1;
         return 0;
     }
@@ -791,7 +791,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
-    out.println(getParentMass()+Composition.H + " " + getCharge());
+    out.println(getPrecursorMass()+Composition.H + " " + getCharge());
     for(Peak p : this)
     {
       out.println(p.getMass() + " " + p.getIntensity());
@@ -876,7 +876,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        out.println(this.getParentMass() + Composition.ChargeCarrierMass() + "\t" + this.getPrecursorPeak().getCharge());
+        out.println(this.getPrecursorMass() + Composition.ChargeCarrierMass() + "\t" + this.getPrecursorPeak().getCharge());
         for (Peak p : this)
             out.println(p.getMz() + "\t" + p.getIntensity());
         out.close();
@@ -889,7 +889,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
      */
     public String toDta() {
         StringBuffer sb = new StringBuffer();
-        sb.append(this.getParentMass() + Composition.ChargeCarrierMass() + "\t" + this.getPrecursorPeak().getCharge() + "\n");
+        sb.append(this.getPrecursorMass() + Composition.ChargeCarrierMass() + "\t" + this.getPrecursorPeak().getCharge() + "\n");
         for (Peak p : this) sb.append(p.getMz() + "\t" + p.getIntensity() + "\n");
         return sb.toString();
     }

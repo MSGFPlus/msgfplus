@@ -133,10 +133,10 @@ public class SwedCAD {
 //				System.out.println(annotation);
             pepSet.add(annotation.toString());
             lengthHist.add(annotation.size());
-            float errorPPM = (spec.getParentMass() - annotation.getParentMass()) / annotation.getParentMass() * 1e6f;
+            float errorPPM = (spec.getPrecursorMass() - annotation.getParentMass()) / annotation.getParentMass() * 1e6f;
             int intErrorPPM = Math.round(errorPPM * 10);
 //			if(intErrorPPM == 3 || intErrorPPM == -3)
-//				System.out.println(annotation+"\t"+spec.getParentMass()+"\t"+annotation.getParentMass()+"\t"+errorPPM);
+//				System.out.println(annotation+"\t"+spec.getPrecursorMass()+"\t"+annotation.getParentMass()+"\t"+errorPPM);
             hist.add(intErrorPPM);
         }
         System.out.println("Error");

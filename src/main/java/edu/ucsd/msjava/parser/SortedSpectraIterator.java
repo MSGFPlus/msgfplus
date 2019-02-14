@@ -33,7 +33,7 @@ public class SortedSpectraIterator implements Iterator<Spectrum> {
         ArrayList<Pair<Integer, Float>> scanNumPMPairList = new ArrayList<Pair<Integer, Float>>();
         while (itr.hasNext()) {
             Spectrum spec = itr.next();
-            scanNumPMPairList.add(new Pair<Integer, Float>(spec.getSpecIndex(), spec.getParentMass()));
+            scanNumPMPairList.add(new Pair<Integer, Float>(spec.getSpecIndex(), spec.getPrecursorMass()));
             numSpecs++;
         }
         this.numSpecs = numSpecs;
@@ -102,7 +102,7 @@ public class SortedSpectraIterator implements Iterator<Spectrum> {
         int numSpecs = 0;
         while (sortedItr.hasNext()) {
             Spectrum spec = sortedItr.next();
-            System.out.println(spec.getParentMass());
+            System.out.println(spec.getPrecursorMass());
             numSpecs++;
         }
         System.out.println("NumSpecs: " + numSpecs);

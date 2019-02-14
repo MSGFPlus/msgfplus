@@ -216,7 +216,7 @@ public class MSGF {
 
             spec.getPrecursorPeak().setCharge(psm.getCharge());
 
-            float expPM = spec.getParentMass();
+            float expPM = spec.getPrecursorMass();
             float calcPM = psm.getPeptide().getParentMass();
             if (Math.abs(expPM - calcPM) > 10) {
                 out.print(psm.getInsPecTString() + "\t" + "N/A: precursor mass != peptide mass (" + expPM + " vs " + calcPM + ")");

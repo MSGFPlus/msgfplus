@@ -694,7 +694,7 @@ public class HeckWhole {
 
             if (!isExplained) {
                 for (int c = 1; c <= spec.getCharge(); c++) {
-                    float mass = (spec.getParentMass() + c * (float) (Composition.NEUTRON)) / c;
+                    float mass = (spec.getPrecursorMass() + c * (float) (Composition.NEUTRON)) / c;
                     System.out.println("NE " + c + " " + (rankOnePeak.getMz() - mass) + " " + rankOnePeak.getMz() + " " + mass);
                 }
             }

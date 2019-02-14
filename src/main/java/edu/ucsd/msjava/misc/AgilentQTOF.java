@@ -444,7 +444,7 @@ public class AgilentQTOF {
             for (int i = pep.size() - 1; i > 0; i--) {
                 numCleavages++;
                 suffixMass += pep.get(i).getMass();
-                float prefixMass = spec.getParentMass() - (float) Composition.H2O - suffixMass;
+                float prefixMass = spec.getPrecursorMass() - (float) Composition.H2O - suffixMass;
 //				float prefixMass = pep.getMass(0, i);
                 boolean peakExists = false;
                 for (IonType ion : ions) {

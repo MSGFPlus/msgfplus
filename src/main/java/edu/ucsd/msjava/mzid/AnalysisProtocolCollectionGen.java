@@ -173,14 +173,14 @@ public class AnalysisProtocolCollectionGen {
         // Parent tolerance
         Tolerance parTol = new Tolerance();
         List<CvParam> parCvList = parTol.getCvParam();
-        CvParam parCvPlus = Constants.getCvParamWithMassUnits(!params.getRightParentMassTolerance().isTolerancePPM());
-        CvParam parCvMinus = Constants.getCvParamWithMassUnits(!params.getLeftParentMassTolerance().isTolerancePPM());
+        CvParam parCvPlus = Constants.getCvParamWithMassUnits(!params.getRightPrecursorMassTolerance().isTolerancePPM());
+        CvParam parCvMinus = Constants.getCvParamWithMassUnits(!params.getLeftPrecursorMassTolerance().isTolerancePPM());
         parCvPlus.setAccession("MS:1001412");
         parCvPlus.setName("search tolerance plus value");
         parCvMinus.setAccession("MS:1001413");
         parCvMinus.setName("search tolerance minus value");
-        parCvPlus.setValue(String.valueOf(params.getRightParentMassTolerance().getValue()));
-        parCvMinus.setValue(String.valueOf(params.getLeftParentMassTolerance().getValue()));
+        parCvPlus.setValue(String.valueOf(params.getRightPrecursorMassTolerance().getValue()));
+        parCvMinus.setValue(String.valueOf(params.getLeftPrecursorMassTolerance().getValue()));
         parCvList.add(parCvPlus);
         parCvList.add(parCvMinus);
         spectrumIdentificationProtocol.setParentTolerance(parTol);

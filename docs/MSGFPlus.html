@@ -145,9 +145,9 @@
         </ul>
       </li>
       <li style="margin-bottom: 10px;">
-        <b>-t ParentMassTolerance</b> (Default: 20ppm)
+        <b>-t PrecursorMassTolerance</b> (Default: 20ppm)
         <ul>
-          <li>Parent mass tolerance in Da. or ppm. There must be no space between the number and the unit. E.g. <code>2.5Da</code> or <code>20ppm</code></li>
+          <li>Precursor mass tolerance in Da. or ppm. There must be no space between the number and the unit. E.g. <code>2.5Da</code> or <code>20ppm</code></li>
           <li>To set asymmetric tolerances, use a comma to separate left (observed mass &lt; theoretical mass) and <br>right (observed mass &gt; theoretical mass) tolerances.<br>E.g. <code>0.5Da,2.5Da</code></li>
           <li>It is recommended to use a tight tolerance rather than a loose tolerance (e.g. for Orbitrap data, 10ppm or 20ppm usually identifies more spectra than 50ppm).</li>
         </ul>
@@ -156,7 +156,7 @@
         <b>-ti IsotopeErrorRange</b> (Default: 0,1)
         <ul>
           <li>Takes into account of the error introduced by choosing non-monoisotopic peak for fragmentation.</li>
-          <li>If the parent mass tolerance is equal to or larger than 0.5Da or 500ppm, this parameter will be ignored.</li>
+          <li>If the precursor mass tolerance is equal to or larger than 0.5Da or 500ppm, this parameter will be ignored.</li>
           <li>The combination of -t and -ti determines the precursor mass tolerance.</li>
           <li>E.g. <span class="code-keyword"><code>-t 20ppm -ti -1,2</code></span> tests abs(ObservedPepMass - TheoreticalPepMass - n * 1.00335Da) &lt; 20ppm for n = -1, 0, 1, 2</li>
         </ul>
