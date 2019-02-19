@@ -212,6 +212,21 @@ public class SearchParams {
         return maxMissedCleavages;
     }
 
+
+    /**
+     * Look for # in dataLine
+     * If present, remove that character and any comment after it
+     * @param dataLine
+     * @return dataLine without the comment
+     */
+    public static String getConfigLineWithoutComment(String dataLine) {
+        String[] tokenArray = dataLine.split("#");
+        if (tokenArray.length == 0)
+            return "";
+
+        return tokenArray[0].trim();
+    }
+
     // Used by MS-GF+
     public String parse(ParamManager paramManager) {
         AminoAcidSet configAASet = null;
@@ -423,13 +438,7 @@ public class SearchParams {
         while ((dataLine = reader.readLine()) != null) {
             lineNum++;
 
-            // Check for a comment in the line (starts with a #)
-            String[] tokenArray = dataLine.split("#");
-            if (tokenArray.length == 0) {
-                continue;
-            }
-
-            String lineSetting = tokenArray[0].trim();
+            String lineSetting = getConfigLineWithoutComment(dataLine);
             if (lineSetting.length() == 0) {
                 continue;
             }

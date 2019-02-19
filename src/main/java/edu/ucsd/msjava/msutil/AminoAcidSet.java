@@ -1,5 +1,6 @@
 package edu.ucsd.msjava.msutil;
 
+import edu.ucsd.msjava.msdbsearch.SearchParams;
 import edu.ucsd.msjava.msutil.Modification.Location;
 import edu.ucsd.msjava.params.ParamManager;
 import edu.ucsd.msjava.parser.BufferedLineReader;
@@ -883,11 +884,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             ArrayList<AminoAcid> customAA,
             ModificationMetadata modMetadata) {
 
-        String[] tokenArray = dataLine.split("#");
-        if (tokenArray.length == 0)
-            return true;
-
-        String modSetting = tokenArray[0].trim();
+        String modSetting = SearchParams.getConfigLineWithoutComment(dataLine);
         if (modSetting.length() == 0) {
             return true;
         }
