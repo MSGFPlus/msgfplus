@@ -257,7 +257,7 @@ public class Composition extends Matter {
         if (!cleanCompositionStr.matches("(([A-Z][a-z]?([+-]\\d+|\\d*)))+"))
             return null;
 
-        HashMap<String, Integer> compTable = new HashMap<String, Integer>();
+        HashMap<String, Integer> compTable = new HashMap<>();
         compTable.put("C", 0);
         compTable.put("H", 0);
         compTable.put("N", 0);

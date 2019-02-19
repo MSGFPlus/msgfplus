@@ -107,13 +107,13 @@ public class Modification {
 
     /**
      * Register a modification by name and mass
-     * @param name Modification name
+     * @param modName Modification name (though getAminoAcidSetFromXMLFile uses 'residueStr + " " + modMass')
      * @param mass Monoisotopic mass
      * @return
      */
-    public static Modification register(String name, double mass) {
-        Modification mod = new Modification(name, mass);
-        modTable.put(name, mod);
+    public static Modification register(String modName, double mass) {
+        Modification mod = new Modification(modName, mass);
+        modTable.put(modName, mod);
         return mod;
     }
 
@@ -161,7 +161,7 @@ public class Modification {
     private static Hashtable<String, Modification> modTable;
 
     static {
-        modTable = new Hashtable<String, Modification>();
+        modTable = new Hashtable<>();
         for (Modification mod : defaultModList)
             modTable.put(mod.getName(), mod);
     }

@@ -80,10 +80,10 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
     private AminoAcidSet() // prevents instantiation
     {
-        aaListMap = new HashMap<Location, ArrayList<AminoAcid>>();
-        standardResidueAAArrayMap = new HashMap<Location, HashMap<Character, AminoAcid[]>>();
+        aaListMap = new HashMap<>();
+        standardResidueAAArrayMap = new HashMap<>();
         for (Location location : Location.values()) {
-            aaListMap.put(location, new ArrayList<AminoAcid>());
+            aaListMap.put(location, new ArrayList<>());
         }
         nextResidue = 128;
     }
@@ -197,7 +197,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
      * @return
      */
     public ArrayList<Character> getResidueListWithoutMods() {
-        ArrayList<Character> residues = new ArrayList<Character>();
+        ArrayList<Character> residues = new ArrayList<>();
         for (Map.Entry<Character, AminoAcid> aa : residueMap.entrySet()) {
             char residue = aa.getValue().getUnmodResidue();
             if (!residues.contains(residue)) {
@@ -213,7 +213,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
      * @return
      */
     public ArrayList<Character> getResidueList() {
-        return new ArrayList<Character>(residueMap.keySet());
+        return new ArrayList<>(residueMap.keySet());
     }
 
     /**
@@ -300,7 +300,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
      */
     public Peptide getPeptide(String sequence) {
         boolean isModified = false;
-        ArrayList<AminoAcid> aaArray = new ArrayList<AminoAcid>();
+        ArrayList<AminoAcid> aaArray = new ArrayList<>();
         for (int i = 0; i < sequence.length(); i++) {
             char residue = sequence.charAt(i);
             AminoAcid aa = this.getAminoAcid(residue);
@@ -578,14 +578,17 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     }
 
     private void applyFixedMods(HashMap<Modification.Location, ArrayList<Modification.Instance>> fixedMods, Location location) {
-        for (Modification.Instance mod : fixedMods.get(location)) {
-            // residue-specific
-            char residue = mod.getResidue();
-            if (residue == '*')
+
+        // Store residue-specific fixed mods
+        for (Modification.Instance modInstance : fixedMods.get(location)) {
+            char residue = modInstance.getResidue();
+            if (residue == '*') {
+                // Static mods with * are handled below
                 continue;
+            }
 
             ArrayList<AminoAcid> oldAAList = this.getAAList(location);
-            ArrayList<AminoAcid> newAAList = new ArrayList<AminoAcid>();
+            ArrayList<AminoAcid> newAAList = new ArrayList<>();
 
             for (AminoAcid aa : oldAAList) {
                 if (aa.getUnmodResidue() != residue) {
@@ -598,13 +601,16 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             updateAAListMapWithFixedModAA(location, newAAList);
         }
 
-        // any residue
-        for (Modification.Instance mod : fixedMods.get(location)) {
-            char residue = mod.getResidue();
-            if (residue != '*')
+        // Store fixed mods that apply to any residue
+        for (Modification.Instance modInstance : fixedMods.get(location)) {
+            char residue = modInstance.getResidue();
+            if (residue != '*') {
+                // Static mods without * were handled above
                 continue;
+            }
+
             ArrayList<AminoAcid> oldAAList = this.getAAList(location);
-            ArrayList<AminoAcid> newAAList = new ArrayList<AminoAcid>();
+            ArrayList<AminoAcid> newAAList = new ArrayList<>();
 
             for (AminoAcid aa : oldAAList) {
                 addFixedModToAAList(modInstance, location, aa, newAAList);
@@ -615,23 +621,25 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     }
 
     private void addVariableMods(HashMap<Modification.Location, ArrayList<Modification.Instance>> variableMods, Location location) {
-        // residue-specific
+
+        // Store residue-specific variable mods
         for (Location loc : locMap.get(location)) {
-            ArrayList<AminoAcid> newAAList = new ArrayList<AminoAcid>();
+            ArrayList<AminoAcid> newAAList = new ArrayList<>();
             ArrayList<AminoAcid> oldAAList = this.getAAList(loc);
             for (AminoAcid targetAA : oldAAList) {
                 for (Modification.Instance mod : variableMods.get(location)) {
                     char residue = mod.getResidue();
                     if (residue == '*')
                         continue;
+
                     if (targetAA.getUnmodResidue() == residue) {
-                        if (targetAA.isModified()) {
 //							if(mod.getLocation() == Location.Anywhere && targetAA.hasResidueSpecificVariableMod())	// residue mod
 //								continue;
 //							if(mod.getLocation() != Location.Anywhere && targetAA.hasTerminalVariableMod())	// residue mod
 //								continue;
-                            if (targetAA.hasResidueSpecificVariableMod())
-                                continue;
+                        if (targetAA.isModified() && targetAA.hasResidueSpecificVariableMod()) {
+                            // This amino acid already has this variable modification
+                            continue;
                         }
 //						char modResidue = this.getModifiedResidue(targetAA.getUnmodResidue());
 //						ModifiedAminoAcid modAA = new ModifiedAminoAcid(targetAA, mod, modResidue);
@@ -644,9 +652,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 updateAAListMapAtLocation(loc, newAA);
         }
 
-        // any residue
+        // Store variable mods that apply to any residue
         for (Location loc : locMap.get(location)) {
-            ArrayList<AminoAcid> newAAList = new ArrayList<AminoAcid>();
+            ArrayList<AminoAcid> newAAList = new ArrayList<>();
             ArrayList<AminoAcid> oldAAList = this.getAAList(loc);
             for (AminoAcid targetAA : oldAAList) {
                 for (Modification.Instance mod : variableMods.get(location)) {
@@ -658,13 +666,13 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 //						System.err.println("Invalid modification: " + mod);
 //						System.exit(-1);
 //					}
-                    if (targetAA.isModified()) {
 //						if(mod.getLocation() == Location.Anywhere && targetAA.hasResidueSpecificVariableMod())	// residue mod
 //							continue;
 //						if(mod.getLocation() != Location.Anywhere && targetAA.hasTerminalVariableMod())	// residue mod
 //							continue;
-                        if (targetAA.hasTerminalVariableMod())
-                            continue;
+
+                    if (targetAA.isModified() && targetAA.hasTerminalVariableMod()) {
+                        continue;
                     }
 //					char modResidue = this.getModifiedResidue(targetAA.getUnmodResidue());
 //					ModifiedAminoAcid modAA = new ModifiedAminoAcid(targetAA, mod, modResidue);
@@ -678,15 +686,15 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     }
 
     private AminoAcidSet finalizeSet() {
-        standardResidueAAArrayMap = new HashMap<Location, HashMap<Character, AminoAcid[]>>();
-        nominalMass2aa = new HashMap<Location, HashMap<Integer, AminoAcid[]>>();
+        standardResidueAAArrayMap = new HashMap<>();
+        nominalMass2aa = new HashMap<>();
         for (Location location : Location.values()) {
-            standardResidueAAArrayMap.put(location, new HashMap<Character, AminoAcid[]>());
-            nominalMass2aa.put(location, new HashMap<Integer, AminoAcid[]>());
+            standardResidueAAArrayMap.put(location, new HashMap<>());
+            nominalMass2aa.put(location, new HashMap<>());
         }
 
-        // add all amino acids to aaList
-        HashSet<AminoAcid> allAASet = new HashSet<AminoAcid>();
+        // add all amino acids to allAASet
+        HashSet<AminoAcid> allAASet = new HashSet<>();
         for (Location location : aaListMap.keySet()) {
             for (AminoAcid aa : aaListMap.get(location))
                 allAASet.add(aa);
@@ -700,7 +708,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         int lightIndex = -1;
         double maxMass = Double.MIN_VALUE;
         int heavyIndex = -1;
-        aa2index = new HashMap<AminoAcid, Integer>();        // aa -> index
+        aa2index = new HashMap<>();        // aa -> index
         for (int i = 0; i < allAminoAcidArr.length; i++) {
             aa2index.put(allAminoAcidArr[i], i);
             double mass = allAminoAcidArr[i].getAccurateMass();
@@ -717,7 +725,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         this.lightestAA = allAminoAcidArr[lightIndex];
 
         // initialize aaList and residueMap
-        residueMap = new HashMap<Character, AminoAcid>();
+        residueMap = new HashMap<>();
 
         for (AminoAcid aa : allAminoAcidArr) {
             assert (residueMap.get(aa.getResidue()) == null) : aa.getResidue() + " already exists!";
@@ -725,20 +733,20 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         }
 
         for (Location location : Location.values()) {
-            HashMap<Integer, ArrayList<AminoAcid>> mass2aaList = new HashMap<Integer, ArrayList<AminoAcid>>();
-            HashMap<Character, LinkedList<AminoAcid>> stdResidue2aaList = new HashMap<Character, LinkedList<AminoAcid>>();
+            HashMap<Integer, ArrayList<AminoAcid>> mass2aaList = new HashMap<>();
+            HashMap<Character, LinkedList<AminoAcid>> stdResidue2aaList = new HashMap<>();
 
             for (AminoAcid aa : this.getAAList(location)) {
                 int thisMass = aa.getNominalMass();
                 if (!mass2aaList.containsKey(thisMass)) {
-                    mass2aaList.put(thisMass, new ArrayList<AminoAcid>());
+                    mass2aaList.put(thisMass, new ArrayList<>());
                 }
                 mass2aaList.get(thisMass).add(aa);
 
                 char stdResidue = aa.getUnmodResidue();
                 LinkedList<AminoAcid> aaList = stdResidue2aaList.get(stdResidue);
                 if (aaList == null)
-                    aaList = new LinkedList<AminoAcid>();
+                    aaList = new LinkedList<>();
                 if (!aa.isModified())
                     aaList.addFirst(aa);    // unmodified residue is at first
                 else
@@ -747,12 +755,12 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             }
 
             // convert the array back to real arrays
-            HashMap<Integer, AminoAcid[]> mass2aaArray = new HashMap<Integer, AminoAcid[]>();
+            HashMap<Integer, AminoAcid[]> mass2aaArray = new HashMap<>();
             for (int mass : mass2aaList.keySet()) {
                 mass2aaArray.put(mass, mass2aaList.get(mass).toArray(new AminoAcid[0]));
             }
 
-            HashMap<Character, AminoAcid[]> stdResidue2aaArray = new HashMap<Character, AminoAcid[]>();
+            HashMap<Character, AminoAcid[]> stdResidue2aaArray = new HashMap<>();
             for (char residue : stdResidue2aaList.keySet())
                 stdResidue2aaArray.put(residue, stdResidue2aaList.get(residue).toArray(new AminoAcid[0]));
 
@@ -879,7 +887,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     }
 
     private static boolean parseConfigEntry(
-            String sourceFilePath, int lineNum, String dataLine,
+            String sourceFilePath,
+            int lineNum,
+            String dataLine,
             ArrayList<Modification.Instance> mods,
             ArrayList<AminoAcid> customAA,
             ModificationMetadata modMetadata) {
@@ -891,7 +901,8 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
         if (modSetting.toLowerCase().startsWith("nummods=")) {
             try {
-                int numMods = Integer.parseInt(modSetting.split("=")[1].trim());
+                String value = modSetting.split("=")[1];
+                int numMods = Integer.parseInt(value.trim());
                 modMetadata.setMaxNumModsPerPeptide(numMods);
             } catch (NumberFormatException e) {
                 System.err.println("Error: Invalid NumMods option at line " + lineNum +
@@ -956,11 +967,12 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             boolean isCustomAminoAcid = false;
             boolean modTypeParseFailed = false;
 
-            if (modInfo[2].trim().equalsIgnoreCase("fix"))
+            String settingType = modInfo[2].trim();
+            if (settingType.equalsIgnoreCase("fix"))
                 isFixedModification = true;
-            else if (modInfo[2].trim().equalsIgnoreCase("opt"))
+            else if (settingType.equalsIgnoreCase("opt"))
                 isFixedModification = false;
-            else if (modInfo[2].trim().equalsIgnoreCase("custom"))
+            else if (settingType.equalsIgnoreCase("custom"))
                 isCustomAminoAcid = true;
             else
                 modTypeParseFailed = true;
@@ -1010,13 +1022,14 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 return false;
             }
 
-            String name = modInfo[4].trim().split("\\s+")[0].trim();
+
             if (!isCustomAminoAcid) {
-                if (isModConflict(sourceFilePath, lineNum, modSetting, name, modMass)) {
+                String modName = getCleanModName(modInfo[4]);
+                if (isModConflict(sourceFilePath, lineNum, modSetting, modName, modMass)) {
                     return false;
                 }
 
-                Modification mod = Modification.register(name, modMass);
+                Modification mod = Modification.register(modName, modMass);
 
                 for (int i = 0; i < residueStr.length(); i++) {
                     char residue = residueStr.charAt(i);
@@ -1030,9 +1043,10 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     }
                 }
             } else {
+                String customAminoAcidDescription = getCleanModName(modInfo[4], false);
                 char customAminoAcidSymbol = residueStr.charAt(0);
 
-                AminoAcid aa = new AminoAcid(customAminoAcidSymbol, name, new Composition(compStr));
+                AminoAcid aa = new AminoAcid(customAminoAcidSymbol, customAminoAcidDescription, new Composition(compStr));
                 if (customAAResidues.contains(Character.toString(customAminoAcidSymbol))) {
                     System.err.println(
                             "Error: Duplicate custom amino acid symbol; \n" +
@@ -1188,13 +1202,13 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     System.exit(-1);
                 }
 
-                String name = residueStr + " " + modMass;
+                String modResiduesAndMass = residueStr + " " + modMass;
 
-                if (isModConflict(modFile.getName(), lineNum, dataLine, name, modMass)) {
+                if (isModConflict(modFile.getName(), lineNum, dataLine, modResiduesAndMass, modMass)) {
                     System.exit(-1);
                 }
 
-                Modification mod = Modification.register(name, modMass);
+                Modification mod = Modification.register(modResiduesAndMass, modMass);
 
                 for (int i = 0; i < residueStr.length(); i++) {
                     char residue = residueStr.charAt(i);
@@ -1465,7 +1479,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     new Modification.Instance(Modification.Carbamidomethyl, 'C').fixedModification()
             };
 
-            HashMap<Character, Modification.Instance> modTable = new HashMap<Character, Modification.Instance>();
+            HashMap<Character, Modification.Instance> modTable = new HashMap<>();
             for (Modification.Instance mod : mods) {
                 if (mod.isFixedModification()) // variable modifications will be ignored
                     modTable.put(mod.getResidue(), mod);
@@ -1525,12 +1539,12 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         return aaSet;
     }
 
-    public static AminoAcidSet getAminoAcidSetFromModAAList(AminoAcidSet baseAASet, ArrayList<AminoAcid> modAAList) {
+    public static AminoAcidSet getAminoAcidSetFromModAAList(AminoAcidSet baseAASet, ArrayList<AminoAcid> modifiedAAList) {
         AminoAcidSet aaSet = new AminoAcidSet();
         for (AminoAcid aa : baseAASet)
             aaSet.addAminoAcid(aa);
 
-        for (AminoAcid aa : modAAList)
+        for (AminoAcid aa : modifiedAAList)
             aaSet.addAminoAcid(aa);
 
         aaSet.finalizeSet();
@@ -1618,16 +1632,19 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         return true;
     }
 
-    private List<ModifiedAminoAcid> modAAList = new ArrayList<ModifiedAminoAcid>();
+    /**
+     * List of amino acid residues where a variable modification has been applied
+     */
+    private List<ModifiedAminoAcid> modAAList = new ArrayList<>();
 
-    private ModifiedAminoAcid getModifiedAminoAcid(AminoAcid targetAA, Modification.Instance mod) {
+    private ModifiedAminoAcid getModifiedAminoAcid(AminoAcid targetAA, Modification.Instance modInstance) {
         for (ModifiedAminoAcid modAA : modAAList) {
-            if (modAA.getTargetAA() == targetAA && modAA.getModification() == mod.getModification())
+            if (modAA.getTargetAA() == targetAA && modAA.getModification() == modInstance.getModification())
                 return modAA;
         }
 
         char modResidue = this.getModifiedResidue(targetAA.getUnmodResidue());
-        ModifiedAminoAcid modAA = new ModifiedAminoAcid(targetAA, mod, modResidue);
+        ModifiedAminoAcid modAA = new ModifiedAminoAcid(targetAA, modInstance, modResidue);
         modAAList.add(modAA);
 
         return modAA;
