@@ -86,7 +86,10 @@ public class Composition extends Matter {
     }
 
     public Composition(String compositionStr) {
-        HashMap<Character, Integer> compTable = new HashMap<Character, Integer>();
+
+        String cleanCompositionStr = removeWhitespace(compositionStr);
+
+        HashMap<Character, Integer> compTable = new HashMap<>();
         compTable.put('C', 0);
         compTable.put('H', 0);
         compTable.put('N', 0);
@@ -97,8 +100,8 @@ public class Composition extends Matter {
         boolean numberSpecified = false;
         char element = '*';
         int i = 0;
-        while (i < compositionStr.length()) {
-            char c = compositionStr.charAt(i);
+        while (i < cleanCompositionStr.length()) {
+            char c = cleanCompositionStr.charAt(i);
             if (Character.isLetter(c)) {
                 if (!numberSpecified && element != '*') {
                     number = 1;
@@ -247,7 +250,11 @@ public class Composition extends Matter {
      * @return
      */
     public static Double getMass(String compositionStr) {
-        if (!compositionStr.matches("(([A-Z][a-z]?([+-]\\d+|\\d*)))+"))
+
+        // Remove any whitespace in compositionStr
+        String cleanCompositionStr = removeWhitespace(compositionStr);
+
+        if (!cleanCompositionStr.matches("(([A-Z][a-z]?([+-]\\d+|\\d*)))+"))
             return null;
 
         HashMap<String, Integer> compTable = new HashMap<String, Integer>();
@@ -263,15 +270,15 @@ public class Composition extends Matter {
         compTable.put("Se", 0);
 
         int i = 0;
-        while (i < compositionStr.length()) {
+        while (i < cleanCompositionStr.length()) {
             int j = i;
             String atom;
-            if (i + 1 < compositionStr.length() && Character.isLowerCase(compositionStr.charAt(i + 1)))
+            if (i + 1 < cleanCompositionStr.length() && Character.isLowerCase(cleanCompositionStr.charAt(i + 1)))
                 j += 2;
             else
                 j += 1;
 
-            atom = compositionStr.substring(i, j);
+            atom = cleanCompositionStr.substring(i, j);
 
             i = j;
 
@@ -279,8 +286,8 @@ public class Composition extends Matter {
             if (number == null || !number.equals(0))
                 return null;
 
-            while (j < compositionStr.length()) {
-                char c = compositionStr.charAt(j);
+            while (j < cleanCompositionStr.length()) {
+                char c = cleanCompositionStr.charAt(j);
                 if (c != '+' && c != '-' && !Character.isDigit(c))
                     break;
                 else
@@ -291,7 +298,7 @@ public class Composition extends Matter {
             if (j == i)
                 n = 1;
             else
-                n = Integer.parseInt(compositionStr.substring(i, j));
+                n = Integer.parseInt(cleanCompositionStr.substring(i, j));
 
             compTable.put(atom, n);
             i = j;
@@ -402,6 +409,15 @@ public class Composition extends Matter {
             }
         }
 
+    }
+
+    /**
+     * Remove spaces and tab characters anywhere in the text
+     * @param text
+     * @return
+     */
+    public static String removeWhitespace(String text) {
+        return text.replaceAll("[ \\t]", "").trim();
     }
 
     public static void main(String argv[]) {
