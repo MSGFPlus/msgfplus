@@ -1003,7 +1003,10 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             // Location
             Modification.Location location = null;
             String customResidueBase = "";
-            String locStr = modInfo[3].trim().split("\\s+")[0].trim();
+
+            // Remove any text after the first whitespace character
+            String locStr = getFirstWord(modInfo[3]);
+
             if (locStr.equalsIgnoreCase("any"))
                 location = Modification.Location.Anywhere;
             else if (locStr.equalsIgnoreCase("N-Term") || locStr.equalsIgnoreCase("NTerm"))
@@ -1553,6 +1556,16 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     }
 
     // returns a new residue for modified amino acid
+    /**
+     * Trim whitespace from the beginning and end of value,
+     * Return the text up to the first whitespace character
+     * @param value
+     * @return
+     */
+    private static String getFirstWord(String value) {
+        return value.trim().split("\\s+")[0].trim();
+    }
+
     private char getModifiedResidue(char unmodifiedResidue) {
         if (!Character.isUpperCase(unmodifiedResidue)) {
             System.err.println("Invalid unmodified residue: " + unmodifiedResidue);
