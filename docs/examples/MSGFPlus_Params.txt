@@ -31,7 +31,8 @@ DynamicMod=O1,          M,  opt, any,       Oxidation             # Oxidized met
 DynamicMod=-187.152366, K,  opt, any,       AcNoTMT               # Residue tagged by MSGF+ with static TMT6, but is actually acetylated and does not have TMT
 
 #Custom AA specification
-CustomAA=C3H5NO,        U, custom, U, Selenocysteine      # Custom amino acids can only have C, H, N, O, and S
+#CustomAA=C3H5NO,        U, custom, U, Selenocysteine   # Custom amino acids can only have C, H, N, O, and S
+#CustomAA=C6H11NO,       X, custom, X, Leu_Ile          # Leucine or Isoleucine
 
 #Fragmentation Method
 #  0 means as written in the spectrum or CID if no info (Default)
@@ -123,7 +124,7 @@ NumMatchesPerSpec=1
 # Examples:
 #   C2H3N1O1,  C,  fix, any,         Carbamidomethyl    # Fixed Carbamidomethyl C (alkylation)
 #   O1,        M,  opt, any,         Oxidation          # Oxidation M
-#   15.994915, M,  opt, any,         Oxidation          # Oxidation M (mass is used instead of CompositionStr)
+#   15.994915, M,  opt, any,         Oxidation          # Oxidation M (mass is used instead of CompositionString)
 #   H-1N-1O1,  NQ, opt, any,         Deamidated         # Negative numbers are allowed.
 #   CH2,       K,  opt, any,         Methyl             # Methylation K
 #   C2H2O1,    K,  opt, any,         Acetyl             # Acetylation K
