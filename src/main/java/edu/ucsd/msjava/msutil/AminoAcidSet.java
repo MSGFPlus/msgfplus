@@ -1554,7 +1554,51 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         return aaSet;
     }
 
-    // returns a new residue for modified amino acid
+    private static String getCleanModName(String modName) {
+        return getCleanModName(modName, true);
+    }
+
+    private static String getCleanModName(String modName, Boolean autoUpdateToCanonicalName) {
+
+        // Remove any text after the first whitespace character
+        String cleanName = getFirstWord(modName);
+
+        if (!autoUpdateToCanonicalName)
+            return cleanName;
+
+        // Check for variants of common names
+        switch (cleanName.toLowerCase()) {
+            case "acetylated":
+            case "acetylation":
+                return "Acetyl";
+            case "alkylated":
+            case "alkylation":
+                return "Carbamidomethyl";
+            case "carbamylated":
+            case "carbamylation":
+                return "Carbamyl";
+            case "deamidated":
+            case "deamidation":
+                return "Deamidated";
+            case "methylated":
+            case "methylation":
+                return "Methyl";
+            case "phosphorylated":
+            case "phosphorylation":
+                return "Phospho";
+        }
+
+        // Check for use of a common mod name, but a capitalization difference
+        for (Modification defaultMod : Modification.getDefaultModList()) {
+            String defaultModName = defaultMod.getName();
+            if (defaultModName.equalsIgnoreCase(cleanName)) {
+                return defaultModName;
+            }
+        }
+
+        return cleanName;
+    }
+
     /**
      * Trim whitespace from the beginning and end of value,
      * Return the text up to the first whitespace character
