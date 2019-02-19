@@ -562,14 +562,13 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     break;
             }
 
-            DecimalFormat massFormatter = new DecimalFormat("#.0###");
             Double modMass = mod.getModification().getAccurateMass();
 
             String formattedModMass;
             if (modMass > 0)
-                formattedModMass = "+" + massFormatter.format(modMass);
+                formattedModMass = "+" + getRoundedMass(modMass);
             else
-                formattedModMass = massFormatter.format(modMass);
+                formattedModMass = getRoundedMass(modMass);
 
             String modInfo = modType + mod.getModification().getName() + " on " + mod.getResidue() + modLocation + " (" + formattedModMass + ")";
 
@@ -1589,6 +1588,16 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     }
 
     /**
+     * Return the mass value as a string, with 4 digits of precision after the decimal
+     * @param mass
+     * @return
+     */
+    private static String getRoundedMass(double mass) {
+        DecimalFormat massFormatter = new DecimalFormat("#.0###");
+        return massFormatter.format(mass);
+    }
+
+    /**
      * Checks for a conflicting mod definition by modification name
      * @param modFileName Mod file name
      * @param lineNum Line number
@@ -1626,8 +1635,8 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                             "Warning: Non-standard modification mass defined on line " + lineNum +
                                     " in file " + modFileName + ": " + dataLine);
 
-                    System.out.println("Modification " + modName + " typically has mass " + existingMod.getAccurateMass());
-                    System.out.println("Overriding with user-defined value of " + modMass);
+                    System.out.println("Modification " + modName + " typically has mass " + getRoundedMass(existingMod.getAccurateMass()));
+                    System.out.println("Overriding with user-defined value of " + getRoundedMass(modMass));
 
                     defaultModUsage.put(modName, modMass);
                     return false;
@@ -1640,8 +1649,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 "the duplicate definition is on line " + lineNum +
                         " in file " + modFileName + ": " + dataLine);
 
-        System.err.println("Modification " + modName + " is already defined with mass " + existingMod.getAccurateMass());
-        System.err.println("The duplicate definition has mass " + modMass);
+
+        System.err.println("Modification " + modName + " is already defined with mass " + getRoundedMass(existingMod.getAccurateMass()));
+        System.err.println("The duplicate definition has mass " + getRoundedMass(modMass));
         return true;
     }
 
