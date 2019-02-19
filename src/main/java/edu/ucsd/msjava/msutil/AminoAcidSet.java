@@ -26,6 +26,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
     private HashMap<Location, ArrayList<AminoAcid>> aaListMap;
 
+    /**
+     * Mapping from Location Enum name to places where the location applies
+     */
     private static HashMap<Location, Location[]> locMap;
 
     /**
@@ -135,7 +138,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     }
 
     /**
-     * Reterns the size of anywhere amino acids
+     * Returns the size of anywhere amino acids
      *
      * @return the size of anywhere amino acids
      */
@@ -421,12 +424,10 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         }
     }
 
-    // private members to build an amino acid set
     private void addAminoAcid(AminoAcid aa) {
         addAminoAcid(aa, Location.Anywhere);
     }
 
-    // private members
     private void addAminoAcid(AminoAcid aa, Location location) {
         for (Location loc : locMap.get(location)) {
             updateAAListMapAtLocation(loc, aa);
@@ -910,6 +911,12 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 return false;
             }
         } else {
+            // Line is a static mod, dynamic mod, or custom amino acid; examples:
+            // C2H3N1O1, C, fix, any,    Carbamidomethyl
+            // 229.1629, *, fix, N-term, TMT6plex
+            // O1,       M, opt, any,    Oxidation
+            // C3H5NO,   U, custom, U, Selenocysteine
+
             String[] modInfo = modSetting.split(",");
             if (modInfo.length < 5) {
                 System.out.println("Ignoring line " + lineNum +
@@ -1609,6 +1616,11 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         return value.trim().split("\\s+")[0].trim();
     }
 
+    /**
+     * Obtain a new residue for a modified amino acid
+      * @param unmodifiedResidue
+     * @return
+     */
     private char getModifiedResidue(char unmodifiedResidue) {
         if (!Character.isUpperCase(unmodifiedResidue)) {
             System.err.println("Invalid unmodified residue: " + unmodifiedResidue);
@@ -1646,7 +1658,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
      * @param modFileName Mod file name
      * @param lineNum Line number
      * @param dataLine Text from this line in the mod file
-     * @param modName Modification name (case-sensitive)
+     * @param modName Modification name (case-sensitive); getAminoAcidSetFromXMLFile uses 'residueStr + " " + modMass'
      * @param modMass Monoisotopic mass
      * @return True if an existing mod is defined with this name but a different mass
      */

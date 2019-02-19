@@ -19,6 +19,11 @@ public class Modification {
     private final String name;
     private final double mass;
     private final int nominalMass;
+
+    /**
+     * Empirical formula or modification mass of this modification
+     * This is null in certain instances (e.g. custom amino acid residue or non-standard modifications)
+     */
     private Composition composition;
 
     private Modification(String name, Composition composition) {
@@ -34,32 +39,60 @@ public class Modification {
         this.nominalMass = NominalMass.toNominalMass((float) mass);
     }
 
+    /**
+     * Modification name
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Modification mass (as a float)
+     * @return
+     */
     public float getMass() {
         return (float) mass;
     }
 
+    /**
+     * Modification mass (as a double)
+     * @return
+     */
     public double getAccurateMass() {
         return mass;
     }
 
+    /**
+     * Modification mass (as an integer)
+     * @return
+     */
     public int getNominalMass() {
         return nominalMass;
     }
 
+    /**
+     * Empirical formula or modification mass of this modification
+     * This is null in certain instances (e.g. custom amino acid residue or non-standard modifications)
+     */
     public Composition getComposition() {
+        if (composition == null)
+            return null;
+
         return composition;
     }
 
+    /**
+     * List of default modifications
+     * @return
+     */
     public static Modification[] getDefaultModList() {
         return defaultModList;
     }
+
     /**
      * Looks for an existing mod with the given name
-     * @param name Modification name (case-sensitive)
+     * @param name Modification name (case-sensitive); getAminoAcidSetFromXMLFile uses 'residueStr + " " + modMass'
      * @param mass Monoisotopic mass
      * @return True if an existing mod exists, and the mass is different (by more than 0.001 Da); otherwise false
      */
@@ -69,7 +102,7 @@ public class Modification {
 
     /**
      * Looks for an existing mod with the given name
-     * @param name Modification name (case-sensitive)
+     * @param name Modification name (case-sensitive); getAminoAcidSetFromXMLFile uses 'residueStr + " " + modMass'
      * @param mass Monoisotopic mass
      * @return True if an existing mod exists, and the mass is different (by more than massTolerance Da); otherwise false
      */
@@ -158,6 +191,10 @@ public class Modification {
                     PyroCarbamidomethyl
             };
 
+    /**
+     * Keys are modification names
+     * Values are modification details
+     */
     private static Hashtable<String, Modification> modTable;
 
     static {

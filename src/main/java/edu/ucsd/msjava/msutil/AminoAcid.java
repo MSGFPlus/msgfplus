@@ -25,7 +25,6 @@ public class AminoAcid extends Matter {
      *
      * @param residue     single letter identifier.
      * @param name        full name of the amino acid.
-     * @param id          kept for historical reasons.
      * @param composition CHNOS composition object.
      */
     protected AminoAcid(char residue, String name, Composition composition) {
@@ -39,8 +38,9 @@ public class AminoAcid extends Matter {
     /**
      * Constructor. Generates a custom amino acid.
      *
-     * @param residue
-     * @param mass
+     * @param residue Single letter identifier.
+     * @param name    Full name of the amino acid.
+     * @param mass    Mass
      */
     protected AminoAcid(char residue, String name, double mass) {
         this.mass = mass;
@@ -77,7 +77,6 @@ public class AminoAcid extends Matter {
     public boolean isModified() {
         return false;
     }
-
 
     /**
      * Quick way to tell the number of variable modifications applied to this amino acid.
@@ -218,7 +217,6 @@ public class AminoAcid extends Matter {
     /**
      * Returns a modified version of this amino acid (fixed modification).
      *
-     * @param newResidue new residue character representing the modified amino acid
      * @param mod        a modification.
      * @return a modified amino acid object.
      */
@@ -232,6 +230,13 @@ public class AminoAcid extends Matter {
         return modAA;
     }
 
+    /**
+     * Get an amino acid with a customized mass
+     * @param residue
+     * @param name
+     * @param mass
+     * @return
+     */
     public static AminoAcid getCustomAminoAcid(char residue, String name, double mass) {
         AminoAcid standardAA = AminoAcid.getStandardAminoAcid(residue);
         if (standardAA != null && Math.abs(mass - standardAA.getMass()) < 0.001f)

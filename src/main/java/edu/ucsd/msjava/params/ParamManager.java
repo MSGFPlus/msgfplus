@@ -144,6 +144,8 @@ public class ParamManager {
 
         MAX_NUM_MODS("numMods", "NumMods", "Maximum number of dynamic (variable) modifications per peptide; Default: 3", null),
 
+        // Note that static and dynamic modifications cannot be specified at the command line
+        // Use -mod or -conf
         STATIC_MODIFICATION("staticMod", "StaticMod", "Static/Fixed modification", null),
 
         DYNAMIC_MODIFICATION("dynamicMod", "DynamicMod", "Dynamic/Variable modification", null),
