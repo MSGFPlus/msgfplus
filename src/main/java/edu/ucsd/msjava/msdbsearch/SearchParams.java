@@ -407,7 +407,12 @@ public class SearchParams {
         String dataLine;
         int lineNum = 0;
 
-        // Keys in this table are line numbers; values are the text from the config file
+        // Keys in this table are line numbers
+        // Values are the text from the config file, after the equals sign, defining a custom amino acid
+        Hashtable<Integer, String> customAAByLine = new Hashtable<>();
+
+        // Keys in this table are line numbers
+        // Values are the text from the config file, after the equals sign, defining a static or dynamic mod
         Hashtable<Integer, String> modsByLine = new Hashtable<>();
 
         // Parse the settings
@@ -440,7 +445,11 @@ public class SearchParams {
 
                 String value = lineSetting.split("=")[1].trim();
                 if (!value.equalsIgnoreCase("none")) {
-                    modsByLine.put(lineNum, value);
+                    // Store the text after the equals sign
+                    if (ParamManager.ParamNameEnum.CUSTOM_AA.isThisParam(paramName))
+                        customAAByLine.put(lineNum, value);
+                    else
+                        modsByLine.put(lineNum, value);
                 }
                 continue;
             }
@@ -486,7 +495,7 @@ public class SearchParams {
                     "https://github.com/MSGFPlus/msgfplus/blob/master/docs/examples/MSGFPlus_Params.txt");
         }
 
-        return AminoAcidSet.getAminoAcidSetFromList(paramFile.getName(), modsByLine, paramManager);
+        return AminoAcidSet.getAminoAcidSetFromList(paramFile.getName(), customAAByLine, modsByLine, paramManager);
     }
 
     @Override

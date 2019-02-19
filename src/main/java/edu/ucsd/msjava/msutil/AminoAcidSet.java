@@ -823,16 +823,31 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     /**
      * Associate modification definitions read from a MSGF+ parameter file with amino acids
      * @param modConfigFilePath
+     * @param customAAByLine Hashtable where keys are the line number in the MSGF+ parameter file and values are the text from the given line
      * @param modsByLine Hashtable where keys are the line number in the MSGF+ parameter file and values are the text from the given line
      * @param paramManager Parameter manager
      * @return AminoAcidSet
      */
-    public static AminoAcidSet getAminoAcidSetFromList(String modConfigFilePath, Hashtable<Integer, String> modsByLine, ParamManager paramManager) {
+    public static AminoAcidSet getAminoAcidSetFromList(
+            String modConfigFilePath,
+            Hashtable<Integer, String> customAAByLine,
+            Hashtable<Integer, String> modsByLine,
+            ParamManager paramManager) {
+
         ArrayList<Modification.Instance> mods = new ArrayList<>();
         ArrayList<AminoAcid> customAA = new ArrayList<>();
         int maxNumMods = paramManager.getMaxNumModsPerPeptide();
         ModificationMetadata modMetadata = new ModificationMetadata(maxNumMods);
 
+        // First parse any custom amino acid definitions
+        customAAByLine.forEach((lineNum, dataLine) -> {
+            boolean success = parseConfigEntry(modConfigFilePath, lineNum, dataLine, mods, customAA, modMetadata);
+            if (!success) {
+                System.exit(-1);
+            }
+        });
+
+        // Now parse the static and dynamic mods
         modsByLine.forEach((lineNum, dataLine) -> {
             boolean success = parseConfigEntry(modConfigFilePath, lineNum, dataLine, mods, customAA, modMetadata);
             if (!success) {
