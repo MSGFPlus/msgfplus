@@ -428,10 +428,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     // private members
     private void addAminoAcid(AminoAcid aa, Location location) {
         for (Location loc : locMap.get(location)) {
-            // Debug
-//			if(aa.isModified())
-//				System.out.println("Debug");
-            aaListMap.get(loc).add(aa);
+            updateAAListMapAtLocation(loc, aa);
         }
     }
 
@@ -465,6 +462,17 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
         mods.add(modIns);
         return true;
+    }
+
+    private void addFixedModToAAList(Modification.Instance modInstance, Location location, AminoAcid aa, ArrayList<AminoAcid> newAAList) {
+        if (location == Location.Anywhere) {
+            Modification mod = modInstance.getModification();
+            AminoAcid modAA = aa.getAAWithFixedModification(mod);
+            newAAList.add(modAA);    // Replace with a new amino acid (or add a new custom amino acid)
+        } else {
+            ModifiedAminoAcid modAA = getModifiedAminoAcid(aa, modInstance);
+            newAAList.add(modAA);
+        }
     }
 
     private void applyModifications(ArrayList<Modification.Instance> mods) {
@@ -579,22 +587,14 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             ArrayList<AminoAcid> newAAList = new ArrayList<AminoAcid>();
 
             for (AminoAcid aa : oldAAList) {
-                if (aa.getUnmodResidue() != residue)
+                if (aa.getUnmodResidue() != residue) {
                     newAAList.add(aa);
-                else {
-                    if (location == Location.Anywhere)
-                        newAAList.add(aa.getAAWithFixedModification(mod.getModification()));    // replace with a new amino acid
-                    else {
-//						char modResidue = this.getModifiedResidue(aa.getUnmodResidue());
-//						ModifiedAminoAcid modAA = new ModifiedAminoAcid(aa, mod, modResidue);
-                        ModifiedAminoAcid modAA = getModifiedAminoAcid(aa, mod);
-                        newAAList.add(modAA);
-                    }
+                } else {
+                    addFixedModToAAList(modInstance, location, aa, newAAList);
                 }
             }
 
-            for (Location loc : locMap.get(location))
-                aaListMap.put(loc, new ArrayList<AminoAcid>(newAAList));
+            updateAAListMapWithFixedModAA(location, newAAList);
         }
 
         // any residue
@@ -606,18 +606,10 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             ArrayList<AminoAcid> newAAList = new ArrayList<AminoAcid>();
 
             for (AminoAcid aa : oldAAList) {
-                if (location == Location.Anywhere)
-                    newAAList.add(aa.getAAWithFixedModification(mod.getModification()));
-                else {
-//					char modResidue = this.getModifiedResidue(aa.getUnmodResidue());
-//					ModifiedAminoAcid modAA = new ModifiedAminoAcid(aa, mod, modResidue);
-                    ModifiedAminoAcid modAA = getModifiedAminoAcid(aa, mod);
-                    newAAList.add(modAA);
-                }
+                addFixedModToAAList(modInstance, location, aa, newAAList);
             }
 
-            for (Location loc : locMap.get(location))
-                aaListMap.put(loc, new ArrayList<AminoAcid>(newAAList));
+            updateAAListMapWithFixedModAA(location, newAAList);
         }
     }
 
@@ -648,7 +640,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 }
             }
             for (AminoAcid newAA : newAAList)
-                aaListMap.get(loc).add(newAA);
+                updateAAListMapAtLocation(loc, newAA);
         }
 
         // any residue
@@ -680,7 +672,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 }
             }
             for (AminoAcid newAA : newAAList)
-                aaListMap.get(loc).add(newAA);
+                updateAAListMapAtLocation(loc, newAA);
         }
     }
 
@@ -1642,6 +1634,19 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
         modAAList.add(modAA);
 
         return modAA;
+    }
+
+    private void updateAAListMapAtLocation(Location loc, AminoAcid aa) {
+        ArrayList<AminoAcid> aaList = aaListMap.get(loc);
+        aaList.add(aa);
+    }
+
+    private void updateAAListMapWithFixedModAA(
+            Location location,
+            ArrayList<AminoAcid> newAAList) {
+
+        for (Location loc : locMap.get(location))
+            aaListMap.put(loc, new ArrayList<>(newAAList));
     }
 
     public static void main(String argv[]) {
