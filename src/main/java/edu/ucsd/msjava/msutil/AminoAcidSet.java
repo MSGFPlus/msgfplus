@@ -633,16 +633,10 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                         continue;
 
                     if (targetAA.getUnmodResidue() == residue) {
-//							if(mod.getLocation() == Location.Anywhere && targetAA.hasResidueSpecificVariableMod())	// residue mod
-//								continue;
-//							if(mod.getLocation() != Location.Anywhere && targetAA.hasTerminalVariableMod())	// residue mod
-//								continue;
                         if (targetAA.isModified() && targetAA.hasResidueSpecificVariableMod()) {
                             // This amino acid already has this variable modification
                             continue;
                         }
-//						char modResidue = this.getModifiedResidue(targetAA.getUnmodResidue());
-//						ModifiedAminoAcid modAA = new ModifiedAminoAcid(targetAA, mod, modResidue);
                         ModifiedAminoAcid modAA = getModifiedAminoAcid(targetAA, mod);
                         newAAList.add(modAA);
                     }
@@ -661,21 +655,10 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     char residue = mod.getResidue();
                     if (residue != '*')
                         continue;
-//					if(location == Location.Anywhere)
-//					{
-//						System.err.println("Invalid modification: " + mod);
-//						System.exit(-1);
-//					}
-//						if(mod.getLocation() == Location.Anywhere && targetAA.hasResidueSpecificVariableMod())	// residue mod
-//							continue;
-//						if(mod.getLocation() != Location.Anywhere && targetAA.hasTerminalVariableMod())	// residue mod
-//							continue;
 
                     if (targetAA.isModified() && targetAA.hasTerminalVariableMod()) {
                         continue;
                     }
-//					char modResidue = this.getModifiedResidue(targetAA.getUnmodResidue());
-//					ModifiedAminoAcid modAA = new ModifiedAminoAcid(targetAA, mod, modResidue);
                     ModifiedAminoAcid modAA = getModifiedAminoAcid(targetAA, mod);
                     newAAList.add(modAA);
                 }
@@ -1008,7 +991,6 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
             // Location
             Modification.Location location = null;
-            String customResidueBase = "";
 
             // Remove any text after the first whitespace character
             String locStr = getFirstWord(modInfo[3]);
@@ -1024,7 +1006,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             else if (locStr.equalsIgnoreCase("Prot-C-Term") || locStr.equalsIgnoreCase("ProtCTerm"))
                 location = Modification.Location.Protein_C_Term;
             else if (isCustomAminoAcid)
-                customResidueBase = locStr;
+                ;
             else {
                 System.err.println("Error: Invalid Location at line " + lineNum +
                         " in file " + sourceFilePath + ": " + modSetting);
