@@ -493,8 +493,14 @@ public class SearchParams {
             }
 
             if (!validParameter) {
-                System.out.println("Warning, unrecognized parameter '" + lineSetting + "' in config file " + paramFile.getName());
-                invalidParameterCount++;
+                if (lineSetting.toLowerCase().startsWith("enzymedef")) {
+                    // DMS uses EnzymeDef to keep track of customize enzyme definitions
+                    // See, for example, https://github.com/PNNL-Comp-Mass-Spec/DMS-Analysis-Manager/blob/875533dfe95ed2c8252dc72b334cfd8ed651fa1c/Plugins/AM_MSGFDB_PlugIn/clsMSGFPlusUtils.cs#L2456
+                    // Thus, silently ignore this
+                } else {
+                    System.out.println("Warning, unrecognized parameter '" + lineSetting + "' in config file " + paramFile.getName());
+                    invalidParameterCount++;
+                }
             }
 
         }
