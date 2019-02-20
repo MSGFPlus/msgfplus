@@ -481,6 +481,8 @@ public class SearchParams {
                                     value.equalsIgnoreCase("all")) {
                                 // Config file has: NumThreads=All
                                 // This is acceptable
+                                // Note that numThreads should have already been initialized to the number of cores on this system
+                                // (see method addNumThreadsParam in ParamManager)
                                 continue;
                             }
 

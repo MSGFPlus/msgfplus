@@ -128,7 +128,7 @@ public class ParamManager {
                 "0 means Don't search decoy database (Default)\n" +
                 "\t   1 means search the decoy database (forward + reverse proteins)"),
 
-        ADD_FEATURES("addFeatures", "AddFeatures", "Include additional features in the output",
+        ADD_FEATURES("addFeatures", "AddFeatures", "Include additional features in the output (enable this to post-process results with Percolator)",
                 "0 means Output basic scores only (Default)\n" +
                         "\t   1 means Output additional features"),
 

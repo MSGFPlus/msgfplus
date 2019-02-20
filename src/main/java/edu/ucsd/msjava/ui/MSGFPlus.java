@@ -22,8 +22,8 @@ import java.util.logging.Logger;
 
 
 public class MSGFPlus {
-    public static final String VERSION = "Release (v2019.02.19)";
-    public static final String RELEASE_DATE = "19 February 2019";
+    public static final String VERSION = "Release (v2019.02.20)";
+    public static final String RELEASE_DATE = "20 February 2019";
 
     public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
     public static final String DEFAULT_DECOY_PROTEIN_PREFIX = "XXX";
@@ -247,8 +247,9 @@ public class MSGFPlus {
         if (numThreads <= 0)
             numThreads = 1;
 
+        // Use 250 spectra/task(or thread) minimum for efficiency; going smaller slows down processing
         int spectraPerTaskMinimum = 250;
-        int maxThreads = Math.max(1, Math.round((float) specSize / spectraPerTaskMinimum)); // 250 spectra/task(or thread) minimum for efficiency; going smaller slows down processing
+        int maxThreads = Math.max(1, Math.round((float) specSize / spectraPerTaskMinimum));
         if (maxThreads < numThreads) {
             System.out.println("Note: " + spectraPerTaskMinimum + " spectra per thread minimum; using " + maxThreads + " threads instead of " + numThreads);
             numThreads = maxThreads;
