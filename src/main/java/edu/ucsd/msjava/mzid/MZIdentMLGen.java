@@ -639,8 +639,8 @@ public class MZIdentMLGen {
                     if (!isNTermMetCleaved) {
                         // peptideSequence begins with M
                         // TODO: is this considered possible (N-Term Methionine cleavage and peptide begins with M)?
-                        // check if the sequence starting at index + 1 matches the provided peptide sequence
-                        String matchSequence = sa.getSequence().getSubsequence(index + 1, index + 2 + peptide.getPeptideSequence().length());
+                        // check if the sequence starting at index + 2 matches the provided peptide sequence
+                        String matchSequence = sa.getSequence().getSubsequence(index + 2, index + 3 + peptide.getPeptideSequence().length());
                         isNTermMetCleaved = matchSequence.startsWith(peptide.getPeptideSequence());
                     }
                 }
