@@ -14,6 +14,17 @@
     </p>
 
     <p>
+        <b>v2019.02.27</b>
+    </p>
+    <ul>
+        <li>Fix a bug that would output a single peptide evidence twice, under certain circumstances</li>
+        <li>Prevent inaccurate information in peptide evidences due to differences in how protein N-Term Methionine cleavage is handled and tracked</li>
+        <ul>
+            <li>This prevents an issue where a peptide that did have N-Term Methionine cleavage would say it started at residue 1, instead of residue 2</li>
+        </ul>
+    </ul>
+
+    <p>
         <b>v2019.02.20</b>
     </p>
     <ul>
