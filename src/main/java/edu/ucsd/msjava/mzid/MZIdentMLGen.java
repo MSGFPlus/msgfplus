@@ -680,9 +680,8 @@ public class MZIdentMLGen {
                 }
                 else {
                     pepEvMap.put(pepEvKey, pepEv);
+                    peptideEvidenceList.add(pepEv);
                 }
-
-                peptideEvidenceList.add(pepEv);
 
                 PeptideEvidenceRef pepEvRef = new PeptideEvidenceRef();
                 pepEvRef.setPeptideEvidence(pepEv);
