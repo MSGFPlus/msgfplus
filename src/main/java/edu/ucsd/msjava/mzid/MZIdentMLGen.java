@@ -628,8 +628,22 @@ public class MZIdentMLGen {
 
             CompactFastaSequence seq = sa.getSequence();
             for (int index : indices) {
-                boolean isNTermMetCleaved;
-                isNTermMetCleaved = match.isNTermMetCleaved() && sa.getSequence().getCharAt(index + 1) == 'M';
+                boolean isNTermMetCleaved = false;
+                
+                // if the sequence matches to a protein N-term that begins with Methionine
+                if (sa.getSequence().getByteAt(index) == 0 && sa.getSequence().getCharAt(index + 1) == 'M') {
+                    // match.isNTermMetCleaved() is specific to only one of the matched peptides in most cases
+                    // Do a double-check that the index/protein match is correct for the sequence by checking
+                    // the first residue (if not 'M') or matching the peptide sequence to sequence at index + 1
+                    isNTermMetCleaved = match.isNTermMetCleaved() || peptide.getPeptideSequence().charAt(0) != 'M';
+                    if (!isNTermMetCleaved) {
+                        // peptideSequence begins with M
+                        // TODO: is this considered possible (N-Term Methionine cleavage and peptide begins with M)?
+                        // check if the sequence starting at index + 1 matches the provided peptide sequence
+                        String matchSequence = sa.getSequence().getSubsequence(index + 1, index + 2 + peptide.getPeptideSequence().length());
+                        isNTermMetCleaved = matchSequence.startsWith(peptide.getPeptideSequence());
+                    }
+                }
 
                 PeptideEvidence pepEv = new PeptideEvidence();
 
@@ -673,12 +687,13 @@ public class MZIdentMLGen {
 
                 if (pepEvMap.get(pepEvKey) != null) {
                     // Avoid duplicate peptide evidences
-                    // currently only occurs when there are 2 results for a single peptide/mod/dbseq combo,
+                    // currently only observed when there are 2 results for a single peptide/mod/dbseq combo,
                     // one where match.isNTermMetCleaved() is true and sa.getSequence().getCharAt(index + 1) == 'M' is false,
                     // and another where match.isNTermMetCleaved() is false.
                     pepEv = pepEvMap.get(pepEvKey);
                 }
                 else {
+                    // New peptide evidence. Add it to the map and to the peptideEvidenceList.
                     pepEvMap.put(pepEvKey, pepEv);
                     peptideEvidenceList.add(pepEv);
                 }
