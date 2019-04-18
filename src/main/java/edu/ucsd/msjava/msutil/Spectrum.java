@@ -557,7 +557,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 
         Spectrum deconvSpec = this.getCloneWithoutPeakList();
         boolean[] ignore = new boolean[this.size()];
-        for (int i = 0; i < this.size() - 1; i++) {
+        for (int i = 0; i < this.size(); i++) {
             if (ignore[i])
                 continue;
             Peak p = this.get(i);
