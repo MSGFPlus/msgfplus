@@ -52,6 +52,7 @@ public class MSGFPlus {
 
         // Running MS-GF+
         paramManager.printToolInfo();
+        paramManager.printJVMInfo();
         String errorMessage = null;
         try {
             errorMessage = runMSGFPlus(paramManager);

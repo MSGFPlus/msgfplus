@@ -291,6 +291,11 @@ public class ParamManager {
     public void printToolInfo() {
         System.out.println(this.toolName + " " + this.version + " (" + this.date + ")");
     }
+    
+    public void printJVMInfo() {
+        System.out.println("Java " + System.getProperty("java.version") + " (" + System.getProperty("java.vendor") + ")");
+        System.out.println(System.getProperty("os.name") + " (" + System.getProperty("os.arch") + ", version " + System.getProperty("os.version") + ")");
+    }
 
     public void printUsageInfo() {
         System.out.println();

@@ -53,6 +53,7 @@ public class MSGFDB {
 
         // Running MS-GFDB
         paramManager.printToolInfo();
+        paramManager.printJVMInfo();
         String errorMessage = runMSGFDB(paramManager);
         if (errorMessage != null) {
             System.err.println("[Error] " + errorMessage);

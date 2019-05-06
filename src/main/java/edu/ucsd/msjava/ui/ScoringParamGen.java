@@ -38,6 +38,7 @@ public class ScoringParamGen {
         long time = System.currentTimeMillis();
 
         paramManager.printToolInfo();
+        paramManager.printJVMInfo();
         String errorMessage = runScoringParamGen(paramManager);
         if (errorMessage != null) {
             System.err.println("[Error] " + errorMessage);

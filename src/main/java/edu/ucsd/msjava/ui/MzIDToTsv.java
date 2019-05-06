@@ -80,6 +80,7 @@ public class MzIDToTsv {
 
         // Running MS-GF+
         paramManager.printToolInfo();
+        paramManager.printJVMInfo();
         String errorMessage = convert(paramManager);
         if (errorMessage != null) {
             System.err.println("[Error] " + errorMessage);
