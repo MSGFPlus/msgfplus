@@ -155,7 +155,7 @@ public class MgfSpectrumParser implements SpectrumParser {
 //  			}
                 else if (buf.startsWith("END IONS")) {
                     assert (spec != null);
-                    if (spec.getScanNum() == -1 && title != null) {
+                    if (spec.getScanNum() < 0 && title != null) {
                         if (title.matches("Scan:\\d+\\s.+")) {
                             // Title line is of the form Scan:ScanNumber AdditionalText
                             // for example, "Scan:8492 Charge:2"
@@ -164,17 +164,20 @@ public class MgfSpectrumParser implements SpectrumParser {
                             String[] token = title.split("\\s++");
                             int scanNum = Integer.parseInt(token[0].substring("Scan:".length()));
                             spec.setScanNum(scanNum);
+
                         } else if (title.matches(".+\\.\\d+\\.\\d+\\.\\d+$")) {
                             // Title line is of the form DatasetName.ScanStart.ScanEnd.Charge
                             // for example, DatasetName.8492.8492.2
-                            // Split on periods
-                            String[] token = title.split("\\.");
+                            extractScanRangeFromTitle(spec, title);
 
-                            int startScanNum = Integer.parseInt(token[token.length - 3]);
-                            int endScanNum = Integer.parseInt(token[token.length - 2]);
-                            spec.setStartScanNum(startScanNum);
-                            spec.setEndScanNum(endScanNum);
+                        } else if (title.contains(".") && title.contains(" ")) {
+                            // Remove text after the first space and try to match DatasetName.ScanStart.ScanEnd.Charge
+                            // Split on periods
+                            String titleStart = title.substring(0, title.indexOf(' '));
+                            extractScanRangeFromTitle(spec, titleStart);
                         }
+
+                        //Match result = dtaStyleMatcher.matcher(spec.Title)
                     }
                     spec.setPrecursor(new Peak(precursorMz, precursorIntensity, precursorCharge));
                     if (elutionTimeSeconds > 0) {
@@ -193,6 +196,33 @@ public class MgfSpectrumParser implements SpectrumParser {
             }
         }
         return null;
+    }
+
+    /**
+     * Extract start and end scan from the title if it is of the form:
+     * DatasetName.ScanStart.ScanEnd.Charge
+     *
+     * @param spec  Spectrum
+     * @param title Title line
+     */
+    private void extractScanRangeFromTitle(Spectrum spec, String title) {
+        // Split on periods
+        String[] token = title.split("\\.");
+
+        if (token.length > 3) {
+            String candidateStartScan = token[token.length - 3];
+            String candidateEndScan = token[token.length - 2];
+
+            if (tryParseInt(candidateStartScan)) {
+                int startScanNum = Integer.parseInt(candidateStartScan);
+                spec.setStartScanNum(startScanNum);
+            }
+
+            if (tryParseInt(candidateEndScan)) {
+                int endScanNum = Integer.parseInt(candidateEndScan);
+                spec.setEndScanNum(endScanNum);
+            }
+        }
     }
 
     /**
@@ -235,6 +265,15 @@ public class MgfSpectrumParser implements SpectrumParser {
             offset = lineReader.getPosition();
         }
         return specIndexMap;
+    }
+
+    boolean tryParseInt(String value) {
+        try {
+            Integer.parseInt(value);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     // test code
