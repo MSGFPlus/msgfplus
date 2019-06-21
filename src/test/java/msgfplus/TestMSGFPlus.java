@@ -31,6 +31,7 @@ import edu.ucsd.msjava.ui.ScoringParamGen;
 public class TestMSGFPlus {
     
     @Test
+    @Ignore
     public void testQCShew()
     {
         File workDir = new File("C:\\DMS_WorkDir1");
@@ -57,6 +58,38 @@ public class TestMSGFPlus {
 
         assertTrue(msg == null);
         
+        assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
+    }
+
+    @Test
+    public void TestMGF()
+    {
+        File workDir = new File("C:\\DMS_WorkDir1\\timsTOF_MSGFPlus");
+        File orgDbDir = new File("C:\\DMS_Temp_Org");
+
+        File specFile = Paths.get(workDir.getPath(), "190325_Aurora_QC_MouseMonocyte_Gradient_50ng_Rep1_Slot2-13_01_3331.mgf").toFile();
+        File dbFile = Paths.get(orgDbDir.getPath(),"ID_007439_64FE4B60.fasta").toFile();
+
+        File confFile = Paths.get(workDir.getPath(), "MSGFDB_PartTryp_MetOx_20ppmParTol.txt").toFile();
+
+        String versionString = getNextVersion();
+
+        String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(),
+                "-o", Paths.get(workDir.getPath(), "Test_" + versionString + ".mzid").toString(),
+                "-conf", confFile.getPath()
+        };
+
+        ParamManager paramManager = getParamManager();
+        paramManager.addMSGFPlusParams();
+
+        String msg = paramManager.parseParams(argv);
+        if(msg != null) {
+            System.err.println("Error: " + msg);
+            paramManager.printUsageInfo();
+        }
+
+        assertTrue(msg == null);
+
         assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
     }
 
