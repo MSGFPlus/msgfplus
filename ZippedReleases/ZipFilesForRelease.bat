@@ -25,8 +25,7 @@ xcopy ..\Docs\examples\* %StagingDirectory%\Docs\Examples /d /y
 
 xcopy C:\DMS_Programs\MzidToTsvConverter\MzidToTsvConverter.exe %StagingDirectory%\MzidToTsvConverter /d /y
 xcopy C:\DMS_Programs\MzidToTsvConverter\MzidToTsvConverter.pdb %StagingDirectory%\MzidToTsvConverter /d /y
-xcopy C:\DMS_Programs\MzidToTsvConverter\PRISM.dll              %StagingDirectory%\MzidToTsvConverter /d /y
-xcopy C:\DMS_Programs\MzidToTsvConverter\PSI_Interface.dll      %StagingDirectory%\MzidToTsvConverter /d /y
+xcopy C:\DMS_Programs\MzidToTsvConverter\*.dll                  %StagingDirectory%\MzidToTsvConverter /d /y
 xcopy C:\DMS_Programs\MzidToTsvConverter\Readme.md              %StagingDirectory%\MzidToTsvConverter /d /y
 
 echo Creating "%WorkingDirectory%\%ZipFileName%"
