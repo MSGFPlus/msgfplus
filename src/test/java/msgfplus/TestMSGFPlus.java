@@ -66,6 +66,7 @@ public class TestMSGFPlus {
     {
         File workDir = new File("C:\\DMS_WorkDir1\\timsTOF_MSGFPlus");
         File orgDbDir = new File("C:\\DMS_Temp_Org");
+        File outputDir = new File("C:\\DMS_WorkDir1\\timsTOF_MSGFPlus\\Results2\\MoreResults");
 
         File specFile = Paths.get(workDir.getPath(), "190325_Aurora_QC_MouseMonocyte_Gradient_50ng_Rep1_Slot2-13_01_3331.mgf").toFile();
         File dbFile = Paths.get(orgDbDir.getPath(),"ID_007439_64FE4B60.fasta").toFile();
@@ -75,7 +76,7 @@ public class TestMSGFPlus {
         String versionString = getNextVersion();
 
         String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(),
-                "-o", Paths.get(workDir.getPath(), "Test_" + versionString + ".mzid").toString(),
+                "-o", Paths.get(outputDir.getPath(), "Test_" + versionString + ".mzid").toString(),
                 "-conf", confFile.getPath()
         };
 
