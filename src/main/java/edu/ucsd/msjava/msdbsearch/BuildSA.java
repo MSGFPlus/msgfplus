@@ -205,7 +205,7 @@ public class BuildSA {
         try {
             if (!outputDir.exists()) {
                 // Attempt to create the output directory
-                Boolean success = outputDir.mkdir();
+                Boolean success = outputDir.mkdirs();
                 if (!success) {
                     System.err.println("Error creating the output directory (access denied?): " + outputDir.getPath());
                     return false;

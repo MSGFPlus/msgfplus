@@ -78,7 +78,9 @@ public class ControlNew {
 
         String annoDirName = "Annotated_Specs";
         File annotatedSpecDir = new File(root, annoDirName);
-        annotatedSpecDir.mkdir();
+        if (!annotatedSpecDir.exists()) {
+            annotatedSpecDir.mkdirs();
+        }
 
         for (int i = 0; i < mzXMLFiles.length; i++) {
             String fileName = mzXMLFiles[i].getName();

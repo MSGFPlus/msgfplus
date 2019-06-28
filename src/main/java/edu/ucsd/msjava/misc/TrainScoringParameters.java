@@ -43,7 +43,7 @@ public class TrainScoringParameters {
             System.out.println("Backup directory already exists: " + backupDir.getPath());
             System.exit(-1);
         }
-        backupDir.mkdir();
+        backupDir.mkdirs();
         System.out.println(backupDir.getPath() + " is created.");
 
         boolean backupSuccess = true;

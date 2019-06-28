@@ -93,7 +93,7 @@ public class RunMSGFDBOnGrid {
 			System.exit(-1);
 		}
 		if(!scriptDir.exists())
-			scriptDir.mkdir();
+			scriptDir.mkdirs();
 		
 		for(int method : methods)
 		{
