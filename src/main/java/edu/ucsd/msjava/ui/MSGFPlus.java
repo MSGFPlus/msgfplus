@@ -120,10 +120,30 @@ public class MSGFPlus {
     private static String runMSGFPlus(int ioIndex, SpecFileFormat specFormat, File outputFile, SearchParams params) {
         long startTime = System.currentTimeMillis();
 
-        // Check the outputFile is valid for writing
-        File parent = outputFile.getParentFile();
-        if (parent != null && !parent.exists()) {
-            return "Cannot create " + outputFile.getPath() + ", the output directory does not exist!";
+        // Verify that the output directory exists and can be written to
+        File outputDirectory = outputFile.getParentFile();
+        if (outputDirectory != null) {
+            if (!outputDirectory.exists()) {
+                System.out.println("Creating directory " + outputDirectory.getPath());
+                boolean success = outputDirectory.mkdirs();
+                if (!success) {
+                    return "Unable to create the missing directory: " + outputDirectory.getPath();
+                }
+            } else if (!outputDirectory.isDirectory()) {
+                return "Invalid output file path (file path instead of directory path?): " + outputDirectory.getPath();
+            }
+
+            // An easy way to test for write access is outputDirectory.canWrite()
+            // However, on Windows this is not always accurate
+            // Thus, create a temporary file then delete it
+            try {
+                File testFile = File.createTempFile("MSGFPlus", ".tmp", outputDirectory);
+                testFile.delete();
+            } catch (java.io.IOException e) {
+                return "Cannot create files in the output directory: " + e.getMessage();
+            } catch (SecurityException e) {
+                return "Cannot create files in the output directory; permission denied for: " + outputDirectory.getPath();
+            }
         }
 
         // DB file

@@ -70,6 +70,7 @@ public class MSGFDB {
         if (!specPath.isDirectory()) {
             // Spectrum format
             SpecFileFormat specFormat = (SpecFileFormat) specParam.getFileFormat();
+
             // Output file
             File outputFile = paramManager.getOutputFileParam().getFile();
 
@@ -96,6 +97,33 @@ public class MSGFDB {
 
     private static String runMSGFDB(File specFile, SpecFileFormat specFormat, File outputFile, ParamManager paramManager) {
         long time = System.currentTimeMillis();
+
+        // Verify that the output directory exists and can be written to
+        File outputDirectory = outputFile.getParentFile();
+        if (outputDirectory != null) {
+
+            if (!outputDirectory.exists()) {
+                System.out.println("Creating directory " + outputDirectory.getPath());
+                boolean success = outputDirectory.mkdirs();
+                if (!success) {
+                    return "Unable to create the missing directory: " + outputDirectory.getPath();
+                }
+            } else if (!outputDirectory.isDirectory()) {
+                return "Invalid output file path (file path instead of directory path?): " + outputDirectory.getPath();
+            }
+
+            // An easy way to test for write access is outputDirectory.canWrite()
+            // However, on Windows this is not always accurate
+            // Thus, create a temporary file then delete it
+            try {
+                File testFile = File.createTempFile("MSGFPlus", ".tmp", outputDirectory);
+                testFile.delete();
+            } catch (java.io.IOException e) {
+                return "Cannot create files in the output directory: " + e.getMessage();
+            } catch (SecurityException e) {
+                return "Cannot create files in the output directory; permission denied for: " + outputDirectory.getPath();
+            }
+        }
 
         // DB file
         File databaseFile = paramManager.getDBFileParam().getFile();
@@ -182,6 +210,7 @@ public class MSGFDB {
             }
             databaseFile = newDBFile;
         }
+
         if (useTDA) {
             String dbFileName = databaseFile.getName();
             String concatDBFileName = dbFileName.substring(0, dbFileName.lastIndexOf('.')) + DECOY_DB_EXTENSION;
