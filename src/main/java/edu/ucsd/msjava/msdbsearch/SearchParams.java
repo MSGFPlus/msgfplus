@@ -65,7 +65,9 @@ public class SearchParams {
     }
 
     // Used by MS-GF+
-    public String getDecoyProteinPrefix() { return decoyProteinPrefix; }
+    public String getDecoyProteinPrefix() {
+        return decoyProteinPrefix;
+    }
 
     // Used by MS-GF+
     public Tolerance getLeftPrecursorMassTolerance() {
@@ -216,6 +218,7 @@ public class SearchParams {
     /**
      * Look for # in dataLine
      * If present, remove that character and any comment after it
+     *
      * @param dataLine
      * @return dataLine without the comment
      */
@@ -302,7 +305,7 @@ public class SearchParams {
         this.maxIsotopeError = isotopeParam.getMax();
 
         if (rightPrecursorMassTolerance.getToleranceAsDa(1000, 2) >= 0.5f ||
-            leftPrecursorMassTolerance.getToleranceAsDa(1000, 2)  >= 0.5f) {
+                leftPrecursorMassTolerance.getToleranceAsDa(1000, 2) >= 0.5f) {
             minIsotopeError = maxIsotopeError = 0;
         }
 
@@ -453,8 +456,8 @@ public class SearchParams {
             }
 
             if (ParamManager.ParamNameEnum.DYNAMIC_MODIFICATION.isThisParam(paramName) ||
-                ParamManager.ParamNameEnum.STATIC_MODIFICATION.isThisParam(paramName) ||
-                ParamManager.ParamNameEnum.CUSTOM_AA.isThisParam(paramName)) {
+                    ParamManager.ParamNameEnum.STATIC_MODIFICATION.isThisParam(paramName) ||
+                    ParamManager.ParamNameEnum.CUSTOM_AA.isThisParam(paramName)) {
 
                 String value = lineSetting.split("=")[1].trim();
                 if (!value.equalsIgnoreCase("none")) {
@@ -468,7 +471,7 @@ public class SearchParams {
             }
 
             boolean validParameter = false;
-            for (ParamManager.ParamNameEnum param: ParamManager.ParamNameEnum.values()) {
+            for (ParamManager.ParamNameEnum param : ParamManager.ParamNameEnum.values()) {
                 if (param.isThisParam(paramName)) {
                     Parameter commandLineParam = paramManager.getParameter(param.getKey());
                     if (commandLineParam != null) {
@@ -584,7 +587,7 @@ public class SearchParams {
             buf.append("No static or dynamic post translational modifications are defined.\n");
         } else {
             buf.append("Post translational modifications in use:\n");
-            for (String modInfo : modificationsInUse )
+            for (String modInfo : modificationsInUse)
                 buf.append("\t" + modInfo + "\n");
         }
 

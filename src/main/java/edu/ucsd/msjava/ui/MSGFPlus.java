@@ -355,7 +355,7 @@ public class MSGFPlus {
 
         try {
             for (int i = 0; i < numTasks; i++) {
-                ScoredSpectraMap specScanner = new ScoredSpectraMap (
+                ScoredSpectraMap specScanner = new ScoredSpectraMap(
                         specAcc,
                         Collections.synchronizedList(specKeyList.subList(startIndex[i], endIndex[i])),
                         leftPrecursorMassTolerance,
@@ -376,7 +376,7 @@ public class MSGFPlus {
                         resultList,
                         i + 1
                 );
-                    executor.execute(msgfplusExecutor);
+                executor.execute(msgfplusExecutor);
             }
             // Output initial progress report.
             executor.outputProgressReport();
