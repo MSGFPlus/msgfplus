@@ -51,13 +51,21 @@ public class MSGFDB {
             return;
         }
 
-        // Running MS-GFDB
+        // Running MS-GFDB (deprecated)
         paramManager.printToolInfo();
         paramManager.printJVMInfo();
-        String errorMessage = runMSGFDB(paramManager);
+        String errorMessage = null;
+        try {
+            errorMessage = runMSGFDB(paramManager);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+
         if (errorMessage != null) {
             System.err.println("[Error] " + errorMessage);
             System.out.println();
+            System.exit(-1);
         } else
             System.out.format("MS-GFDB complete (total elapsed time: %.2f sec)\n", (System.currentTimeMillis() - time) / (float) 1000);
     }
