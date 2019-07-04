@@ -386,8 +386,11 @@ public class ParamManager {
         return null;
     }
 
-    public void addSpecFileParam() {
+    public void addSpecFileParam(boolean isOptional) {
         FileParameter specFileParam = new FileParameter(ParamNameEnum.SPECTRUM_FILE);
+        if (isOptional) {
+            specFileParam.setAsOptional();
+        }
         specFileParam.addFileFormat(SpecFileFormat.MZML);
         specFileParam.addFileFormat(SpecFileFormat.MZXML);
         specFileParam.addFileFormat(SpecFileFormat.MGF);
@@ -400,8 +403,8 @@ public class ParamManager {
         addParameter(specFileParam);
     }
 
-    private void addDBFileParam() {
-        addDBFileParam(ParamNameEnum.DB_FILE, false);
+    private void addDBFileParam(boolean isOptional) {
+        addDBFileParam(ParamNameEnum.DB_FILE, isOptional);
     }
 
     private void addDBFileParam(ParamNameEnum paramInfo, boolean isOptional) {
@@ -739,10 +742,10 @@ public class ParamManager {
         addConfigFileParam();
 
         // -s SpectrumFile (*.mzML, *.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt)
-        addSpecFileParam();
+        addSpecFileParam(true);
 
         // -d DatabaseFile (*.fasta or *.fa or *.faa)
-        addDBFileParam();
+        addDBFileParam(true);
         addDecoyPrefixParam();
 
         // [-o OutputFile (*.mzid)] (Default: [SpectrumFileName].mzid)
@@ -855,8 +858,8 @@ public class ParamManager {
 
     @Deprecated
     public void addMSGFDBParams() {
-        addSpecFileParam();
-        addDBFileParam();
+        addSpecFileParam(false);
+        addDBFileParam(false);
 
         addPrecursorMassToleranceParam();
         addPrecursorMassToleranceUnitsParam(true);
@@ -995,7 +998,7 @@ public class ParamManager {
     }
 
     public void addMSGFLibParams() {
-        addSpecFileParam();
+        addSpecFileParam(false);
 
         // Add library file param
         FileParameter libFileParam = new FileParameter("d", "LibraryFile", "*.sptxt");

@@ -28,7 +28,7 @@ public class SpectraSTToMSGFInput {
         FileParameter outputFileParam = new FileParameter("o", "OutputFile", "MS-GF input file");
         paramManager.addParameter(outputFileParam);
 
-        paramManager.addSpecFileParam();
+        paramManager.addSpecFileParam(false);
 
         if (argv.length == 0) {
             paramManager.printUsageInfo();

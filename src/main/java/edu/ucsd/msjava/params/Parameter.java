@@ -69,7 +69,10 @@ public abstract class Parameter {
     }
 
     public boolean isValid() {
-        return !(!isOptional && !isValueAssigned());
+        if (isOptional)
+            return true;
+
+        return isValueAssigned();
     }
 
     public abstract String parse(String value);
