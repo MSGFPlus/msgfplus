@@ -67,6 +67,10 @@ public class MSGFDB {
         FileParameter specParam = paramManager.getSpecFileParam();
         File specPath = specParam.getFile();
 
+        if (!specPath.exists()) {
+            return "Spectrum file not found: " + specPath.getPath();
+        }
+
         if (!specPath.isDirectory()) {
             // Spectrum format
             SpecFileFormat specFormat = (SpecFileFormat) specParam.getFileFormat();

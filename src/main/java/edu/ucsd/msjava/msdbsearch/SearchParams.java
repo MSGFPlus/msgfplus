@@ -244,6 +244,10 @@ public class SearchParams {
         FileParameter specParam = paramManager.getSpecFileParam();
         File specPath = specParam.getFile();
 
+        if (!specPath.exists()) {
+            return "Spectrum file not found: " + specPath.getPath();
+        }
+
         dbSearchIOList = new ArrayList<>();
 
         if (!specPath.isDirectory()) {

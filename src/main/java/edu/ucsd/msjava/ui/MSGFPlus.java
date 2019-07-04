@@ -153,6 +153,10 @@ public class MSGFPlus {
             return "Database file is not defined; use -d at the command line or DatabaseFile in a config file";
         }
 
+        if (!databaseFile.exists()) {
+            return "Database file not found: " + databaseFile.getPath();
+        }
+
         // Precursor mass tolerance
         Tolerance leftPrecursorMassTolerance = params.getLeftPrecursorMassTolerance();
         Tolerance rightPrecursorMassTolerance = params.getRightPrecursorMassTolerance();
