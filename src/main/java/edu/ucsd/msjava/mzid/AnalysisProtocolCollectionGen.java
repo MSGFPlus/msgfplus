@@ -130,7 +130,9 @@ public class AnalysisProtocolCollectionGen {
                 mzIdEnzyme.setSemiSpecific(false);
             else
                 mzIdEnzyme.setSemiSpecific(true);
-            mzIdEnzyme.setMissedCleavages(1000);
+            
+            // -1: No limit; >-1: set limit
+            mzIdEnzyme.setMissedCleavages(params.getMaxMissedCleavages());
             // Add name
             ParamList enzCvParams = new ParamList();
             String enzAcc = enzyme.getPSICvAccession();
