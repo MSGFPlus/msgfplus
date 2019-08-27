@@ -247,6 +247,11 @@ public class SearchParams {
         FileParameter specParam = paramManager.getSpecFileParam();
         File specPath = specParam.getFile();
 
+        if (specPath == null)
+        {
+            return "Spectrum file is not defined; use -s at the command line or SpectrumFile in a config file";
+        }
+
         if (!specPath.exists()) {
             return "Spectrum file not found: " + specPath.getPath();
         }

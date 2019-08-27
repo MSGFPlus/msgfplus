@@ -93,7 +93,12 @@ public class TestMSGFPlus {
 
         assertTrue(msg == null);
 
-        assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
+        String resultMsg = MSGFPlus.runMSGFPlus(paramManager);
+        if(resultMsg != null) {
+            System.err.println("Error: " + resultMsg);
+        }
+
+        assertTrue(resultMsg == null);
     }
 
     @Test
