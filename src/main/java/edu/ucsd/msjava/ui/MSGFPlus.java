@@ -277,7 +277,13 @@ public class MSGFPlus {
         int spectraPerTaskMinimum = 250;
         int maxThreads = Math.max(1, Math.round((float) specSize / spectraPerTaskMinimum));
         if (maxThreads < numThreads) {
-            System.out.println("Note: " + spectraPerTaskMinimum + " spectra per thread minimum; using " + maxThreads + " threads instead of " + numThreads);
+            if (maxThreads == 1) {
+                System.out.println("Note: under " + spectraPerTaskMinimum + " spectra; using 1 thread instead of " + numThreads);
+            }
+            else{
+                System.out.println("Note: " + spectraPerTaskMinimum + " spectra per thread minimum; using " + maxThreads + " threads instead of " + numThreads);
+            }
+
             numThreads = maxThreads;
         }
 
