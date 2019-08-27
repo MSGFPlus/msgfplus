@@ -16,6 +16,18 @@ public class MgfSpectrumParser implements SpectrumParser {
 
     private long linesRead;
 
+    private long scanMissingWarningCount;
+
+    /**
+     * Number of scans where we could not determine the scan number
+     * This method is required by interface SpectrumParser
+     * @return
+     */
+    public long getScanMissingWarningCount()
+    {
+        return scanMissingWarningCount;
+    }
+
     /**
      * Amino acid set to be used to parse "SEQ="
      */
@@ -30,6 +42,7 @@ public class MgfSpectrumParser implements SpectrumParser {
     public MgfSpectrumParser aaSet(AminoAcidSet aaSet) {
         this.aaSet = aaSet;
         linesRead = 0;
+        scanMissingWarningCount = 0;
         return this;
     }
 

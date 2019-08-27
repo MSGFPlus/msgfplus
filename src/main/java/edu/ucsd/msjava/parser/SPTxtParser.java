@@ -7,6 +7,17 @@ import java.util.Map;
 
 public class SPTxtParser implements SpectrumParserWithTitle {
 
+    /**
+     * Number of scans where we could not determine the scan number
+     * This method is required by interface SpectrumParser
+     * However, this class does not keep track of spectra without a scan number
+     * @return
+     */
+    public long getScanMissingWarningCount()
+    {
+        return 0;
+    }
+
     public Spectrum readSpectrum(LineReader lineReader) {
         Spectrum spec = null;
 

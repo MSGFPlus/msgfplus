@@ -14,6 +14,17 @@ import java.util.Map;
 public class PklSpectrumParser implements SpectrumParser {
 
     /**
+     * Number of scans where we could not determine the scan number
+     * This method is required by interface SpectrumParser
+     * However, this class does not keep track of spectra without a scan number
+     *
+     * @return
+     */
+    public long getScanMissingWarningCount() {
+        return 0;
+    }
+
+    /**
      * Reads a spectrum from pkl file and returns it.
      *
      * @param lineReader A LineReader object points to the start of a spectrum.

@@ -17,6 +17,17 @@ public class MS2SpectrumParser implements SpectrumParser {
     private Boolean isSpecSorted = null;
 
     /**
+     * Number of scans where we could not determine the scan number
+     * This method is required by interface SpectrumParser
+     * However, this class does not keep track of spectra without a scan number
+     *
+     * @return
+     */
+    public long getScanMissingWarningCount() {
+        return 0;
+    }
+
+    /**
      * Reads a spectrum from ms2 file and returns it.
      *
      * @param lineReader A LineReader object points to the start of a spectrum.
@@ -43,8 +54,9 @@ public class MS2SpectrumParser implements SpectrumParser {
             spec.setStartScanNum(startScanNum);
             spec.setEndScanNum(endScanNum);
             isSpecSorted = true;
-        } else if (spec == null)
+        } else if (spec == null) {
             return null;
+        }
 
         boolean zParsed = false;
         while ((buf = lineReader.readLine()) != null) {

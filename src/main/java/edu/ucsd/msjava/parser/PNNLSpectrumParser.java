@@ -11,6 +11,17 @@ public class PNNLSpectrumParser implements SpectrumParser {
 
     public static final String SCAN_TYPE_FILE_EXTENSION = "_ScanType.txt";
 
+    /**
+     * Number of scans where we could not determine the scan number
+     * This method is required by interface SpectrumParser
+     * However, this class does not keep track of spectra without a scan number
+     *
+     * @return
+     */
+
+    public long getScanMissingWarningCount() {
+        return 0;
+    }
     public Spectrum readSpectrum(LineReader lineReader) {
         Spectrum spec = null;
 
