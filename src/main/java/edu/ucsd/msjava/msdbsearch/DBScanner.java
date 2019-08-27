@@ -329,9 +329,13 @@ public class DBScanner {
                     //else if(lcp < peptideLengthIndex + 1)
                 else {
                     if (enzyme != null && enzyme.isNTerm()) {
-                        if (lcp > 1) peptideLengthIndex = lcp - 1;
-                        else peptideLengthIndex = 1;
-                    } else peptideLengthIndex = lcp;
+                        if (lcp > 1)
+                            peptideLengthIndex = lcp - 1;
+                        else
+                            peptideLengthIndex = 1;
+                    } else {
+                        peptideLengthIndex = lcp;
+                    }
                 }
 
                 for (; peptideLengthIndex <= maxPeptideLength && index + peptideLengthIndex < size - 1; peptideLengthIndex++)    // ith character of a peptide

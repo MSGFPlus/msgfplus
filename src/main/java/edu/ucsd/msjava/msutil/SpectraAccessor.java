@@ -123,7 +123,7 @@ public class SpectraAccessor {
                 || specFormat == SpecFileFormat.MGF
                 || specFormat == SpecFileFormat.PKL
                 || specFormat == SpecFileFormat.MS2
-                )
+        )
             cvParam = Constants.makeCvParam("MS:1000774", "multiple peak list nativeID format");
         else if (specFormat == SpecFileFormat.MZXML)
             cvParam = Constants.makeCvParam("MS:1000776", "scan number only nativeID format");
