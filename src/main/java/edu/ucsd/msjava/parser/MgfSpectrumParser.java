@@ -178,8 +178,9 @@ public class MgfSpectrumParser implements SpectrumParser {
                             int scanNum = Integer.parseInt(token[0].substring("Scan:".length()));
                             spec.setScanNum(scanNum);
 
-                        } else if (title.matches(".+\\.\\d+\\.\\d+\\.\\d+$")) {
-                            // Title line is of the form DatasetName.ScanStart.ScanEnd.Charge
+                        } else if (title.matches(".+\\.\\d+\\.\\d+\\.\\d+$") ||
+                                title.matches(".+\\.\\d+\\.\\d+\\.$")) {
+                            // Title line is of the form DatasetName.ScanStart.ScanEnd.Charge or DatasetName.ScanStart.ScanEnd.
                             // for example, DatasetName.8492.8492.2
                             extractScanRangeFromTitle(spec, title);
 
@@ -188,6 +189,8 @@ public class MgfSpectrumParser implements SpectrumParser {
                             // Split on periods
                             String titleStart = title.substring(0, title.indexOf(' '));
                             extractScanRangeFromTitle(spec, titleStart);
+                        } else {
+                            warnScanNotFoundInTitle(title);
                         }
 
                         //Match result = dtaStyleMatcher.matcher(spec.Title)
@@ -204,6 +207,7 @@ public class MgfSpectrumParser implements SpectrumParser {
 //  				}
                     if (!sorted)
                         Collections.sort(spec);
+
                     return spec;
                 }
             }
@@ -221,20 +225,41 @@ public class MgfSpectrumParser implements SpectrumParser {
     private void extractScanRangeFromTitle(Spectrum spec, String title) {
         // Split on periods
         String[] token = title.split("\\.");
+        String candidateStartScan;
+        String candidateEndScan;
 
         if (token.length > 3) {
-            String candidateStartScan = token[token.length - 3];
-            String candidateEndScan = token[token.length - 2];
+            // Assume DatasetName.ScanStart.ScanEnd.Charge
+            // For example: DatasetName.10418.10418.4
+            candidateStartScan = token[token.length - 3];
+            candidateEndScan = token[token.length - 2];
+        } else if (token.length == 3 && title.endsWith(".")) {
+            // Charge not specified, but title does end with a period
+            // In this case, .split() only returns 3 items
 
-            if (tryParseInt(candidateStartScan)) {
-                int startScanNum = Integer.parseInt(candidateStartScan);
-                spec.setStartScanNum(startScanNum);
-            }
+            // Assume DatasetName.ScanStart.ScanEnd.
+            // For example: DatasetName.40193.40193.
+            candidateStartScan = token[token.length - 2];
+            candidateEndScan = token[token.length - 1];
+        } else {
+            warnScanNotFoundInTitle(title);
+            return;
+        }
 
-            if (tryParseInt(candidateEndScan)) {
-                int endScanNum = Integer.parseInt(candidateEndScan);
-                spec.setEndScanNum(endScanNum);
-            }
+        boolean success = false;
+        if (tryParseInt(candidateStartScan)) {
+            int startScanNum = Integer.parseInt(candidateStartScan);
+            spec.setStartScanNum(startScanNum);
+            success = true;
+        }
+
+        if (tryParseInt(candidateEndScan)) {
+            int endScanNum = Integer.parseInt(candidateEndScan);
+            spec.setEndScanNum(endScanNum);
+        }
+
+        if (!success) {
+            warnScanNotFoundInTitle(title);
         }
     }
 
@@ -286,6 +311,16 @@ public class MgfSpectrumParser implements SpectrumParser {
             return true;
         } catch (NumberFormatException e) {
             return false;
+        }
+    }
+
+    void warnScanNotFoundInTitle(String title) {
+        scanMissingWarningCount++;
+        if (scanMissingWarningCount <= MAX_SCAN_MISSING_WARNINGS) {
+            System.out.println("Unable to extract the scan number from the title: " + title);
+            if (scanMissingWarningCount == 1) {
+                System.out.println("Expected format is DatasetName.ScanStart.ScanEnd.Charge");
+            }
         }
     }
 
