@@ -16,18 +16,33 @@ public class SpectraAccessor {
     private final File specFile;
     private final SpecFileFormat specFormat;
 
+    private SpectrumParser spectrumParser;
+
     private MzMLAdapter mzmlAdapter = null;
 
     SpectrumAccessorBySpecIndex specMap = null;
     Iterator<Spectrum> specItr = null;
 
+    /**
+     * Constructor that accepts a file
+     * Determines the file format based on the file extension
+     *
+     * @param specFile
+     */
     public SpectraAccessor(File specFile) {
         this(specFile, SpecFileFormat.getSpecFileFormat(specFile.getName()));
     }
 
+    /**
+     * Constructor that accepts a file and a file format
+     *
+     * @param specFile
+     * @param specFormat
+     */
     public SpectraAccessor(File specFile, SpecFileFormat specFormat) {
         this.specFile = specFile;
         this.specFormat = specFormat;
+        this.spectrumParser = null;
     }
 
     public SpectrumAccessorBySpecIndex getSpecMap() {
@@ -50,6 +65,8 @@ public class SpectraAccessor {
                     parser = new PklSpectrumParser();
                 else
                     return null;
+
+                spectrumParser = parser;
                 specMap = new SpectraMap(specFile.getPath(), parser);
             }
         }
@@ -86,6 +103,8 @@ public class SpectraAccessor {
                     parser = new PklSpectrumParser();
                 else
                     return null;
+
+                spectrumParser = parser;
                 try {
                     specItr = new SpectraIterator(specFile.getPath(), parser);
                 } catch (IOException e) {
@@ -103,6 +122,14 @@ public class SpectraAccessor {
 
     public Spectrum getSpectrumById(String specId) {
         return getSpecMap().getSpectrumById(specId);
+    }
+
+    /**
+     * Get the current spectrum parser, or null if no parser
+     * @return
+     */
+    public SpectrumParser getSpectrumParser() {
+        return spectrumParser;
     }
 
     public String getID(int specIndex) {
