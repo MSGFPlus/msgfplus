@@ -1,6 +1,7 @@
 package edu.ucsd.msjava.msutil;
 
 import edu.ucsd.msjava.parser.MzXMLSpectraIterator;
+import edu.ucsd.msjava.parser.SpectrumParser;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,6 +58,40 @@ public class SpecKey extends Pair<Integer, Integer> {
 
     public ArrayList<Integer> getSpecIndexList() {
         return specIndexList;
+    }
+
+    public static ArrayList<SpecKey> getSpecKeyList(
+            SpectraAccessor specAcc,
+            int startSpecIndex,
+            int endSpecIndex,
+            int minCharge,
+            int maxCharge,
+            ActivationMethod activationMethod,
+            int minNumPeaksPerSpectrum) {
+
+        Iterator<Spectrum> itr = specAcc.getSpecItr();
+
+        ArrayList<SpecKey> specKeyList = getSpecKeyList(
+                itr,
+                startSpecIndex,
+                endSpecIndex,
+                minCharge,
+                maxCharge,
+                activationMethod,
+                minNumPeaksPerSpectrum);
+
+
+        SpectrumParser parser = specAcc.getSpectrumParser();
+
+        if (parser != null) {
+            long scanMissingWarningCount = parser.getScanMissingWarningCount();
+
+            if (scanMissingWarningCount > 1) {
+                System.out.println("Unable to extract the scan number from " + scanMissingWarningCount + " spectra");
+            }
+        }
+
+        return specKeyList;
     }
 
     public static ArrayList<SpecKey> getSpecKeyList(
@@ -130,7 +165,7 @@ public class SpecKey extends Pair<Integer, Integer> {
                 // specActivationMethod is null
                 // Just let the user know we are using what was written on the command line
                 if (informativeMessageCount < MAX_INFORMATIVE_MESSAGES) {
-                    System.out.println("Spectrum " + spec.getID() + " activationMethod is unknown; " 
+                    System.out.println("Spectrum " + spec.getID() + " activationMethod is unknown; "
                             + "Using " + activationMethod.toString() + " as specified in parameters.");
                     informativeMessageCount++;
                 } else {
@@ -171,6 +206,7 @@ public class SpecKey extends Pair<Integer, Integer> {
 
         System.out.println("Ignoring " + numProfileSpectra + " profile spectra.");
         System.out.println("Ignoring " + numSpectraWithTooFewPeaks + " spectra having less than " + minNumPeaksPerSpectrum + " peaks.");
+
         return specKeyList;
     }
 

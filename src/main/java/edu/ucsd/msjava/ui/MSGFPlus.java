@@ -260,8 +260,9 @@ public class MSGFPlus {
         if (specAcc.getSpecMap() == null || specAcc.getSpecItr() == null)
             return "Error while parsing spectrum file: " + specFile.getPath();
 
-        ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specAcc.getSpecItr(),
+        ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specAcc,
                 startSpecIndex, endSpecIndex, minCharge, maxCharge, activationMethod, minNumPeaksPerSpectrum);
+
         int specSize = specKeyList.size();
         if (specSize == 0)
             return specFile.getPath() + " does not have any valid spectra";
