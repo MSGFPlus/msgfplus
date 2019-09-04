@@ -47,7 +47,7 @@ public class MSGFPlus {
             System.err.println("[Error] " + errMessage);
             System.out.println();
             paramManager.printUsageInfo();
-            return;
+            System.exit(-1);
         }
 
         // Running MS-GF+
