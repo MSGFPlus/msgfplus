@@ -1,0 +1,36 @@
+9873
+2140348492
+1576122816188
+A:B:C:D:E:F:G:H:I:J:K:L:M:N:O:P:Q:R:S:T:U:V:W:X:Y:Z
+232:Contaminant_TRYP_PIG sp|P00761|TRYP_PIG Trypsin precursor (EC 3.4.21.4) - Sus scrofa (Pig).
+241:Contaminant_Trypa1 VATVSLPR-like Promega trypsin artifact 1 (871.1) xATVSLPR (PromTArt1)
+250:Contaminant_Trypa2 VATVSLPR-like Promega trypsin artifact 2 (899.5) xxTVSLPR (PromTArt2)
+259:Contaminant_Trypa3 VATVSLPR-like Promega trypsin artifact 3 (824.5) xxxVSLPR (PromTArt3)
+270:Contaminant_Trypa4 LSSPATLNSR-like Promega trypsin artifact 4 (1071.5) xxxPATLNSR (PromTArt4)
+321:Contaminant_Trypa5 Promega trypsin artifact 5 K to R mods (2239.1, 2914)(1987, 2003) (PromTArt5)
+334:Contaminant_Trypa6 VATVSLPR 422 ion wrongly assigned z=3 (1262.8) (llhg are dummy aa's) (TrypArt6)
+564:Contaminant_TRYP_BOVIN TRYPSINOGEN. (sp|P00760|TRYP_BOVIN, gi|136425)
+810:Contaminant_CTRA_BOVIN CHYMOTRYPSINOGEN A (EC 3.4.21.1). - BOS TAURUS (BOVINE).
+1056:Contaminant_CTRB_BOVIN CHYMOTRYPSINOGEN B (EC 3.4.21.1). - BOS TAURUS (BOVINE).
+1666:Contaminant_ALBU_HUMAN SERUM ALBUMIN PRECURSOR. (sp|P02768|ALBU_HUMAN, gi|113576)
+2274:Contaminant_ALBU_BOVIN SERUM ALBUMIN PRECURSOR. (sp|P02769|ALBU_BOVIN, gi|113574)
+2918:Contaminant_K2C1_HUMAN sp|P04264 Keratin, type II cytoskeletal 1 (Cytokeratin-1) (CK-1) (Keratin-1) (K1) (67 kDa cytokeratin) (Hair alpha protein) - Homo sapiens (Human).
+3564:Contaminant_K22E_HUMAN sp|P35908 Keratin, type II cytoskeletal 2 epidermal (Cytokeratin-2e) (K2e) (CK 2e) - Homo sapiens (Human).
+4188:Contaminant_K1C9_HUMAN sp|P35527 Keratin, type I cytoskeletal 9 (Cytokeratin-9) (CK-9) (Keratin-9) (K9) - Homo sapiens (Human).
+4782:Contaminant_K1C10_HUMAN sp|P13645 Keratin, type I cytoskeletal 10 (Cytokeratin-10) (CK-10) (Keratin-10) (K10) - Homo sapiens (Human).
+5014:XXX_Contaminant_TRYP_PIG sp|P00761|TRYP_PIG Trypsin precursor (EC 3.4.21.4) - Sus scrofa (Pig).
+5023:XXX_Contaminant_Trypa1 VATVSLPR-like Promega trypsin artifact 1 (871.1) xATVSLPR (PromTArt1)
+5032:XXX_Contaminant_Trypa2 VATVSLPR-like Promega trypsin artifact 2 (899.5) xxTVSLPR (PromTArt2)
+5041:XXX_Contaminant_Trypa3 VATVSLPR-like Promega trypsin artifact 3 (824.5) xxxVSLPR (PromTArt3)
+5052:XXX_Contaminant_Trypa4 LSSPATLNSR-like Promega trypsin artifact 4 (1071.5) xxxPATLNSR (PromTArt4)
+5103:XXX_Contaminant_Trypa5 Promega trypsin artifact 5 K to R mods (2239.1, 2914)(1987, 2003) (PromTArt5)
+5116:XXX_Contaminant_Trypa6 VATVSLPR 422 ion wrongly assigned z=3 (1262.8) (llhg are dummy aa's) (TrypArt6)
+5346:XXX_Contaminant_TRYP_BOVIN TRYPSINOGEN. (sp|P00760|TRYP_BOVIN, gi|136425)
+5592:XXX_Contaminant_CTRA_BOVIN CHYMOTRYPSINOGEN A (EC 3.4.21.1). - BOS TAURUS (BOVINE).
+5838:XXX_Contaminant_CTRB_BOVIN CHYMOTRYPSINOGEN B (EC 3.4.21.1). - BOS TAURUS (BOVINE).
+6448:XXX_Contaminant_ALBU_HUMAN SERUM ALBUMIN PRECURSOR. (sp|P02768|ALBU_HUMAN, gi|113576)
+7056:XXX_Contaminant_ALBU_BOVIN SERUM ALBUMIN PRECURSOR. (sp|P02769|ALBU_BOVIN, gi|113574)
+7700:XXX_Contaminant_K2C1_HUMAN sp|P04264 Keratin, type II cytoskeletal 1 (Cytokeratin-1) (CK-1) (Keratin-1) (K1) (67 kDa cytokeratin) (Hair alpha protein) - Homo sapiens (Human).
+8346:XXX_Contaminant_K22E_HUMAN sp|P35908 Keratin, type II cytoskeletal 2 epidermal (Cytokeratin-2e) (K2e) (CK 2e) - Homo sapiens (Human).
+8970:XXX_Contaminant_K1C9_HUMAN sp|P35527 Keratin, type I cytoskeletal 9 (Cytokeratin-9) (CK-9) (Keratin-9) (K9) - Homo sapiens (Human).
+9565:XXX_Contaminant_K1C10_HUMAN sp|P13645 Keratin, type I cytoskeletal 10 (Cytokeratin-10) (CK-10) (Keratin-10) (K10) - Homo sapiens (Human).
