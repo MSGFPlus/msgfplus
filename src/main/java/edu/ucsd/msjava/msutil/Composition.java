@@ -242,6 +242,18 @@ public class Composition extends Matter {
         }
         return false;
     }
+    
+    public static boolean equals(Composition a, Composition b) {
+        if (a == null && b == null) {
+            return true;
+        }
+
+        if (a == null || b == null) {
+            return false;
+        }
+
+        return a.number == b.number;
+    }
 
     /**
      * Compute the mass of an empirical formula

@@ -413,6 +413,9 @@ public class SearchParams {
             System.exit(-1);
         }
 
+        // Make sure all unique modifications have unique identifiers...
+        Modification.setModIdentifiers();
+
         return null;
     }
 

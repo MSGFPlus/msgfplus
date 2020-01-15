@@ -489,11 +489,11 @@ public class MZIdentMLGen {
                 char residue = aa.getUnmodResidue();
                 unmodPepStr.append(residue);
 
-                List<Double> modMasses = new ArrayList<Double>();
+                List<edu.ucsd.msjava.msutil.Modification> anyPosMods = new ArrayList<>();
                 boolean hasNTermMod = false;
-                List<Double> nTermMasses = new ArrayList<Double>();
+                List<edu.ucsd.msjava.msutil.Modification> nTermMods = new ArrayList<>();
                 boolean hasCTermMod = false;
-                List<Double> cTermMasses = new ArrayList<Double>();
+                List<edu.ucsd.msjava.msutil.Modification> cTermMods = new ArrayList<>();
                 boolean modified = false;
                 
                 if (loc == Location.N_Term || loc == Location.C_Term) {
@@ -524,17 +524,17 @@ public class MZIdentMLGen {
                     ModifiedAminoAcid modAA = (ModifiedAminoAcid) aa;
                     if (location == 1 && modAA.isNTermVariableMod()) {
                         mod.setLocation(location - 1);
-                        nTermMasses.add(modAA.getModification().getAccurateMass());
+                        nTermMods.add(modAA.getModification());
                         hasNTermMod = true;
                     }
                     else if (location == peptide.size() && modAA.isCTermVariableMod()) {
                         mod.setLocation(location + 1);
-                        cTermMasses.add(modAA.getModification().getAccurateMass());
+                        cTermMods.add(modAA.getModification());
                         hasCTermMod = true;
                     }
                     else {
                         mod.setLocation(location);
-                        modMasses.add(modAA.getModification().getAccurateMass());
+                        anyPosMods.add(modAA.getModification());
                         modified = true;
                     }
                     mod.setMonoisotopicMassDelta(modAA.getModification().getAccurateMass());
@@ -548,17 +548,17 @@ public class MZIdentMLGen {
                         modAA = (ModifiedAminoAcid) modAA.getTargetAA();
                         if (location == 1 && modAA.isNTermVariableMod()) {
                             mod2.setLocation(location - 1);
-                            nTermMasses.add(modAA.getModification().getAccurateMass());
+                            nTermMods.add(modAA.getModification());
                             hasNTermMod = true;
                         }
                         else if (location == peptide.size() && modAA.isCTermVariableMod()) {
                             mod2.setLocation(location + 1);
-                            cTermMasses.add(modAA.getModification().getAccurateMass());
+                            cTermMods.add(modAA.getModification());
                             hasCTermMod = true;
                         }
                         else {
                             mod2.setLocation(location);
-                            modMasses.add(modAA.getModification().getAccurateMass());
+                            anyPosMods.add(modAA.getModification());
                             modified = true;
                         }
                         mod2.setMonoisotopicMassDelta(modAA.getModification().getAccurateMass());
@@ -568,33 +568,28 @@ public class MZIdentMLGen {
                     }
                 }
                 
+                edu.ucsd.msjava.msutil.Modification.MassComparator massCompare = new edu.ucsd.msjava.msutil.Modification.MassComparator();
                 if (hasNTermMod) {
                     modPepStr.append("[");
-                    Collections.sort(nTermMasses);
-                    for (Double nTMass : nTermMasses) {
-                        if (nTMass >= 0)
-                            modPepStr.append("+");
-                        modPepStr.append(Math.round(nTMass));
+                    Collections.sort(nTermMods, massCompare);
+                    for (edu.ucsd.msjava.msutil.Modification nTMass : nTermMods) {
+                        modPepStr.append(nTMass.getModId());
                     }
                 }
                 
                 modPepStr.append(residue);
                 if (modified) {
-                    Collections.sort(modMasses);
-                    for (Double mMass : modMasses) {
-                        if (mMass >= 0)
-                            modPepStr.append("+");
-                        modPepStr.append(Math.round(mMass));
+                    Collections.sort(anyPosMods, massCompare);
+                    for (edu.ucsd.msjava.msutil.Modification mMass : anyPosMods) {
+                        modPepStr.append(mMass.getModId());
                     }
                 }
                 
                 if (hasCTermMod) {
                     modPepStr.append("}");
-                    Collections.sort(cTermMasses);
-                    for (Double cTMass : cTermMasses) {
-                        if (cTMass >= 0)
-                            modPepStr.append("+");
-                        modPepStr.append(Math.round(cTMass));
+                    Collections.sort(cTermMods, massCompare);
+                    for (edu.ucsd.msjava.msutil.Modification cTMass : cTermMods) {
+                        modPepStr.append(cTMass.getModId());
                     }
                 }
                 
