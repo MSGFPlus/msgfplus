@@ -19,7 +19,7 @@ public class ChargePrediction {
         AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSetWithFixedCarbamidomethylatedCys();
         ActivationMethod method = ActivationMethod.CID;
         Enzyme enzyme = Enzyme.TRYPSIN;
-        NewRankScorer scorer = NewScorerFactory.get(method, enzyme);
+        NewRankScorer scorer = NewScorerFactory.get(method, InstrumentType.HIGH_RESOLUTION_LTQ, enzyme, Protocol.STANDARD);
 
         String fileName = "/home/sangtaekim/Research/Data/HeckRevision/AnnotatedSpectra/CID_Tryp_Confident.mgf";
         SpectraIterator itr = new SpectraIterator(fileName, new MgfSpectrumParser());

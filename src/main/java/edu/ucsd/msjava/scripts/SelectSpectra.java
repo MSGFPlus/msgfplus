@@ -94,7 +94,7 @@ public class SelectSpectra {
                 //System.out.printf("%.2f %.2f\n", s.getParentMass(), new Peptide(tokens[3]).getMass());
 
                 // exact mass
-                float pm = s.getParentMass();
+                float pm = s.getPrecursorMass();
                 double em = new Peptide(tokens[3]).getMass() + Composition.H2O;// + Composition.H;
                 float massCorrection = (float) em - pm;
                 s.setPrecursor(s.getPrecursorPeak().duplicate(massCorrection));
