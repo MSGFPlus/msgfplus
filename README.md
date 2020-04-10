@@ -16,8 +16,10 @@ and Concatenated DTA files (_dta.txt).
 Requirements
 ======
 
-Java Runtime v1.6 or higher (use 64-bit Java)\
+Java Runtime 8 or higher (use 64-bit Java)\
 At least 2GB of memory (recommended to use 4GB); larger FASTA files require more memory
+
+There are some issues running with newer version of Java (Java 11 and newer), due to the deprecation and removal of some libraries. 
 
 Downloads / Updates
 ======
