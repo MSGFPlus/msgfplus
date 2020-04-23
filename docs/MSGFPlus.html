@@ -30,7 +30,7 @@
 
 <span class="code-keyword">-d DatabaseFile</span> (*.fasta or *.fa or *.faa)
 
-<span class="code-keyword">[-conf ConfigurationFile]</span> (Configuration file path; options specified at the command line will override settings in the config file)
+<span class="code-keyword">[-conf ConfigurationFile]</span> (Configuration file path)
    Example parameter file is at https://github.com/MSGFPlus/msgfplus/blob/master/docs/examples/MSGFPlus_Params.txt
    Additional parameter files can be found at https://github.com/MSGFPlus/msgfplus/tree/master/docs/ParameterFiles
 
@@ -95,7 +95,12 @@
       </pre>
     </div>
 
-    <p>Example command (high-precision spectra):</p>
+    <h4>Examples:</h4>
+
+    <p>Example command (using a parameter file):</p>
+    <p class="note"><code>java -Xmx3500M -jar MSGFPlus.jar -s Dataset.mzML -d ProteinList.fasta -conf MSGFPlus_PartTryp_MetOx_20ppmParTol.txt</code></p>
+
+    <p>Example command (high-precision spectra, using arguments):</p>
     <p class="note"><code>java -Xmx3500M -jar MSGFPlus.jar -s Dataset.mzML -d IPI_human_3.79.fasta -inst 1 -t 20ppm -ti -1,2 -ntt 2 -tda 1 -o PSMs.mzid</code></p>
 
     <p>Example command (low-precision spectra):</p>
@@ -114,15 +119,24 @@
              For Thermo .raw files, obtain a centroided .mzML using MSConvert, which is part of <a href="http://proteowizard.sourceforge.net/">ProteoWizard</a>.
           </li>
         </ul>
-        <p class="note"><code>MSConvert.exe DatasetName.raw --filter "peakPicking true 1-" --mzML --32</code></p>
+        <p class="note"><code>MSConvert.exe --mzML --32 --filter "peakPicking true 1-" DatasetName.raw</code></p>
       </li>
-      <li>
-        <b>-d DatabaseFile</b> (*.fasta or *.fa) - Required
+      <li style="margin-bottom: 10px;">
+        <b>-d DatabaseFile</b> (*.fasta or *.fa or *.faa) - Required
         <ul>
           <li>Path to the protein database file. If the database file does not have auxiliary index files (*.canno, *.cnlcp, *.csarr, and *.cseq), MS-GF+ will create them.</li>
           <li>When "-tda 1" option is used, the database specified here must contain only target protein sequences.</li>
         </ul>
         <p class="note">If multiple MS-GF+ processes access the same database file, it is strongly recommended to index the database prior to the database search by <a href="BuildSA.html">running BuildSA</a>.</p>
+      </li>
+      <li style="margin-bottom: 10px;">
+        <b>-conf ConfigurationFile</b>
+        <ul>
+          <li>Path to the configuration file (aka parameter file) that defines settings for MS-GF+</li>
+          <li>Options specified at the command line will override settings in the config file</li>
+          <li>Example parameter file: <a href="https://github.com/MSGFPlus/msgfplus/blob/master/docs/examples/MSGFPlus_Params.txt">MSGFPlus_Params.txt</a></li>
+          <li>See also these additional <a href="https://github.com/MSGFPlus/msgfplus/tree/master/docs/ParameterFiles">example parameter files</a></li>
+        </ul>
       </li>
       <li>
         <b>-decoy DecoyPrefix</b>
