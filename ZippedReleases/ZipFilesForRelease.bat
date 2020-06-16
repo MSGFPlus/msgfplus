@@ -8,10 +8,11 @@ Set ZipFileName=MSGFPlus_v%DateStamp%.zip
 Set "WorkingDirectory=%cd%"
 
 Set StagingDirectory=%Temp%\MSGFPlusFilesToZip
-if not exist %StagingDirectory%                    mkdir %StagingDirectory%
-if not exist %StagingDirectory%\Docs               mkdir %StagingDirectory%\Docs
-if not exist %StagingDirectory%\Docs\Examples      mkdir %StagingDirectory%\Docs\Examples
-if not exist %StagingDirectory%\MzidToTsvConverter mkdir %StagingDirectory%\MzidToTsvConverter
+if not exist %StagingDirectory%                     mkdir %StagingDirectory%
+if not exist %StagingDirectory%\Docs                mkdir %StagingDirectory%\Docs
+if not exist %StagingDirectory%\Docs\Examples       mkdir %StagingDirectory%\Docs\Examples
+if not exist %StagingDirectory%\Docs\ParameterFiles mkdir %StagingDirectory%\Docs\ParameterFiles
+if not exist %StagingDirectory%\MzidToTsvConverter  mkdir %StagingDirectory%\MzidToTsvConverter
 
 echo Copying files to %StagingDirectory%
 
@@ -21,7 +22,8 @@ xcopy ..\LICENSE.txt         %StagingDirectory% /d /y
 xcopy ReferenceFiles\*       %StagingDirectory% /d /y
 
 xcopy ..\Docs\* %StagingDirectory%\Docs /d /y
-xcopy ..\Docs\examples\* %StagingDirectory%\Docs\Examples /d /y
+xcopy ..\Docs\Examples\* %StagingDirectory%\Docs\Examples /d /y
+xcopy ..\Docs\ParameterFiles\* %StagingDirectory%\Docs\ParameterFiles /d /y
 
 xcopy C:\DMS_Programs\MzidToTsvConverter\MzidToTsvConverter.exe %StagingDirectory%\MzidToTsvConverter /d /y
 xcopy C:\DMS_Programs\MzidToTsvConverter\MzidToTsvConverter.pdb %StagingDirectory%\MzidToTsvConverter /d /y
