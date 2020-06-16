@@ -12,11 +12,14 @@ public class FloatParameter extends NumberParameter<Float> {
     public String parse(String value) {
         try {
             super.value = Float.valueOf(value);
-            String range = (super.isMinInclusive ? "[" : "(") + minValue + "," + maxValue + (super.isMaxInclusive ? "]" : ")");
-            if (this.value < minValue || this.value > maxValue
-                    || !super.isMinInclusive && this.value.equals(minValue)
-                    || !super.isMaxInclusive && this.value.equals(maxValue))
+
+
+            String range = getValidRange();
+            if (this.value < minValue || this.value > maxValue ||
+                    !isMinInclusive && this.value.equals(minValue) ||
+                    !isMaxInclusive && this.value.equals(maxValue)) {
                 return "must be in the range " + range;
+            }
         } catch (NumberFormatException e) {
             return "must be a float";
         }

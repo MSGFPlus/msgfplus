@@ -38,6 +38,10 @@ public abstract class NumberParameter<T extends Number> extends Parameter {
         return this;
     }
 
+    protected String getValidRange() {
+        return (isMinInclusive ? "[" : "(") + minValue + "," + maxValue + (isMaxInclusive ? "]" : ")");
+    }
+
     @Override
     public abstract String parse(String value);
 

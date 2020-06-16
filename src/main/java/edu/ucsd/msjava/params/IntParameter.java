@@ -34,10 +34,10 @@ public class IntParameter extends NumberParameter<Integer> {
                 maxValue = Integer.MAX_VALUE;
             }
 
-            String range = (super.isMinInclusive ? "[" : "(") + minValue + "," + maxValue + (super.isMaxInclusive ? "]" : ")");
-            if (this.value < minValue || this.value > maxValue
-                    || !super.isMinInclusive && this.value.equals(minValue)
-                    || !super.isMaxInclusive && this.value.equals(maxValue)) {
+            String range = getValidRange();
+            if (this.value < minValue || this.value > maxValue ||
+                    !super.isMinInclusive && this.value.equals(minValue) ||
+                    !super.isMaxInclusive && this.value.equals(maxValue)) {
 
                 if (super.isMinInclusive && super.isMaxInclusive)
                     return "must be in the range " + minValue + " to " + maxValue;
