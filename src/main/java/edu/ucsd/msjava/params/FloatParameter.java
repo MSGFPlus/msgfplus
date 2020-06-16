@@ -13,6 +13,11 @@ public class FloatParameter extends NumberParameter<Float> {
         try {
             super.value = Float.valueOf(value);
 
+            if (minValue == null)
+                minValue = Float.NEGATIVE_INFINITY;
+
+            if (maxValue == null)
+                maxValue = Float.POSITIVE_INFINITY;
 
             String range = getValidRange();
             if (this.value < minValue || this.value > maxValue ||
