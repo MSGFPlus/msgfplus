@@ -103,6 +103,40 @@ public class TestMSGFPlus {
 
     @Test
     @Ignore
+    public void testQCMamConfFile()
+    {
+        File workDir = new File("C:\\DMS_WorkDir");
+        File orgDbDir = new File("C:\\DMS_Temp_Org");
+        File specFile = Paths.get(workDir.getPath(), "QC_Mam_19_01-run1_15Jun20_Remus_WBEH-20-05-10.mzML").toFile();
+        File dbFile = Paths.get(orgDbDir.getPath(),"ID_004225_C1CEE570.fasta").toFile();
+
+        File confFile = Paths.get(workDir.getPath(), "MSGFPlus_Tryp_MetOx_StatCysAlk_20ppmParTol.txt").toFile();
+
+        String versionString = getNextVersion();
+
+        String[] argv = {"-s", specFile.getPath(), "-d", dbFile.getPath(),
+                "-o", Paths.get(workDir.getPath(), "Test_" + versionString + ".mzid").toString(),
+                "-conf", confFile.getPath()
+        };
+
+        ParamManager paramManager = getParamManager();
+        paramManager.addMSGFPlusParams();
+
+        String msg = paramManager.parseParams(argv);
+        if(msg != null) {
+            System.err.println("Error: " + msg);
+            paramManager.printUsageInfo();
+        }
+
+        assertTrue(msg == null);
+
+        String result = MSGFPlus.runMSGFPlus(paramManager);
+
+        assertTrue("MS-GF+ returned an error message", result == null);
+    }
+
+    @Test
+    @Ignore
     public void testQCShewConfFile()
     {
         File workDir = new File("C:\\DMS_WorkDir1");
