@@ -27,6 +27,9 @@ public class CompactSuffixArray {
      */
     protected static final String EXTENSION_INDICES = ".csarr";
 
+    /**
+     * Default extension of a neighboring longest common prefix file
+     */
     protected static final String EXTENSION_NLCPS = ".cnlcp";
 
     /**
@@ -46,7 +49,7 @@ public class CompactSuffixArray {
     private final File indexFile;
 
     /**
-     * Tracks precomputed LCPs of neighboring suffixes
+     * Tracks precomputed LCPs (longest common prefixes) of neighboring suffixes
      */
     private final File nlcpFile;
 
@@ -184,7 +187,8 @@ public class CompactSuffixArray {
         return true;
     }
 
-    //TODO: this method has a bug
+    // TODO: this method has a bug (according to Sangtae in 2011)
+    // The only evident bug is no checks for reading past the end of a file
     private void computeNumDistinctPeptides() {
         boolean[] isValidResidue = new boolean[128];
         AminoAcidSet aaSet = AminoAcidSet.getStandardAminoAcidSet();
