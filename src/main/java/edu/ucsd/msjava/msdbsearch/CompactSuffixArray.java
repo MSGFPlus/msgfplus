@@ -328,16 +328,19 @@ public class CompactSuffixArray {
         // the main array that stores the sorted buckets of suffixes
         Bucket[] bucketSuffixes = new Bucket[numBuckets];
 
+        int numResiduesInSequence = (int) sequence.getSize();
         // main loop for putting suffixes into the buckets
-        for (int i = BUCKET_SIZE - 1, j = 0; j < (int) sequence.getSize(); i++, j++) {
+        for (int i = BUCKET_SIZE - 1, j = 0; j < numResiduesInSequence; i++, j++) {
             // print progress
             if (j % 10000001 == 0)
-                System.out.printf("Suffix creation: %.2f%% complete.\n", j * 100.0 / sequence.getSize());
+                System.out.printf("Suffix creation: %.2f%% complete.\n", j * 100.0 / numResiduesInSequence);
 
 //			System.out.println(j);
             // quick wait to derive the next hash, since we are reading the sequence in order
             byte b = Constants.TERMINATOR;
-            if (i < sequence.getSize()) b = sequence.getByteAt(i);
+            if (i < numResiduesInSequence)
+                b = sequence.getByteAt(i);
+
             currentHash = (currentHash % denominator) * hashBase + b;
 
             // first bucket at this position
@@ -352,12 +355,12 @@ public class CompactSuffixArray {
         try {
             DataOutputStream indexOut = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(indexFile)));
             DataOutputStream nlcpOut = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(nlcpFile)));
-            indexOut.writeInt((int) sequence.getSize());
+            indexOut.writeInt(numResiduesInSequence);
             indexOut.writeInt(sequence.getId());
-            nlcpOut.writeInt((int) sequence.getSize());
+            nlcpOut.writeInt(numResiduesInSequence);
             nlcpOut.writeInt(sequence.getId());
             SuffixFactory.Suffix prevBucketSuffix = null;
-//			byte[] neighboringLcps = new byte[(int)sequence.getSize()];         // the computed neighboring lcps
+//			byte[] neighboringLcps = new byte[numResiduesInSequence];         // the computed neighboring lcps
 
             for (int i = 0; i < bucketSuffixes.length; i++) {
 
