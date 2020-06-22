@@ -194,7 +194,10 @@ public class CompactSuffixArray {
         // This array keeps track of the number of possible peptides of each length
         numDistinctPeptides = new int[maxPeptideLength + 2];
         try {
-            DataInputStream indices = new DataInputStream(new BufferedInputStream(new FileInputStream(getIndexFile())));
+            File indexFile = getIndexFile();
+            System.out.printf("Counting number of distinct peptides in %s using %s\n", indexFile.getName(), nlcpFile.getName());
+
+            DataInputStream indices = new DataInputStream(new BufferedInputStream(new FileInputStream(indexFile)));
             indices.skip(CompactSuffixArray.INT_BYTE_SIZE * 2);    // skip size and id
 
             DataInputStream neighboringLcps = new DataInputStream(new BufferedInputStream(new FileInputStream(nlcpFile)));
