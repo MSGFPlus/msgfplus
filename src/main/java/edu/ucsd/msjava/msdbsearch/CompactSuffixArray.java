@@ -73,7 +73,7 @@ public class CompactSuffixArray {
     /**
      * number of distinct peptides
      */
-    private int[] numDisinctPeptides;
+    private int[] numDistinctPeptides;
 
 
     /**
@@ -134,7 +134,7 @@ public class CompactSuffixArray {
 
     public int getNumDistinctPeptides(int length) {
         // no boundary check
-        return numDisinctPeptides[length];
+        return numDistinctPeptides[length];
     }
 
     public String getAnnotation(long index) {
@@ -191,7 +191,8 @@ public class CompactSuffixArray {
         for (AminoAcid aa : aaSet)
             isValidResidue[aa.getResidue()] = true;
 
-        numDisinctPeptides = new int[maxPeptideLength + 2];
+        // This array keeps track of the number of possible peptides of each length
+        numDistinctPeptides = new int[maxPeptideLength + 2];
         try {
             DataInputStream indices = new DataInputStream(new BufferedInputStream(new FileInputStream(getIndexFile())));
             indices.skip(CompactSuffixArray.INT_BYTE_SIZE * 2);    // skip size and id
@@ -207,8 +208,8 @@ public class CompactSuffixArray {
                 if (isValidResidue[idx] == false)
                     continue;
 
-                for (int l = lcp + 1; l < numDisinctPeptides.length; l++) {
-                    numDisinctPeptides[l]++;
+                for (int l = lcp + 1; l < numDistinctPeptides.length; l++) {
+                    numDistinctPeptides[l]++;
                 }
             }
             neighboringLcps.close();
@@ -491,7 +492,7 @@ public class CompactSuffixArray {
         long totalErr = 0;
         System.out.println("Length\tNumDistinctPeptides\tNumPeptides\tNumPeptidesWithErrors");
         for (i = 0; i < maxPeptideLength; i++) {
-            System.out.print((i + 1) + "\t" + this.numDisinctPeptides[i + 1] + "\t" + numPeptides[i]);
+            System.out.print((i + 1) + "\t" + this.numDistinctPeptides[i + 1] + "\t" + numPeptides[i]);
             total += numPeptides[i];
             for (int j = 0; j < 11; j++) {
                 if (numPepWithError[i][j] > 0) {
