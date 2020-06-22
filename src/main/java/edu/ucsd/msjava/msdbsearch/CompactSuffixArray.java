@@ -201,7 +201,15 @@ public class CompactSuffixArray {
             int size = neighboringLcps.readInt();
             neighboringLcps.readInt();    // skip id
 
+            long lastStatusTime = System.currentTimeMillis();
+
             for (int i = 0; i < size; i++) {
+                // print progress
+                if (i % 100000 == 0 && System.currentTimeMillis() - lastStatusTime > 2000) {
+                    lastStatusTime = System.currentTimeMillis();
+                    System.out.printf("Counting distinct peptides: %.2f%% complete.\n", i * 100.0 / size);
+                }
+
                 int index = indices.readInt();
                 byte lcp = neighboringLcps.readByte();
                 int idx = sequence.getCharAt(index);
@@ -328,12 +336,16 @@ public class CompactSuffixArray {
         // the main array that stores the sorted buckets of suffixes
         Bucket[] bucketSuffixes = new Bucket[numBuckets];
 
+        long lastStatusTime = System.currentTimeMillis();
         int numResiduesInSequence = (int) sequence.getSize();
+
         // main loop for putting suffixes into the buckets
         for (int i = BUCKET_SIZE - 1, j = 0; j < numResiduesInSequence; i++, j++) {
             // print progress
-            if (j % 10000001 == 0)
+            if (j % 100000 == 0 && System.currentTimeMillis() - lastStatusTime > 2000) {
+                lastStatusTime =  System.currentTimeMillis();
                 System.out.printf("Suffix creation: %.2f%% complete.\n", j * 100.0 / numResiduesInSequence);
+            }
 
 //			System.out.println(j);
             // quick wait to derive the next hash, since we are reading the sequence in order
@@ -362,11 +374,15 @@ public class CompactSuffixArray {
             SuffixFactory.Suffix prevBucketSuffix = null;
 //			byte[] neighboringLcps = new byte[numResiduesInSequence];         // the computed neighboring lcps
 
-            for (int i = 0; i < bucketSuffixes.length; i++) {
+            System.out.println("Sorting suffixes... Size: " + bucketSuffixes.length);
+            lastStatusTime = System.currentTimeMillis();
 
-                // print out progress
-                if (i % 1000000 == 0)
-                    System.out.printf("Sorting %.2f%% complete.\n", i * 100.0 / bucketSuffixes.length);
+            for (int i = 0; i < bucketSuffixes.length; i++) {
+                // print progress
+                if (i % 100000 == 0 && System.currentTimeMillis() - lastStatusTime > 2000) {
+                    lastStatusTime = System.currentTimeMillis();
+                    System.out.printf("Sorting: %.2f%% complete.\n", i * 100.0 / bucketSuffixes.length);
+                }
 
                 if (bucketSuffixes[i] != null) {
 
