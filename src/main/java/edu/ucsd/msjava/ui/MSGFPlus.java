@@ -28,6 +28,9 @@ public class MSGFPlus {
     public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
     public static final String DEFAULT_DECOY_PROTEIN_PREFIX = "XXX";
 
+    // Set this to true when debugging
+    private static final boolean DISABLE_THREADING = false;
+
     public static void main(String argv[]) {
         long startTime = System.currentTimeMillis();
 
@@ -382,7 +385,13 @@ public class MSGFPlus {
                         resultList,
                         i + 1
                 );
-                executor.execute(msgfplusExecutor);
+
+                if (DISABLE_THREADING) {
+                    msgfplusExecutor.run();
+                } else {
+                    executor.execute(msgfplusExecutor);
+                }
+
             }
             // Output initial progress report.
             executor.outputProgressReport();
