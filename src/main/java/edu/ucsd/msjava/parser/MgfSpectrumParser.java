@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Map;
 
+import static edu.ucsd.msjava.misc.TextParsingUtils.isInteger;
+
 /**
  * This class enables to parse spectrum file with mgf format.
  *
@@ -247,13 +249,13 @@ public class MgfSpectrumParser implements SpectrumParser {
         }
 
         boolean success = false;
-        if (tryParseInt(candidateStartScan)) {
+        if (isInteger(candidateStartScan)) {
             int startScanNum = Integer.parseInt(candidateStartScan);
             spec.setStartScanNum(startScanNum);
             success = true;
         }
 
-        if (tryParseInt(candidateEndScan)) {
+        if (isInteger(candidateEndScan)) {
             int endScanNum = Integer.parseInt(candidateEndScan);
             spec.setEndScanNum(endScanNum);
         }
@@ -303,15 +305,6 @@ public class MgfSpectrumParser implements SpectrumParser {
             offset = lineReader.getPosition();
         }
         return specIndexMap;
-    }
-
-    boolean tryParseInt(String value) {
-        try {
-            Integer.parseInt(value);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
     }
 
     void warnScanNotFoundInTitle(String title) {
