@@ -12,7 +12,13 @@ public class CandidatePeptideGrid {
     private final Enzyme enzyme;
     private final int maxPeptideLength;
     private final int numMaxMods;
+
+    /**
+     * Number of isoforms to consider per peptide.
+     * NUM_VARIANTS_PER_PEPTIDE is 128 in Constants.java
+     */
     private final int maxNumVariantsPerPeptide;
+
     private final int maxNumMissedCleavages;
     private final int[] nMissedCleavages;
     private final char[] residues;
@@ -20,6 +26,10 @@ public class CandidatePeptideGrid {
 
     private int[][] nominalPRM;
     private double[][] prm;
+
+    /**
+     * Number of modifications for each length prm
+     */
     private int[][] numMods;
     private StringBuffer[] peptide;
 
@@ -155,7 +165,12 @@ public class CandidatePeptideGrid {
 //		return addResidue(length+1, residue);
 //	}
 
-    // if residue is not a standard residue, return false
+    /**
+     * Add a residue to the candidate peptide grid
+     * @param length
+     * @param residue
+     * @return True if the residue can be added; false if the residue should not be added
+     */
     public boolean addResidue(int length, char residue) {
         double[] aaMassArr = aaMass[residue];
         if (aaMassArr == null || length > maxPeptideLength)
@@ -215,6 +230,14 @@ public class CandidatePeptideGrid {
         return false;
     }
 
+    /**
+     * Add a residue to the candidate peptide grid
+     * @param aaMassArr
+     * @param aaNominalMassArr
+     * @param aaResidueArr
+     * @param length
+     * @return True if the residue can be added; false if the residue should not be added
+     */
     private boolean addResidue(double[] aaMassArr, int[] aaNominalMassArr, char[] aaResidueArr, int length) {
         int parentSize = size[length - 1];
         for (int parentIndex = 0; parentIndex < parentSize; parentIndex++) {
@@ -226,7 +249,7 @@ public class CandidatePeptideGrid {
         }
         size[length] = parentSize;
 
-        // modified residue: copy prms up to length - 1 into new array
+        // modified residue: copy PRMs up to length - 1 into new array
         if (aaMassArr.length > 1 && parentSize < maxNumVariantsPerPeptide) {
             int newIndex = parentSize;
             for (int parentIndex = 0; parentIndex < parentSize; parentIndex++) {
@@ -273,7 +296,7 @@ public class CandidatePeptideGrid {
             /* For C-term enzymes, we need to look backward one residue to
              * determine if adding this residue creates a missed cleavage.
              *
-             * E.g., for Trpysin, if the previous residue is K but we are
+             * E.g., for Trypsin, if the previous residue is K but we are
              * extending the peptide with another amino acid, the new peptide
              * has 1 missed cleavage at position length - 1 because the K did not
              * cleave.

@@ -279,8 +279,7 @@ public class MSGFPlus {
         if (maxThreads < numThreads) {
             if (maxThreads == 1) {
                 System.out.println("Note: under " + spectraPerTaskMinimum + " spectra; using 1 thread instead of " + numThreads);
-            }
-            else{
+            } else {
                 System.out.println("Note: " + spectraPerTaskMinimum + " spectra per thread minimum; using " + maxThreads + " threads instead of " + numThreads);
             }
 

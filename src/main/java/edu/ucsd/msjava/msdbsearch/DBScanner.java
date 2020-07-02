@@ -18,6 +18,11 @@ public class DBScanner {
     private int minPeptideLength;
     private int maxPeptideLength;
     private int maxMissedCleavages;
+
+    /**
+     * Number of isoforms to consider per peptide.
+     * NUM_VARIANTS_PER_PEPTIDE is 128 in Constants.java
+     */
     private int maxNumVariantsPerPeptide;
 
     private AminoAcidSet aaSet;
@@ -204,9 +209,13 @@ public class DBScanner {
 
         try {
             DataInputStream indices = new DataInputStream(new BufferedInputStream(new FileInputStream(sa.getIndexFile())));
-            indices.skip(CompactSuffixArray.INT_BYTE_SIZE * 2 + CompactSuffixArray.INT_BYTE_SIZE * fromIndex);    // skip size and id
+
+            // skip size and id
+            indices.skip(CompactSuffixArray.INT_BYTE_SIZE * 2 + CompactSuffixArray.INT_BYTE_SIZE * fromIndex);
 
             DataInputStream nlcps = new DataInputStream(new BufferedInputStream(new FileInputStream(sa.getNeighboringLcpFile())));
+
+            // skip size
             nlcps.skip(CompactSuffixArray.INT_BYTE_SIZE * 2 + fromIndex);
             CompactFastaSequence sequence = sa.getSequence();
 
@@ -214,7 +223,10 @@ public class DBScanner {
             int nTermCleavageScore = 0;
 
             boolean isExtensionAtTheSameIndex;
-            int numNonEnzTermini = 0;    // number of non-enzymatic termini
+
+            // number of non-enzymatic termini
+            int numNonEnzTermini = 0;
+
             int numIndices = toIndex - fromIndex;
 
             class MatchList extends ArrayList<DatabaseMatch> {
@@ -297,7 +309,8 @@ public class DBScanner {
                 if (lcp >= peptideLengthIndex + 2 ||
                         lcp == peptideLengthIndex + 1 && (enzyme == null || enzyme.isCTerm())) {
                     continue;
-                } else if (lcp == 0)    // preceding aa is changed
+                }
+                else if (lcp == 0)    // preceding aa is changed
                 {
                     char precedingAA = sequence.getCharAt(index);
                     isProteinNTerm = precedingAA == Constants.TERMINATOR_CHAR;

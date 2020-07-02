@@ -42,6 +42,7 @@ public class Modification {
 
     /**
      * Modification name
+     *
      * @return
      */
     public String getName() {
@@ -50,6 +51,7 @@ public class Modification {
 
     /**
      * Modification mass (as a float)
+     *
      * @return
      */
     public float getMass() {
@@ -58,6 +60,7 @@ public class Modification {
 
     /**
      * Modification mass (as a double)
+     *
      * @return
      */
     public double getAccurateMass() {
@@ -66,6 +69,7 @@ public class Modification {
 
     /**
      * Modification mass (as an integer)
+     *
      * @return
      */
     public int getNominalMass() {
@@ -74,6 +78,7 @@ public class Modification {
 
     /**
      * Modification identifier (used in mzid output)
+     *
      * @return
      */
     public String getModId() {
@@ -93,6 +98,7 @@ public class Modification {
 
     /**
      * List of default modifications
+     *
      * @return
      */
     public static Modification[] getDefaultModList() {
@@ -101,6 +107,7 @@ public class Modification {
 
     /**
      * Looks for an existing mod with the given name
+     *
      * @param name Modification name (case-sensitive); getAminoAcidSetFromXMLFile uses 'residueStr + " " + modMass'
      * @param mass Monoisotopic mass
      * @return True if an existing mod exists, and the mass is different (by more than 0.001 Da); otherwise false
@@ -111,6 +118,7 @@ public class Modification {
 
     /**
      * Looks for an existing mod with the given name
+     *
      * @param name Modification name (case-sensitive); getAminoAcidSetFromXMLFile uses 'residueStr + " " + modMass'
      * @param mass Monoisotopic mass
      * @return True if an existing mod exists, and the mass is different (by more than massTolerance Da); otherwise false
@@ -129,7 +137,8 @@ public class Modification {
 
     /**
      * Looks for an existing mod with the given name
-     * @param name Modification name (case-sensitive)
+     *
+     * @param name        Modification name (case-sensitive)
      * @param composition Modification empirical formula
      * @return True if an existing mod exists, and the mass is different (by more than 0.001 Da); otherwise false
      */
@@ -139,7 +148,8 @@ public class Modification {
 
     /**
      * Looks for an existing mod with the given name
-     * @param name Modification name (case-sensitive)
+     *
+     * @param name        Modification name (case-sensitive)
      * @param composition Modification empirical formula
      * @return True if an existing mod exists, and the mass is different (by more than massTolerance Da); otherwise false
      */
@@ -149,8 +159,9 @@ public class Modification {
 
     /**
      * Register a modification by name and mass
+     *
      * @param modName Modification name (though getAminoAcidSetFromXMLFile uses 'residueStr + " " + modMass')
-     * @param mass Monoisotopic mass
+     * @param mass    Monoisotopic mass
      * @return
      */
     public static Modification register(String modName, double mass) {
@@ -162,7 +173,8 @@ public class Modification {
 
     /**
      * Register a modification by name and composition
-     * @param name Modification name
+     *
+     * @param name        Modification name
      * @param composition Modification empirical formula
      * @return
      */
@@ -187,7 +199,8 @@ public class Modification {
 
     /**
      * Generate a unique identifier for the modification to be used in mzid output (in peptide and peptideEvidence IDs)
-     * @param mod 
+     *
+     * @param mod
      */
     private static void setModIdentifier(Modification mod) {
         double mass = mod.getAccurateMass();
@@ -227,7 +240,10 @@ public class Modification {
         mod.modId = id;
     }
 
-    public static Modification getModByName(String name) { return modTable.get(name); }
+    public static Modification getModByName(String name) {
+        return modTable.get(name);
+    }
+
     public static final Modification Carbamidomethyl = new Modification("Carbamidomethyl", new Composition(2, 3, 1, 1, 0));
     public static final Modification Carboxymethyl = new Modification("Carboxymethyl", new Composition(2, 2, 2, 0, 0));
     public static final Modification NIPCAM = new Modification("NIPCAM", new Composition(5, 9, 1, 1, 0));
@@ -320,21 +336,30 @@ public class Modification {
         }
 
         public String toString() {
-            return mod.getName() + " " + residue + " " + location + " " + (isFixedModification ? "Fixed (static)" : "Variable (dynamic)");
+            return mod.getName() + " " +
+                    residue + " " +
+                    location + ", " +
+                    (isFixedModification ? "Fixed (static)" : "Variable (dynamic)");
         }
 
         @Override
         public boolean equals(Object obj) {
             if (obj instanceof Instance) {
                 Instance other = (Instance) obj;
-                return mod == other.mod && this.residue == other.residue && this.location == other.location && this.isFixedModification == other.isFixedModification;
+                return this.mod == other.mod &&
+                        this.residue == other.residue &&
+                        this.location == other.location &&
+                        this.isFixedModification == other.isFixedModification;
             }
             return false;
         }
 
         @Override
         public int hashCode() {
-            return mod.getName().hashCode() + new Character(residue).hashCode() + location.hashCode() + new Boolean(isFixedModification).hashCode();
+            return mod.getName().hashCode() +
+                    new Character(residue).hashCode() +
+                    location.hashCode() +
+                    new Boolean(isFixedModification).hashCode();
         }
     }
 

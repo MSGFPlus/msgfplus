@@ -438,11 +438,12 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
     /**
      * Add a dynamic or static modification that applies to a residue or the N- or C-terminus
+     *
      * @param modFileName Mod file name
-     * @param lineNum Line number
-     * @param dataLine Text from this line in the mod file
-     * @param mods Existing mod instances
-     * @param modIns New mod instance
+     * @param lineNum     Line number
+     * @param dataLine    Text from this line in the mod file
+     * @param mods        Existing mod instances
+     * @param modIns      New mod instance
      * @return True if successful, false if the same modification is defined for the same residue twice
      */
     private static boolean addModInstance(
@@ -455,8 +456,8 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     modIns.getModification().getName().equals(comparisonItem.getModification().getName())) {
                 System.err.println(
                         "Error: The same modification is defined for the same residue twice; \n" +
-                        "the duplicate definition is on line " + lineNum +
-                        " in file " + modFileName + ": " + dataLine);
+                                "the duplicate definition is on line " + lineNum +
+                                " in file " + modFileName + ": " + dataLine);
 
                 return false;
             }
@@ -486,7 +487,8 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             return;
         }
 
-        // partition modification instances into different types
+        // partition modification instances into hash maps where
+        // keys are location and values are a list of mods that can apply to that location
         HashMap<Modification.Location, ArrayList<Modification.Instance>> fixedMods = new HashMap<>();
         HashMap<Modification.Location, ArrayList<Modification.Instance>> variableMods = new HashMap<>();
 
@@ -571,7 +573,10 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             else
                 formattedModMass = getRoundedMass(modMass);
 
-            String modInfo = modType + mod.getModification().getName() + " on " + mod.getResidue() + modLocation + " (" + formattedModMass + ")";
+            String modInfo = modType +
+                    mod.getModification().getName() + " on " + mod.getResidue() +
+                    modLocation +
+                    " (" + formattedModMass + ")";
 
             modificationsInUse.add(modInfo);
         }
@@ -762,7 +767,8 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
     /**
      * Load modification definitions from a text file and associate with amino acids
-     * @param modFilePath Path to the mods.txt file
+     *
+     * @param modFilePath  Path to the mods.txt file
      * @param paramManager Parameter manager
      * @return
      */
@@ -806,10 +812,11 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
     /**
      * Associate modification definitions read from a MSGF+ parameter file with amino acids
+     *
      * @param modConfigFilePath
-     * @param customAAByLine Hashtable where keys are the line number in the MSGF+ parameter file and values are the text from the given line
-     * @param modsByLine Hashtable where keys are the line number in the MSGF+ parameter file and values are the text from the given line
-     * @param paramManager Parameter manager
+     * @param customAAByLine    Hashtable where keys are the line number in the MSGF+ parameter file and values are the text from the given line
+     * @param modsByLine        Hashtable where keys are the line number in the MSGF+ parameter file and values are the text from the given line
+     * @param paramManager      Parameter manager
      * @return AminoAcidSet
      */
     public static AminoAcidSet getAminoAcidSetFromList(
@@ -845,9 +852,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     }
 
     /**
-     * @param mods Modification definitions
-     * @param customAA Custom amino acids
-     * @param modMetadata Modification metadata, which may have an updated maxNumModsPerPeptide value read from a mods.txt file
+     * @param mods         Modification definitions
+     * @param customAA     Custom amino acids
+     * @param modMetadata  Modification metadata, which may have an updated maxNumModsPerPeptide value read from a mods.txt file
      * @param paramManager Parameter manager
      * @return AminoAcidSet
      */
@@ -916,9 +923,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             // Supports C, H, N, O, S, P, Br, Cl, Fe, and Se
 
             Double mass = Composition.getMass(compStr);
-            if (mass != null)
+            if (mass != null) {
                 modMass = mass;
-            else {
+            } else {
                 try {
                     modMass = Double.parseDouble(compStr);
                 } catch (NumberFormatException e) {
@@ -1119,7 +1126,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     // do nothing
                 } else {
                     System.err.println("Error: Invalid Cysteine protecting group at line " + lineNum +
-                            " in file " + modFile.getName() + ": "+ dataLine);
+                            " in file " + modFile.getName() + ": " + dataLine);
                     System.exit(-1);
                 }
             } else if (dataLine.startsWith(ptmKey))    // custom PTM
@@ -1129,7 +1136,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
                 if (token.length != 3) {
                     System.err.println("Error: Invalid custom ptm option at line " + lineNum +
-                            " in file " + modFile.getName() + ": "+ dataLine);
+                            " in file " + modFile.getName() + ": " + dataLine);
                     System.exit(-1);
                 }
 
@@ -1139,7 +1146,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                     modMass = Double.parseDouble(token[0]);
                 } catch (NumberFormatException e) {
                     System.err.println("Error: Invalid Mass at line " + lineNum +
-                            " in file " + modFile.getName() + ": "+ dataLine);
+                            " in file " + modFile.getName() + ": " + dataLine);
                     e.printStackTrace();
                     System.exit(-1);
                 }
@@ -1591,6 +1598,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
     /**
      * Trim whitespace from the beginning and end of value,
      * Return the text up to the first whitespace character
+     *
      * @param value
      * @return
      */
@@ -1600,7 +1608,8 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
     /**
      * Obtain a new residue for a modified amino acid
-      * @param unmodifiedResidue
+     *
+     * @param unmodifiedResidue
      * @return
      */
     private char getModifiedResidue(char unmodifiedResidue) {
@@ -1627,6 +1636,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
     /**
      * Return the mass value as a string, with 4 digits of precision after the decimal
+     *
      * @param mass
      * @return
      */
@@ -1637,11 +1647,12 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
     /**
      * Checks for a conflicting mod definition by modification name
+     *
      * @param modFileName Mod file name
-     * @param lineNum Line number
-     * @param dataLine Text from this line in the mod file
-     * @param modName Modification name (case-sensitive); getAminoAcidSetFromXMLFile uses 'residueStr + " " + modMass'
-     * @param modMass Monoisotopic mass
+     * @param lineNum     Line number
+     * @param dataLine    Text from this line in the mod file
+     * @param modName     Modification name (case-sensitive); getAminoAcidSetFromXMLFile uses 'residueStr + " " + modMass'
+     * @param modMass     Monoisotopic mass
      * @return True if an existing mod is defined with this name but a different mass
      */
     private static boolean isModConflict(
@@ -1684,7 +1695,7 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
 
         System.err.println(
                 "Error: Two modifications are defined with the same name but different masses; \n" +
-                "the duplicate definition is on line " + lineNum +
+                        "the duplicate definition is on line " + lineNum +
                         " in file " + modFileName + ": " + dataLine);
 
 
@@ -1741,7 +1752,9 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             customAAResidues += customAminoAcidSymbol;
         }
 
-        public void setMaxNumModsPerPeptide(int newModCount) { maxNumModsPerPeptide = newModCount; }
+        public void setMaxNumModsPerPeptide(int newModCount) {
+            maxNumModsPerPeptide = newModCount;
+        }
 
         // Unused: public void setCustomAAResidues(String residues) { customAAResidues = residues; }
 

@@ -78,8 +78,10 @@ public class ConcurrentMSGFPlus {
             if (Thread.currentThread().isInterrupted()) {
                 return;
             }
+
             if (specScanner.getPepMassSpecKeyMap().size() == 0)
                 specScanner.makePepMassSpecKeyMap();
+
             output.println(threadName + ": Preprocessing spectra...");
             if (Thread.currentThread().isInterrupted()) {
                 return;
