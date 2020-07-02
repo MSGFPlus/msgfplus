@@ -1012,11 +1012,10 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             else if (isCustomAminoAcid)
                 ;
             else {
-                System.err.println("Error: Invalid Location at line " + lineNum +
-                        " in file " + sourceFilePath + ": " + modSetting);
+                System.err.println("Error: Invalid Location '" + locStr + "'; expecting any, N-Term, C-Term, or similar; " +
+                        "see line " + lineNum + " in file " + sourceFilePath + ": " + modSetting);
                 return false;
             }
-
 
             if (!isCustomAminoAcid) {
                 String modName = getCleanModName(modInfo[4]);
