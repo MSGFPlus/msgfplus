@@ -961,17 +961,19 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
             // isFixedModification
             boolean isFixedModification = false;
             boolean isCustomAminoAcid = false;
-            boolean modTypeParseFailed = false;
 
             String settingType = modInfo[2].trim();
-            if (settingType.equalsIgnoreCase("fix"))
+            if (settingType.equalsIgnoreCase("fix")) {
                 isFixedModification = true;
-            else if (settingType.equalsIgnoreCase("opt"))
+            } else if (settingType.equalsIgnoreCase("opt")) {
                 isFixedModification = false;
-            else if (settingType.equalsIgnoreCase("custom"))
+            } else if (settingType.equalsIgnoreCase("custom")) {
                 isCustomAminoAcid = true;
-            else
-                modTypeParseFailed = true;
+            } else {
+                System.err.println("Error: Modification must be fix, opt, optset#, or custom at line " + lineNum +
+                        " in file " + sourceFilePath + ": " + modSetting);
+                return false;
+            }
 
             if ((!isResidueStrLegitimate && !isCustomAminoAcid) || (isCustomAminoAcid && matchesCustomAA)) {
                 System.err.println("Error: Invalid Residue(s) at line " + lineNum +
@@ -988,11 +990,6 @@ public class AminoAcidSet implements Iterable<AminoAcid> {
                 System.err.println("Error: Invalid composition/mass at line " + lineNum +
                         " in file " + sourceFilePath + ": " + modSetting);
                 System.err.println("Custom Amino acids must supply a composition string, and must not use elements other than C H N O S.");
-                return false;
-            }
-            if (modTypeParseFailed) {
-                System.err.println("Error: Modification must be either fix, opt, or custom at line " + lineNum +
-                        " in file " + sourceFilePath + ": " + modSetting);
                 return false;
             }
 
