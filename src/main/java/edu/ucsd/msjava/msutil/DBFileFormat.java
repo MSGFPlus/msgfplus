@@ -9,5 +9,5 @@ public class DBFileFormat extends FileFormat {
         super(suffix);
     }
 
-    public static final DBFileFormat FASTA = new DBFileFormat(new String[]{".fa", ".fasta"});
+    public static final DBFileFormat FASTA = new DBFileFormat(new String[]{".fa", ".fasta", ".faa"});
 }
