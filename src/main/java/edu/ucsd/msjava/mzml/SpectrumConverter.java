@@ -3,13 +3,14 @@ package edu.ucsd.msjava.mzml;
 import edu.ucsd.msjava.msutil.ActivationMethod;
 import edu.ucsd.msjava.msutil.CvParamInfo;
 import edu.ucsd.msjava.msutil.Peak;
+import edu.ucsd.msjava.msutil.Spectrum;
 import uk.ac.ebi.jmzml.model.mzml.*;
 
 import java.util.Collections;
 
 public class SpectrumConverter {
     public static edu.ucsd.msjava.msutil.Spectrum getSpectrumFromJMzMLSpec(uk.ac.ebi.jmzml.model.mzml.Spectrum jmzMLSpec) {
-        edu.ucsd.msjava.msutil.Spectrum spec = new edu.ucsd.msjava.msutil.Spectrum();
+        Spectrum spec = new edu.ucsd.msjava.msutil.Spectrum();
 
         // ID
         String id = jmzMLSpec.getId();
@@ -24,7 +25,10 @@ public class SpectrumConverter {
 
         // MS Level
         CVParam msLevelParam = null;
+
         Boolean isCentroided = false;
+        Spectrum.Polarity scanPolarity = Spectrum.Polarity.POSITIVE;
+
         for (CVParam cvParam : jmzMLSpec.getCvParam()) {
             if (cvParam.getAccession().equals("MS:1000511"))    // MS level
             {
@@ -35,10 +39,17 @@ public class SpectrumConverter {
             } else if (cvParam.getAccession().equals("MS:1000128"))    // profile spectrum
             {
                 isCentroided = false;
+            } else if (cvParam.getAccession().equals("MS:1000129"))    // negative mode scan
+            {
+                scanPolarity = Spectrum.Polarity.NEGATIVE;
+            } else if (cvParam.getAccession().equals("MS:1000130"))    // positive mode scan
+            {
+                scanPolarity = Spectrum.Polarity.POSITIVE;
             }
         }
 
         spec.setIsCentroided(isCentroided);
+        spec.setScanPolarity(scanPolarity);
 
         float precursorMz = -1;
         float scanStartTime = -1;
@@ -65,8 +76,7 @@ public class SpectrumConverter {
                     CvParamInfo cvParamInfo;
                     if (cvParam.getUnitAccession() != null && !cvParam.getUnitAccession().isEmpty()) {
                         cvParamInfo = new CvParamInfo(cvParam.getAccession(), cvParam.getName(), cvParam.getValue(), cvParam.getUnitAccession(), cvParam.getUnitName());
-                    }
-                    else {
+                    } else {
                         cvParamInfo = new CvParamInfo(cvParam.getAccession(), cvParam.getName(), cvParam.getValue());
                     }
 

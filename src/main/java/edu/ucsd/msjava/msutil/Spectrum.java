@@ -17,6 +17,11 @@ import java.util.Comparator;
  */
 public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
 
+    public enum Polarity {
+        POSITIVE,
+        NEGATIVE
+    }
+
     //this is recommended for Serializable objects
     static final private long serialVersionUID = 1L;
 
@@ -36,6 +41,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
     private boolean rtIsSeconds = true;      // retention time units - false, is minutes, true, is seconds
     private ActivationMethod activationMethod = null;    // fragmentation method
     private int msLevel = 2;    // ms level
+    private Polarity scanPolarity = Polarity.POSITIVE;
 
     private Boolean isCentroided = true;
 
@@ -110,7 +116,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
     /**
      * Gets the list of seq fi as String objects.
      *
-     * @return the ArrayList of String objeccts of the annotations. null if there is no annotation.
+     * @return the ArrayList of String objects of the annotations. null if there is no annotation.
      */
     public ArrayList<String> getSeqList() {
         return seqList;
@@ -231,6 +237,14 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
      */
     public ActivationMethod getActivationMethod() {
         return this.activationMethod;
+    }
+
+    /**
+     * Gets the polarity of this scan
+     *
+     */
+    public Polarity getScanPolarity() {
+        return this.scanPolarity;
     }
 
     /**
@@ -405,6 +419,15 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
      */
     public void setMsLevel(int msLevel) {
         this.msLevel = msLevel;
+    }
+
+    /**
+     * Sets the polarity of this scan (positive or negative)
+     *
+     * @param scanPolarity the scan polarity
+     */
+    public void setScanPolarity(Polarity scanPolarity) {
+        this.scanPolarity = scanPolarity;
     }
 
     /**
