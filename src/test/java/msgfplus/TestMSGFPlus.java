@@ -62,6 +62,7 @@ public class TestMSGFPlus {
     }
 
     @Test
+    @Ignore
     public void TestMGF()
     {
         File workDir = new File("C:\\DMS_WorkDir1");
