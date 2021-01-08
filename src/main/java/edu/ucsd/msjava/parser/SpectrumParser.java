@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface SpectrumParser {
 
-    int MAX_NEGATIVE_CHARGE_WARNINGS = 10;
+    int MAX_NEGATIVE_POLARITY_WARNINGS = 10;
     int MAX_SCAN_MISSING_WARNINGS = 10;
 
     Spectrum readSpectrum(LineReader lineReader);

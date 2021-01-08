@@ -18,7 +18,7 @@ public class MgfSpectrumParser implements SpectrumParser {
 
     private long linesRead;
 
-    private long negativeChargeWarningCount;
+    private long negativePolarityWarningCount;
 
     private long scanMissingWarningCount;
 
@@ -46,7 +46,7 @@ public class MgfSpectrumParser implements SpectrumParser {
     public MgfSpectrumParser aaSet(AminoAcidSet aaSet) {
         this.aaSet = aaSet;
         linesRead = 0;
-        negativeChargeWarningCount = 0;
+        negativePolarityWarningCount = 0;
         scanMissingWarningCount = 0;
         return this;
     }
@@ -339,18 +339,20 @@ public class MgfSpectrumParser implements SpectrumParser {
         return specIndexMap;
     }
 
-    private void warnNegativeCharge(String currentLine) {
-        negativeChargeWarningCount++;
-        if (negativeChargeWarningCount > MAX_NEGATIVE_CHARGE_WARNINGS)
+    private void warnNegativePolarity(String currentLine) {
+        negativePolarityWarningCount++;
+        if (negativePolarityWarningCount > MAX_NEGATIVE_POLARITY_WARNINGS)
             return;
 
-        if (negativeChargeWarningCount == 1) {
-            System.out.println("Warning: MS-GF+ does not support negative mode precursor ions (i.e. negative scan polarity)");
+        if (negativePolarityWarningCount == 1) {
+            System.out.println(
+                    "Warning: negative precursor charge found, indicating a negative polarity spectrum; " +
+                    "you likely need to use a negative charge carrier");
         }
-        System.out.println("Ignoring negative charge defined on line " + Long.toString(linesRead) + ": " + currentLine);
+        System.out.println("Negative charge found on line " + Long.toString(linesRead) + ": " + currentLine);
 
-        if (negativeChargeWarningCount == MAX_NEGATIVE_CHARGE_WARNINGS) {
-            System.out.println("Additional warnings regarding negative mode precursor ions will not be shown");
+        if (negativePolarityWarningCount == MAX_NEGATIVE_POLARITY_WARNINGS) {
+            System.out.println("Additional warnings regarding negative polarity will not be shown");
         }
     }
 
