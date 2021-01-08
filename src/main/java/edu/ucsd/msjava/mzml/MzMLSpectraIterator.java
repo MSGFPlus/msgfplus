@@ -107,9 +107,6 @@ public class MzMLSpectraIterator implements Iterator<edu.ucsd.msjava.msutil.Spec
 
     private void warnNegativeCharge(Spectrum currentSpectrum) {
         negativeChargeWarningCount++;
-
-        currentSpectrum.getPrecursorPeak().setCharge(0);
-
         if (negativeChargeWarningCount > SpectrumParser.MAX_NEGATIVE_CHARGE_WARNINGS)
             return;
 
