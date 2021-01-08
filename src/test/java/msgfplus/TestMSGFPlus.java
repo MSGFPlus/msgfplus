@@ -64,13 +64,12 @@ public class TestMSGFPlus {
     @Test
     public void TestMGF()
     {
-        File workDir = new File("C:\\DMS_WorkDir1\\timsTOF_MSGFPlus");
+        File workDir = new File("C:\\DMS_WorkDir1");
         File orgDbDir = new File("C:\\DMS_Temp_Org");
-        File outputDir = new File("C:\\DMS_WorkDir1\\timsTOF_MSGFPlus\\Results3\\MoreResults");
+        File outputDir = new File("C:\\DMS_WorkDir1");
 
-        File specFile = Paths.get(workDir.getPath(), "190327_Aurora_PNNL_QC_PP_Enriched_15min_Slot2-21_01_3338_excerpt.mgf").toFile();
-        File dbFile = Paths.get(orgDbDir.getPath(),"ID_007544_F379B1D1.fasta").toFile();
-
+        File specFile = Paths.get(workDir.getPath(), "20121223_ICD_individual_33_TP_A177_Elite_30k_run2_01_excerpt.mgf").toFile();
+        File dbFile = Paths.get(orgDbDir.getPath(),"CPTAC_264contams.fasta").toFile();
         File confFile = Paths.get(workDir.getPath(), "MSGFPlus_Tryp_MetOx_20ppmParTol.txt").toFile();
 
         String versionString = getNextVersion();
@@ -99,6 +98,39 @@ public class TestMSGFPlus {
         }
 
         assertTrue(resultMsg == null);
+    }
+
+    @Test
+    public void TestMzML()
+    {
+        File workDir = new File("C:\\DMS_WorkDir1");
+        File orgDbDir = new File("C:\\DMS_Temp_Org");
+
+        File specFile = Paths.get(workDir.getPath(), "QC_Mam_19_01_PNNL_10_06Jan21_Arwen_WBEH-20-12-01.mzML").toFile();
+        File dbFile = Paths.get(orgDbDir.getPath(),"CPTAC_264contams.fasta").toFile();
+        File confFile = Paths.get(workDir.getPath(), "MSGFPlus_Tryp_MetOx_StatCysAlk_20ppmParTol.txt").toFile();
+
+        String versionString = getNextVersion();
+
+        String[] argv = {
+                "-s", specFile.getPath(),
+                "-d", dbFile.getPath(),
+                //"-o", Paths.get(outputDir.getPath(), "Test_" + versionString + ".mzid").toString(),
+                "-conf", confFile.getPath()
+        };
+
+        ParamManager paramManager = getParamManager();
+        paramManager.addMSGFPlusParams();
+
+        String msg = paramManager.parseParams(argv);
+        if(msg != null) {
+            System.err.println("Error: " + msg);
+            paramManager.printUsageInfo();
+        }
+
+        assertTrue(msg == null);
+
+        assertTrue(MSGFPlus.runMSGFPlus(paramManager) == null);
     }
 
     @Test
