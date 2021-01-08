@@ -251,7 +251,13 @@
             <name>The internal repository</name>
             <url>file:${project.basedir}/repo</url>
         </repository>
-    </repositories>  
+        <repository>
+            <!-- This repo is required for cpdetector (required by jmzidml->pride-xml-handler->xxindex->cpdetector) and related libraries -->
+            <!-- This is supplied here because of an HTTP 301 Permanent Redirect on the old URL that xxindex supplies, which breaks fresh builds. -->
+            <id>sammoa-group</id>
+            <url>https://nexus.nuiton.org/nexus/content/groups/sammoa-group/</url>
+        </repository>
+    </repositories>
     <organization>
         <name>Center for Computational Mass Spectrometry, University of California, San Diego</name>
         <url>http://proteomics.ucsd.edu</url>
