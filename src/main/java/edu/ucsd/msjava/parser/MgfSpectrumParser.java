@@ -18,6 +18,8 @@ public class MgfSpectrumParser implements SpectrumParser {
 
     private long linesRead;
 
+    private long negativeChargeWarningCount;
+
     private long scanMissingWarningCount;
 
     /**
@@ -44,6 +46,7 @@ public class MgfSpectrumParser implements SpectrumParser {
     public MgfSpectrumParser aaSet(AminoAcidSet aaSet) {
         this.aaSet = aaSet;
         linesRead = 0;
+        negativeChargeWarningCount = 0;
         scanMissingWarningCount = 0;
         return this;
     }
@@ -107,16 +110,45 @@ public class MgfSpectrumParser implements SpectrumParser {
                     spec.setTitle(title);
 //  				spec.setID(title);
                 } else if (buf.startsWith("CHARGE")) {
+                    // Charge state, e.g. CHARGE=2+
+                    // Extract the text after the equals sign
                     String chargeStr = buf.substring(buf.indexOf("=") + 1).trim();
+
+                    // Only use the charge state if there is a single value listed
+                    // We will leave precursorCharge as 0 if the mgf file has lines like this:
+                    //  CHARGE=2+ and 3+
+                    //  CHARGE=2+,3+
+                    // First split on whitespace
                     String[] chargeStrToken = chargeStr.split("\\s+");
                     if (chargeStrToken.length == 1) {
+                        // Only one charge state is listed
+                        // Now split on commas
                         String[] multipleChargeToken = chargeStr.split(",");
-                        if (multipleChargeToken.length == 1) {
-                            if (chargeStr.startsWith("+"))
-                                chargeStr = chargeStr.substring(1);
-                            if (chargeStr.charAt(chargeStr.length() - 1) == '+')
-                                chargeStr = chargeStr.substring(0, chargeStr.length() - 1);
-                            precursorCharge = Integer.valueOf(chargeStr);
+                        if (chargeStr.length() > 0 && multipleChargeToken.length == 1) {
+                            // Only one value is present
+                            if (chargeStr.startsWith("-") ||
+                                chargeStr.charAt(chargeStr.length() - 1) == '-') {
+                                // The line is of the form
+                                // CHARGE=1-
+                                // or
+                                // CHARGE=-1
+
+                                // This is a negative charge, which MS-GF+ does not support; leave precursorCharge at 0
+                                warnNegativeCharge(buf);
+                            } else {
+                                if (chargeStr.startsWith("+")) {
+                                    // The charge is listed as +2 (which is non-standard)
+                                    // Remove the plus sign
+                                    chargeStr = chargeStr.substring(1);
+                                }
+                                if (chargeStr.charAt(chargeStr.length() - 1) == '+') {
+                                    // The charge is listed as 2+ (which is standard)
+                                    // Remove the plus sign
+                                    chargeStr = chargeStr.substring(0, chargeStr.length() - 1);
+                                }
+                                // We should now have an integer to parse
+                                precursorCharge = Integer.valueOf(chargeStr);
+                            }
                         }
                     }
                 } else if (buf.startsWith("SEQ")) {
@@ -305,6 +337,21 @@ public class MgfSpectrumParser implements SpectrumParser {
             offset = lineReader.getPosition();
         }
         return specIndexMap;
+    }
+
+    private void warnNegativeCharge(String currentLine) {
+        negativeChargeWarningCount++;
+        if (negativeChargeWarningCount > MAX_NEGATIVE_CHARGE_WARNINGS)
+            return;
+
+        if (negativeChargeWarningCount == 1) {
+            System.out.println("Warning: MS-GF+ does not support negative mode precursor ions (i.e. negative scan polarity)");
+        }
+        System.out.println("Ignoring negative charge defined on line " + Long.toString(linesRead) + ": " + currentLine);
+
+        if (negativeChargeWarningCount == MAX_NEGATIVE_CHARGE_WARNINGS) {
+            System.out.println("Additional warnings regarding negative mode precursor ions will not be shown");
+        }
     }
 
     void warnScanNotFoundInTitle(String title) {
