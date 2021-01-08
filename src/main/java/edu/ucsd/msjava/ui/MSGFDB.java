@@ -259,6 +259,9 @@ public class MSGFDB {
 
         System.out.println("Reading spectra...");
 
+        // Show a message of the form "Opening mzML file QC_Mam_19_01_PNNL_10_06Jan21_Arwen_WBEH-20-12-01.mzML"
+        System.out.printf("Opening %s %s\n", specFormat.getPSIName(), specFile.getName());
+
         SpectraAccessor specAcc = new SpectraAccessor(specFile, specFormat);
 
         if (specAcc.getSpecMap() == null || specAcc.getSpecItr() == null)

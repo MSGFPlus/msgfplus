@@ -22,8 +22,8 @@ import java.util.logging.Logger;
 
 
 public class MSGFPlus {
-    public static final String VERSION = "Release (v2021.01.07)";
-    public static final String RELEASE_DATE = "7 January 2021";
+    public static final String VERSION = "Release (v2021.01.08)";
+    public static final String RELEASE_DATE = "8 January 2021";
 
     public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
     public static final String DEFAULT_DECOY_PROTEIN_PREFIX = "XXX";
@@ -257,6 +257,9 @@ public class MSGFPlus {
         System.out.println("Reading spectra...");
 
         File specFile = params.getDBSearchIOList().get(ioIndex).getSpecFile();
+
+        // Show a message of the form "Opening mzML file QC_Mam_19_01_PNNL_10_06Jan21_Arwen_WBEH-20-12-01.mzML"
+        System.out.printf("Opening %s %s\n", specFormat.getPSIName(), specFile.getName());
 
         SpectraAccessor specAcc = new SpectraAccessor(specFile, specFormat);
 
