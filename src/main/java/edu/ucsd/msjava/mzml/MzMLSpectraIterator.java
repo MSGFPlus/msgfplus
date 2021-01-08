@@ -1,6 +1,7 @@
 package edu.ucsd.msjava.mzml;
 
 import edu.ucsd.msjava.msutil.Spectrum;
+import edu.ucsd.msjava.parser.SpectrumParser;
 import uk.ac.ebi.jmzml.xml.io.MzMLObjectIterator;
 import uk.ac.ebi.jmzml.xml.io.MzMLUnmarshaller;
 
@@ -16,11 +17,13 @@ public class MzMLSpectraIterator implements Iterator<edu.ucsd.msjava.msutil.Spec
     private MzMLObjectIterator<uk.ac.ebi.jmzml.model.mzml.Spectrum> itr;
     private boolean hasNext;
     private edu.ucsd.msjava.msutil.Spectrum currentSpectrum = null;
+    private long negativeChargeWarningCount;
 
     public MzMLSpectraIterator(MzMLAdapter mzmlAdapter) {
         unmarshaller = mzmlAdapter.getUnmarshaller();
         minMSLevel = mzmlAdapter.getMinMSLevel();
         maxMSLevel = mzmlAdapter.getMaxMSLevel();
+        negativeChargeWarningCount = 0;
 
         itr = unmarshaller.unmarshalCollectionFromXpath("/run/spectrumList/spectrum", uk.ac.ebi.jmzml.model.mzml.Spectrum.class);
         currentSpectrum = parseNextSpectrum();
@@ -41,6 +44,10 @@ public class MzMLSpectraIterator implements Iterator<edu.ucsd.msjava.msutil.Spec
         currentSpectrum = parseNextSpectrum();
         if (currentSpectrum == null)
             hasNext = false;
+
+        if (curSpecCopy.getScanPolarity() == Spectrum.Polarity.NEGATIVE) {
+            warnNegativeCharge(curSpecCopy);
+        }
         return curSpecCopy;
     }
 
@@ -95,6 +102,24 @@ public class MzMLSpectraIterator implements Iterator<edu.ucsd.msjava.msutil.Spec
                 System.out.println(spec.getPrecursorPeak().getCharge());
                 System.out.println(spec.getActivationMethod().getName());
             }
+        }
+    }
+
+    private void warnNegativeCharge(Spectrum currentSpectrum) {
+        negativeChargeWarningCount++;
+
+        currentSpectrum.getPrecursorPeak().setCharge(0);
+
+        if (negativeChargeWarningCount > SpectrumParser.MAX_NEGATIVE_CHARGE_WARNINGS)
+            return;
+
+        if (negativeChargeWarningCount == 1) {
+            System.out.println("Warning: MS-GF+ does not support negative mode precursor ions (i.e. negative scan polarity)");
+        }
+        System.out.println("Ignoring the charge state defined for scan " + Long.toString(currentSpectrum.getScanNum()));
+
+        if (negativeChargeWarningCount == SpectrumParser.MAX_NEGATIVE_CHARGE_WARNINGS) {
+            System.out.println("Additional warnings regarding negative mode precursor ions will not be shown");
         }
     }
 
