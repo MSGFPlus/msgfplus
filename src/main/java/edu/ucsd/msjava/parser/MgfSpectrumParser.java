@@ -126,29 +126,32 @@ public class MgfSpectrumParser implements SpectrumParser {
                         String[] multipleChargeToken = chargeStr.split(",");
                         if (chargeStr.length() > 0 && multipleChargeToken.length == 1) {
                             // Only one value is present
-                            if (chargeStr.startsWith("-") ||
-                                chargeStr.charAt(chargeStr.length() - 1) == '-') {
-                                // The line is of the form
-                                // CHARGE=1-
-                                // or
-                                // CHARGE=-1
-
-                                // This is a negative charge, which MS-GF+ does not support; leave precursorCharge at 0
-                                warnNegativeCharge(buf);
-                            } else {
-                                if (chargeStr.startsWith("+")) {
-                                    // The charge is listed as +2 (which is non-standard)
-                                    // Remove the plus sign
-                                    chargeStr = chargeStr.substring(1);
-                                }
-                                if (chargeStr.charAt(chargeStr.length() - 1) == '+') {
-                                    // The charge is listed as 2+ (which is standard)
-                                    // Remove the plus sign
-                                    chargeStr = chargeStr.substring(0, chargeStr.length() - 1);
-                                }
-                                // We should now have an integer to parse
-                                precursorCharge = Integer.valueOf(chargeStr);
+                            if (chargeStr.startsWith("+")) {
+                                // The charge is listed as +2 (which is non-standard)
+                                // Remove the plus sign
+                                chargeStr = chargeStr.substring(1);
+                            } else if (chargeStr.charAt(chargeStr.length() - 1) == '+') {
+                                // The charge is listed as 2+ (which is standard)
+                                // Remove the plus sign
+                                chargeStr = chargeStr.substring(0, chargeStr.length() - 1);
+                            } else if (chargeStr.startsWith("-")) {
+                                // The charge is listed as -2
+                                // This is a negative charge, which means negative scan polarity
+                                // MS-GF+ does not yet support this, but we'll store the charge anyway (as a positive number)
+                                warnNegativePolarity(buf);
+                                chargeStr = chargeStr.substring(1);
+                                spec.setScanPolarity(Spectrum.Polarity.NEGATIVE);
+                            } else if (chargeStr.charAt(chargeStr.length() - 1) == '-') {
+                                // The charge is listed as 2-
+                                // This is a negative charge, which means negative scan polarity
+                                // MS-GF+ does not yet support this, but we'll store the charge anyway (as a positive number)
+                                warnNegativePolarity(buf);
+                                chargeStr = chargeStr.substring(0, chargeStr.length() - 1);
+                                spec.setScanPolarity(Spectrum.Polarity.NEGATIVE);
                             }
+
+                            // We should now have an integer to parse
+                            precursorCharge = Integer.valueOf(chargeStr);
                         }
                     }
                 } else if (buf.startsWith("SEQ")) {
