@@ -16,7 +16,8 @@ public class DoubleParameter extends NumberParameter<Double> {
     @Override
     public String parse(String value) {
         try {
-            super.value = Double.valueOf(value);
+            // When parsing the value, look for and remove any trailing exclamation marks
+            super.value = Double.valueOf(trimTrailingChars(value, "!"));
 
             if (minValue == null)
                 minValue = Double.NEGATIVE_INFINITY;

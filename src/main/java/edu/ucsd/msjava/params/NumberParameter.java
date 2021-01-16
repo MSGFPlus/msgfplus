@@ -1,5 +1,7 @@
 package edu.ucsd.msjava.params;
 
+import org.apache.commons.lang3.StringUtils;
+
 public abstract class NumberParameter<T extends Number> extends Parameter {
     protected T value;
 
@@ -48,6 +50,17 @@ public abstract class NumberParameter<T extends Number> extends Parameter {
     @Override
     public String getValueAsString() {
         return String.valueOf(value);
+    }
+
+    /**
+     * Remove the specified characters from the end of the value
+     * @param value
+     * @param stripChars
+     * @return
+     */
+    public String trimTrailingChars(String value, String stripChars)
+    {
+        return StringUtils.stripEnd(value, stripChars);
     }
 
     public T getValue() {

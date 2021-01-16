@@ -16,7 +16,10 @@ public class IntParameter extends NumberParameter<Integer> {
     @Override
     public String parse(String value) {
         try {
-            super.value = Integer.valueOf(value);
+            // When parsing the value, look for and remove any trailing exclamation marks
+            // Some DMS config files use a trailing exclamation mark to indicate that a value should not be changed
+            super.value = Integer.valueOf(trimTrailingChars(value, "!"));
+
             if (this.value == null) {
                 return "Value cannot be null";
             }

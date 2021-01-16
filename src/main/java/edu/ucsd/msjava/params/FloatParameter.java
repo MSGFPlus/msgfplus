@@ -11,7 +11,8 @@ public class FloatParameter extends NumberParameter<Float> {
     @Override
     public String parse(String value) {
         try {
-            super.value = Float.valueOf(value);
+            // When parsing the value, look for and remove any trailing exclamation marks
+            super.value = Float.valueOf(trimTrailingChars(value, "!"));
 
             if (minValue == null)
                 minValue = Float.NEGATIVE_INFINITY;
