@@ -30,92 +30,92 @@
     </ul>
 
     <p>
-      <b>v2020.08.05</b>
+        <b>v2020.08.05</b>
     </p>
     <ul>
         <li>Add .faa as a supported extension for FASTA files</li>
     </ul>
 
     <p>
-      <b>v2020.07.02</b>
+        <b>v2020.07.02</b>
     </p>
     <ul>
         <li>Update publication links and error message</li>
     </ul>
 
     <p>
-      <b>v2020.06.22</b>
+        <b>v2020.06.22</b>
     </p>
     <ul>
-      <li>Show progress messages every 2 seconds when indexing the FASTA file</li>
+        <li>Show progress messages every 2 seconds when indexing the FASTA file</li>
     </ul>
 
     <p>
-      <b>v2020.06.16</b>
+        <b>v2020.06.16</b>
     </p>
     <ul>
-      <li>Fix bug parsing a custom charge carrier mass from the command line (-ccm) or from a parameter file (e.g. ChargeCarrierMass=1.00727649)</li>
+        <li>Fix bug parsing a custom charge carrier mass from the command line (-ccm) or from a parameter file (e.g. ChargeCarrierMass=1.00727649)</li>
     </ul>
 
     <p>
-      <b>v2020.03.14</b>
+        <b>v2020.03.14</b>
     </p>
     <ul>
-      <li>Update the embedded Unimod 'brick' definitions to fix the mzid generation failure after updating Unimod.obo</li>
+        <li>Update the embedded Unimod 'brick' definitions to fix the mzid generation failure after updating Unimod.obo</li>
     </ul>
 
     <p>
-      <b>v2020.03.12</b>
+        <b>v2020.03.12</b>
     </p>
     <ul>
-      <li>Update the embedded Unimod.obo file to support recent Unimod accessions</li>
+        <li>Update the embedded Unimod.obo file to support recent Unimod accessions</li>
     </ul>
 
     <p>
-      <b>v2020.01.15</b>
+        <b>v2020.01.15</b>
     </p>
     <ul>
-      <li>Resolve a new issue with duplicate peptide ids in the mzid output (problem with 2 modifications rounding to the same integer mass)</li>
-      <li>Don't exit with exit code '0' when there is a parameter parsing error</li>
-      <li>Add additional example files to the documentation</li>
+        <li>Resolve a new issue with duplicate peptide ids in the mzid output (problem with 2 modifications rounding to the same integer mass)</li>
+        <li>Don't exit with exit code '0' when there is a parameter parsing error</li>
+        <li>Add additional example files to the documentation</li>
     </ul>
 
     <p>
-      <b>v2019.08.26</b>
+        <b>v2019.08.26</b>
     </p>
     <ul>
-      <li>Improve support for searching mgf files, particularly those containing spectra with no charge in the title</li>
+        <li>Improve support for searching mgf files, particularly those containing spectra with no charge in the title</li>
     </ul>
 
     <p>
-      <b>v2019.07.03</b>
+        <b>v2019.07.03</b>
     </p>
     <ul>
-      <li><code>-s</code> and <code>-d</code> are now optional at the command line, allowing the spectrum file and database file to be defined in the configuration file</li>
+        <li><code>-s</code> and <code>-d</code> are now optional at the command line, allowing the spectrum file and database file to be defined in the configuration file</li>
     </ul>
 
     <p>
-      <b>v2019.06.28</b>
+        <b>v2019.06.28</b>
     </p>
     <ul>
-      <li>Auto-create the output directory if missing</li>
-      <li>Verify that the user has write access to the output directory</li>
+        <li>Auto-create the output directory if missing</li>
+        <li>Verify that the user has write access to the output directory</li>
     </ul>
 
     <p>
-      <b>v2019.06.20</b>
+        <b>v2019.06.20</b>
     </p>
     <ul>
-      <li>Allow the title line of spectra in a .mgf file to have DatasetName.ScanStart.ScanEnd.Charge followed by a space and extra info</li>
-      <li>Output the Java version and OS information to the console</li>
-      <li>Update jmzReader and jmzidentml dependencies</li>
+        <li>Allow the title line of spectra in a .mgf file to have DatasetName.ScanStart.ScanEnd.Charge followed by a space and extra info</li>
+        <li>Output the Java version and OS information to the console</li>
+        <li>Update jmzReader and jmzidentml dependencies</li>
     </ul>
 
     <p>
-      <b>v2019.04.18</b>
+        <b>v2019.04.18</b>
     </p>
     <ul>
-      <li>Fix to issue #62, which prevents dropping of the highest m/z data point from most MS/MS spectra</li>
+        <li>Fix to issue #62, which prevents dropping of the highest m/z data point from most MS/MS spectra</li>
     </ul>
 
     <p>
@@ -362,250 +362,250 @@
     </ul>
 
     <p>
-      <b>v2016.10.10</b>
+        <b>v2016.10.10</b>
     </p>
     <ul>
-      <li>Fix: mzid output - Peptide IDs were being mishandled and led to creating incorrect PeptideEvidence references in SpectrumIdentificationItems. Also, added more information to the Peptide IDs to decrease the possibility of ID collision on edge cases.</li>
+        <li>Fix: mzid output - Peptide IDs were being mishandled and led to creating incorrect PeptideEvidence references in SpectrumIdentificationItems. Also, added more information to the Peptide IDs to decrease the possibility of ID collision on edge cases.</li>
     </ul>
 
     <p>
-      <b>v2016.09.22</b>
+        <b>v2016.09.22</b>
     </p>
     <ul>
-      <li>New: Add the ability to set the charge carrier mass to something besides the mass of a proton.</li>
+        <li>New: Add the ability to set the charge carrier mass to something besides the mass of a proton.</li>
     </ul>
 
     <p>
-      <b>v2016.08.31</b>
+        <b>v2016.08.31</b>
     </p>
     <ul>
-      <li>Fix: output the scan start time units to the mzid file when the input is mzML; previously only the value (without the units specified) was being output, which was ambiguous and did not comply with the CV specification</li>
-      <li>New: When input is a _dta.txt file, with supporting _ScanType.txt file, a 4th column listing scan start time (in minutes) is supported, and will be output to the mzid if present.</li>
+        <li>Fix: output the scan start time units to the mzid file when the input is mzML; previously only the value (without the units specified) was being output, which was ambiguous and did not comply with the CV specification</li>
+        <li>New: When input is a _dta.txt file, with supporting _ScanType.txt file, a 4th column listing scan start time (in minutes) is supported, and will be output to the mzid if present.</li>
     </ul>
     
     <p>
-      <b>v2016.07.26</b>
+        <b>v2016.07.26</b>
     </p>
     <ul>
-      <li>Add UVPD as a dissociation method</li>
-      <li>Add new ions: a. and x.</li>
-      <li>Fix off-by-one error in IonType code that ignores c-NH3</li>
+        <li>Add UVPD as a dissociation method</li>
+        <li>Add new ions: a. and x.</li>
+        <li>Fix off-by-one error in IonType code that ignores c-NH3</li>
     </ul>
 
     <p>
-      <b>v2016.06.29</b>
+        <b>v2016.06.29</b>
     </p>
     <ul>
-      <li>Clean up the mzid output a little, reducing file size (v2016.06.15 introduced a change that resulted in larger mzid files)</li>
-      <li>Reduced the amount of unnecessary data in the .jar file, cutting size by ~1/2</li>
+        <li>Clean up the mzid output a little, reducing file size (v2016.06.15 introduced a change that resulted in larger mzid files)</li>
+        <li>Reduced the amount of unnecessary data in the .jar file, cutting size by ~1/2</li>
     </ul>
     
     <p>
-      <b>v2016.06.15</b>
+        <b>v2016.06.15</b>
     </p>
     <ul>
-      <li>Fix the mzid output when the modification is unknown to unimod. (cvRef now correctly references PSI-MS, and the value will be the name provided in the Mods.txt file)</li>
-      <li>Update the unimod.obo to date 2016:02:01, and change code to parse it properly after updating</li>
-      <li>Bump some dependencies to a newer version, and change code to properly work with those changes.</li>
+        <li>Fix the mzid output when the modification is unknown to unimod. (cvRef now correctly references PSI-MS, and the value will be the name provided in the Mods.txt file)</li>
+        <li>Update the unimod.obo to date 2016:02:01, and change code to parse it properly after updating</li>
+        <li>Bump some dependencies to a newer version, and change code to properly work with those changes.</li>
     </ul>
     
     <p>
-      <b>v2016.05.25</b>
+        <b>v2016.05.25</b>
     </p>
     <ul>
-      <li>Output the residue letter and mass of any custom amino acids to the "MassTable" portion of the mzid.</li>
-      <li>Update the URIs for the ontologies to their current locations (psi-ms.obo and unit.obo).</li>
+        <li>Output the residue letter and mass of any custom amino acids to the "MassTable" portion of the mzid.</li>
+        <li>Update the URIs for the ontologies to their current locations (psi-ms.obo and unit.obo).</li>
     </ul>
     
     <p>
-      <b>v2016.02.12</b>
+        <b>v2016.02.12</b>
     </p>
     <ul>
-      <li>Ensure that ETciD and EThcD are handled as ETD when using a _dta.txt file with a _ScanType.txt file</li>
+        <li>Ensure that ETciD and EThcD are handled as ETD when using a _dta.txt file with a _ScanType.txt file</li>
     </ul>
     
     <p>
-      <b>v2016.01.29</b>
+        <b>v2016.01.29</b>
     </p>
     <ul>
-      <li>Added ability to enter custom amino acids using the Mods.txt file.</li>
+        <li>Added ability to enter custom amino acids using the Mods.txt file.</li>
     </ul>
     
     <p>
-      <b>v2016.01.21</b>
+        <b>v2016.01.21</b>
     </p>
     <ul>
-      <li>Changed the versioning system - SVN revisions don't work for Git repositories. Now commit date is used for the version.</li>
-      <li>Improve the overall progress reporting.</li>
-      <li>Cause entire search to fail if a thread exits with a failure.</li>
-      <li>Retention Time/Scan Start Time is now output to the mzid file for searches performed on mzML files, as long as the data is available.</li>
+        <li>Changed the versioning system - SVN revisions don't work for Git repositories. Now commit date is used for the version.</li>
+        <li>Improve the overall progress reporting.</li>
+        <li>Cause entire search to fail if a thread exits with a failure.</li>
+        <li>Retention Time/Scan Start Time is now output to the mzid file for searches performed on mzML files, as long as the data is available.</li>
     </ul>
     
     <p>
-      <b>2014-07-16 v10089</b>
+        <b>2014-07-16 v10089</b>
     </p>
     <ul>
-      <li>Fixed a bug that crashes when C-term mod mass is below -57Da.</li>
-      <li>Added a test that checks whether the output path is valid before processing the data.</li>
+        <li>Fixed a bug that crashes when C-term mod mass is below -57Da.</li>
+        <li>Added a test that checks whether the output path is valid before processing the data.</li>
     </ul>
 
     <p>
-      <b>2014-06-30 v10072</b>
+        <b>2014-06-30 v10072</b>
     </p>
     <ul>
-      <li>Optimization for multithreaded performance.</li>
-      <li>Several minor bug fixes.</li>
+        <li>Optimization for multithreaded performance.</li>
+        <li>Several minor bug fixes.</li>
     </ul>
 
     <p>
-      <b>2014-02-10 v9949</b>
+        <b>2014-02-10 v9949</b>
     </p>
     <ul>
-      <li>New scoring parameters are added for HCD/Q-Exactive/Trypsin/TMT. Parameters for HCD/HighRes/Trypsin/TMT have also been changed. As a result, for HCD spectra of TMT peptides, the number of identifications has been significantly increased.</li>
-      <li>MS-GF+ now automatically recognize "TMT6plex" in the modification file and change the protocol to TMT.</li>
-      <li>For mzML files converted from Thermo raw data using msconvert, MS-GF+ now reads monoisotopic precursor m/z first from a user parameter (<span class="red">[Thermo Trailer Extra]Monoisotopic M/Z:</span>) instead of the CvParam "MS:1000744".</li>
-      <li>The maximum number of variable modifications (per peptide) is written to the mzIdentML output file.</li>
-      <li>Previously MS-GF+ ignored spectra having less than <b>20 peaks</b> for non-TOF spectra. Now it ignores spectra having less than <b>10 peaks</b>.</li>
+        <li>New scoring parameters are added for HCD/Q-Exactive/Trypsin/TMT. Parameters for HCD/HighRes/Trypsin/TMT have also been changed. As a result, for HCD spectra of TMT peptides, the number of identifications has been significantly increased.</li>
+        <li>MS-GF+ now automatically recognize "TMT6plex" in the modification file and change the protocol to TMT.</li>
+        <li>For mzML files converted from Thermo raw data using msconvert, MS-GF+ now reads monoisotopic precursor m/z first from a user parameter (<span class="red">[Thermo Trailer Extra]Monoisotopic M/Z:</span>) instead of the CvParam "MS:1000744".</li>
+        <li>The maximum number of variable modifications (per peptide) is written to the mzIdentML output file.</li>
+        <li>Previously MS-GF+ ignored spectra having less than <b>20 peaks</b> for non-TOF spectra. Now it ignores spectra having less than <b>10 peaks</b>.</li>
     </ul>
 
     <p>
-      <b>2013-08-28 v9881</b>
+        <b>2013-08-28 v9881</b>
     </p>
     <ul>
-      <li>Change in database indexing format. The index file keeps non-standard amino acids (characters other than 20 standard residue characters). Previously, non-standard amino acids were converted into ‘?’ while indexing. It caused a problem when converting mzid into pepXML using idconvert (ProteoWizard).</li>
-      <li>Fixed a bug that creates duplicate PeptideEvidence items when more than one matches are reported for a spectrum (e.g. -n 10),</li>
-      <li>Fixed a bug that crashes MS-GF+ when a modification makes the amino acid mass 0 or smaller (e.g. M-131).</li>
+        <li>Change in database indexing format. The index file keeps non-standard amino acids (characters other than 20 standard residue characters). Previously, non-standard amino acids were converted into ‘?’ while indexing. It caused a problem when converting mzid into pepXML using idconvert (ProteoWizard).</li>
+        <li>Fixed a bug that creates duplicate PeptideEvidence items when more than one matches are reported for a spectrum (e.g. -n 10),</li>
+        <li>Fixed a bug that crashes MS-GF+ when a modification makes the amino acid mass 0 or smaller (e.g. M-131).</li>
     </ul>
 
     <p>
-      <b>2013-08-28 v9733</b>
+        <b>2013-08-28 v9733</b>
     </p>
     <ul>
-      <li>Added parameters for CID-LowRes-NoCleavage.</li>
-      <li>Misc bug fixes.</li>
+        <li>Added parameters for CID-LowRes-NoCleavage.</li>
+        <li>Misc bug fixes.</li>
     </ul>
 
     <p>
-      <b>2013-04-03 v9517</b>
+        <b>2013-04-03 v9517</b>
     </p>
     <ul>
-      <li>Previously separate SpectrumIdentificationItems were created for the same peptide if "pre" is different (e.g. R.SIPDSMNYGDEEENK and K.SIPDSMNYGDEEENK). Now they show up as the same SpectrumIdentificationItem. If the score is different due to different NTT (e.g. G.SIPDSMNYGDEEENK), a separate SpectrumIdentificationItem is created.</li>
-      <li>Bug fix: falling into an infinite loop while reading an mzML file if it contains &lt;binaryDataArray&gt; of encodedLength="0"</li>
+        <li>Previously separate SpectrumIdentificationItems were created for the same peptide if "pre" is different (e.g. R.SIPDSMNYGDEEENK and K.SIPDSMNYGDEEENK). Now they show up as the same SpectrumIdentificationItem. If the score is different due to different NTT (e.g. G.SIPDSMNYGDEEENK), a separate SpectrumIdentificationItem is created.</li>
+        <li>Bug fix: falling into an infinite loop while reading an mzML file if it contains &lt;binaryDataArray&gt; of encodedLength="0"</li>
     </ul>
 
     <p>
-      <b>2013-04-03 v9501</b>
+        <b>2013-04-03 v9501</b>
     </p>
     <ul>
-      <li>Previously, spectra are ignored in the search if the number of peaks is less than 20 for all types spectra. Now, for TOF spectra (i.e. -inst 2), this number has been changed to 3.</li>
+        <li>Previously, spectra are ignored in the search if the number of peaks is less than 20 for all types spectra. Now, for TOF spectra (i.e. -inst 2), this number has been changed to 3.</li>
     </ul>
 
     <p>
-      <b>2013-04-02 v9494</b>
+        <b>2013-04-02 v9494</b>
     </p>
     <ul>
-      <li>The following features are added in the SpectrumIdentificationItem when "-addFeatures 1"
+        <li>The following features are added in the SpectrumIdentificationItem when "-addFeatures 1"
         <ul>
           <li>MeanErrorAll: Mean of mass errors of explained fragment ion peaks</li>
           <li>StdevErrorAll: Standard deviation of mass errors of explained fragment ion peaks</li>
           <li>MeanErrorTop7: Mean of mass errors of 7 fragment ion peaks with highest intensities</li>
           <li>StdevErrorTop7: Standard deviation of mass errors of 7 fragment ion peaks with highest intensities</li>
         </ul>
-      </li>
+        </li>
     </ul>
 
     <p>
-      <b>2013-03-25 v9436</b>
+        <b>2013-03-25 v9436</b>
     </p>
     <ul>
-      <li>Added TMT scoring model for HCD/HighRes (-m 3 -inst 1)</li>
-      <li>Bug fix: duplicate PeptideEvidence id in mzid output</li>
-      <li>Bug fix: crashing while using user-trained scoring parameters</li>
+        <li>Added TMT scoring model for HCD/HighRes (-m 3 -inst 1)</li>
+        <li>Bug fix: duplicate PeptideEvidence id in mzid output</li>
+        <li>Bug fix: crashing while using user-trained scoring parameters</li>
     </ul>
 
     <p>
-      <b>2013-03-05 v9324</b>
+        <b>2013-03-05 v9324</b>
     </p>
     <ul>
-      <li>Added Q-Exactive unlabeled phosphorylation parameters</li>
-      <li>Bug fix: recognizing ETD+SA spectra in mzML as CID</li>
+        <li>Added Q-Exactive unlabeled phosphorylation parameters</li>
+        <li>Bug fix: recognizing ETD+SA spectra in mzML as CID</li>
     </ul>
 
     <p>
-      <b>2013-02-27 v9324</b>
+        <b>2013-02-27 v9324</b>
     </p>
     <ul>
-      <li>Minor bug fix: mistakenly assigning 3 mods to a N-term amino acid.</li>
+        <li>Minor bug fix: mistakenly assigning 3 mods to a N-term amino acid.</li>
     </ul>
 
     <p>
-      <b>2013-02-15 v9312</b>
+        <b>2013-02-15 v9312</b>
     </p>
     <ul>
-      <li>Added scoring parameter sets for Q-Exactive iTRAQ (-inst 3 -protocol 2) and iTRAQ phosphopeptide enriched (-inst 3 -protocol 3) samples.</li>
+        <li>Added scoring parameter sets for Q-Exactive iTRAQ (-inst 3 -protocol 2) and iTRAQ phosphopeptide enriched (-inst 3 -protocol 3) samples.</li>
     </ul>
 
     <p>
-      <b>2013-02-15 v9284</b>
+        <b>2013-02-15 v9284</b>
     </p>
     <ul>
-      <li>When "-protocol" parameter is missing, MS-GF+ automatically selects an appropriate protocol depending on the modification file.</li>
-      <li>In the mzid output, Enzyme has attributes "missedCleavages".</li>
+        <li>When "-protocol" parameter is missing, MS-GF+ automatically selects an appropriate protocol depending on the modification file.</li>
+        <li>In the mzid output, Enzyme has attributes "missedCleavages".</li>
     </ul>
 
     <p>
-      <b>2013-02-14 v9249</b>
+        <b>2013-02-14 v9249</b>
     </p>
     <ul>
-      <li>Scoring parameters for Q-Exactive (-inst 3) have been added.</li>
+        <li>Scoring parameters for Q-Exactive (-inst 3) have been added.</li>
     </ul>
 
     <p>
-      <b>2013-02-04 v9244</b>
+        <b>2013-02-04 v9244</b>
     </p>
     <ul>
-      <li>A bug (crash with an exception) in edu.ucsd.msjava.ui.ScoringParamGen has been fixed.</li>
+        <li>A bug (crash with an exception) in edu.ucsd.msjava.ui.ScoringParamGen has been fixed.</li>
     </ul>
 
     <p>
-      <b>2013-01-03 v9176</b>
+        <b>2013-01-03 v9176</b>
     </p>
     <ul>
-      <li>"-ti" parameter accepts only two comma separated integers, i.e., "-ti 1" will be rejected.</li>
-      <li>MzIDToTsv adds "Title" column to the tsv file if the input spectrum is the mgf format.</li>
+        <li>"-ti" parameter accepts only two comma separated integers, i.e., "-ti 1" will be rejected.</li>
+        <li>MzIDToTsv adds "Title" column to the tsv file if the input spectrum is the mgf format.</li>
     </ul>
 
     <p>
-      <b>2012-12-19 v9107</b>
+        <b>2012-12-19 v9107</b>
     </p>
     <ul>
-      <li>"No enzyme" (-e 1) was renamed to "unspecific cleavage".</li>
-      <li>"No enzyme (peptidomics)" (-e 9) was renamed to "no cleavage".</li>
-      <li>&lt;Enzyme&gt;...&lt;/Enzyme&gt; in the mzid output now shows right CVs for -e 1 and -e 9.</li>
-      <li>The following bug has been fixed
-        <ul>
-          <li>Precursor errors are negated when MzIDToTsv was run.</li>
-          <li>C-term specific modifications do not show up in result files.</li>
-        </ul>
-      </li>
+        <li>"No enzyme" (-e 1) was renamed to "unspecific cleavage".</li>
+        <li>"No enzyme (peptidomics)" (-e 9) was renamed to "no cleavage".</li>
+        <li>&lt;Enzyme&gt;...&lt;/Enzyme&gt; in the mzid output now shows right CVs for -e 1 and -e 9.</li>
+        <li>The following bug has been fixed
+          <ul>
+            <li>Precursor errors are negated when MzIDToTsv was run.</li>
+            <li>C-term specific modifications do not show up in result files.</li>
+          </ul>
+        </li>
     </ul>
 
     <p>
-      <b>2012-12-10 v9014</b>
+        <b>2012-12-10 v9014</b>
     </p>
     <ul>
-      <li>The following bug has been fixed
-        <ul>
-          <li>Ignoring some spectra when -n value is larger than 1</li>
-        </ul>
-      </li>
+        <li>The following bug has been fixed
+          <ul>
+            <li>Ignoring some spectra when -n value is larger than 1</li>
+          </ul>
+        </li>
     </ul>
 
     <p>
-      <b>2012-11-30 v9012</b>
+        <b>2012-11-30 v9012</b>
     </p>
     <ul>
-      <li>The following bugs have been fixed
+        <li>The following bugs have been fixed
         <ul>
           <li>Profile spectra should be ignored but not.</li>
           <li>Peptides shorter than MinLength are reported.</li>
@@ -613,145 +613,144 @@
           <li>Some SpectrumIdentificationResult elements have no SpectrumIdentificationItem element.</li>
           <li>Different PeptideEvident elements have the same ID.</li>
         </ul>
-      </li>
+        </li>
     </ul>
 
     <p>
-      <b>2012-11-09 v8884</b>
+        <b>2012-11-09 v8884</b>
     </p>
     <ul>
-      <li>Bug fix: crashing while reading mzML files converted from wiff</li>
+        <li>Bug fix: crashing while reading mzML files converted from wiff</li>
     </ul>
 
     <p>
-      <b>2012-11-09 v8873</b>
+        <b>2012-11-09 v8873</b>
     </p>
     <ul>
-      <li>Fixed a bug of ignoring N-term peptide when N-term Met cleaved peptide exists.</li>
-      <li>Add scan numbers for NIST mgf files</li>
+        <li>Fixed a bug of ignoring N-term peptide when N-term Met cleaved peptide exists.</li>
+        <li>Add scan numbers for NIST mgf files</li>
     </ul>
 
     <p>
-      <b>2012-10-30 v8806</b>
+        <b>2012-10-30 v8806</b>
     </p>
     <ul>
-      <li>Fixed a bug in edu.ucsd.msjava.misc.MS2ToMgf</li>
+        <li>Fixed a bug in edu.ucsd.msjava.misc.MS2ToMgf</li>
     </ul>
 
     <p>
-      <b>2012-10-29 v8792</b>
+        <b>2012-10-29 v8792</b>
     </p>
     <ul>
-      <li>Fixed bugs to ignore N-term fixed mods in the output</li>
-      <li>Added edu.ucsd.msjava.misc.MS2ToMgf</li>
+        <li>Fixed bugs to ignore N-term fixed mods in the output</li>
+        <li>Added edu.ucsd.msjava.misc.MS2ToMgf</li>
     </ul>
 
     <p>
-      <b>2012-10-11 v8719</b>
+        <b>2012-10-11 v8719</b>
     </p>
     <ul>
-      <li>Fixed bugs reporting NaN as additional features when spectrum has charge 0</li>
+        <li>Fixed bugs reporting NaN as additional features when spectrum has charge 0</li>
     </ul>
 
     <p>
-      <b>2012-10-04 v8605</b>
+        <b>2012-10-04 v8605</b>
     </p>
     <ul>
-      <li>Updates to handle multiple charge states in the ms2 format</li>
+        <li>Updates to handle multiple charge states in the ms2 format</li>
     </ul>
 
     <p>
-      <b>2012-10-03 v8597</b>
+        <b>2012-10-03 v8597</b>
     </p>
     <ul>
-      <li>Fixed the bug to erroneously report precursorMz in converted tsv files</li>
+        <li>Fixed the bug to erroneously report precursorMz in converted tsv files</li>
     </ul>
 
     <p>
-      <b>2012-09-26 v8540</b>
+        <b>2012-09-26 v8540</b>
     </p>
     <ul>
-      <li>Update MS2 parser to support <a href="http://noble.gs.washington.edu/proj/crux/ms2-format.html">http://noble.gs.washington.edu/proj/crux/ms2-format.html</a>
-      </li>
-      <li>Old MS2 format (<a href="http://fields.scripps.edu/sequest/SQTFormat.html">http://fields.scripps.edu/sequest/SQTFormat.html</a>) is no longer supported</li>
+        <li>Update MS2 parser to support <a href="http://noble.gs.washington.edu/proj/crux/ms2-format.html">http://noble.gs.washington.edu/proj/crux/ms2-format.html</a></li>
+        <li>Old MS2 format (<a href="http://fields.scripps.edu/sequest/SQTFormat.html">http://fields.scripps.edu/sequest/SQTFormat.html</a>) is no longer supported</li>
     </ul>
 
     <p>
-      <b>2012-09-20 v8490</b>
+        <b>2012-09-20 v8490</b>
     </p>
     <ul>
-      <li>Fix the following bugs:
+        <li>Fix the following bugs:
         <ul>
           <li>Same PeptideEvidence occurs more than once</li>
           <li>SearchModification/SpecificityRules is always empty</li>
           <li>Unknown modification cvParam does not have cvRef</li>
           <li>SpectrumIdentificationResult has no SpectrumIdentificationItem</li>
         </ul>
-      </li>
-      <li>MzIDToTsv -o TSVFile is now an optional parameter.</li>
+        </li>
+        <li>MzIDToTsv -o TSVFile is now an optional parameter.</li>
     </ul>
 
     <p>
-      <b>2012-09-18 v8477</b>
+        <b>2012-09-18 v8477</b>
     </p>
     <ul>
-      <li>The extension of target/decoy concatenated database file has changed from .revConcat.fasta to .revCat.fasta.</li>
-      <li>*.revConcat.fasta: decoy proteins have prefix "REV_" (used by MS-GFDB)</li>
-      <li>*.revCat.fasta: decoy proteins have prefix "XXX_" (used by MS-GF+)</li>
+        <li>The extension of target/decoy concatenated database file has changed from .revConcat.fasta to .revCat.fasta.</li>
+        <li>*.revConcat.fasta: decoy proteins have prefix "REV_" (used by MS-GFDB)</li>
+        <li>*.revCat.fasta: decoy proteins have prefix "XXX_" (used by MS-GF+)</li>
     </ul>
 
     <p>
-      <b>2012-09-18 v8472</b>
+        <b>2012-09-18 v8472</b>
     </p>
     <ul>
-      <li>Bug fix: N-term or C-term residue-specific modifications (e.g. pyro-glu from Q) will have locations 1 (N-term) or length (C-term).</li>
-      <li>Fix a bug to write SpectrumIdentificationResult twice for some spectra without precursor charges</li>
+        <li>Bug fix: N-term or C-term residue-specific modifications (e.g. pyro-glu from Q) will have locations 1 (N-term) or length (C-term).</li>
+        <li>Fix a bug to write SpectrumIdentificationResult twice for some spectra without precursor charges</li>
     </ul>
 
     <p>
-      <b>2012-09-17 v8449</b>
+        <b>2012-09-17 v8449</b>
     </p>
     <ul>
-      <li>Fix a bug in parsing Agilent mzML files</li>
+        <li>Fix a bug in parsing Agilent mzML files</li>
     </ul>
 
     <p>
-      <b>2012-09-13 v8442</b>
+        <b>2012-09-13 v8442</b>
     </p>
     <ul>
-      <li>Fix the bug ignoring PSMs with IsotopeError=0, when MinIsotopeError was negative</li>
-      <li>Change the '-ntt' parameter to set the minimum number of termini following the enzyme specificity rule</li>
-      <li>Change the default value of '-ntt' from 1 to 2</li>
-      <li>Fix the bug to set "fixedMod=true" for variable modifications</li>
-      <li>Fix the bug not showing fixed modifications in the peptide list</li>
-      <li>Fix the bug to show the location of N-term modification as 1 instead of 0</li>
-      <li>Fix the bug to calculate massToChargeRatio as neutral masses instead of charged masses</li>
-      <li>Replace the cvParam showing the dissociation method with a userParam named AssumedDissociationMethod in the SpectrumIdentificationItem</li>
+        <li>Fix the bug ignoring PSMs with IsotopeError=0, when MinIsotopeError was negative</li>
+        <li>Change the '-ntt' parameter to set the minimum number of termini following the enzyme specificity rule</li>
+        <li>Change the default value of '-ntt' from 1 to 2</li>
+        <li>Fix the bug to set "fixedMod=true" for variable modifications</li>
+        <li>Fix the bug not showing fixed modifications in the peptide list</li>
+        <li>Fix the bug to show the location of N-term modification as 1 instead of 0</li>
+        <li>Fix the bug to calculate massToChargeRatio as neutral masses instead of charged masses</li>
+        <li>Replace the cvParam showing the dissociation method with a userParam named AssumedDissociationMethod in the SpectrumIdentificationItem</li>
     </ul>
 
     <p>
-      <b>2012-08-30 v8299</b>
+        <b>2012-08-30 v8299</b>
     </p>
 
     <ul>
-      <li>Provide MzID to TSV converter (edu.ucsd.msjava.ui.MzIDToTsv)</li>
-      <li>Ignore profile spectra in the analysis</li>
-      <li>Support JRE 1.6</li>
+        <li>Provide MzID to TSV converter (edu.ucsd.msjava.ui.MzIDToTsv)</li>
+        <li>Ignore profile spectra in the analysis</li>
+        <li>Support JRE 1.6</li>
     </ul>
 
     <p>
-      <b>2012-08-29 v8297</b>
+        <b>2012-08-29 v8297</b>
     </p>
     <ul>
-      <li>Fix minor bugs</li>
-      <li>Add the scan number CV in the output</li>
+        <li>Fix minor bugs</li>
+        <li>Add the scan number CV in the output</li>
     </ul>
 
     <p>
-      <b>2012-08-27 v8283</b>
+        <b>2012-08-27 v8283</b>
     </p>
     <ul>
-      <li>Fix minor bugs</li>
+        <li>Fix minor bugs</li>
     </ul>
   </body>
 </html>
