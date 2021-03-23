@@ -567,6 +567,7 @@ public class SearchParams {
 
         buf.append("\tProtocol: " + (protocol == null ? "null" : this.protocol.getName()) + "\n");
         buf.append("\tNumTolerableTermini: " + this.numTolerableTermini + "\n");
+        buf.append("\tIgnoreMetCleavage: " + this.ignoreMetCleavage + "\n");
         buf.append("\tMinPepLength: " + this.minPeptideLength + "\n");
         buf.append("\tMaxPepLength: " + this.maxPeptideLength + "\n");
         buf.append("\tMinCharge: " + this.minCharge + "\n");
