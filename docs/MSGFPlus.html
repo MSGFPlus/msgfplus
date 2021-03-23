@@ -15,10 +15,6 @@
     <h1>MS-GF+</h1>
 
     <p>
-        <a href="MS-GFDB.html" title="MS-GFDB">(How to migrate from MS-GFDB to MS-GF)</a>
-    </p>
-
-    <p>
         <a href="Changelog.html" title="MS-GF+ ChangeLog">ChangeLog</a>
     </p>
 
@@ -89,6 +85,8 @@
 
 <span class="code-keyword">[-ccm ChargeCarrierMass]</span> (Mass of charge carrier; <span class="code-object">Default: mass of proton (1.00727649)</span>)
 
+<span class="code-keyword">[-ignoreMetCleavage 0/1]</span> (N-terminal methionine cleavage behavior; <span class="code-object">Default: 0</span>)
+
 <span class="code-keyword">[-maxMissedCleavages Count]</span> (Exclude peptides with more than this number of missed cleavages from the search; <span class="code-object">Default: -1 (no limit)</span>)
 
 <span class="code-keyword">[-numMods Count]</span> (Maximum number of dynamic (variable) modifications per peptide; <span class="code-object">Default: 3</span>)
@@ -121,6 +119,7 @@
         </ul>
         <p class="note"><code>MSConvert.exe --mzML --32 --filter "peakPicking true 1-" DatasetName.raw</code></p>
       </li>
+
       <li style="margin-bottom: 10px;">
         <b>-d DatabaseFile</b> (*.fasta or *.fa or *.faa) - Required
         <ul>
@@ -129,6 +128,7 @@
         </ul>
         <p class="note">If multiple MS-GF+ processes access the same database file, it is strongly recommended to index the database prior to the database search by <a href="BuildSA.html">running BuildSA</a>.</p>
       </li>
+
       <li style="margin-bottom: 10px;">
         <b>-conf ConfigurationFile</b>
         <ul>
@@ -159,6 +159,7 @@
           <li>E.g. for the input spectrum file "test.mzML", the output will be written to "test.mzid" if this parameter is not specified.</li>
         </ul>
       </li>
+
       <li style="margin-bottom: 10px;">
         <b>-t PrecursorMassTolerance</b> (Default: 20ppm)
         <ul>
@@ -167,6 +168,7 @@
           <li>It is recommended to use a tight tolerance rather than a loose tolerance (e.g. for Orbitrap data, 10ppm or 20ppm usually identifies more spectra than 50ppm).</li>
         </ul>
       </li>
+
       <li style="margin-bottom: 10px;">
         <b>-ti IsotopeErrorRange</b> (Default: 0,1)
         <ul>
@@ -176,6 +178,7 @@
           <li>E.g. <span class="code-keyword"><code>-t 20ppm -ti -1,2</code></span> tests abs(ObservedPepMass - TheoreticalPepMass - n * 1.00335Da) &lt; 20ppm for n = -1, 0, 1, 2</li>
         </ul>
       </li>
+
       <li style="margin-bottom: 10px;">
         <b>-thread NumOfThreads</b> (Default: Number of available cores)
         <ul>
@@ -183,6 +186,7 @@
           <li>Default value is the number of available logical cores (e.g. 8 for quad-core processor with hyper-threading support).</li>
         </ul>
       </li>
+
       <li style="margin-bottom: 10px;">
         <b>-tasks NumTasks</b> (Default: internally calculated based on inputs)
         <ul>
@@ -197,6 +201,7 @@
           <li>2-3 tasks per thread will use comparably less memory, but may cause the search to take 1.5 to 2 times as long with a 23MB fasta file.</li>
         </ul>
       </li>
+
       <li style="margin-bottom: 10px;">
         <b>-verbose 0/1</b> (Default: 0)
         <ul>
@@ -250,6 +255,7 @@
           <li>If the identifier is 4, MS/MS spectra from the same precursor ion (e.g. CID/ETD pairs, CID/HCD/ETD triplets) will be merged and the &quot;merged&quot; spectrum will be used for searching instead of individual spectra. See Kim et al., MCP 2010 for details.</li>
         </ul>
       </li>
+
       <li style="margin-bottom: 10px;">
         <b>-inst InstrumentID</b>
         <ul>
@@ -269,12 +275,13 @@
           <li>For other HCD spectra, use 1.</li>
         </ul>
       </li>
+
       <li style="margin-bottom: 10px;">
         <b>-e EnzymeID</b> (Default: 1)
         <ul>
           <li>Enzyme identifier.
             <ul>
-              <li>0: unspecific cleavage</li>
+              <li>0: unspecific cleavage (cleave after any residue)</li>
               <li>1: Trypsin (default)</li>
               <li>2: Chymotrypsin</li>
               <li>3: Lys-C</li>
@@ -291,6 +298,7 @@
           <li>For more info, see <a href="examples/enzymes.txt">enzymes.txt</a></li>
         </ul>
       </li>
+
       <li style="margin-bottom: 10px;">
         <b>-p ProtocolID</b> (Default: 0)
         <ul>
@@ -338,30 +346,35 @@
             See an <a href="examples/Mods.txt">example MS-GF+ modification file</a>.</li>
         </ul>
       </li>
+
       <li style="margin-bottom: 10px;">
         <b>-minLength MinPepLength</b> (Default: 6)
         <ul>
           <li>Minimum length of the peptide to be considered.</li>
         </ul>
       </li>
+
       <li style="margin-bottom: 10px;">
         <b>-maxLength MaxPepLength</b> (Default: 40)
         <ul>
           <li>Maximum length of the peptide to be considered.</li>
         </ul>
       </li>
+
       <li style="margin-bottom: 10px;">
         <b>-minCharge MinPrecursorCharge</b> (Default: 2)
         <ul>
           <li>Minimum precursor charge to consider. This parameter is used only for spectra with no charge.</li>
         </ul>
       </li>
+
       <li style="margin-bottom: 10px;">
         <b>-maxCharge MinPrecursorCharge</b> (Default: 3)
         <ul>
           <li>Maximum precursor charge to consider. This parameter is used only for spectra with no charge.</li>
         </ul>
       </li>
+
       <li style="margin-bottom: 10px;">
         <b>-n NumMatchesPerSpec</b> (Default: 1)
         <ul>
@@ -369,7 +382,8 @@
           <li>Expected false discovery rates (EFDRs) will be reported only when this value is 1.</li>
         </ul>
       </li>
-      <li>
+      
+      <li style="margin-bottom: 10px;">
         <b>-addFeatures 0/1</b> (Default: 0)
         <ul>
           <li>If 0, only basic scores are reported.</li>
@@ -383,6 +397,37 @@
           </li>
         </ul>
       </li>
+      
+      <li style="margin-bottom: 10px;">
+        <b>-ccm ChargeCarrierMass</b> (Default: 1.00727649)
+        <ul>
+          <li>Override the default charge carrier mass</li>
+        </ul>
+      </li>
+      
+      <li style="margin-bottom: 10px;">
+        <b>-ignoreMetCleavage 0/1</b> (Default: 0)
+        <ul>
+          <li>0: consider cleavage of methionine from the protein's N-terminus, even when NTT=2</li>
+          <li>1: disable N-terminal methionine cleavage</li>
+        </ul>
+      </li>
+      
+      <li style="margin-bottom: 10px;">
+        <b>-maxMissedCleavages Count</b> (Default: -1, meaning no limit)
+        <ul>
+          <li>Exclude peptides with more than this number of missed cleavages</li>
+        </ul>
+      </li>
+      
+      <li style="margin-bottom: 10px;">
+        <b>-numMods Count</b> (Default: 3)
+        <ul>
+          <li>Maximum number of dynamic (variable) modifications per peptide</li>
+          <li>If this value is large and multiple dynamic modifications are defined, the search will be slow (depending on FASTA file size)</li>
+        </ul>
+      </li>
+
     </ul>
 
     <h3>MS-GF+ output</h3>
@@ -392,15 +437,19 @@
       <li style="margin-bottom: 5px;">
         <b>MS-GF:RawScore</b>: MS-GF+ raw score of the peptide-spectrum match
       </li>
+
       <li style="margin-bottom: 5px;">
         <b>MS-GF:DeNovoScore</b><b>:</b> the score of the optimal scoring peptide for the spectrum (not necessary in the database)&nbsp;(MS-GF:RawScore &lt;= MS-GF:DeNovoScore)
       </li>
+
       <li style="margin-bottom: 5px;">
         <b>MS-GF:SpecEValue</b>: spectral E-value (spectrum level E-value) of the peptide-spectrum match - the lower the better
       </li>
+
       <li style="margin-bottom: 5px;">
         <b>MS-GF:EValue</b>: database level E-value (expected number of peptides in a random database having equal or better scores than the PSM score) - the lower the better
       </li>
+
       <li style="margin-bottom: 5px;">
         <b>MS-GF:QValue</b>
         <ul>
@@ -408,6 +457,7 @@
           <li>MS-GF:QValue is computed solely based on MS-GF:SpecEValue.</li>
         </ul>
       </li>
+
       <li style="margin-bottom: 5px;">
         <b>MS-GF:PepQValue</b>
         <ul>

@@ -1,32 +1,32 @@
 
 Usage: java -Xmx3500M -jar MSGFPlus.jar
-        -s SpectrumFile (*.mzML, *.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt)
-           Spectra should be centroided (see below for MSConvert example). Profile spectra will be ignored.
-        -d DatabaseFile (*.fasta or *.fa or *.faa)
 	[-conf ConfigurationFile] (Configuration file path; options specified at the command line will override settings in the config file)
 	   Example parameter file is at https://github.com/MSGFPlus/msgfplus/blob/master/docs/examples/MSGFPlus_Params.txt
+	[-s SpectrumFile] (*.mzML, *.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt)
+	   Spectra should be centroided (see below for MSConvert example). Profile spectra will be ignored.
+	[-d DatabaseFile] (*.fasta or *.fa or *.faa)
 	[-decoy DecoyPrefix] (Prefix for decoy protein names; Default: XXX)
 	[-o OutputFile (*.mzid)] (Default: [SpectrumFileName].mzid)
 	[-t PrecursorMassTolerance] (e.g. 2.5Da, 20ppm or 0.5Da,2.5Da; Default: 20ppm)
-           Use a comma to define asymmetric values.
-           E.g. "-t 0.5Da,2.5Da" will set 0.5Da to the left (ObservedPepMass < TheoreticalPepMass) 
-                                      and 2.5Da to the right (ObservedPepMass > TheoreticalPepMass)
-        [-ti IsotopeErrorRange] (Range of allowed isotope peak errors; Default:0,1)
-           Takes into account the error introduced by choosing a non-monoisotopic peak for fragmentation.
-           The combination of -t and -ti determines the precursor mass tolerance.
-           E.g. "-t 20ppm -ti -1,2" tests abs(ObservedPepMass - TheoreticalPepMass - n * 1.00335Da) < 20ppm for n = -1, 0, 1, 2.
-        [-thread NumThreads] (Number of concurrent threads to be executed; Default: Number of available cores)
+	   Use a comma to define asymmetric values. 
+	   E.g. "-t 0.5Da,2.5Da" will set 0.5Da to the left (ObservedPepMass < TheoreticalPepMass) 
+	                              and 2.5Da to the right (ObservedPepMass > TheoreticalPepMass)
+	[-ti IsotopeErrorRange] (Range of allowed isotope peak errors; Default: 0,1)
+	   Takes into account the error introduced by choosing a non-monoisotopic peak for fragmentation.
+	   The combination of -t and -ti determines the precursor mass tolerance.
+	   E.g. "-t 20ppm -ti -1,2" tests abs(ObservedPepMass - TheoreticalPepMass - n * 1.00335Da) < 20ppm for n = -1, 0, 1, 2.
+	[-thread NumThreads] (Number of concurrent threads to be executed; Default: Number of available cores)
 	   This is best set to the number of physical cores in a single NUMA node.
 	   Generally a single NUMA node is 1 physical processor.
 	   The default will try to use hyperthreading cores, which can increase the amount of time this process will take.
 	   This is because the part of Scoring param generation that is multithreaded is also I/O intensive.
-        [-tasks NumTasks] (Override the number of tasks to use on the threads; Default: (internally calculated based on inputs))
-           More tasks than threads will reduce the memory requirements of the search, but will be slower (how much depends on the inputs).
-           1 <= tasks <= numThreads: will create one task per thread, which is the original behavior.
-           tasks = 0: use default calculation - minimum of: (threads*3) and (numSpectra/250).
-           tasks < 0: multiply number of threads by abs(tasks) to determine number of tasks (i.e., -2 means "2 * numThreads" tasks).
-           One task per thread will use the most memory, but will usually finish the fastest.
-           2-3 tasks per thread will use comparably less memory, but may cause the search to take 1.5 to 2 times as long.
+	[-tasks NumTasks] (Override the number of tasks to use on the threads; Default: (internally calculated based on inputs))
+	   More tasks than threads will reduce the memory requirements of the search, but will be slower (how much depends on the inputs).
+	   1 <= tasks <= numThreads: will create one task per thread, which is the original behavior.
+	   tasks = 0: use default calculation - minimum of: (threads*3) and (numSpectra/250).
+	   tasks < 0: multiply number of threads by abs(tasks) to determine number of tasks (i.e., -2 means "2 * numThreads" tasks).
+	   One task per thread will use the most memory, but will usually finish the fastest.
+	   2-3 tasks per thread will use comparably less memory, but may cause the search to take 1.5 to 2 times as long.
 	[-verbose 0/1] (Console output message verbosity, Default: 0)
 	   0 means Report total progress only
 	   1 means Report total and per-thread progress/status
@@ -38,18 +38,18 @@ Usage: java -Xmx3500M -jar MSGFPlus.jar
 	   1 means CID
 	   2 means ETD
 	   3 means HCD
-        [-inst MS2DetectorID] (0: Low-res LCQ/LTQ (Default), 1: Orbitrap/FTICR/Lumos, 2: TOF, 3: Q-Exactive)
-        [-e EnzymeID] (0: Unspecific cleavage, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: glutamyl endopeptidase, 6: Arg-C, 7: Asp-N, 8: alphaLP, 9: no cleavage)
-        [-protocol ProtocolID] (0: Automatic (Default), 1: Phosphorylation, 2: iTRAQ, 3: iTRAQPhospho, 4: TMT, 5: Standard)
-        [-ntt 0/1/2] (Number of Tolerable Termini, Default: 2)
-           E.g. For trypsin, 0: non-tryptic, 1: semi-tryptic, 2: fully-tryptic peptides only.
+	[-inst InstrumentID] (0: Low-res LCQ/LTQ (Default), 1: Orbitrap/FTICR/Lumos, 2: TOF, 3: Q-Exactive)
+	[-e EnzymeID] (0: unspecific cleavage, 1: Trypsin (Default), 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: glutamyl endopeptidase, 6: Arg-C, 7: Asp-N, 8: alphaLP, 9: no cleavage)
+	[-protocol ProtocolID] (0: Automatic (Default), 1: Phosphorylation, 2: iTRAQ, 3: iTRAQPhospho, 4: TMT, 5: Standard)
+	[-ntt 0/1/2] (Number of Tolerable Termini, Default: 2)
+	   E.g. For trypsin, 0: non-tryptic, 1: semi-tryptic, 2: fully-tryptic peptides only.
 	[-mod ModificationFileName] (Modification file; Default: standard amino acids with fixed C+57; only if -mod is not specified)
 	[-minLength MinPepLength] (Minimum peptide length to consider; Default: 6)
 	[-maxLength MaxPepLength] (Maximum peptide length to consider; Default: 40)
 	[-minCharge MinCharge] (Minimum precursor charge to consider if charges are not specified in the spectrum file; Default: 2)
 	[-maxCharge MaxCharge] (Maximum precursor charge to consider if charges are not specified in the spectrum file; Default: 3)
 	[-n NumMatchesPerSpec] (Number of matches per spectrum to be reported; Default: 1)
-	[-addFeatures 0/1] (Include additional features in the output, Default: 0)
+	[-addFeatures 0/1] (Include additional features in the output (enable this to post-process results with Percolator), Default: 0)
 	   0 means Output basic scores only (Default)
 	   1 means Output additional features
 	[-ccm ChargeCarrierMass] (Mass of charge carrier; Default: mass of proton (1.00727649))
@@ -59,7 +59,6 @@ Usage: java -Xmx3500M -jar MSGFPlus.jar
 Example (high-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_human_3.79.fasta -inst 1 -t 20ppm -ti -1,2 -ntt 2 -tda 1 -o testMSGFPlus.mzid -mod Mods.txt
 
 Example (low-precision):  java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_human_3.79.fasta -inst 0 -t 0.5Da,2.5Da    -ntt 2 -tda 1 -o testMSGFPlus.mzid -mod Mods.txt
-
 
 For Thermo .raw files, obtain a centroided .mzML file using MSConvert, which is part of ProteoWizard (http://proteowizard.sourceforge.net/)
   MSConvert.exe DatasetName.raw --filter "peakPicking true 1-" --mzML --32
