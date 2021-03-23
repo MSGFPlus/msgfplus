@@ -114,8 +114,8 @@ public class ParamManager {
         NUM_ISOFORMS("iso", "NumIsoforms", "Number of isoforms to consider per peptide; Default: 128" + Constants.NUM_VARIANTS_PER_PEPTIDE, null),
 
         IGNORE_MET_CLEAVAGE("ignoreMetCleavage", "IgnoreMetCleavage", "When 1, ignore N-terminal methionine cleavage",
-                "0 means Consider protein N-term Met cleavage (Default)\n" +
-                "\t   1 means Ignore protein N-term Met cleavage"),
+                "0 means to consider protein N-term Met cleavage (Default)\n" +
+                "\t   1 means to ignore protein N-term Met cleavage"),
 
         MIN_DE_NOVO_SCORE("minDeNovoScore", "MinDeNovoScore", "Minimum de Novo score; Default: " + Constants.MIN_DE_NOVO_SCORE, null),
 
