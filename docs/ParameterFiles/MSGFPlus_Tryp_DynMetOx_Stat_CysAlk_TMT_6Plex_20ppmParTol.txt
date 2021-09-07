@@ -19,7 +19,7 @@ DynamicMod=O1, M, opt, any,                Oxidation             # Oxidized meth
 #  1 means CID
 #  2 means ETD
 #  3 means HCD
-#  4 means Merge spectra from the same precursor (e.g. CID/ETD pairs, CID/HCD/ETD triplets) 
+#  Disabled in MS-GF+: 4 means Merge spectra from the same precursor (e.g. CID/ETD pairs, CID/HCD/ETD triplets) 
 FragmentationMethodID=0
 
 # Instrument ID

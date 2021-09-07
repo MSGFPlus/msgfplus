@@ -1,9 +1,9 @@
-# Parent mass tolerance 
+# Precursor mass tolerance
 #  Examples: 2.5Da or 30ppm
 #  Use comma to set asymmetric values, for example "0.5Da,2.5Da" will set 0.5Da to the left (expMass<theoMass) and 2.5Da to the right (expMass>theoMass)
 PrecursorMassTolerance=20ppm
 
-# Max Number of Modifications per peptide 
+# Max Number of Dynamic (Variable) Modifications per peptide
 # If this value is large, the search will be slow
 NumMods=3
 
@@ -73,6 +73,24 @@ MaxCharge=5
 # Number of matches per spectrum to be reported
 # If this value is greater than 1, the FDR values computed by MS-GF+ will be skewed by high-scoring 2nd and 3rd hits
 NumMatchesPerSpec=1
+
+# Mass of charge carrier
+#  Default: mass of proton
+#ChargeCarrierMass=1.00727649
+
+# Maximum missed cleavages
+#  Exclude peptides with more than this number of missed cleavages from the search, Default: -1 (no limit)
+#MaxMissedCleavages=-1
+
+# Minimum number of ions a spectrum must have to be examined
+#MinNumPeaksPerSpectrum=10
+
+# Number of isoforms to consider per peptide
+#  Default: 128
+#NumIsoforms=128
+
+# Include additional features in the output (enable this to post-process results with Percolator)
+#AddFeatures=1
 
 # Amino Acid Modification Examples
 # Specify static modifications using one or more StaticMod= entries
