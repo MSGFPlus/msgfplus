@@ -413,11 +413,24 @@ public class GeneratingFunction<T extends Matter> implements GF<T> {
         if (curMinScore >= curMaxScore)
             return;
 
-        if (curMinScore < -10000 || curMaxScore > 10000) {
-            System.err.println("Error! MinScore: " + curMinScore + ", MaxScore: " + curMaxScore + ", "
-                    + "CurNode: " + curNode.getNominalMass()
-                    + ", CurNodeScore: " + curNodeScore);
-            System.exit(-1);
+        if (curMinScore < -10000) {
+            System.err.println("Warning, MinScore is abnormally low; "
+                    + "MinScore: " + curMinScore + ", MaxScore: " + curMaxScore + ", "
+                    + "CurNode: " + curNode.getNominalMass() + ", CurNodeScore: " + curNodeScore);
+            // Could abort processing
+            // System.exit(-1);
+            // Instead, skip this node
+            return;
+        }
+
+        if (curMaxScore > 10000) {
+            System.err.println("Warning, MaxScore is abnormally high; "
+                    + "MinScore: " + curMinScore + ", MaxScore: " + curMaxScore + ", "
+                    + "CurNode: " + curNode.getNominalMass() + ", CurNodeScore: " + curNodeScore);
+            // Could abort processing
+            // System.exit(-1);
+            // Instead, skip this node
+            return;
         }
 
         ScoreDist curDist = scoreDistFactory.getInstance(curMinScore, curMaxScore);
