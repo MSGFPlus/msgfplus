@@ -33,11 +33,11 @@ InstrumentID=1
 EnzymeID=1
 
 # Isotope error range
-#  Takes into account of the error introduced by choosing non-monoisotopic peak for fragmentation.
-#  Useful for accurate precursor ion masses
-#  Ignored if the parent mass tolerance is > 0.5Da or 500ppm
-#  The combination of -t and -ti determins the precursor mass tolerance.
-#  e.g. "-t 20ppm -ti -1,2" tests abs(exp-calc-n*1.00335Da)<20ppm for n=-1, 0, 1, 2.
+#  Takes into account the error introduced by not choosing the monoisotopic peak for fragmentation.
+#  Useful for accurate precursor ion masses.
+#  Ignored if the parent mass tolerance is > 0.5Da or 500ppm.
+#  The combination of -t and -ti determines the precursor mass tolerance.
+#  e.g. "-t 20ppm -ti -1,2" tests abs(observed - theoretical - n * 1.00335Da) < 20ppm for n=-1, 0, 1, 2
 IsotopeErrorRange=-1,2
 
 # Number of tolerable termini
