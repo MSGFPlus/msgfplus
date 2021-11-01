@@ -25,7 +25,6 @@ Downloads / Updates
 ======
 
 * https://github.com/MSGFPlus/msgfplus/releases
-* https://omics.pnl.gov/software/ms-gf
 
 *Version number notes*
 
