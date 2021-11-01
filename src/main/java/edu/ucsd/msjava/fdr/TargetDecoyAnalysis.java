@@ -195,13 +195,23 @@ public class TargetDecoyAnalysis {
 
             if (targetIndex > 0) {
                 float fdr;
-                if (targetIndex <= decoyIndex)
+
+                if (targetIndex <= decoyIndex) {
                     fdr = 1;
-                else {
+                } else {
+                    // Compute FDR using simple formulation by Lukas Käll et al., JPR 2008
+                    // https://pubmed.ncbi.nlm.nih.gov/18052118/
+                    // fdr = ReversePeptideCount ÷ ForwardPeptideCount
+
                     // pit is "portion of incorrect target PSMs" and is always 1 (in practice)
-                    fdr = Math.round(decoyIndex * pit) / (float) targetIndex;    // simple formulation by Kall et et., JPR 2008
-//					fdr = (2*decoyIndex)/(float)(targetIndex + decoyIndex);	// Elias and Gygi, Nat. Methods 2007
+                    fdr = Math.round(decoyIndex * pit) / (float) targetIndex;
+
+                    // Alternative formula, from Elias and Gygi, Nat. Methods 2007
+                    // https://pubmed.ncbi.nlm.nih.gov/17327847/
+                    // fdr = (2 × ReversePeptideCount) ÷ (ForwardPeptideCount + ReversePeptideCount)
+                    // fdr = (2 * decoyIndex) / (float)(targetIndex + decoyIndex);
                 }
+
                 if (fdr > 1)
                     fdr = 1f;
 
