@@ -165,11 +165,16 @@ public class MgfSpectrumParser implements SpectrumParser {
                 } else if (buf.startsWith("SCANS")) {
                     if (buf.matches(".+=\\d+-\\d+"))    // e.g. SCANS=953-959
                     {
+                        // Scan range
+                        // SCANS=7654-7662
                         int startScanNum = Integer.parseInt(buf.substring(buf.indexOf('=') + 1, buf.lastIndexOf('-')));
                         int endScanNum = Integer.parseInt(buf.substring(buf.lastIndexOf('-') + 1));
                         spec.setStartScanNum(startScanNum);
                         spec.setEndScanNum(endScanNum);
                     } else {
+                        // Single scan
+                        // SCANS=1106
+
                         // Look for a single integer after the equals sign
                         try {
                             int scanNum = Integer.valueOf(buf.substring(buf.indexOf("=") + 1));
@@ -343,6 +348,12 @@ public class MgfSpectrumParser implements SpectrumParser {
                 String title = buf.substring(buf.indexOf('=') + 1);
                 metaInfo.setAdditionalInfo("title", title);
             } else if (buf.startsWith("PEPMASS")) {
+                // This could be a single mass
+                // PEPMASS=494.5596
+
+                // Or a mass, intensity, and charge
+                // PEPMASS=570.85805 2840724.1 2
+
                 String[] token = buf.substring(buf.indexOf("=") + 1).split("\\s+");
                 float precursorMz = Float.valueOf(token[0]);
                 metaInfo.setPrecursorMz(precursorMz);
