@@ -1,0 +1,114 @@
+# Precursor mass tolerance
+#  Examples: 2.5Da or 30ppm
+#  Use comma to set asymmetric values, for example "0.5Da,2.5Da" will set 0.5Da to the left (expMass<theoMass) and 2.5Da to the right (expMass>theoMass)
+PrecursorMassTolerance=20ppm
+
+# Max Number of Dynamic (Variable) Modifications per peptide
+# If this value is large, the search will be slow
+NumMods=3
+
+# Modifications (see below for examples)
+StaticMod=None
+
+DynamicMod=O1, M, opt, any, Oxidation            # Oxidized methionine
+
+# Fragmentation Method
+#  0 means Low-res LCQ/LTQ (Default for CID and ETD); use InstrumentID=0 if analyzing a dataset with low-res CID and high-res HCD spectra
+#  1 means High-res LTQ (Default for HCD; also appropriate for high res CID); use InstrumentID=1 for Orbitrap and Lumos with high res MS2 spectra
+#  2 means TOF
+#  3 means Q-Exactive; use InstrumentID=3 for Q Exactive and QEHFX instruments
+#  4 means UVPD
+FragmentationMethodID=0
+
+# Instrument ID
+#  0 means Low-res LCQ/LTQ (Default for CID and ETD); use InstrumentID=0 if analyzing a dataset with low-res CID and high-res HCD spectra
+#  1 means High-res LTQ (Default for HCD; also appropriate for high res CID); use InstrumentID=1 for Orbitrap, Lumos, and QEHFX instruments
+#  2 means TOF
+#  3 means Q-Exactive
+InstrumentID=0
+
+# Enzyme ID
+#  0 means unspecific cleavage (cleave after any residue)
+#  1 means Trypsin (Default); optionally use this along with NTT=0 for a no-enzyme-specificity search of a tryptically digested sample
+#  2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: Glu-C, 6: Arg-C, 7: Asp-N, 8: alphaLP, 9: No Cleavage (for peptidomics)
+EnzymeID=1
+
+# Isotope error range
+#  Takes into account the error introduced by not choosing the monoisotopic peak for fragmentation.
+#  Useful for accurate precursor ion masses.
+#  Ignored if the parent mass tolerance is > 0.5Da or 500ppm.
+#  The combination of -t and -ti determines the precursor mass tolerance.
+#  e.g. "-t 20ppm -ti -1,2" tests abs(observed - theoretical - n * 1.00335Da) < 20ppm for n=-1, 0, 1, 2
+IsotopeErrorRange=-1,2
+
+# Number of tolerable termini
+#  The number of peptide termini that must have been cleaved by the enzyme (default 1)
+#  For trypsin, 2 means fully tryptic only, 1 means partially tryptic, and 0 means no-enzyme search
+NTT=2
+
+# Control N-terminal methionine cleavage
+#  0 means to consider protein N-term Met cleavage (Default)
+#  1 means to ignore protein N-term Met cleavage
+IgnoreMetCleavage=0
+
+# Target/Decoy search mode
+#  0 means don't search decoy database (default)
+#  1 means search decoy database to compute FDR (source FASTA file must be forward-only proteins)
+TDA=1
+
+# Number of Threads (by default, uses all available cores)
+NumThreads=All
+
+# Minimum peptide length to consider
+MinPepLength=6
+
+# Maximum peptide length to consider
+MaxPepLength=50
+
+# Minimum precursor charge to consider (if not specified in the spectrum)
+MinCharge=2
+
+# Maximum precursor charge to consider (if not specified in the spectrum)
+MaxCharge=5
+
+# Number of matches per spectrum to be reported
+# If this value is greater than 1, the FDR values computed by MS-GF+ will be skewed by high-scoring 2nd and 3rd hits
+NumMatchesPerSpec=1
+
+# Mass of charge carrier
+#  Default: mass of proton
+#ChargeCarrierMass=1.00727649
+
+# Maximum missed cleavages
+#  Exclude peptides with more than this number of missed cleavages from the search, Default: -1 (no limit)
+#MaxMissedCleavages=-1
+
+# Minimum number of ions a spectrum must have to be examined
+#MinNumPeaksPerSpectrum=10
+
+# Number of isoforms to consider per peptide
+#  Default: 128
+#NumIsoforms=128
+
+# Include additional features in the output (enable this to post-process results with Percolator)
+#AddFeatures=1
+
+# Amino Acid Modification Examples
+# Specify static modifications using one or more StaticMod= entries
+# Specify dynamic modifications using one or more DynamicMod= entries
+# Modification format is:
+# Mass or CompositionString, Residues, ModType, Position, Name (all five fields are required).
+# CompositionString can only contain a limited set of elements, primarily C H N O S or P
+#
+# Examples:
+#   C2H3N1O1,  C,  fix, any,         Carbamidomethyl    # Fixed Carbamidomethyl C (alkylation)
+#   O1,        M,  opt, any,         Oxidation          # Oxidation M
+#   15.994915, M,  opt, any,         Oxidation          # Oxidation M (mass is used instead of CompositionString)
+#   H-1N-1O1,  NQ, opt, any,         Deamidated         # Negative numbers are allowed.
+#   CH2,       K,  opt, any,         Methyl             # Methylation K
+#   C2H2O1,    K,  opt, any,         Acetyl             # Acetylation K
+#   HO3P,      STY,opt, any,         Phospho            # Phosphorylation STY
+#   C2H3NO,    *,  opt, N-term,      Carbamidomethyl    # Variable Carbamidomethyl N-term
+#   H-2O-1,    E,  opt, N-term,      Glu->pyro-Glu      # Pyro-glu from E
+#   H-3N-1,    Q,  opt, N-term,      Gln->pyro-Glu      # Pyro-glu from Q
+#   C2H2O,     *,  opt, Prot-N-term, Acetyl             # Acetylation Protein N-term

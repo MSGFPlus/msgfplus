@@ -70,7 +70,7 @@ public class TestMSGFPlus {
         File outputDir = new File("C:\\DMS_WorkDir1");
 
         File specFile = Paths.get(workDir.getPath(), "20121223_ICD_individual_33_TP_A177_Elite_30k_run2_01_excerpt.mgf").toFile();
-        File dbFile = Paths.get(orgDbDir.getPath(),"CPTAC_264contams.fasta").toFile();
+        File dbFile = Paths.get(orgDbDir.getPath(),"Tryp_Pig_Bov.fasta").toFile();
         File confFile = Paths.get(workDir.getPath(), "MSGFPlus_Tryp_MetOx_20ppmParTol.txt").toFile();
 
         String versionString = getNextVersion();
@@ -108,7 +108,7 @@ public class TestMSGFPlus {
         File orgDbDir = new File("C:\\DMS_Temp_Org");
 
         File specFile = Paths.get(workDir.getPath(), "QC_Mam_19_01_PNNL_10_06Jan21_Arwen_WBEH-20-12-01.mzML").toFile();
-        File dbFile = Paths.get(orgDbDir.getPath(),"CPTAC_264contams.fasta").toFile();
+        File dbFile = Paths.get(orgDbDir.getPath(),"Tryp_Pig_Bov.fasta").toFile();
         File confFile = Paths.get(workDir.getPath(), "MSGFPlus_Tryp_MetOx_StatCysAlk_20ppmParTol.txt").toFile();
 
         String versionString = getNextVersion();
