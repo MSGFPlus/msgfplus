@@ -183,8 +183,19 @@ public class MgfSpectrumParser implements SpectrumParser {
                     activation = ActivationMethod.get(activationName);
                     spec.setActivationMethod(activation);
                 } else if (buf.startsWith("RTINSECONDS")) {
+                    // This could be a single time:
+                    // RTINSECONDS=347.9825
+
+                    // Or a time range
+                    // RTINSECONDS=200.1054-204.3903
+
                     String[] token = buf.substring(buf.indexOf("=") + 1).split("\\s+");
-                    elutionTimeSeconds = Float.valueOf(token[0]);
+                    int dashIndex = token[0].indexOf("-");
+
+                    if (dashIndex > 0)
+                        elutionTimeSeconds = Float.valueOf(token[0].substring(0, dashIndex));
+                    else
+                        elutionTimeSeconds = Float.valueOf(token[0]);
                 }
 //  			else if(buf.startsWith("TOL="))
 //  			{
