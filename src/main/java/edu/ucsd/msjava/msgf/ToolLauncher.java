@@ -29,7 +29,7 @@ public abstract class ToolLauncher {
     protected float maxParentMass = 2000;
     protected int msgfScoreThreshold = 0;
 
-    // Amino acid set, default: standard + Carboamidomethyl C
+    // Amino acid set, default: standard + Carbamidomethyl C
     protected AminoAcidSet aaSet;
 
     // output
