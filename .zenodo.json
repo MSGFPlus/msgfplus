@@ -1,0 +1,20 @@
+{
+   "description":"<p>MS-GF+ performs peptide identification by scoring MS/MS spectra against peptides derived from a protein sequence database.</p>",
+
+   "license":"other-open",
+
+   "keywords":[
+      "Proteomics",
+      "Mass spectrometry",
+      "LC-MS/MS",
+      "mzid",
+      "peptide",
+      "protein"
+   ],
+
+   "communities":[
+      {
+         "identifier":"pnnl"
+      }
+   ]
+}
