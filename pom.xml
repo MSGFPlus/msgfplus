@@ -244,7 +244,7 @@
         <repository>
             <id>nexus-ebi-release-repo</id>
             <name>The EBI Maven 2 Nexus release repository</name>
-            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-repo/</url>
+            <url>https://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-repo/</url>
         </repository>
         <repository>
             <id>internal-repo</id>
@@ -260,7 +260,7 @@
     </repositories>
     <organization>
         <name>Center for Computational Mass Spectrometry, University of California, San Diego</name>
-        <url>http://proteomics.ucsd.edu</url>
+        <url>https://proteomics.ucsd.edu</url>
     </organization>
     <description>MSGF+</description>
 </project>
