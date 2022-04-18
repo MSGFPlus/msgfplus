@@ -488,6 +488,17 @@ public class DBScanner {
 //						maxPeptideMassIndex = maxNominalPeptideMass + Math.round(tolDaLeft-0.4999f);
 //						minPeptideMassIndex = minNominalPeptideMass - Math.round(tolDaRight-0.4999f);
 
+                        if (leftThr < 1 || rightThr < 1) {
+                            // Either or both of the thresholds is less than 1 (and probably negative)
+                            // This can happen when a dynamic mod with a large negative mass is defined and is applied to a small peptide
+
+                            // For example:
+                            //  DynamicMod=304.207146,  *,  opt, N-term,    TMTpro                # 16-plex TMT
+                            //  DynamicMod=304.207146,  K,  opt, any,       TMTpro                # 16-plex TMT
+                            //  DynamicMod=-190.164215, K,  opt, any,       UbNoTMT16             # Residue tagged by MS-GF+ with TMT16, but is actually ubiquitinated and does not have TMT (+114.042931 - 304.207146)
+                            continue;
+                        }
+
                         Collection<SpecKey> matchedSpecKeyList = specScanner.getPepMassSpecKeyMap().subMap(leftThr, rightThr).values();
                         if (matchedSpecKeyList.size() > 0) {
                             //////
