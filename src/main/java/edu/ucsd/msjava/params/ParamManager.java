@@ -131,6 +131,9 @@ public class ParamManager {
         ADD_FEATURES("addFeatures", "AddFeatures", "Include additional features in the output (enable this to post-process results with Percolator)",
                 "0 means Output basic scores only (Default)\n" +
                         "\t   1 means Output additional features"),
+        
+        ALLOW_DENSE_CENTROIDED_PEAKS("allowDenseCentroidedPeaks", "AllowDenseCentroidedPeaks", "Allow centroid scans with dense peaks (Default: 0)\n" + 
+                "\t   (for mzML or mzXML files, the console output will tell you if you might want to use this)", null),
 
         DD_DIRECTORY("dd", "DBIndexDir", "Path to the directory containing database index files", null),
 
@@ -652,6 +655,13 @@ public class ParamManager {
         addParameter(maxNumMods);
     }
 
+    private void addAllowDenseCentroidedPeaksParam() {
+        EnumParameter allowDenseCentroidedPeaksParam = new EnumParameter(ParamNameEnum.ALLOW_DENSE_CENTROIDED_PEAKS);
+        allowDenseCentroidedPeaksParam.registerEntry("Skip all spectra that fail a peak density check").setDefault();
+        allowDenseCentroidedPeaksParam.registerEntry("Allow mzML/mzXML centroided spectra that fail a peak density check");
+        addParameter(allowDenseCentroidedPeaksParam);
+    }
+
     private void addDbIndexDirParam(boolean isHidden) {
         FileParameter dbIndexDirParam = new FileParameter(ParamNameEnum.DD_DIRECTORY);
         dbIndexDirParam.fileMustExist();
@@ -780,6 +790,8 @@ public class ParamManager {
         addChargeCarrierMassParam();
         addMaxMissedCleavagesParam();
         addMaxNumModsParam();
+        
+        addAllowDenseCentroidedPeaksParam();
 
         addExample("Example (high-precision): java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_human_3.79.fasta -inst 1 -t 20ppm -ti -1,2 -ntt 2 -tda 1 -o testMSGFPlus.mzid -mod Mods.txt");
         addExample("Example (low-precision):  java -Xmx3500M -jar MSGFPlus.jar -s test.mzML -d IPI_human_3.79.fasta -inst 0 -t 0.5Da,2.5Da    -ntt 2 -tda 1 -o testMSGFPlus.mzid -mod Mods.txt");
@@ -907,6 +919,8 @@ public class ParamManager {
         uniformAAProb.registerEntry("Use amino acid probabilities computed from the input database").setDefault();
         uniformAAProb.registerEntry("Use probability 0.05 for all amino acids");
         addParameter(uniformAAProb);
+        
+        addAllowDenseCentroidedPeaksParam();
 
         addExample("Example (high-precision): java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 30ppm -c13 1 -nnet 0 -tda 1 -o testMSGFDB.tsv");
         addExample("Example (low-precision):  java -Xmx2000M -jar MSGFDB.jar -s test.mzXML -d IPI_human_3.79.fasta -t 0.5Da,2.5Da  -nnet 0 -tda 1 -o testMSGFDB.tsv");
@@ -1173,6 +1187,11 @@ public class ParamManager {
     // Used by MS-GF+
     public FileParameter getConfigFileParam() {
         return ((FileParameter) getParameter(ParamNameEnum.CONFIGURATION_FILE.key));
+    }
+
+    // Used by MS-GF+
+    public int getAllowDenseCentroidedPeaks() {
+        return getIntValue(ParamNameEnum.ALLOW_DENSE_CENTROIDED_PEAKS.key);
     }
 
     public int getIntValue(String key) {

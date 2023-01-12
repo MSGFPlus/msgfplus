@@ -67,7 +67,8 @@ public class SpecKey extends Pair<Integer, Integer> {
             int minCharge,
             int maxCharge,
             ActivationMethod activationMethod,
-            int minNumPeaksPerSpectrum) {
+            int minNumPeaksPerSpectrum,
+            boolean allowDenseCentroidedData) {
 
         Iterator<Spectrum> itr = specAcc.getSpecItr();
 
@@ -78,7 +79,8 @@ public class SpecKey extends Pair<Integer, Integer> {
                 minCharge,
                 maxCharge,
                 activationMethod,
-                minNumPeaksPerSpectrum);
+                minNumPeaksPerSpectrum,
+                allowDenseCentroidedData);
 
 
         SpectrumParser parser = specAcc.getSpectrumParser();
@@ -101,7 +103,8 @@ public class SpecKey extends Pair<Integer, Integer> {
             int minCharge,
             int maxCharge,
             ActivationMethod activationMethod,
-            int minNumPeaksPerSpectrum) {
+            int minNumPeaksPerSpectrum,
+            boolean allowDenseCentroidedData) {
 
         if (activationMethod == ActivationMethod.FUSION)
             return getFusedSpecKeyList(itr, startSpecIndex, endSpecIndex, minCharge, maxCharge);
@@ -109,6 +112,7 @@ public class SpecKey extends Pair<Integer, Integer> {
         ArrayList<SpecKey> specKeyList = new ArrayList<SpecKey>();
 
         int numProfileSpectra = 0;
+        int numDenseCentroidedSpectra = 0;
         int numSpectraWithTooFewPeaks = 0;
         final int MAX_INFORMATIVE_MESSAGES = 10;
         int informativeMessageCount = 0;
@@ -176,9 +180,18 @@ public class SpecKey extends Pair<Integer, Integer> {
                 }
             }
 
-            if (!spec.isCentroided()) {
+            if (!spec.isCentroided() && !(spec.isCentroidedWithDensePeaks() && allowDenseCentroidedData)) {
+                String message = "Skip spectrum " + spec.getID() + " since ";
+                if (spec.isCentroidedWithDensePeaks()) {
+                    message += "peaks are too dense";
+                    numDenseCentroidedSpectra++;
+                } else {
+                    message += "it is not centroided";
+                    numProfileSpectra++;
+                }
+                
                 if (informativeMessageCount < MAX_INFORMATIVE_MESSAGES) {
-                    System.out.println("Skip spectrum " + spec.getID() + " since it is not centroided");
+                    System.out.println(message);
                     informativeMessageCount++;
                 } else {
                     if (informativeMessageCount == MAX_INFORMATIVE_MESSAGES) {
@@ -186,7 +199,6 @@ public class SpecKey extends Pair<Integer, Integer> {
                         informativeMessageCount++;
                     }
                 }
-                numProfileSpectra++;
                 continue;
             }
 
@@ -206,6 +218,10 @@ public class SpecKey extends Pair<Integer, Integer> {
 
         System.out.println("Ignoring " + numProfileSpectra + " profile spectra.");
         System.out.println("Ignoring " + numSpectraWithTooFewPeaks + " spectra having less than " + minNumPeaksPerSpectrum + " peaks.");
+        if (numDenseCentroidedSpectra > 0) {
+            System.out.println("Ignoring " + numDenseCentroidedSpectra + " spectra marked as centroid with dense peaks (<50ppm median distance).\n" +
+                    "    Re-run search with parameter '-allowDenseCentroidedPeaks 1' to include these spectra in the search");
+        }
 
         return specKeyList;
     }

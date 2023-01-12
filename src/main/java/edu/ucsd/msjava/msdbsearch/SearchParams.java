@@ -50,6 +50,7 @@ public class SearchParams {
     private double chargeCarrierMass;
     private int maxMissedCleavages;
     private int maxNumMods;
+    private boolean allowDenseCentroidedPeaks;
 
     public SearchParams() {
     }
@@ -214,6 +215,10 @@ public class SearchParams {
         return maxMissedCleavages;
     }
 
+    // Used by MS-GF+
+    public boolean getAllowDenseCentroidedPeaks() {
+        return allowDenseCentroidedPeaks;
+    }
 
     /**
      * Look for # in dataLine
@@ -402,6 +407,8 @@ public class SearchParams {
         } else if (maxMissedCleavages > -1 && enzyme.getName().equals("NoCleavage")) {
             return "Cannot specify a MaxMissedCleavages when using no cleavage enzyme";
         }
+        
+        allowDenseCentroidedPeaks = paramManager.getAllowDenseCentroidedPeaks() == 1;
 
         maxNumMods = paramManager.getMaxNumModsPerPeptide();
         int maxNumModsCompare = aaSet.getMaxNumberOfVariableModificationsPerPeptide();

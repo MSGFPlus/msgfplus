@@ -90,6 +90,10 @@
 <span class="code-keyword">[-maxMissedCleavages Count]</span> (Exclude peptides with more than this number of missed cleavages from the search; <span class="code-object">Default: -1 (no limit)</span>)
 
 <span class="code-keyword">[-numMods Count]</span> (Maximum number of dynamic (variable) modifications per peptide; <span class="code-object">Default: 3</span>)
+
+<span class="code-keyword">[-allowDenseCentroidedPeaks 0/1]</span> (<span class="code-object">Default: 0 (disabled)</span>; 1: (for mzML/mzXML input only) allows inclusion of spectra with high-density centroid data in the search)
+   MS-GF+ checks the distance between consecutive peaks in the spectrum, and if the median distance is less than 50 ppm, they are considered profile spectra regardless of the value provided in mzML and mzXML files.
+   This parameter allows overriding this check when the mzML/mzXML file says the spectrum is centroided.
       </pre>
     </div>
 

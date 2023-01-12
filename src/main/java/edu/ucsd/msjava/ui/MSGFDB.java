@@ -208,6 +208,7 @@ public class MSGFDB {
         boolean useUniformAAProb = paramManager.getIntValue(ParamManager.ParamNameEnum.UNIFORM_AA_PROBABILITY.getKey()) == 1;
         boolean replicateMergedResults = paramManager.getIntValue("replicate") == 1;
         boolean doNotDseEdgeScore = paramManager.getIntValue(ParamManager.ParamNameEnum.EDGE_SCORE.getKey()) == 1;
+        boolean allowDenseCentroidedPeaks = paramManager.getIntValue(ParamManager.ParamNameEnum.ALLOW_DENSE_CENTROIDED_PEAKS.getKey()) == 1;
 
         System.out.println("Loading database files...");
         File dbIndexDir = paramManager.getFile(ParamManager.ParamNameEnum.DD_DIRECTORY.getKey());
@@ -277,7 +278,7 @@ public class MSGFDB {
         int avgPeptideMass = 2000;
         int numBytesPerMass = 12;
         int numSpecScannedTogether = (int) ((float) maxMemory / avgPeptideMass / numBytesPerMass);
-        ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specAcc.getSpecItr(), startSpecIndex, endSpecIndex, minCharge, maxCharge, activationMethod, Constants.MIN_NUM_PEAKS_PER_SPECTRUM);
+        ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specAcc.getSpecItr(), startSpecIndex, endSpecIndex, minCharge, maxCharge, activationMethod, Constants.MIN_NUM_PEAKS_PER_SPECTRUM, allowDenseCentroidedPeaks);
         int specSize = specKeyList.size();
 
         System.out.print("Reading spectra finished ");

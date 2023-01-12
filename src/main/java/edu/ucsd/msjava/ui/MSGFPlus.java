@@ -22,8 +22,8 @@ import java.util.logging.Logger;
 
 
 public class MSGFPlus {
-    public static final String VERSION = "Release (v2022.04.18)";
-    public static final String RELEASE_DATE = "18 April 2022";
+    public static final String VERSION = "Release (v2023.01.12)";
+    public static final String RELEASE_DATE = "12 January 2023";
 
     public static final String DECOY_DB_EXTENSION = ".revCat.fasta";
     public static final String DEFAULT_DECOY_PROTEIN_PREFIX = "XXX";
@@ -185,6 +185,7 @@ public class MSGFPlus {
 
         int numThreads = params.getNumThreads();
         boolean doNotUseEdgeScore = params.doNotUseEdgeScore();
+        boolean allowDenseCentroidedPeaks = params.getAllowDenseCentroidedPeaks();
 
         int minNumPeaksPerSpectrum = params.getMinNumPeaksPerSpectrum();
         if (minNumPeaksPerSpectrum == -1)    // not specified
@@ -267,7 +268,7 @@ public class MSGFPlus {
             return "Error while parsing spectrum file: " + specFile.getPath();
 
         ArrayList<SpecKey> specKeyList = SpecKey.getSpecKeyList(specAcc,
-                startSpecIndex, endSpecIndex, minCharge, maxCharge, activationMethod, minNumPeaksPerSpectrum);
+                startSpecIndex, endSpecIndex, minCharge, maxCharge, activationMethod, minNumPeaksPerSpectrum, allowDenseCentroidedPeaks);
 
         int specSize = specKeyList.size();
         if (specSize == 0)

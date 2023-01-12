@@ -44,6 +44,8 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
     private Polarity scanPolarity = Polarity.POSITIVE;
 
     private Boolean isCentroided = true;
+    private Boolean externalSetIsCentroided = false;
+    private Boolean isCentroidedWithDensePeaks = false;
 
     private boolean isHighPrecision = false;
 //	private Tolerance precursorTolerance = null;
@@ -257,6 +259,15 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
     }
 
     /**
+     * Whether this spectrum is centroided according to the reader, but failed determineIfCentroided() because peaks are too dense.
+     *
+     * @return false unless the reader called setIsCentroided(true) and determineIfCentroided() failed
+     */
+    public boolean isCentroidedWithDensePeaks() {
+        return this.isCentroidedWithDensePeaks;
+    }
+
+    /**
      * Returns whether this spectrum peaks are measured with high-precision.
      *
      * @return true if this spectrum is centroided and false otherwise.
@@ -437,6 +448,8 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
      */
     public void setIsCentroided(boolean isCentroided) {
         this.isCentroided = isCentroided;
+        // function is used for mzML and mzXML files, track that isCentroided was set outside of this class
+        this.externalSetIsCentroided = true;
     }
 
     /**
@@ -489,7 +502,7 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
      * Sets isCentroided by a simple testing.
      */
     public void determineIsCentroided() {
-        this.isCentroided = true;
+        boolean centroidedCheckPass = true;
 
 //		if(this.size() > 100)
 //		{
@@ -516,8 +529,21 @@ public class Spectrum extends ArrayList<Peak> implements Comparable<Spectrum> {
                 prevMz = curMz;
             }
             Collections.sort(diff);
-            if (diff.size() > 0 && diff.get(diff.size() / 2) < 50)
-                isCentroided = false;
+            if (diff.size() > 0 && diff.get(diff.size() / 2) < 50) {
+                // Check failed - the median PPM distance between peaks is less than 50 PPM
+                centroidedCheckPass = false;
+            }
+        }
+        
+        if (centroidedCheckPass) {
+            this.isCentroided = true;
+        } else {
+            if (this.isCentroided && this.externalSetIsCentroided) {
+                // set a flag to notify the user
+                this.isCentroidedWithDensePeaks = true;
+            }
+
+            this.isCentroided = false;
         }
     }
 
