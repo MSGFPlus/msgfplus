@@ -556,10 +556,10 @@ public class ScanHeader implements Serializable
 	this.precursorIntensity = precursorIntensity;
     }
 
-    	/**
-	 * @return Returns the activaion method
+	/**
+	 * @return Returns the activation method
 	 */
-    	public String getActivationMethod()
+	public String getActivationMethod()
 	{
 		return activationMethod;
 	}
