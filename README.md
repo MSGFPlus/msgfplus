@@ -23,7 +23,7 @@ Releases after April 2019 support Java 11 and newer; older releases will not wor
 
 Downloads / Updates
 ======
-
+[![Github This Release](https://img.shields.io/github/downloads/MSGFPlus/msgfplus/total.svg)]() [![Github This Release](https://img.shields.io/github/downloads/MSGFPlus/msgfplus/latest/total.svg)]()
 * https://github.com/MSGFPlus/msgfplus/releases
 
 *Version number notes*
