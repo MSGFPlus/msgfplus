@@ -275,30 +275,32 @@ public class AminoAcid extends Matter {
 //	}
 
     private static Hashtable<Character, AminoAcid> residueMap;
-    // Static table containing Predefined Amino Acids
+    // Static table containing Predefined Amino Acids, sorted by increasing mass
     private static final AminoAcid[] standardAATable =
             {
-                    new AminoAcid('G', "Glycine", new Composition(2, 3, 1, 1, 0)),
-                    new AminoAcid('A', "Alanine", new Composition(3, 5, 1, 1, 0)),
-                    new AminoAcid('S', "Serine", new Composition(3, 5, 1, 2, 0)),
-                    new AminoAcid('P', "Proline", new Composition(5, 7, 1, 1, 0)),
-                    new AminoAcid('V', "Valine", new Composition(5, 9, 1, 1, 0)),
-                    new AminoAcid('T', "Threonine", new Composition(4, 7, 1, 2, 0)),
-                    new AminoAcid('C', "Cystine", new Composition(3, 5, 1, 1, 1)),
-                    new AminoAcid('L', "Leucine", new Composition(6, 11, 1, 1, 0)),
-                    new AminoAcid('I', "Isoleucine", new Composition(6, 11, 1, 1, 0)),
-                    new AminoAcid('N', "Asparagine", new Composition(4, 6, 2, 2, 0)),
-                    new AminoAcid('D', "Aspartate", new Composition(4, 5, 1, 3, 0)),
-                    new AminoAcid('Q', "Glutamine", new Composition(5, 8, 2, 2, 0)),
-                    new AminoAcid('K', "Lysine", new Composition(6, 12, 2, 1, 0)),
-                    new AminoAcid('E', "Glutamate", new Composition(5, 7, 1, 3, 0)),
-                    new AminoAcid('M', "Methionine", new Composition(5, 9, 1, 1, 1)),
-                    new AminoAcid('H', "Histidine", new Composition(6, 7, 3, 1, 0)),
-                    new AminoAcid('F', "Phenylalanine", new Composition(9, 9, 1, 1, 0)),
-//		new AminoAcid('U',  "Selenocysteine", 150.0379),
-                    new AminoAcid('R', "Arginine", new Composition(6, 12, 4, 1, 0)),
-                    new AminoAcid('Y', "Tyrosine", new Composition(9, 9, 1, 2, 0)),
-                    new AminoAcid('W', "Tryptophan", new Composition(11, 10, 2, 1, 0)),
+                    //                                                   C  H  N  O  S
+                    new AminoAcid('G', "Glycine",        new Composition(2, 3, 1, 1, 0)),   // 57.0215
+                    new AminoAcid('A', "Alanine",        new Composition(3, 5, 1, 1, 0)),   // 71.0371
+                    new AminoAcid('S', "Serine",         new Composition(3, 5, 1, 2, 0)),   // 87.032
+                    new AminoAcid('P', "Proline",        new Composition(5, 7, 1, 1, 0)),   // 97.0528
+                    new AminoAcid('V', "Valine",         new Composition(5, 9, 1, 1, 0)),   // 99.0684
+                    new AminoAcid('T', "Threonine",      new Composition(4, 7, 1, 2, 0)),   // 101.0477
+                    new AminoAcid('C', "Cystine",        new Composition(3, 5, 1, 1, 1)),   // 103.0092
+                    // new AminoAcid('O', "Hydroxyproline", new Composition(5, 7, 1, 2, 0)),   // 113.0477; note that O could be Hydroxyproline, Ornithine, or Pyrrolysine
+                    new AminoAcid('L', "Leucine",        new Composition(6, 11, 1, 1, 0)),  // 113.0841
+                    new AminoAcid('I', "Isoleucine",     new Composition(6, 11, 1, 1, 0)),  // 113.0841
+                    new AminoAcid('N', "Asparagine",     new Composition(4, 6, 2, 2, 0)),   // 114.0429
+                    new AminoAcid('D', "Aspartate",      new Composition(4, 5, 1, 3, 0)),   // 115.0269
+                    new AminoAcid('Q', "Glutamine",      new Composition(5, 8, 2, 2, 0)),   // 128.0586
+                    new AminoAcid('K', "Lysine",         new Composition(6, 12, 2, 1, 0)),  // 128.095
+                    new AminoAcid('E', "Glutamate",      new Composition(5, 7, 1, 3, 0)),   // 129.0426
+                    new AminoAcid('M', "Methionine",     new Composition(5, 9, 1, 1, 1)),   // 131.0405
+                    new AminoAcid('H', "Histidine",      new Composition(6, 7, 3, 1, 0)),   // 137.0589
+                    new AminoAcid('F', "Phenylalanine",  new Composition(9, 9, 1, 1, 0)),   // 147.0684
+                    // new AminoAcid('U',  "Selenocysteine", 150.0379),                                    // 150.9536
+                    new AminoAcid('R', "Arginine",       new Composition(6, 12, 4, 1, 0)),  // 156.1011
+                    new AminoAcid('Y', "Tyrosine",       new Composition(9, 9, 1, 2, 0)),   // 163.0633
+                    new AminoAcid('W', "Tryptophan",     new Composition(11, 10, 2, 1, 0)), // 186.0793
             };
 
 //	public static final AminoAcid N_TERN = new AminoAcid('[',  "N-terminus", new Composition(0,0,0,0,0));
