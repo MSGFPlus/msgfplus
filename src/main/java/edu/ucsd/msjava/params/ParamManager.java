@@ -111,7 +111,7 @@ public class ParamManager {
 
         MIN_NUM_PEAKS("minNumPeaks", "MinNumPeaksPerSpectrum", "Minimum number of peaks per spectrum; Default: " + Constants.MIN_NUM_PEAKS_PER_SPECTRUM, null),
 
-        NUM_ISOFORMS("iso", "NumIsoforms", "Number of isoforms to consider per peptide; Default: 128" + Constants.NUM_VARIANTS_PER_PEPTIDE, null),
+        NUM_ISOFORMS("iso", "NumIsoforms", "Number of isoforms to consider per peptide; Default: " + Constants.NUM_VARIANTS_PER_PEPTIDE, null),
 
         IGNORE_MET_CLEAVAGE("ignoreMetCleavage", "IgnoreMetCleavage", "When 1, ignore N-terminal methionine cleavage",
                 "0 means to consider protein N-term Met cleavage (Default)\n" +
