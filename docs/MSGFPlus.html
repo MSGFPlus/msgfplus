@@ -21,14 +21,14 @@
     <div class="codePanel">
       <pre class="code">Usage: java -Xmx3500M -jar MSGFPlus.jar
 
-<span class="code-keyword">-s SpectrumFile</span> (*.mzML, *.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt)
+<span class="code-keyword">[-conf ConfigurationFile]</span> (Configuration file path; options specified at the command line will override settings in the config file)
+   An example parameter file is at https://github.com/MSGFPlus/msgfplus/blob/master/docs/examples/MSGFPlus_Params.txt
+   Additional parameter files are at https://github.com/MSGFPlus/msgfplus/tree/master/docs/ParameterFiles
+
+<span class="code-keyword">[-s SpectrumFile]</span> (*.mzML, *.mzXML, *.mgf, *.ms2, *.pkl or *_dta.txt)
    Spectra should be centroided (see below for MSConvert example). Profile spectra will be ignored.
 
-<span class="code-keyword">-d DatabaseFile</span> (*.fasta or *.fa or *.faa)
-
-<span class="code-keyword">[-conf ConfigurationFile]</span> (Configuration file path)
-   Example parameter file is at https://github.com/MSGFPlus/msgfplus/blob/master/docs/examples/MSGFPlus_Params.txt
-   Additional parameter files can be found at https://github.com/MSGFPlus/msgfplus/tree/master/docs/ParameterFiles
+<span class="code-keyword">[-d DatabaseFile]</span> (*.fasta or *.fa or *.faa)
 
 <span class="code-keyword">[-decoy DecoyPrefix]</span> (Prefix for decoy protein names; <span class="code-object">Default: XXX</span>)
 
@@ -45,8 +45,12 @@
    E.g. <span class="code-quote">"-t 20ppm -ti -1,2"</span> tests abs(ObservedPepMass - TheoreticalPepMass - n * 1.00335Da) &lt; 20ppm for n = -1, 0, 1, 2.
 
 <span class="code-keyword">[-thread NumThreads]</span> (Number of concurrent threads to be executed; <span class="code-object">Default: Number of available cores</span>)
+   This is best set to the number of physical cores in a single NUMA node.
+   Generally a single NUMA node is 1 physical processor.
+   The default will try to use hyperthreading cores, which can increase the amount of time this process will take.
+   This is because the part of Scoring param generation that is multithreaded is also I/O intensive.
 
-<span class="code-keyword">[-tasks NumTasks]</span> (Override the number of tasks to use on the threads; <span class="code-object">Default: (internally calculated based on inputs)</span>)
+<span class="code-keyword">[-tasks NumTasks]</span> (Override the number of tasks to use on the threads; <span class="code-object">Default: internally calculated based on inputs</span>)
    More tasks than threads will reduce the memory requirements of the search, but will be slower (how much depends on the inputs).
    1 &lt;= tasks &lt;= numThreads: will create one task per thread, which is the original behavior.
    tasks = 0: use default calculation - minimum of: (threads*3) and (numSpectra/250).
@@ -54,20 +58,52 @@
    One task per thread will use the most memory, but will usually finish the fastest.
    2-3 tasks per thread will use comparably less memory, but may cause the search to take 1.5 to 2 times as long.
 
-<span class="code-keyword">[-verbose 0/1]</span> (<span class="code-object">0: Report total progress only (Default)</span>, 1: Report total and per-thread progress/status)
+<span class="code-keyword">[-verbose 0/1]</span> (Console output message verbosity; <span class="code-object">Default: 0</span>)
+   0: Report total progress only
+   1: Report total and per-thread progress/status
 
-<span class="code-keyword">[-tda 0/1]</span> (<span class="code-object">0: Don't search decoy database (Default)</span>, 1: Search decoy database)
+<span class="code-keyword">[-tda 0/1]</span> (Target decoy strategy; <span class="code-object">Default: 0</span>)
+   0: Don't use a decoy database
+   1: Search with a decoy database (forward + reverse proteins)
 
-<span class="code-keyword">[-m FragmentMethodID]</span> (<span class="code-object">0: As written in the spectrum or CID if no info (Default)</span>, 1: CID, 2: ETD, 3: HCD, 4: UVPD)
+<span class="code-keyword">[-m FragmentationMethodID]</span> (Fragmentation Method; <span class="code-object">Default: 0</span>)
+   0: As written in the spectrum or CID if no info
+   1: CID
+   2: ETD
+   3: HCD
+   4: UVPD
 
-<span class="code-keyword">[-inst InstrumentID]</span> (<span class="code-object">0: Low-res LCQ/LTQ (Default)</span>, 1: Orbitrap/FTICR/Lumos, 2: TOF, 3: Q-Exactive)
+<span class="code-keyword">[-inst InstrumentID]</span> (Instrument ID; <span class="code-object">Default: 0</span>)
+   0: Low-res LCQ/LTQ
+   1: Orbitrap/FTICR/Lumos
+   2: TOF
+   3: Q-Exactive
 
-<span class="code-keyword">[-e EnzymeID]</span> (0: Unspecific cleavage, <span class="code-object">1: Trypsin (Default)</span>, 2: Chymotrypsin, 3: Lys-C, 4: Lys-N, 5: glutamyl endopeptidase, 6: Arg-C, 7: Asp-N, 8: alphaLP, 9: no cleavage)
+<span class="code-keyword">[-e EnzymeID]</span> (Enzyme ID; <span class="code-object">Default: 1</span>)
+   0: Unspecific cleavage
+   1: Trypsin
+   2: Chymotrypsin
+   3: Lys-C
+   4: Lys-N
+   5: glutamyl endopeptidase
+   6: Arg-C
+   7: Asp-N
+   8: alphaLP
+   9: no cleavage
 
-<span class="code-keyword">[-protocol ProtocolID]</span> (<span class="code-object">0: Automatic (Default)</span>, 1: Phosphorylation, 2: iTRAQ, 3: iTRAQPhospho, 4: TMT, 5: Standard)
+<span class="code-keyword">[-protocol ProtocolID]</span> (Protocol ID; <span class="code-object">Default: 0</span>)
+   0: Automatic
+   1: Phosphorylation
+   2: iTRAQ
+   3: iTRAQPhospho
+   4: TMT
+   5: Standard
 
 <span class="code-keyword">[-ntt 0/1/2]</span> (Number of Tolerable Termini; <span class="code-object">Default: 2</span>)
-   E.g. For trypsin, 0: non-tryptic, 1: semi-tryptic, 2: fully-tryptic peptides only.
+   When EnzymeID is 1 (trypsin),
+     2: Only search for fully-tryptic peptides
+     1: Search for semi-tryptic and fully-tryptic peptides
+     0: Non-tryptic search
 
 <span class="code-keyword">[-mod ModificationFileName]</span> (Modification file; <span class="code-object">Default: standard amino acids with fixed C+57; only if -mod is not specified</span>)
 
@@ -81,13 +117,15 @@
 
 <span class="code-keyword">[-n NumMatchesPerSpec]</span> (Number of matches per spectrum to be reported; <span class="code-object">Default: 1</span>)
 
-<span class="code-keyword">[-addFeatures 0/1]</span> (<span class="code-object">0: Output basic scores only (Default)</span>, 1: Output additional features)
+<span class="code-keyword">[-addFeatures 0/1]</span> (Include additional features in the output; enable this to post-process results with Percolator; <span class="code-object">Default: 0</span>)
+   0: Output basic scores only
+   1: Output additional features
 
-<span class="code-keyword">[-ccm ChargeCarrierMass]</span> (Mass of charge carrier; <span class="code-object">Default: mass of proton (1.00727649)</span>)
+<span class="code-keyword">[-ccm ChargeCarrierMass]</span> (Mass of charge carrier; <span class="code-object">Default: mass of a proton, 1.00727649</span>)
 
 <span class="code-keyword">[-ignoreMetCleavage 0/1]</span> (N-terminal methionine cleavage behavior; <span class="code-object">Default: 0</span>)
 
-<span class="code-keyword">[-maxMissedCleavages Count]</span> (Exclude peptides with more than this number of missed cleavages from the search; <span class="code-object">Default: -1 (no limit)</span>)
+<span class="code-keyword">[-maxMissedCleavages Count]</span> (Exclude peptides with more than this number of missed cleavages from the search; <span class="code-object">Default: -1, meaning no limit</span>)
 
 <span class="code-keyword">[-minNumPeaks Count]</span> (Minimum number of ions a spectrum must have to be examined; <span class="code-object">Default: 10</span>)
 
